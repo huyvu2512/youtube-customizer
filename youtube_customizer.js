@@ -11,11 +11,16 @@
             ytd-rich-grid-renderer {
                 --ytd-rich-grid-items-per-row: 4 !important;
             }
-            /* Khi đang tua, chỉ ẩn thanh Play/Pause */
+            /* Khi đang tua: Ẩn thanh Play/Pause VÀ ẩn con trỏ chuột */
             #movie_player.seeking-mode .ytp-chrome-bottom,
             #movie_player.seeking-mode .ytp-gradient-bottom,
             #movie_player.seeking-mode .ytp-chrome-top {
                 opacity: 0 !important;
+            }
+            
+            /* TÍNH NĂNG MỚI: Ẩn chuột khi đang tua */
+            #movie_player.seeking-mode {
+                cursor: none !important;
             }
         `;
         document.head.appendChild(style);
@@ -46,11 +51,11 @@
 
             ytdLogos.forEach(ytdLogo => {
                 const ytdLogoSvg = ytdLogo.querySelector("svg");
-                const logoLink = ytdLogo.closest('ytd-topbar-logo-renderer'); // Tìm thẻ chứa link chuẩn hơn
+                const logoLink = ytdLogo.closest('ytd-topbar-logo-renderer'); 
 
                 if (ytdLogoSvg) {
                     ytdLogoSvg.setAttribute('width', '101');
-                    ytdLogoSvg.setAttribute('height', '20'); // Thêm height cho chuẩn
+                    ytdLogoSvg.setAttribute('height', '20'); 
                     ytdLogoSvg.setAttribute('viewBox', '0 0 101 20');
                     const logoWrapper = ytdLogoSvg.closest('ytd-logo');
                     if(logoWrapper) logoWrapper.setAttribute('is-red-logo', '');
@@ -59,7 +64,6 @@
                 }
                 
                 // Gắn sự kiện click vào thẻ A chứa logo
-                // (Link này có thể là #logo hoặc thẻ a bao quanh)
                 const clickable = logoLink ? logoLink.querySelector('a') || logoLink : null;
 
                 if (clickable && !clickable.dataset.hasScrollFix) {
@@ -81,15 +85,29 @@
                  setTimeout(() => {
                     ytdLogos = document.querySelectorAll("ytd-logo > yt-icon > span > div");
                     modifyAndSetupLogo(ytdLogos);
+                    setupSearchScroll(); // GỌI HÀM SETUP TÌM KIẾM
                 }, 50);
             }
         }
         logoObserver = new MutationObserver(checkYtIconExistence);
         logoObserver.observe(document.body, {childList: true, subtree: true});
         checkYtIconExistence();
+        
+        // --- 2.1b: TÍNH NĂNG MỚI - SCROLL KHI ẤN TÌM KIẾM ---
+        function setupSearchScroll() {
+            // Tìm nút kính lúp (search-icon-legacy)
+            const searchBtn = document.querySelector('#search-icon-legacy');
+            if (searchBtn && !searchBtn.dataset.hasSearchScrollFix) {
+                searchBtn.dataset.hasSearchScrollFix = "true";
+                searchBtn.addEventListener('click', () => {
+                    // Cuộn lên đầu trang mượt mà
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+        }
 
 
-        // --- 2.2: LOGIC TUA VIDEO & ẨN GIAO DIỆN ---
+        // --- 2.2: LOGIC TUA VIDEO & ẨN GIAO DIỆN & CHUỘT ---
         function initLiteSeek() {
             const player = document.querySelector('#movie_player');
             if (!player) return;
@@ -97,13 +115,11 @@
             let lastKeyTime = 0;
 
             document.addEventListener('keydown', (e) => {
-                // TỐI ƯU HÓA: Không chạy nếu đang gõ chữ
                 const target = e.target;
                 if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
 
                 let isSeekAction = false;
                 
-                // Numpad 4 -> J, Numpad 6 -> L
                 if (e.code === 'Numpad4') { 
                     e.preventDefault(); e.stopPropagation(); 
                     document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'j', 'code': 'KeyJ', 'keyCode': 74, 'which': 74, 'bubbles': true}));
@@ -120,7 +136,7 @@
 
                 if (isSeekAction) {
                     lastKeyTime = Date.now();
-                    player.classList.add('seeking-mode');
+                    player.classList.add('seeking-mode'); // CSS sẽ xử lý việc ẩn chuột
                 }
             }, true);
 
@@ -130,7 +146,6 @@
             }, true);
         }
         
-        // Polling nhẹ để tìm player
         const intervalCheck = setInterval(() => {
             const player = document.querySelector('#movie_player');
             if (player) { initLiteSeek(); clearInterval(intervalCheck); }
@@ -141,7 +156,6 @@
         let isPageUnsafe = true;
         setTimeout(() => { isPageUnsafe = false; }, 2500);
 
-        // Thoát Fullscreen
         document.addEventListener('fullscreenchange', () => {
             if (document.fullscreenElement && isPageUnsafe) {
                 if (document.exitFullscreen) document.exitFullscreen();
@@ -149,8 +163,6 @@
             }
         });
 
-        // Thoát Theater Mode: Tối ưu Observer
-        // Thay vì observe document, ta tìm thẻ ytd-watch-flexy khi nó xuất hiện
         const waitForApp = setInterval(() => {
             const app = document.querySelector('ytd-watch-flexy');
             if (app) {
@@ -166,14 +178,13 @@
         }, 500);
         
 
-        // --- 2.4: AUTO SKIP ADS (TÍNH NĂNG MỚI) ---
+        // --- 2.4: AUTO SKIP ADS ---
         setInterval(() => {
             const skipBtn = document.querySelector('.ytp-ad-skip-button, .ytp-ad-skip-button-modern, .videoAdUiSkipButton');
             if (skipBtn) {
                 skipBtn.click();
                 console.log('Auto skipped ad');
             }
-            // Xử lý banner quảng cáo đè lên video
             const closeOverlay = document.querySelector('.ytp-ad-overlay-close-button');
             if (closeOverlay) closeOverlay.click();
         }, 1000);
