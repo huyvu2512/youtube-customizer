@@ -14,8 +14,7 @@ Script Tampermonkey mạnh mẽ giúp tùy biến giao diện YouTube, tối ưu
     * Phím **Numpad 4**: Lùi 10 giây (Giống phím J).
     * Phím **Numpad 6**: Tiến 10 giây (Giống phím L).
     * *Tính năng thông minh:* Tự động vô hiệu hóa khi bạn đang gõ bình luận hoặc tìm kiếm.
-* **Giao diện tua "Sạch" (Clean Seek):** Khi bạn tua video, thanh điều khiển bên dưới (Play/Pause, thanh thời gian) sẽ tự động ẩn đi cho thoáng mắt, chỉ hiển thị vòng tròn thông báo số giây (+-10s).
-* **🚫 Auto-Skip Ads:** Tự động phát hiện và nhấn nút "Bỏ qua quảng cáo" ngay lập tức khi xuất hiện.
+* **Giao diện tua "Sạch" (Clean Seek):** Khi bạn tua video, thanh điều khiển bên dưới (Play/Pause, thanh thời gian) và các nút Like/Share rườm rà sẽ tự động ẩn đi, chỉ hiển thị vòng tròn thông báo số giây (+-10s) nguyên bản.
 
 ### 🛡️ Sửa lỗi & Bảo vệ (Fix Lag)
 * **Auto-ESC (Chống lỗi Zoom):** Khi mạng lag hoặc trang chưa tải xong, nếu bạn ấn phóng to (Fullscreen) thường sẽ bị lỗi màn hình đen hoặc video bị nhỏ. Script sẽ phát hiện và **tự động thoát toàn màn hình** ngay lập tức để bạn không bị kẹt ở giao diện lỗi.
@@ -37,7 +36,12 @@ Sau khi đã có Tampermonkey, hãy nhấn vào nút dưới đây để cài đ
 
 *(Nhấn nút **Install** hoặc **Cài đặt** khi tab mới hiện ra)*
 
-### Bước 3: Tận hưởng
+### Bước 3: Chặn quảng cáo (Khuyên dùng)
+Script này tập trung vào giao diện và tính năng. Để chặn quảng cáo sạch sẽ và hiệu quả nhất, bạn hãy cài đặt thêm tiện ích **uBlock Origin Lite**:
+
+[![Tải uBlock Origin Lite](https://img.shields.io/badge/Tải%20uBlock-Origin%20Lite-drkred?style=for-the-badge&logo=ublockorigin)](https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh?hl=vi)
+
+### Bước 4: Tận hưởng
 Truy cập [YouTube](https://www.youtube.com/), tải lại trang (F5) và tận hưởng giao diện mới! 🎉
 
 ---
