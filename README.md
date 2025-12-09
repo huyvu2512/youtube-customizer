@@ -1,14 +1,44 @@
+# 🛠️ YouTube Customizer: All-in-One
+
+Script Tampermonkey mạnh mẽ giúp tùy biến giao diện YouTube, tối ưu hóa trải nghiệm xem video và sửa các lỗi khó chịu thường gặp. Một công cụ "tất cả trong một" dành cho người dùng YouTube.
+
+## ✨ Tính năng nổi bật
+
+### 🎨 Giao diện & Hiển thị
+* **Logo Premium:** Tự động thay thế logo mặc định thành logo **YouTube Premium**.
+* **Lưới 4 Cột:** Cưỡng chế giao diện trang chủ hiển thị **4 video trên một hàng** (thay vì giao diện lộn xộn mặc định), giúp danh sách video gọn gàng và dễ nhìn hơn.
+* **Click Logo lên đầu trang:** Sửa lỗi khó chịu của YouTube. Khi ấn vào Logo, trang sẽ tự động cuộn mượt mà lên vị trí đầu tiên (Top 0) thay vì giữ nguyên vị trí cũ.
+
+### ⏩ Điều khiển & Trải nghiệm
+* **Tua video bằng Numpad (Bàn phím số):**
+    * Phím **Numpad 4**: Lùi 10 giây (Giống phím J).
+    * Phím **Numpad 6**: Tiến 10 giây (Giống phím L).
+    * *Tính năng thông minh:* Tự động vô hiệu hóa khi bạn đang gõ bình luận hoặc tìm kiếm.
+* **Giao diện tua "Sạch" (Clean Seek):** Khi bạn tua video, thanh điều khiển bên dưới (Play/Pause, thanh thời gian) sẽ tự động ẩn đi cho thoáng mắt, chỉ hiển thị vòng tròn thông báo số giây (+-10s).
+* **🚫 Auto-Skip Ads:** Tự động phát hiện và nhấn nút "Bỏ qua quảng cáo" ngay lập tức khi xuất hiện.
+
+### 🛡️ Sửa lỗi & Bảo vệ (Fix Lag)
+* **Auto-ESC (Chống lỗi Zoom):** Khi mạng lag hoặc trang chưa tải xong, nếu bạn ấn phóng to (Fullscreen) thường sẽ bị lỗi màn hình đen hoặc video bị nhỏ. Script sẽ phát hiện và **tự động thoát toàn màn hình** ngay lập tức để bạn không bị kẹt ở giao diện lỗi.
+* **Ổn định giao diện:** Ngăn chặn các thành phần rác (như thanh Like/Share nổi, Popup đề xuất) che khuất nội dung khi đang tua video.
+
+---
+
 ## 📥 Hướng dẫn cài đặt
-1. **Cài đặt Tampermonkey**:
-   - [Tải Tampermonkey cho PC](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
-   - [Tải Tampermonkey cho Mobile (phiên bản cũ)](https://chromewebstore.google.com/detail/tampermonkey-legacy/lcmhijbkigalmkeommnijlpobloojgfn)
 
-2. **Cài đặt script YouTube Customizer**:
-   - Nhấn vào nút dưới đây để tự động cài đặt script vào Tampermonkey:
-   
-     [![Cài đặt Script](https://img.shields.io/badge/Cài%20đặt-Script-blue?style=for-the-badge)](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)
+### Bước 1: Cài đặt tiện ích nền
+Trước tiên, bạn cần cài đặt tiện ích quản lý script **Tampermonkey** cho trình duyệt của mình:
+* 💻 **Cho PC (Chrome/Edge/CốcCốc):** [Tải Tampermonkey tại đây](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+* 📱 **Cho Mobile (Android/Yandex):** [Tải Tampermonkey Legacy](https://chromewebstore.google.com/detail/tampermonkey-legacy/lcmhijbkigalmkeommnijlpobloojgfn)
 
-3. **Truy cập YouTube**:
-   - Truy cập [YouTube](https://www.youtube.com/), tải lại trang và tận hưởng giao diện mới! 🎉
+### Bước 2: Cài đặt Script
+Sau khi đã có Tampermonkey, hãy nhấn vào nút dưới đây để cài đặt script tự động:
 
+[![Cài đặt Script](https://img.shields.io/badge/CÀI%20ĐẶT-SCRIPT-2ea44f?style=for-the-badge&logo=tampermonkey)](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)
 
+*(Nhấn nút **Install** hoặc **Cài đặt** khi tab mới hiện ra)*
+
+### Bước 3: Tận hưởng
+Truy cập [YouTube](https://www.youtube.com/), tải lại trang (F5) và tận hưởng giao diện mới! 🎉
+
+---
+**Lưu ý:** Nếu script không hoạt động, hãy thử tải lại trang hoặc kiểm tra xem Tampermonkey đã được bật chưa nhé.
