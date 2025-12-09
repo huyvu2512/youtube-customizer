@@ -90,39 +90,52 @@
         checkYtIconExistence();
         
 
-        // --- 2.1b: FIX LỖI TÌM KIẾM KHÔNG CUỘN (TỐI ƯU NHẤT) ---
-        // Thay vì chỉ bắt sự kiện click/enter, ta bắt sự kiện "Hoàn tất chuyển trang" của YouTube
+        // --- 2.1b: FIX SCROLL (V2 - MẠNH MẼ HƠN) ---
         
-        // Cách 1: Bắt sự kiện trực tiếp khi ấn nút (Cho phản hồi nhanh)
+        // Hàm cuộn cưỡng bức (Chạy nhiều lần để thắng cơ chế giữ trang của YT)
+        function forceScrollTop() {
+            window.scrollTo({ top: 0, behavior: 'instant' }); 
+            // Thử lại liên tục trong 500ms
+            let attempts = 0;
+            const interval = setInterval(() => {
+                if (window.scrollY > 5) { // Nếu vẫn bị trôi xuống
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                }
+                attempts++;
+                if (attempts > 10) clearInterval(interval);
+            }, 50);
+        }
+
+        // Bắt sự kiện INPUT và CLICK ngay lập tức
         function setupInteractiveSearch() {
             const searchBtn = document.querySelector('#search-icon-legacy');
             const searchInput = document.querySelector('input#search');
 
             if (searchBtn && !searchBtn.dataset.hasSearchScrollFix) {
                 searchBtn.dataset.hasSearchScrollFix = "true";
-                searchBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+                searchBtn.addEventListener('click', forceScrollTop);
             }
             if (searchInput && !searchInput.dataset.hasEnterScrollFix) {
                 searchInput.dataset.hasEnterScrollFix = "true";
                 searchInput.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') window.scrollTo({ top: 0, behavior: 'smooth' });
+                    if (e.key === 'Enter') forceScrollTop();
                 });
             }
         }
-        // Gọi hàm này định kỳ để đảm bảo nút tìm kiếm luôn được gắn sự kiện
         setInterval(setupInteractiveSearch, 1000);
 
-        // Cách 2: Bắt sự kiện yt-navigate-finish (QUAN TRỌNG NHẤT)
-        // Sự kiện này chạy khi YouTube tải xong nội dung mới (khi tìm kiếm liên tiếp)
-        document.addEventListener('yt-navigate-finish', function(event) {
-            // Kiểm tra nếu URL hiện tại là trang kết quả tìm kiếm (/results)
+        // Bắt sự kiện DATA UPDATED (Khi list video mới hiện ra)
+        // Đây là "Chìa khóa" cho việc tìm kiếm liên tiếp
+        document.addEventListener('yt-page-data-updated', function() {
             if (location.pathname === '/results') {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                
-                // Backup: Đôi khi YouTube render lại sau khi navigate, cuộn lại lần nữa cho chắc
-                setTimeout(() => {
-                    if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: 'smooth' });
-                }, 500);
+                forceScrollTop();
+            }
+        });
+        
+        // Backup bằng navigate-finish
+        document.addEventListener('yt-navigate-finish', function() {
+            if (location.pathname === '/results') {
+                forceScrollTop();
             }
         });
 
