@@ -7,14 +7,18 @@ Script Tampermonkey mạnh mẽ giúp tùy biến giao diện YouTube, tối ưu
 ### 🎨 Giao diện & Hiển thị
 * **Logo Premium:** Tự động thay thế logo mặc định thành logo **YouTube Premium**.
 * **Lưới 4 Cột:** Cưỡng chế giao diện trang chủ hiển thị **4 video trên một hàng** (thay vì giao diện lộn xộn mặc định), giúp danh sách video gọn gàng và dễ nhìn hơn.
-* **Click Logo lên đầu trang:** Sửa lỗi khó chịu của YouTube. Khi ấn vào Logo, trang sẽ tự động cuộn mượt mà lên vị trí đầu tiên (Top 0) thay vì giữ nguyên vị trí cũ.
-
+* **Click Logo & Tìm kiếm lên đầu trang:** 
+    * Khi ấn vào Logo: Trang tự động cuộn mượt mà lên vị trí đầu tiên (Top 0).
+    * Khi ấn nút Tìm kiếm (🔍): Trang cũng tự động cuộn lên đầu, giúp bạn xem kết quả tìm kiếm thuận tiện nhất mà không cần kéo chuột thủ công.
+    
 ### ⏩ Điều khiển & Trải nghiệm
 * **Tua video bằng Numpad (Bàn phím số):**
     * Phím **Numpad 4**: Lùi 10 giây (Giống phím J).
     * Phím **Numpad 6**: Tiến 10 giây (Giống phím L).
     * *Tính năng thông minh:* Tự động vô hiệu hóa khi bạn đang gõ bình luận hoặc tìm kiếm.
-* **Giao diện tua "Sạch" (Clean Seek):** Khi bạn tua video, thanh điều khiển bên dưới (Play/Pause, thanh thời gian) và các nút Like/Share rườm rà sẽ tự động ẩn đi, chỉ hiển thị vòng tròn thông báo số giây (+-10s) nguyên bản.
+* **Giao diện tua "Sạch" (Clean Seek):** 
+    * Khi bạn tua video, thanh điều khiển bên dưới (Play/Pause, thanh thời gian) và các nút Like/Share rườm rà sẽ tự động ẩn đi, chỉ hiển thị vòng tròn thông báo số giây (+-10s) nguyên bản.
+    * Ẩn chuột thông minh: Con trỏ chuột sẽ biến mất khi bạn đang tua để không che khuất nội dung, và hiện lại ngay lập tức khi bạn di chuyển chuột.
 
 ### 🛡️ Sửa lỗi & Bảo vệ (Fix Lag)
 * **Auto-ESC (Chống lỗi Zoom):** Khi mạng lag hoặc trang chưa tải xong, nếu bạn ấn phóng to (Fullscreen) thường sẽ bị lỗi màn hình đen hoặc video bị nhỏ. Script sẽ phát hiện và **tự động thoát toàn màn hình** ngay lập tức để bạn không bị kẹt ở giao diện lỗi.
@@ -46,3 +50,4 @@ Truy cập [YouTube](https://www.youtube.com/), tải lại trang (F5) và tận
 
 ---
 **Lưu ý:** Nếu script không hoạt động, hãy thử tải lại trang hoặc kiểm tra xem Tampermonkey đã được bật chưa nhé.
+
