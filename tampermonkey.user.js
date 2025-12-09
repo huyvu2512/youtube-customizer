@@ -8,8 +8,9 @@
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
-// @icon         https://github.com/user-attachments/assets/1ab52ab7-ecac-4f96-9603-7a7a7d0fb167
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
 // ==/UserScript==
+
 
 
 
