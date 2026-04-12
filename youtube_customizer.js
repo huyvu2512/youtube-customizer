@@ -8,6 +8,15 @@
         const style = document.createElement('style');
         style.type = 'text/css';
         style.textContent = `
+            /* Tránh nháy Logo: Giảm độ mờ thay vì ẩn hoàn toàn để không lỗi giao diện */
+            ytd-logo:not([is-red-logo]) svg {
+                opacity: 0 !important;
+            }
+            ytd-logo[is-red-logo] svg {
+                opacity: 1 !important;
+                transition: opacity 0.2s ease-in-out;
+            }
+
             ytd-rich-grid-renderer {
                 --ytd-rich-grid-items-per-row: 4 !important;
             }
@@ -20,6 +29,26 @@
             /* Ẩn chuột khi đang tua */
             #movie_player.seeking-mode {
                 cursor: none !important;
+            }
+
+            /* CHẾ ĐỘ TÀNG HÌNH KHI CÓ QUẢNG CÁO */
+            #movie_player.ad-showing video,
+            #movie_player.ad-interrupting video {
+                opacity: 0 !important;
+                filter: brightness(0) !important;
+            }
+            #movie_player.ad-showing::after,
+            #movie_player.ad-interrupting::after {
+                content: "Đang bỏ qua quảng cáo...";
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 18px;
+                font-family: sans-serif;
+                z-index: 1000;
+                pointer-events: none;
             }
         `;
         document.head.appendChild(style);
@@ -77,10 +106,11 @@
         }
 
         function checkYtIconExistence() {
-            let ytdLogos = document.querySelectorAll("ytd-logo > yt-icon > span > div");
+            // Dùng querySelector rộng hơn để bao quát mọi trường hợp nút logo
+            let ytdLogos = document.querySelectorAll("ytd-logo yt-icon");
             if (ytdLogos.length > 0) {
                  setTimeout(() => {
-                    ytdLogos = document.querySelectorAll("ytd-logo > yt-icon > span > div");
+                    ytdLogos = document.querySelectorAll("ytd-logo yt-icon");
                     modifyAndSetupLogo(ytdLogos);
                 }, 50);
             }
