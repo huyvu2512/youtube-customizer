@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      1.5
-// @description  Tối ưu trải nghiệm YouTube: Chặn quảng cáo tàng hình, Premium Logo, Numpad seek, và tự động xác nhận tiếp tục xem.
+// @version      1.6
+// @description  Tối ưu trải nghiệm YouTube: 1.6: Chặn quảng cáo tàng hình, sạch bóng thông báo rác & Shorts, Premium Logo, Numpad control.
 // @author       Huy Vũ
 // @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js
 // @match        https://www.youtube.com/*

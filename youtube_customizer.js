@@ -50,6 +50,13 @@
                 z-index: 1000;
                 pointer-events: none;
             }
+            /* Ẩn các mảng video Shorts và quảng cáo rác (Shelf) trên trang chủ */
+            ytd-rich-shelf-renderer[is-shorts], 
+            ytd-reel-shelf-renderer,
+            ytd-ad-slot-renderer,
+            ytd-rich-section-renderer #content.ytd-rich-section-renderer > ytd-statement-banner-renderer {
+                display: none !important;
+            }
         `;
         document.head.appendChild(style);
     }

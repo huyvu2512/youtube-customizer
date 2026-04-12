@@ -23,8 +23,10 @@ Script Tampermonkey mạnh mẽ giúp tùy biến giao diện YouTube, tối ưu
     * Ẩn chuột thông minh: Con trỏ chuột sẽ biến mất khi bạn đang tua để không che khuất nội dung, và hiện lại ngay lập tức khi bạn di chuyển chuột.
 
 ### 🛡️ Sửa lỗi & Bảo vệ (Fix Lag)
-* **Bỏ qua quảng cáo tàng hình (Stealth Skip - Phiên bản 1.5):** Một bước tiến so với uBlock. Script không chỉ tăng tốc video 16x mà còn **ẩn hoàn toàn hình ảnh quảng cáo**, thay thế bằng màn hình tối với thông báo "Đang bỏ qua quảng cáo...". Bạn sẽ không bao giờ phải thấy nội dung quảng cáo dù chỉ là thoáng qua.
-* **Tự động dẹp cảnh báo:** Tự động phát hiện và đóng các bảng thông báo "YouTube không cho phép trình chặn quảng cáo" để trải nghiệm xem video không bị gián đoạn.
+* **Bỏ qua quảng cáo tàng hình (Stealth Skip - Phiên bản 1.6):** Một bước tiến so với uBlock. Script không chỉ tăng tốc video 16x mà còn **ẩn hoàn toàn hình ảnh quảng cáo**, thay thế bằng màn hình tối với thông báo "Đang bỏ qua quảng cáo...". Bạn sẽ không bao giờ phải thấy nội dung quảng cáo dù chỉ là thoáng qua.
+* **Dọn dẹp thông báo & Shorts (Clean UI):** 
+    * Ẩn hoàn toàn các bảng thông báo "Bạn đang gặp sự cố gián đoạn?", gợi ý Premium, khảo sát rác.
+    * **Mới:** Tự động ẩn các mảng video **Shorts** và các banner quảng cáo tự mọc trên trang chủ, giúp bạn tập trung hoàn toàn vào nội dung video chất lượng.
 * **Auto-ESC (Chống lỗi Zoom):** Khi mạng lag hoặc trang chưa tải xong, nếu bạn ấn phóng to (Fullscreen) thường sẽ bị lỗi màn hình đen hoặc video bị nhỏ. Script sẽ phát hiện và **tự động thoát toàn màn hình** ngay lập tức để bạn không bị kẹt ở giao diện lỗi.
 * **Tự động nhấn "Tiếp tục xem":** Tự động nhấn "Có" khi YouTube hiện thông báo "Video đã tạm dừng. Tiếp tục xem?" do treo tab quá lâu, giúp trải nghiệm nghe nhạc hoặc xem video liên tục không bị gián đoạn.
 * **Ổn định giao diện:** Ngăn chặn các thành phần rác (như thanh Like/Share nổi, Popup đề xuất) che khuất nội dung khi đang tua video.
