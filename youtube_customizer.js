@@ -8,15 +8,6 @@
         const style = document.createElement('style');
         style.type = 'text/css';
         style.textContent = `
-            /* Tránh nháy Logo: Giảm độ mờ thay vì ẩn hoàn toàn để không lỗi giao diện */
-            ytd-logo:not([is-red-logo]) svg {
-                opacity: 0 !important;
-            }
-            ytd-logo[is-red-logo] svg {
-                opacity: 1 !important;
-                transition: opacity 0.2s ease-in-out;
-            }
-
             ytd-rich-grid-renderer {
                 --ytd-rich-grid-items-per-row: 4 !important;
             }
@@ -113,11 +104,10 @@
         }
 
         function checkYtIconExistence() {
-            // Dùng querySelector rộng hơn để bao quát mọi trường hợp nút logo
-            let ytdLogos = document.querySelectorAll("ytd-logo yt-icon");
+            let ytdLogos = document.querySelectorAll("ytd-logo > yt-icon > span > div");
             if (ytdLogos.length > 0) {
                  setTimeout(() => {
-                    ytdLogos = document.querySelectorAll("ytd-logo yt-icon");
+                    ytdLogos = document.querySelectorAll("ytd-logo > yt-icon > span > div");
                     modifyAndSetupLogo(ytdLogos);
                 }, 50);
             }
