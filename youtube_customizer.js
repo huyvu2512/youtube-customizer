@@ -157,31 +157,46 @@
                 const isNumpad = (e.location === 3);
                 let captured = false;
 
+                const player = document.querySelector('#movie_player');
+
                 // Numpad 8 (Tăng âm lượng)
                 if (isNumpad && (e.key === '8' || e.key === 'ArrowUp' || e.code === 'Numpad8')) {
                     captured = true;
-                    document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'ArrowUp', 'code': 'ArrowUp', 'keyCode': 38, 'which': 38, 'bubbles': true}));
+                    if (player && typeof player.setVolume === 'function') {
+                        player.setVolume(Math.min(100, player.getVolume() + 5));
+                        // Hiển thị thanh âm lượng (UI)
+                        if (typeof player.volumeUp === 'function') player.volumeUp(); 
+                        else player.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', keyCode: 38, bubbles: true }));
+                    }
                 }
                 // Numpad 2 (Giảm âm lượng)
                 else if (isNumpad && (e.key === '2' || e.key === 'ArrowDown' || e.code === 'Numpad2')) {
                     captured = true;
-                    document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'ArrowDown', 'code': 'ArrowDown', 'keyCode': 40, 'which': 40, 'bubbles': true}));
+                    if (player && typeof player.setVolume === 'function') {
+                        player.setVolume(Math.max(0, player.getVolume() - 5));
+                        // Hiển thị thanh âm lượng (UI)
+                        if (typeof player.volumeDown === 'function') player.volumeDown();
+                        else player.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', keyCode: 40, bubbles: true }));
+                    }
                 }
                 // Numpad 4 (Lùi 10s)
                 else if (isNumpad && (e.key === '4' || e.key === 'ArrowLeft' || e.code === 'Numpad4')) {
                     captured = true;
-                    document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'j', 'code': 'KeyJ', 'keyCode': 74, 'which': 74, 'bubbles': true}));
+                    const ev = new KeyboardEvent('keydown', { key: 'j', code: 'KeyJ', keyCode: 74, which: 74, bubbles: true, cancelable: true });
+                    document.dispatchEvent(ev);
                     isSeekAction = true;
                 } 
                 // Numpad 5 (Play/Pause)
                 else if (isNumpad && (e.key === '5' || e.key === 'Clear' || e.code === 'Numpad5' || e.keyCode === 12)) {
                     captured = true;
-                    document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'k', 'code': 'KeyK', 'keyCode': 75, 'which': 75, 'bubbles': true}));
+                    const ev = new KeyboardEvent('keydown', { key: 'k', code: 'KeyK', keyCode: 75, which: 75, bubbles: true, cancelable: true });
+                    document.dispatchEvent(ev);
                 }
                 // Numpad 6 (Tiến 10s)
                 else if (isNumpad && (e.key === '6' || e.key === 'ArrowRight' || e.code === 'Numpad6')) {
                     captured = true;
-                    document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'l', 'code': 'KeyL', 'keyCode': 76, 'which': 76, 'bubbles': true}));
+                    const ev = new KeyboardEvent('keydown', { key: 'l', code: 'KeyL', keyCode: 76, which: 76, bubbles: true, cancelable: true });
+                    document.dispatchEvent(ev);
                     isSeekAction = true;
                 }
                 // Các phím còn lại (1, 3, 7, 9): Chặn hoàn toàn để tránh bấm nhầm
@@ -240,39 +255,57 @@
         }, 500);
         
 
-        // --- 2.4: AUTO SKIP ADS (MẠNH MẼ) ---
+        // --- 2.4: AUTO SKIP ADS (TỐI ƯU TRÁNH PHÁT HIỆN) ---
+        let originalPlaybackRate = 1;
+
         setInterval(() => {
             const player = document.querySelector('#movie_player');
             if (!player) return;
 
-            // 1. Nếu đang hiển thị quảng cáo
-            if (player.classList.contains('ad-showing') || player.classList.contains('ad-interrupting')) {
-                const video = player.querySelector('video');
-                if (video && !isNaN(video.duration)) {
-                    // Tắt tiếng và tua nhanh cực đại (16x) để quảng cáo trôi qua nhanh
-                    video.muted = true;
-                    video.playbackRate = 16;
-                    // Nhảy thẳng đến cuối quảng cáo nếu có thể
-                    if (video.currentTime < video.duration - 0.5) {
-                        video.currentTime = video.duration - 0.1;
-                    }
-                }
+            const video = player.querySelector('video');
+            if (!video) return;
 
-                // Tìm và nhấn tất cả các loại nút bỏ qua
+            // 1. Kiểm tra nếu đang có quảng cáo
+            if (player.classList.contains('ad-showing') || player.classList.contains('ad-interrupting')) {
+                // Lưu lại tốc độ người dùng đang xem nếu chưa lưu
+                if (video.playbackRate !== 16) originalPlaybackRate = video.playbackRate;
+                
+                // Thuật toán "Tua nhưng không Nhảy": Giữ 16x để lướt qua cực nhanh mà không bị bắt bài
+                video.muted = true;
+                video.playbackRate = 16;
+
+                // Nhấn nút Skip ngay khi có thể
                 const skipBtn = document.querySelector('.ytp-ad-skip-button, .ytp-ad-skip-button-modern, .videoAdUiSkipButton, .ytp-ad-skip-button-slot');
-                if (skipBtn) {
-                    skipBtn.click();
-                    console.log('Antigravity: Đã tự động bỏ qua quảng cáo.');
+                if (skipBtn) skipBtn.click();
+            } else {
+                // Khi hết quảng cáo, trả lại tốc độ và âm thanh ban đầu
+                if (video.playbackRate === 16) {
+                    video.playbackRate = originalPlaybackRate;
+                    video.muted = false;
                 }
             }
 
-            // 2. Chặn các banner quảng cáo đè lên video
+            // 2. Tự động đóng bảng cảnh báo "YouTube không cho phép chặn quảng cáo"
+            const adblockModal = document.querySelector('ytd-enforcement-message-view-model, tp-yt-paper-dialog');
+            if (adblockModal) {
+                // Tìm nút đóng (X)
+                const closeBtn = adblockModal.querySelector('yt-icon-button#dismiss-button, button[aria-label="Close"], #dismiss-button');
+                if (closeBtn) {
+                    closeBtn.click();
+                    console.log('Antigravity: Đã đóng bảng cảnh báo Adblock.');
+                } else {
+                    // Nếu không tìm thấy nút đóng, ta ẩn luôn cái bảng và lớp phủ để xem tiếp
+                    adblockModal.style.display = 'none';
+                    const backdrop = document.querySelector('tp-yt-iron-overlay-backdrop');
+                    if (backdrop) backdrop.style.display = 'none';
+                    // Đôi khi cần nhấn nút Play lại
+                    if (video.paused) video.play();
+                }
+            }
+
+            // 3. Đóng banner nhỏ đè lên video
             const closeOverlay = document.querySelector('.ytp-ad-overlay-close-button');
             if (closeOverlay) closeOverlay.click();
-            
-            // 3. Tự động đóng các popup khảo sát hoặc thông báo rác khác
-            const adContainers = document.querySelectorAll('ytd-ad-slot-renderer, ytd-action-companion-ad-renderer');
-            adContainers.forEach(ad => ad.style.display = 'none');
         }, 500);
 
 
