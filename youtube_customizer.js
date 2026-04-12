@@ -153,18 +153,47 @@
 
                 let isSeekAction = false;
                 
-                if (e.code === 'Numpad4') { 
-                    e.preventDefault(); e.stopPropagation(); 
+                // --- XỬ LÝ PHÍM NUMPAD (Bất kể Num Lock) ---
+                const isNumpad = (e.location === 3);
+                let captured = false;
+
+                // Numpad 8 (Tăng âm lượng)
+                if (isNumpad && (e.key === '8' || e.key === 'ArrowUp' || e.code === 'Numpad8')) {
+                    captured = true;
+                    document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'ArrowUp', 'code': 'ArrowUp', 'keyCode': 38, 'which': 38, 'bubbles': true}));
+                }
+                // Numpad 2 (Giảm âm lượng)
+                else if (isNumpad && (e.key === '2' || e.key === 'ArrowDown' || e.code === 'Numpad2')) {
+                    captured = true;
+                    document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'ArrowDown', 'code': 'ArrowDown', 'keyCode': 40, 'which': 40, 'bubbles': true}));
+                }
+                // Numpad 4 (Lùi 10s)
+                else if (isNumpad && (e.key === '4' || e.key === 'ArrowLeft' || e.code === 'Numpad4')) {
+                    captured = true;
                     document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'j', 'code': 'KeyJ', 'keyCode': 74, 'which': 74, 'bubbles': true}));
                     isSeekAction = true;
                 } 
-                else if (e.code === 'Numpad6') { 
-                    e.preventDefault(); e.stopPropagation(); 
+                // Numpad 5 (Play/Pause)
+                else if (isNumpad && (e.key === '5' || e.key === 'Clear' || e.code === 'Numpad5' || e.keyCode === 12)) {
+                    captured = true;
+                    document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'k', 'code': 'KeyK', 'keyCode': 75, 'which': 75, 'bubbles': true}));
+                }
+                // Numpad 6 (Tiến 10s)
+                else if (isNumpad && (e.key === '6' || e.key === 'ArrowRight' || e.code === 'Numpad6')) {
+                    captured = true;
                     document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'l', 'code': 'KeyL', 'keyCode': 76, 'which': 76, 'bubbles': true}));
                     isSeekAction = true;
                 }
-                else if (['ArrowLeft', 'ArrowRight', 'j', 'l', 'J', 'L'].includes(e.key)) {
-                    isSeekAction = true;
+                // Các phím còn lại (1, 3, 7, 9): Chặn hoàn toàn để tránh bấm nhầm
+                else if (isNumpad && ['1', '3', '7', '9', 'End', 'PageDown', 'Home', 'PageUp'].includes(e.key)) {
+                    captured = true;
+                }
+
+                if (captured) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                } else if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'j', 'l', 'J', 'L', 'k', 'K'].includes(e.key)) {
+                    isSeekAction = (['j', 'l', 'ArrowLeft', 'ArrowRight'].includes(e.key));
                 }
 
                 if (isSeekAction) {
@@ -211,16 +240,40 @@
         }, 500);
         
 
-        // --- 2.4: AUTO SKIP ADS ---
+        // --- 2.4: AUTO SKIP ADS (MẠNH MẼ) ---
         setInterval(() => {
-            const skipBtn = document.querySelector('.ytp-ad-skip-button, .ytp-ad-skip-button-modern, .videoAdUiSkipButton');
-            if (skipBtn) {
-                skipBtn.click();
-                console.log('Auto skipped ad');
+            const player = document.querySelector('#movie_player');
+            if (!player) return;
+
+            // 1. Nếu đang hiển thị quảng cáo
+            if (player.classList.contains('ad-showing') || player.classList.contains('ad-interrupting')) {
+                const video = player.querySelector('video');
+                if (video && !isNaN(video.duration)) {
+                    // Tắt tiếng và tua nhanh cực đại (16x) để quảng cáo trôi qua nhanh
+                    video.muted = true;
+                    video.playbackRate = 16;
+                    // Nhảy thẳng đến cuối quảng cáo nếu có thể
+                    if (video.currentTime < video.duration - 0.5) {
+                        video.currentTime = video.duration - 0.1;
+                    }
+                }
+
+                // Tìm và nhấn tất cả các loại nút bỏ qua
+                const skipBtn = document.querySelector('.ytp-ad-skip-button, .ytp-ad-skip-button-modern, .videoAdUiSkipButton, .ytp-ad-skip-button-slot');
+                if (skipBtn) {
+                    skipBtn.click();
+                    console.log('Antigravity: Đã tự động bỏ qua quảng cáo.');
+                }
             }
+
+            // 2. Chặn các banner quảng cáo đè lên video
             const closeOverlay = document.querySelector('.ytp-ad-overlay-close-button');
             if (closeOverlay) closeOverlay.click();
-        }, 1000);
+            
+            // 3. Tự động đóng các popup khảo sát hoặc thông báo rác khác
+            const adContainers = document.querySelectorAll('ytd-ad-slot-renderer, ytd-action-companion-ad-renderer');
+            adContainers.forEach(ad => ad.style.display = 'none');
+        }, 500);
 
 
         // --- 2.5: AUTO CONFIRM "STILL WATCHING" ---
