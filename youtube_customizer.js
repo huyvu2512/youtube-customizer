@@ -41,11 +41,11 @@
                 z-index: 1000;
                 pointer-events: none;
             }
-            /* Ẩn các mảng video Shorts và quảng cáo rác (Shelf) trên trang chủ */
-            ytd-rich-shelf-renderer[is-shorts], 
-            ytd-reel-shelf-renderer,
-            ytd-ad-slot-renderer,
-            ytd-rich-section-renderer #content.ytd-rich-section-renderer > ytd-statement-banner-renderer {
+            /* Ẩn các bảng thông báo "Sự cố gián đoạn", "Premium", "Khảo sát" rác */
+            ytd-mealbar-promo-renderer,
+            ytd-upsell-dialog-renderer,
+            yt-notification-action-renderer,
+            #premium-container {
                 display: none !important;
             }
         `;
