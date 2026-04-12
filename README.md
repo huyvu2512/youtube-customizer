@@ -22,6 +22,7 @@ Script Tampermonkey mạnh mẽ giúp tùy biến giao diện YouTube, tối ưu
 
 ### 🛡️ Sửa lỗi & Bảo vệ (Fix Lag)
 * **Auto-ESC (Chống lỗi Zoom):** Khi mạng lag hoặc trang chưa tải xong, nếu bạn ấn phóng to (Fullscreen) thường sẽ bị lỗi màn hình đen hoặc video bị nhỏ. Script sẽ phát hiện và **tự động thoát toàn màn hình** ngay lập tức để bạn không bị kẹt ở giao diện lỗi.
+* **Tự động nhấn "Tiếp tục xem":** Tự động nhấn "Có" khi YouTube hiện thông báo "Video đã tạm dừng. Tiếp tục xem?" do treo tab quá lâu, giúp trải nghiệm nghe nhạc hoặc xem video liên tục không bị gián đoạn.
 * **Ổn định giao diện:** Ngăn chặn các thành phần rác (như thanh Like/Share nổi, Popup đề xuất) che khuất nội dung khi đang tua video.
 
 ---

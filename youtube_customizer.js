@@ -222,5 +222,45 @@
             if (closeOverlay) closeOverlay.click();
         }, 1000);
 
+
+        // --- 2.5: AUTO CONFIRM "STILL WATCHING" ---
+        // Sử dụng MutationObserver để tối ưu hiệu năng (chỉ chạy khi có thay đổi trên trang)
+        const setupConfirmObserver = () => {
+            const observerTarget = document.querySelector('ytd-app') || document.body;
+            if (!observerTarget) return;
+
+            const confirmObserver = new MutationObserver((mutations) => {
+                // Kiểm tra xem có element mới được thêm vào không
+                const confirmBtn = document.querySelector('yt-confirm-dialog-renderer yt-button-renderer#confirm-button, #confirm-button.yt-confirm-dialog-renderer, ytd-popup-container yt-button-renderer#confirm-button');
+                
+                if (confirmBtn && confirmBtn.offsetParent !== null) {
+                    const btnText = confirmBtn.innerText || confirmBtn.textContent;
+                    if (btnText && (btnText.includes('Có') || btnText.includes('Yes') || btnText.includes('CONTINUE'))) {
+                        confirmBtn.click();
+                        console.log('Antigravity: Đã tự động nhấn "Có" (via Observer).');
+                        
+                        const video = document.querySelector('video');
+                        if (video && video.paused) {
+                            video.play();
+                        }
+                    }
+                }
+            });
+
+            confirmObserver.observe(observerTarget, { childList: true, subtree: true });
+        };
+
+        // Chạy ngay khi có thể
+        if (document.querySelector('ytd-app')) {
+            setupConfirmObserver();
+        } else {
+            const checkAppInterval = setInterval(() => {
+                if (document.querySelector('ytd-app')) {
+                    setupConfirmObserver();
+                    clearInterval(checkAppInterval);
+                }
+            }, 500);
+        }
+
     });
 })();
