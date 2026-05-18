@@ -7,27 +7,30 @@ Script Tampermonkey mạnh mẽ giúp tùy biến giao diện YouTube, tối ưu
 ### 🎨 Giao diện & Hiển thị
 * **Logo Premium chuẩn:** Tự động thay thế logo mặc định thành logo **YouTube Premium**. Sử dụng công nghệ ẩn logo gốc và hiệu ứng fade-in mượt mà, đảm bảo không bị nháy logo cũ khi tải trang.
 * **Lưới 4 Cột:** Cưỡng chế giao diện trang chủ hiển thị **4 video trên một hàng** (thay vì giao diện lộn xộn mặc định), giúp danh sách video gọn gàng và dễ nhìn hơn.
-* **Click Logo & Tìm kiếm lên đầu trang:** 
-    * Khi ấn vào Logo: Trang tự động cuộn mượt màng lên vị trí đầu tiên (Top 0).
-    * Khi ấn nút Tìm kiếm (🔍): Trang cũng tự động cuộn lên đầu, giúp bạn xem kết quả tìm kiếm thuận tiện nhất mà không cần kéo chuột thủ công.
+* **Click Logo:** Khi ấn vào Logo: Trang tự động cuộn mượt màng lên vị trí đầu tiên (Top 0).
     
 ### ⏩ Điều khiển & Trải nghiệm
-* **Tua & Điều khiển bằng Numpad (Bàn phím số):**
-    * Phím **Numpad 8 / 2**: Tăng / Giảm âm lượng.
-    * Phím **Numpad 4 / 6**: Lùi / Tiến 10 giây.
-    * Phím **Numpad 5**: Dừng / Phát video.
-    * phím **Numpad 1, 3, 7, 9**: Đã được vô hiệu hóa để tránh trường hợp bấm nhầm làm nhảy video.
-    * *Tính năng thông minh:* Tự động nhận diện phím kể cả khi tắt Num Lock. Chặn hoàn toàn lỗi bị nhảy video khi dùng phím số. Tự động vô hiệu hóa khi bạn đang gõ bình luận hoặc tìm kiếm.
+* **Tua & Điều khiển (Hỗ trợ 2 tay):**
+    * Dành cho tay phải (**Numpad**):
+        * **Numpad 8 / 2**: Tăng / Giảm âm lượng.
+        * **Numpad 4 / 6**: Lùi / Tiến 10 giây.
+        * **Numpad 5**: Dừng / Phát video.
+        * **Numpad 1, 3, 7, 9**: Đã được vô hiệu hóa để tránh bấm nhầm.
+    * Dành cho tay trái (**Phím chữ A-S-D**):
+        * Phím **A**: Lùi lại 10 giây.
+        * Phím **S**: Dừng / Phát video.
+        * Phím **D**: Tiến tới 10 giây.
+    * *Tính năng thông minh:* Tự động vô hiệu hóa phím tắt khi bạn đang gõ bình luận hoặc tìm kiếm để không bị loạn chữ. Nhận diện phím Numpad kể cả khi bạn quên bật Num Lock.
 * **Giao diện tua "Sạch" (Clean Seek):** 
     * Khi bạn tua video, thanh điều khiển bên dưới (Play/Pause, thanh thời gian) và các nút Like/Share rườm rà sẽ tự động ẩn đi, chỉ hiển thị vòng tròn thông báo số giây (+-10s) nguyên bản.
     * Ẩn chuột thông minh: Con trỏ chuột sẽ biến mất khi bạn đang tua để không che khuất nội dung, và hiện lại ngay lập tức khi bạn di chuyển chuột.
 
-### 🛡️ Sửa lỗi & Bảo vệ (Fix Lag)
-* **Bỏ qua quảng cáo tàng hình (Stealth Skip - Phiên bản 1.5):** Một bước tiến so với uBlock. Script không chỉ tăng tốc video 16x mà còn **ẩn hoàn toàn hình ảnh quảng cáo**, thay thế bằng màn hình tối với thông báo "Đang bỏ qua quảng cáo...". Bạn sẽ không bao giờ phải thấy nội dung quảng cáo dù chỉ là thoáng qua.
-* **Dọn dẹp thông báo rác (Clean UI):** Tự động ẩn hoàn toàn các bảng thông báo "Bạn đang gặp sự cố gián đoạn?", gợi ý Premium, khảo sát và các thông báo đẩy gây phiền nhiễu khi đang xem video.
-* **Auto-ESC (Chống lỗi Zoom):** Khi mạng lag hoặc trang chưa tải xong, nếu bạn ấn phóng to (Fullscreen) thường sẽ bị lỗi màn hình đen hoặc video bị nhỏ. Script sẽ phát hiện và **tự động thoát toàn màn hình** ngay lập tức để bạn không bị kẹt ở giao diện lỗi.
-* **Tự động nhấn "Tiếp tục xem":** Tự động nhấn "Có" khi YouTube hiện thông báo "Video đã tạm dừng. Tiếp tục xem?" do treo tab quá lâu, giúp trải nghiệm nghe nhạc hoặc xem video liên tục không bị gián đoạn.
-* **Ổn định giao diện:** Ngăn chặn các thành phần rác (như thanh Like/Share nổi, Popup đề xuất) che khuất nội dung khi đang tua video.
+### 🛡️ Tối ưu Hiệu năng & Chống Lag (Zero-Overhead)
+* **Công nghệ Zero-Overhead (Phiên bản 1.7):** Loại bỏ hoàn toàn các vòng lặp kiểm tra gây nặng máy. Thay vào đó, script sử dụng công nghệ `CSS Animation Event` cực nhẹ, chỉ chạy đúng lúc cần thiết. Máy tính của bạn sẽ không tốn một giọt RAM/CPU nào để duy trì script!
+* **Chống Lag - Tắt Ambient Mode:** Ép tắt hiệu ứng "Ánh sáng môi trường" (hiệu ứng viền phát sáng) của YouTube, giúp giải phóng Card màn hình (GPU), giảm giật lag triệt để trên laptop và máy tính cấu hình yếu.
+* **Lazy Render (Cuộn trang siêu mượt):** Can thiệp sâu vào CSS (`content-visibility`) để ép trình duyệt không tải và không vẽ các bình luận / video đề xuất ở dưới trừ khi bạn cuộn tới. Cuộn YouTube giờ đây mượt như bôi mỡ!
+* **Bỏ qua quảng cáo tàng hình (Super Optimized):** Tự động phát hiện và ẩn quảng cáo/cảnh báo Adblock ngay lập tức bằng màn hình tối với thông báo "Đang bỏ qua quảng cáo...". Bạn sẽ không bao giờ phải thấy nội dung quảng cáo dù chỉ là thoáng qua.
+* **Dọn dẹp thông báo rác & YouTube Shorts:** Tự động ẩn hoàn toàn các bảng thông báo "Bạn đang gặp sự cố gián đoạn?", gợi ý Premium, khảo sát và các thông báo đẩy gây phiền nhiễu. Đặc biệt, **ẩn hoàn toàn mục YouTube Shorts** để tránh gây xao nhãng khi làm việc/học tập.
 
 ---
 
