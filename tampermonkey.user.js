@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      2.0
-// @description  YouTube Customizer v2.0 — Logo Premium, lưới 4 cột mượt mà, phím A-S-D/Numpad, siêu nhẹ chống giật lag, ẩn Shorts triệt để, tương thích Unikey.
+// @version      2.1
+// @description  YouTube Customizer v2.1 — Menu cài đặt nhanh chuẩn YouTube, tùy chỉnh 3-4-5 cột, Logo Premium, ẩn Shorts & video tài trợ (Clean Search), phím A-S-D/Numpad, siêu nhẹ chống giật lag.
 // @author       Huy Vũ
 // @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js
 // @match        https://www.youtube.com/*
