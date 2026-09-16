@@ -7,6 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Version](https://img.shields.io/badge/Version-2.1-red)](https://github.com/huyvu2512/youtube-customizer)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
 [![Forks](https://img.shields.io/github/forks/huyvu2512/youtube-customizer?style=flat-square&label=Forks&color=6e7681)](https://github.com/huyvu2512/youtube-customizer/forks)
@@ -72,6 +73,7 @@ Phiên bản **v2.1** giải quyết triệt để vấn đề giật lag khi du
 
 ```text
 youtube-customizer/
+├── LICENSE                 # Giấy phép mã nguồn mở MIT License
 ├── README.md               # Tài liệu hướng dẫn sử dụng và giới thiệu dự án
 ├── tampermonkey.user.js    # Tệp metadata nạp script cho tiện ích Tampermonkey
 └── youtube_customizer.js   # Mã nguồn chính (toàn bộ CSS, giao diện Menu và logic điều khiển)
