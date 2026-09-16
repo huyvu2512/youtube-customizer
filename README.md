@@ -1,44 +1,36 @@
-# YouTube Customizer — Phiên bản 1.6
+# YouTube Customizer — Phiên bản 2.0
 
-Script Tampermonkey tùy biến YouTube: giao diện gọn, xem video thoải mái hơn, tối ưu hiệu năng nhẹ. Một file logic chính (`youtube_customizer.js`) + wrapper cài đặt (`tampermonkey.user.js`).
+Script Tampermonkey tùy biến YouTube: giao diện tinh gọn, xem video mượt mà, loại bỏ triệt để hiện tượng giật lag, tương thích hoàn toàn với giao diện mới của YouTube. Gồm một file logic chính ([`youtube_customizer.js`](file:///c:/Users/Huy%20Vu/Downloads/youtube-customizer-main/youtube_customizer.js)) và wrapper cài đặt ([`tampermonkey.user.js`](file:///c:/Users/Huy%20Vu/Downloads/youtube-customizer-main/tampermonkey.user.js)).
 
 ---
 
-## Tính năng (v1.6)
+## Tính năng (v2.0)
 
-### Giao diện
+### Giao diện & Hiệu năng cao (Zero-Lag)
 
 | Tính năng | Mô tả |
 |-----------|--------|
-| **Logo Premium** | Thay logo YouTube bằng logo Premium (span độc lập, tự khôi phục khi YouTube đổi DOM). Ẩn mã quốc gia cạnh logo. |
-| **Lưới 4 cột** | Trang chủ & feed: **4 video/hàng** (màn ≥ 1000px). CSS + JavaScript dự phòng. Hover thumbnail gọn trong ô, tránh chồng chéo. |
-| **Click logo** | Trên trang chủ / feed: cuộn mượt lên đầu trang. |
+| **Logo Premium** | Thay logo YouTube bằng logo Premium màu đỏ sắc nét. Ẩn mã quốc gia cạnh logo. Tự sửa bằng CSS tức thì, không giật hình (FOUC). |
+| **Lưới 4 cột chuẩn mới** | Trang chủ & Kênh đăng ký: hiển thị **4 video/hàng** cân đối trên màn hình ≥ 1024px. Khắc phục lỗi vỡ tỷ lệ thẻ video hoặc lệch layout của YouTube mới. |
+| **Ẩn Shorts triệt để** | Sử dụng CSS `:has()` hiện đại để ẩn toàn bộ kệ Shorts ngoài trang chủ/feed/kênh và mục Shorts trên thanh menu bên trái, **không để lại khoảng trống hay khoảng cách vô nghĩa**. |
+| **Tắt Ambient Mode** | Tắt hoàn toàn hiệu ứng Cinematics (viền sáng phát sáng xung quanh video), tiết kiệm tài nguyên GPU tối đa. |
+| **Lazy render bình luận** | Tự động áp dụng `content-visibility: auto` cho danh sách bình luận giúp tăng tốc cuộn trang khi xem video. |
+| **Click logo cuộn lên đầu** | Trên trang chủ & feed: bấm vào logo sẽ cuộn mượt (smooth scroll) lên đầu trang. |
+| **Tự động tiếp tục xem** | Tự động bấm xác nhận khi xuất hiện hộp thoại "Vẫn đang xem? / Video đã tạm dừng", phù hợp nghe nhạc playlist/lofi dài. |
 
-### Điều khiển video
+### Điều khiển video thông minh
 
 | Phím | Chức năng |
 |------|-----------|
-| **Numpad 8 / 2** | Tăng / giảm âm lượng |
+| **Numpad 8 / 2** | Tăng / giảm âm lượng 5% |
 | **Numpad 4 / 6** | Lùi / tiến 10 giây |
 | **Numpad 5** | Play / Pause |
-| **A / S / D** | Lùi 10s / Play-Pause / Tiến 10s — chỉ khi chuột trên player hoặc fullscreen |
-| **Numpad 1, 3, 7, 9** | Vô hiệu (tránh bấm nhầm) |
+| **A / S / D** | Lùi 10s / Play-Pause / Tiến 10s — chỉ kích hoạt khi chuột trong player hoặc khi Fullscreen |
+| **Numpad 1, 3, 7, 9** | Vô hiệu hóa để tránh bấm nhầm |
 
-- Tự tắt phím tắt khi đang gõ ô tìm kiếm, bình luận, v.v.
-- **A/S/D dùng `e.code` (phím vật lý)** — tương thích Unikey, ít lag khi bật bộ gõ tiếng Việt.
-- **Clean seek:** khi tua, ẩn thanh điều khiển rườm rà + ẩn con trỏ tạm thời.
-
-### Hiệu năng & tiện ích
-
-| Tính năng | Mô tả |
-|-----------|--------|
-| **Tắt Ambient Mode** | Giảm tải GPU (viền sáng quanh video). |
-| **Lazy render bình luận** | `content-visibility` chỉ trên comment — **không** áp lên ô video feed (tránh lỗi layout). |
-| **Bỏ qua quảng cáo** | Tua nhanh, ẩn hình quảng cáo, tự bấm Skip; **giữ trạng thái mute** trước/sau quảng cáo. |
-| **Đóng popup Adblock** | Tự đóng cảnh báo chặn quảng cáo (nhiều ngôn ngữ). |
-| **Vẫn đang xem?** | Tự bấm xác nhận tiếp tục phát. |
-| **Ẩn rác & Shorts** | Promo, upsell, shelf Shorts, mục Shorts sidebar. |
-| **SPA** | Tự gắn lại player khi chuyển trang (`yt-navigate-finish`). |
+- **Không lag khi di chuột:** Khác với các script cũ lắng nghe mousemove/mouseover trên toàn bộ trang web, phiên bản 2.0 sử dụng bộ chọn `:hover` native và timer cục bộ, loại bỏ 100% hiện tượng drop FPS khi rê chuột.
+- **Tương thích hoàn hảo với bộ gõ tiếng Việt (Unikey / EVKey):** Phím A/S/D bắt theo mã vật lý `e.code` (`KeyA`, `KeyS`, `KeyD`), đồng thời tự động ngắt khi bạn đang gõ ô tìm kiếm, viết bình luận hoặc trò chuyện trực tiếp.
+- **Clean Seek:** Khi tua phím, giao diện thanh điều khiển và con trỏ chuột được ẩn gọn gàng, tự hiện lại ngay sau khi dừng tua.
 
 ---
 
@@ -46,55 +38,35 @@ Script Tampermonkey tùy biến YouTube: giao diện gọn, xem video thoải m�
 
 ### Bước 1: Tampermonkey
 
-- PC (Chrome / Edge / Cốc Cốc): [Tampermonkey](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
-- Android: [Tampermonkey Legacy](https://chromewebstore.google.com/detail/tampermonkey-legacy/lcmhijbkigalmkeommnijlpobloojgfn)
+- PC (Chrome / Edge / Cốc Cốc / Brave / Firefox): [Tampermonkey Extension](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
 
 ### Bước 2: Cài script
 
-**Cách A — Từ GitHub (sau khi đã push bản 1.6):**
+**Cách A — Cài trực tiếp từ GitHub (sau khi push lên GitHub repo):**
 
 [![Cài đặt Script](https://img.shields.io/badge/CÀI%20ĐẶT-SCRIPT-2ea44f?style=for-the-badge&logo=tampermonkey)](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)
 
-**Cách B — Cài local (khuyên dùng khi chưa push GitHub):**
+**Cách B — Cài đặt cục bộ (Dùng ngay trên máy tính):**
 
-1. Tampermonkey → **Tạo script mới**
-2. Xóa dòng `@require ...` trong `tampermonkey.user.js`
-3. Dán **toàn bộ** nội dung `youtube_customizer.js` vào **cuối** file script
-4. Lưu → F5 YouTube
+1. Mở tiện ích Tampermonkey trên trình duyệt → Chọn **Tạo script mới** (+).
+2. Xóa hết code mẫu có sẵn.
+3. Mở file [`tampermonkey.user.js`](file:///c:/Users/Huy%20Vu/Downloads/youtube-customizer-main/tampermonkey.user.js), xóa dòng `@require ...`.
+4. Sao chép toàn bộ nội dung file [`youtube_customizer.js`](file:///c:/Users/Huy%20Vu/Downloads/youtube-customizer-main/youtube_customizer.js) và dán vào dưới metadata của script.
+5. Nhấn **File** → **Save** (hoặc Ctrl+S) và tải lại (F5) YouTube.
 
-### Bước 3: Chặn quảng cáo (khuyên dùng)
+### Lưu ý về chặn quảng cáo
 
-Script tập trung giao diện & trải nghiệm. Chặn quảng cáo nên dùng thêm [uBlock Origin Lite](https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh?hl=vi).
-
----
-
-## Cấu trúc repo
-
-| File | Vai trò |
-|------|---------|
-| `youtube_customizer.js` | Toàn bộ logic (CSS + JS) |
-| `tampermonkey.user.js` | Metadata Tampermonkey, `@version 1.6` |
-| `README.md` | Tài liệu này |
+Phiên bản 2.0 đã gỡ bỏ hoàn toàn module bỏ qua quảng cáo trong script để đảm bảo sự tinh gọn, không xung đột với các bản cập nhật chống adblock của YouTube. Để chặn quảng cáo tốt nhất, bạn nên dùng tiện ích chuyên dụng như **uBlock Origin** hoặc **uBlock Origin Lite**.
 
 ---
 
-## Ghi chú phiên bản
+## Ghi chú nâng cấp (v2.0)
 
-- **1.6** là phiên bản phát hành hiện tại (gộp các chỉnh sửa ổn định: lưới 4 cột, sửa feed Premium, A/S/D + Unikey, SPA player).
-- Không dùng nhánh 1.6.1 / 1.6.2 trong tài liệu — mọi bản vá đều nằm trong **1.6**.
-
----
-
-## Xử lý sự cố
-
-| Triệu chứng | Gợi ý |
-|-------------|--------|
-| Script không chạy | Kiểm tra Tampermonkey bật; F5; cài local (Cách B) nếu GitHub chưa cập nhật |
-| Trang chủ trống | Đảm bảo dùng bản 1.6 mới (không ẩn `#premium-container`) |
-| Vẫn 3 cột | Thu gọn sidebar YouTube; cửa sổ rộng ≥ 1000px; F5 trang chủ |
-| A/S/D lag với Unikey | Bản 1.6 dùng `e.code`; rê chuột vào vùng video trước khi bấm |
-| Logo không đổi | Đợi 1–2 giây sau F5; thử tắt script khác xung đột |
+- **Loại bỏ tính năng Ad-skip:** Tối ưu độ nhẹ, không can thiệp vào `playbackRate` hay mute của video.
+- **Khắc phục lỗi lag 100%:** Loại bỏ toàn bộ `mouseover` / `mousemove` toàn cục trên `document`.
+- **Cập nhật lưới 4 cột:** Phù hợp với cấu trúc container mới của YouTube, chống co kéo thumbnail.
+- **Cải tiến ẩn Shorts:** Sử dụng CSS `:has()` triệt tiêu các khoảng trống dư thừa.
 
 ---
 
-**Tác giả:** Huy Vũ · **Phiên bản:** 1.6
+**Tác giả:** Huy Vũ · **Phiên bản:** 2.0

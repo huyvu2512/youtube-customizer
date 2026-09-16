@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      1.6
-// @description  YouTube Customizer v1.6 — Logo Premium, lưới 4 cột, phím A-S-D/Numpad, anti-lag, skip ad, tương thích Unikey.
+// @version      2.0
+// @description  YouTube Customizer v2.0 — Logo Premium, lưới 4 cột mượt mà, phím A-S-D/Numpad, siêu nhẹ chống giật lag, ẩn Shorts triệt để, tương thích Unikey.
 // @author       Huy Vũ
 // @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js
 // @match        https://www.youtube.com/*
