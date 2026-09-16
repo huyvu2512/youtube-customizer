@@ -7,7 +7,7 @@
     // 0. CẤU HÌNH & LƯU TRỮ (LOCALSTORAGE)
     const CONFIG_KEY = 'ytc_config_v2';
     const DEFAULT_CONFIG = {
-        columns: 4,             // 3, 4 hoặc 5 cột
+        columns: 4,             // 3, 4 hoặc 5 cột (mặc định 4)
         hideShorts: true,       // Ẩn Shorts hoàn toàn
         premiumLogo: true,      // Logo YouTube Premium
         cleanSearch: true,      // Ẩn video tài trợ / quảng cáo tìm kiếm
@@ -32,15 +32,23 @@
 
     const currentConfig = loadConfig();
 
-    function applyConfigToBody() {
-        const body = document.body;
-        if (!body) return;
+    function applyConfigToRoot() {
+        const root = document.documentElement;
+        if (!root) return;
 
-        body.classList.toggle('ytc-hide-shorts', !!currentConfig.hideShorts);
-        body.classList.toggle('ytc-premium-logo', !!currentConfig.premiumLogo);
-        body.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
-        body.classList.toggle('ytc-disable-ambient', !!currentConfig.disableAmbient);
-        body.setAttribute('data-ytc-cols', String(currentConfig.columns || 4));
+        root.classList.toggle('ytc-hide-shorts', !!currentConfig.hideShorts);
+        root.classList.toggle('ytc-premium-logo', !!currentConfig.premiumLogo);
+        root.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
+        root.classList.toggle('ytc-disable-ambient', !!currentConfig.disableAmbient);
+        root.setAttribute('data-ytc-cols', String(currentConfig.columns || 4));
+
+        if (document.body) {
+            document.body.classList.toggle('ytc-hide-shorts', !!currentConfig.hideShorts);
+            document.body.classList.toggle('ytc-premium-logo', !!currentConfig.premiumLogo);
+            document.body.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
+            document.body.classList.toggle('ytc-disable-ambient', !!currentConfig.disableAmbient);
+            document.body.setAttribute('data-ytc-cols', String(currentConfig.columns || 4));
+        }
 
         applyHomeGridColumns();
     }
@@ -51,10 +59,57 @@
         const style = document.createElement('style');
         style.id = 'yt-customizer-styles';
         style.textContent = `
+            /* ==============================================
+               LƯỚI VIDEO TRANG CHỦ & FEED: ÉP 4 CỘT CHUẨN XÁC
+               ============================================== */
+            @media (min-width: 900px) {
+                ytd-browse[page-subtype="home"] ytd-rich-grid-renderer,
+                ytd-browse[page-subtype="subscriptions"] ytd-rich-grid-renderer,
+                ytd-browse[page-subtype="channels"] ytd-rich-grid-renderer,
+                #page-manager ytd-browse ytd-rich-grid-renderer,
+                ytd-rich-grid-renderer.ytc-grid,
+                ytd-rich-grid-renderer {
+                    --ytd-rich-grid-items-per-row: 4 !important;
+                    --ytd-rich-grid-posts-per-row: 4 !important;
+                    --ytd-rich-grid-item-max-width: none !important;
+                }
+
+                /* Ép chiều rộng mỗi thẻ video hiển thị đúng 4 cột */
+                #contents.ytd-rich-grid-row ytd-rich-item-renderer,
+                ytd-rich-grid-renderer ytd-rich-item-renderer {
+                    width: calc(100% / var(--ytd-rich-grid-items-per-row, 4) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
+                    max-width: calc(100% / var(--ytd-rich-grid-items-per-row, 4) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
+                }
+
+                /* Tùy chỉnh khi người dùng chọn 3 hoặc 5 cột */
+                [data-ytc-cols="3"] ytd-rich-grid-renderer {
+                    --ytd-rich-grid-items-per-row: 3 !important;
+                    --ytd-rich-grid-posts-per-row: 3 !important;
+                }
+                [data-ytc-cols="4"] ytd-rich-grid-renderer {
+                    --ytd-rich-grid-items-per-row: 4 !important;
+                    --ytd-rich-grid-posts-per-row: 4 !important;
+                }
+                [data-ytc-cols="5"] ytd-rich-grid-renderer {
+                    --ytd-rich-grid-items-per-row: 5 !important;
+                    --ytd-rich-grid-posts-per-row: 5 !important;
+                }
+            }
+
+            /* Cắt gọn thumbnail hover, tránh vỡ layout và chồng chéo */
+            #page-manager ytd-rich-item-renderer {
+                overflow: hidden !important;
+                border-radius: 12px;
+            }
+            #page-manager ytd-rich-item-renderer:hover {
+                z-index: 2;
+                position: relative;
+            }
+
             /* Tắt Ambient Mode & Cinematics để giảm tải GPU tối đa */
-            body.ytc-disable-ambient #cinematics,
-            body.ytc-disable-ambient ytd-cinematics-renderer,
-            body.ytc-disable-ambient .ytp-ambient-mode-rendering-container {
+            .ytc-disable-ambient #cinematics,
+            .ytc-disable-ambient ytd-cinematics-renderer,
+            .ytc-disable-ambient .ytp-ambient-mode-rendering-container {
                 display: none !important;
             }
 
@@ -73,16 +128,6 @@
                 animation: ytcConfirmInserted 0.001s;
             }
 
-            /* Cắt gọn thumbnail hover, tránh vỡ layout và chồng chéo */
-            #page-manager ytd-rich-item-renderer {
-                overflow: hidden !important;
-                border-radius: 12px;
-            }
-            #page-manager ytd-rich-item-renderer:hover {
-                z-index: 2;
-                position: relative;
-            }
-
             /* Chế độ Clean Seek: Tự ẩn controls và con trỏ khi tua phím */
             #movie_player.seeking-mode .ytp-chrome-bottom,
             #movie_player.seeking-mode .ytp-gradient-bottom,
@@ -95,42 +140,42 @@
             }
 
             /* Ẩn triệt để mục Shorts không để lại khoảng trắng (dùng :has) */
-            body.ytc-hide-shorts ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),
-            body.ytc-hide-shorts ytd-rich-section-renderer:has(ytd-reel-shelf-renderer),
-            body.ytc-hide-shorts ytd-rich-shelf-renderer[is-shorts],
-            body.ytc-hide-shorts ytd-reel-shelf-renderer,
-            body.ytc-hide-shorts ytd-guide-entry-renderer:has(a[href^="/shorts"]),
-            body.ytc-hide-shorts ytd-mini-guide-entry-renderer:has(a[href^="/shorts"]),
-            body.ytc-hide-shorts ytd-guide-entry-renderer a[title="Shorts"],
-            body.ytc-hide-shorts ytd-mini-guide-entry-renderer[aria-label="Shorts"],
-            body.ytc-hide-shorts #endpoint[title="Shorts"],
-            body.ytc-hide-shorts ytd-mealbar-promo-renderer,
-            body.ytc-hide-shorts ytd-upsell-dialog-renderer {
+            .ytc-hide-shorts ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),
+            .ytc-hide-shorts ytd-rich-section-renderer:has(ytd-reel-shelf-renderer),
+            .ytc-hide-shorts ytd-rich-shelf-renderer[is-shorts],
+            .ytc-hide-shorts ytd-reel-shelf-renderer,
+            .ytc-hide-shorts ytd-guide-entry-renderer:has(a[href^="/shorts"]),
+            .ytc-hide-shorts ytd-mini-guide-entry-renderer:has(a[href^="/shorts"]),
+            .ytc-hide-shorts ytd-guide-entry-renderer a[title="Shorts"],
+            .ytc-hide-shorts ytd-mini-guide-entry-renderer[aria-label="Shorts"],
+            .ytc-hide-shorts #endpoint[title="Shorts"],
+            .ytc-hide-shorts ytd-mealbar-promo-renderer,
+            .ytc-hide-shorts ytd-upsell-dialog-renderer {
                 display: none !important;
             }
 
             /* Clean Search: Ẩn video tài trợ / quảng cáo trong trang tìm kiếm và feeds */
-            body.ytc-clean-search ytd-ad-slot-renderer,
-            body.ytc-clean-search ytd-in-feed-ad-layout-renderer,
-            body.ytc-clean-search ytd-promoted-sparkles-web-renderer,
-            body.ytc-clean-search ytd-promoted-video-renderer,
-            body.ytc-clean-search ytd-search-pyv-renderer,
-            body.ytc-clean-search ytd-clarification-renderer,
-            body.ytc-clean-search ytd-rich-item-renderer:has(ytd-ad-slot-renderer),
-            body.ytc-clean-search ytd-rich-section-renderer:has(ytd-ad-slot-renderer),
-            body.ytc-clean-search ytd-video-renderer:has(.badge-style-type-ad) {
+            .ytc-clean-search ytd-ad-slot-renderer,
+            .ytc-clean-search ytd-in-feed-ad-layout-renderer,
+            .ytc-clean-search ytd-promoted-sparkles-web-renderer,
+            .ytc-clean-search ytd-promoted-video-renderer,
+            .ytc-clean-search ytd-search-pyv-renderer,
+            .ytc-clean-search ytd-clarification-renderer,
+            .ytc-clean-search ytd-rich-item-renderer:has(ytd-ad-slot-renderer),
+            .ytc-clean-search ytd-rich-section-renderer:has(ytd-ad-slot-renderer),
+            .ytc-clean-search ytd-video-renderer:has(.badge-style-type-ad) {
                 display: none !important;
             }
 
             /* Logo Premium: Ẩn logo mặc định và mã quốc gia bằng CSS ngay từ đầu */
-            body.ytc-premium-logo ytd-topbar-logo-renderer #country-code {
+            .ytc-premium-logo ytd-topbar-logo-renderer #country-code {
                 display: none !important;
             }
-            body.ytc-premium-logo ytd-logo yt-icon#logo-icon,
-            body.ytc-premium-logo ytd-logo svg:not(.custom-premium-logo svg) {
+            .ytc-premium-logo ytd-logo yt-icon#logo-icon,
+            .ytc-premium-logo ytd-logo svg:not(.custom-premium-logo svg) {
                 display: none !important;
             }
-            body:not(.ytc-premium-logo) .custom-premium-logo {
+            :not(.ytc-premium-logo) .custom-premium-logo {
                 display: none !important;
             }
             ytd-logo, ytd-topbar-logo-renderer {
@@ -178,8 +223,6 @@
 
             #ytc-settings-panel {
                 position: fixed;
-                top: 56px;
-                right: 60px;
                 width: 310px;
                 background-color: #282828;
                 border: 1px solid rgba(255, 255, 255, 0.12);
@@ -320,6 +363,7 @@
     }
 
     addCustomStyles();
+    applyConfigToRoot();
 
     // 2. LƯỚI CỘT TÙY BIẾN
     function isHomeFeedPath() {
@@ -332,6 +376,9 @@
         const cols = currentConfig.columns || 4;
         const grids = document.querySelectorAll('ytd-rich-grid-renderer');
         grids.forEach((grid) => {
+            if (!grid.classList.contains('ytc-grid')) {
+                grid.classList.add('ytc-grid');
+            }
             grid.style.setProperty('--ytd-rich-grid-items-per-row', String(cols), 'important');
             grid.style.setProperty('--ytd-rich-grid-posts-per-row', String(cols), 'important');
             grid.style.setProperty('--ytd-rich-grid-item-max-width', 'none', 'important');
@@ -539,20 +586,23 @@
     function ensureSettingsElements() {
         if (document.getElementById('ytc-settings-btn')) return;
 
-        // Vị trí đặt nút: bên trong #buttons của ytd-masthead, cạnh nút "+ Tạo"
-        const buttonsContainer = document.querySelector('ytd-masthead #end #buttons');
-        if (!buttonsContainer) return;
+        // Vị trí đặt nút: thanh topbar masthead #end (cạnh nút "+ Tạo")
+        const endContainer = document.querySelector('ytd-masthead #end, #masthead #end, #end.ytd-masthead');
+        if (!endContainer) return;
 
         const btn = document.createElement('button');
         btn.id = 'ytc-settings-btn';
-        btn.title = 'Tùy biến YouTube (YouTube Customizer)';
+        btn.title = 'YouTube Customizer';
         btn.innerHTML = GEAR_SVG;
 
-        // Chèn vào trước nút Tạo nếu có, hoặc ở đầu container nút
-        const createBtn = buttonsContainer.querySelector('ytd-button-renderer, yt-button-shape');
-        if (createBtn) {
-            buttonsContainer.insertBefore(btn, createBtn);
+        // Tìm nút Tạo hoặc chuông để chèn ngay phía trước
+        const createBtn = endContainer.querySelector('ytd-button-renderer:has(a[href*="/upload"]), ytd-button-renderer, yt-button-shape') 
+                       || endContainer.querySelector('ytd-notification-topbar-button-renderer');
+
+        if (createBtn && createBtn.parentElement) {
+            createBtn.parentElement.insertBefore(btn, createBtn);
         } else {
+            const buttonsContainer = endContainer.querySelector('#buttons') || endContainer;
             buttonsContainer.prepend(btn);
         }
 
@@ -657,7 +707,7 @@
                     panel.querySelectorAll('.ytc-col-btn').forEach(b => b.classList.remove('active'));
                     colBtn.classList.add('active');
 
-                    applyConfigToBody();
+                    applyConfigToRoot();
                 });
             });
 
@@ -672,7 +722,7 @@
                     }
                     currentConfig[key] = checkbox.checked;
                     saveConfig(currentConfig);
-                    applyConfigToBody();
+                    applyConfigToRoot();
                 });
             });
         }
@@ -693,7 +743,7 @@
 
         // Bấm ra ngoài để đóng menu
         document.addEventListener('click', (e) => {
-            if (panel.classList.contains('open')) {
+            if (panel && panel.classList.contains('open')) {
                 if (!e.target.closest('#ytc-settings-panel') && !e.target.closest('#ytc-settings-btn')) {
                     panel.classList.remove('open');
                 }
@@ -702,7 +752,7 @@
 
         // Bấm Esc để đóng menu
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && panel.classList.contains('open')) {
+            if (e.key === 'Escape' && panel && panel.classList.contains('open')) {
                 panel.classList.remove('open');
             }
         });
@@ -710,7 +760,7 @@
 
     // 7. KHỞI CHẠY VÀ XỬ LÝ SPA (Single Page Application)
     function onNavigate() {
-        applyConfigToBody();
+        applyConfigToRoot();
         updateAllLogos();
         ensureSettingsElements();
         bindGlobalKeys();
@@ -723,16 +773,17 @@
     }
 
     document.addEventListener('yt-navigate-finish', onNavigate);
+    window.addEventListener('resize', applyHomeGridColumns);
 
-    // Hỗ trợ chèn nút cài đặt và logo khi YouTube render chậm
-    let retryCount = 0;
-    const retryInterval = setInterval(() => {
-        retryCount++;
-        ensureSettingsElements();
-        updateAllLogos();
-        if (retryCount > 10 || (document.getElementById('ytc-settings-btn') && document.querySelector('.custom-premium-logo'))) {
-            clearInterval(retryInterval);
+    // MutationObserver nhẹ để tự động bắt kịp khi YouTube render trễ
+    const appObserver = new MutationObserver(() => {
+        if (!document.getElementById('ytc-settings-btn')) {
+            ensureSettingsElements();
         }
-    }, 500);
+        applyHomeGridColumns();
+    });
+
+    const targetNode = document.querySelector('ytd-app') || document.documentElement;
+    appObserver.observe(targetNode, { childList: true });
 
 })();
