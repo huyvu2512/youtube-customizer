@@ -89,8 +89,10 @@ Cài đặt tiện ích quản lý Userscript trên trình duyệt của bạn:
 
 ### Cách 1: Cài đặt trực tiếp từ GitHub (Khuyên dùng)
 
-1. Nhấp vào liên kết cài đặt: [**Cài Đặt Script**](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)
-2. Trình quản lý Tampermonkey sẽ tự động mở giao diện cài đặt, chọn **Install** (Cài đặt).
+[![Cài đặt Script](https://img.shields.io/badge/CÀI%20ĐẶT-SCRIPT-2ea44f?style=for-the-badge&logo=tampermonkey)](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)
+
+1. Nhấp vào nút **CÀI ĐẶT SCRIPT** ở trên (hoặc mở [liên kết tệp script](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)).
+2. Tiện ích Tampermonkey sẽ tự động mở giao diện cài đặt, chọn **Install** (hoặc **Update** nếu đã cài bản cũ).
 3. Mở YouTube hoặc tải lại trang (F5) để bắt đầu sử dụng.
 
 ### Cách 2: Cài đặt thủ công bằng mã nguồn cục bộ
