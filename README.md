@@ -1,68 +1,107 @@
-# YouTube Customizer — Phiên bản 2.1
+<div align="center">
 
-Script Tampermonkey tùy biến YouTube chuyên sâu: giao diện tinh gọn, menu cài đặt trực quan chuẩn phong cách YouTube, loại bỏ triệt để hiện tượng giật lag, tương thích hoàn toàn với giao diện mới nhất của YouTube.
+# YouTube Customizer
 
-Dự án gồm một file logic chính ([`youtube_customizer.js`](file:///c:/Users/Huy%20Vu/Downloads/youtube-customizer-main/youtube_customizer.js)) và wrapper cài đặt ([`tampermonkey.user.js`](file:///c:/Users/Huy%20Vu/Downloads/youtube-customizer-main/tampermonkey.user.js)).
+**Userscript Tampermonkey tùy biến giao diện YouTube, tối ưu hiệu năng và điều khiển video thông minh**
 
----
+[![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Version](https://img.shields.io/badge/Version-2.1-red)](https://github.com/huyvu2512/youtube-customizer)
 
-## Tính năng nổi bật (v2.1)
+[![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
+[![Forks](https://img.shields.io/github/forks/huyvu2512/youtube-customizer?style=flat-square&label=Forks&color=6e7681)](https://github.com/huyvu2512/youtube-customizer/forks)
+[![Issues](https://img.shields.io/github/issues/huyvu2512/youtube-customizer?style=flat-square&label=Issues&color=f85149)](https://github.com/huyvu2512/youtube-customizer/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/huyvu2512/youtube-customizer?style=flat-square&label=Last%20Commit&color=3fb950)](https://github.com/huyvu2512/youtube-customizer/commits/main)
 
-### ⚙️ Menu Cài Đặt Nhanh (Native YouTube Style)
-- **Vị trí tinh tế:** Nút icon bánh răng SVG được đặt ngay cạnh nút **"+ Tạo"** ở thanh trên cùng (Topbar).
-- **Giao diện chuẩn YouTube:** Thiết kế phong cách Dark theme tối giản, đồng bộ với menu tài khoản của YouTube, không màu mè rườm rà.
-- **Thao tác nhanh:** Bấm vào để mở, bấm ra ngoài hoặc nhấn `Esc` để đóng.
-- **Lưu cấu hình tự động:** Tự động lưu lựa chọn vào `localStorage`, cập nhật hiệu lực ngay tức thì (Live Update) mà không cần tải lại trang.
+[Cài Đặt Script](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js) · [Báo Lỗi](https://github.com/huyvu2512/youtube-customizer/issues) · [Yêu Cầu Tính Năng](https://github.com/huyvu2512/youtube-customizer/issues)
 
-### 🎛️ Bảng tính năng có thể bật / tắt trong Menu
-
-| Tính năng | Mô tả |
-|-----------|--------|
-| **Tùy chọn số cột trang chủ** | Chọn hiển thị **3 cột**, **4 cột** hoặc **5 cột** video trên màn hình rộng theo sở thích. |
-| **Ẩn mục Shorts** | Sử dụng CSS `:has()` hiện đại để ẩn sạch toàn bộ kệ Shorts và menu Shorts bên trái, **không để lại khoảng trắng**. |
-| **Logo Premium** | Đổi logo YouTube sang logo YouTube Premium màu đỏ sắc nét, ẩn mã quốc gia. |
-| **Clean Search (Ẩn video tài trợ)** | Ẩn triệt để các video quảng cáo/được tài trợ (`Sponsored`, `ytd-ad-slot-renderer`) trong trang tìm kiếm và feeds. |
-| **Tắt Ambient Mode** | Tắt hiệu ứng viền sáng phát sáng xung quanh video (Cinematics), giải phóng tài nguyên GPU. |
-| **Phím tắt điều khiển video** | Bật / tắt hệ thống phím tắt A-S-D và Numpad. |
+</div>
 
 ---
 
-### ⌨️ Điều khiển video thông minh (A-S-D & Numpad)
+## Giới thiệu
 
-| Phím | Chức năng |
-|------|-----------|
-| **Numpad 8 / 2** | Tăng / giảm âm lượng 5% |
-| **Numpad 4 / 6** | Lùi / tiến 10 giây |
-| **Numpad 5** | Play / Pause |
-| **A / S / D** | Lùi 10s / Play-Pause / Tiến 10s — chỉ kích hoạt khi chuột trong player hoặc Fullscreen |
-| **Numpad 1, 3, 7, 9** | Vô hiệu hóa để tránh bấm nhầm |
+**YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-- **Zero-Lag:** Sử dụng bộ chọn native `:hover`, loại bỏ 100% hiện tượng drop FPS khi rê chuột.
-- **Tương thích Unikey / EVKey:** Đọc mã phím vật lý `e.code` (`KeyA`, `KeyS`, `KeyD`), tự động vô hiệu khi đang nhập văn bản trong ô tìm kiếm hoặc khung bình luận.
-- **Clean Seek:** Tự động ẩn thanh điều khiển và con trỏ chuột khi tua phím để màn hình thông thoáng.
+Phiên bản **v2.1** giải quyết triệt để vấn đề giật lag khi duyệt web trên giao diện mới của YouTube, tích hợp menu cài đặt nhanh chuẩn phong cách giao diện YouTube (nằm cạnh nút "+ Tạo"), loại bỏ các thành phần rác, video tài trợ trong tìm kiếm và cung cấp hệ thống phím tắt điều khiển tiện lợi tương thích hoàn toàn với bộ gõ tiếng Việt.
 
 ---
 
-## Cài đặt
+## Tính năng chính
 
-### Bước 1: Tampermonkey
-
-- PC (Chrome / Edge / Cốc Cốc / Brave / Firefox): [Tampermonkey Extension](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
-
-### Bước 2: Cài script
-
-**Cách A — Cài trực tiếp từ GitHub (khuyên dùng):**
-
-[![Cài đặt Script](https://img.shields.io/badge/CÀI%20ĐẶT-SCRIPT-2ea44f?style=for-the-badge&logo=tampermonkey)](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)
-
-**Cách B — Cài đặt cục bộ (Dùng trực tiếp code):**
-
-1. Mở tiện ích Tampermonkey trên trình duyệt → Chọn **Tạo script mới** (+).
-2. Xóa hết code mẫu có sẵn.
-3. Mở file [`tampermonkey.user.js`](file:///c:/Users/Huy%20Vu/Downloads/youtube-customizer-main/tampermonkey.user.js), xóa dòng `@require ...`.
-4. Sao chép toàn bộ nội dung file [`youtube_customizer.js`](file:///c:/Users/Huy%20Vu/Downloads/youtube-customizer-main/youtube_customizer.js) và dán vào dưới metadata của script.
-5. Nhấn **File** → **Save** (hoặc Ctrl+S) và F5 lại trang YouTube.
+- **Menu cài đặt nhanh chuẩn giao diện YouTube:**
+  - Nút icon bánh răng SVG tinh gọn được gắn trực tiếp trên thanh điều hướng cạnh nút "+ Tạo".
+  - Bảng menu dropdown thiết kế tối giản theo chuẩn Dark theme của YouTube, hiển thị ngay dưới nút bấm và tự động đóng khi nhấp chuột ra ngoài hoặc nhấn phím `Esc`.
+  - Toàn bộ thiết lập được lưu trữ tự động vào `localStorage` và áp dụng thay đổi tức thì (Live Update) mà không cần tải lại trang.
+- **Tùy biến lưới video linh hoạt:**
+  - Hỗ trợ chuyển đổi nhanh bố cục hiển thị **3 cột**, **4 cột** hoặc **5 cột** trên trang chủ và kênh đăng ký đối với màn hình rộng.
+  - Tự động bo góc và cắt gọn thumbnail khi hover, chống lỗi tràn viền hoặc co kéo sai tỉ lệ khung hình.
+- **Ẩn hoàn toàn nội dung Shorts:**
+  - Áp dụng bộ chọn CSS hiện đại `:has()` để triệt tiêu toàn bộ kệ Shorts trên trang chủ, trang đăng ký và mục Shorts trên thanh điều hướng bên trái, không để lại khoảng trắng dư thừa.
+- **Clean Search (Ẩn video tài trợ):**
+  - Tự động ẩn các thẻ video quảng cáo và nội dung được tài trợ (`Sponsored`) trong kết quả tìm kiếm và các trang feed.
+- **Tối ưu hiệu năng tải trang và xử lý đồ họa:**
+  - Vô hiệu hóa hiệu ứng sáng viền video (Ambient Mode / Cinematics) giúp giảm tải GPU đáng kể.
+  - Áp dụng cơ chế lazy-render (`content-visibility: auto`) cho danh sách bình luận.
+  - Loại bỏ hoàn toàn các event listener bắt chuột toàn cục (`mouseover`/`mousemove`), loại bỏ triệt để hiện tượng tụt FPS khi di chuyển con trỏ.
+- **Logo YouTube Premium:**
+  - Thay thế logo mặc định bằng biểu tượng YouTube Premium sắc nét, đồng thời ẩn mã vùng quốc gia.
+  - Nhấp chuột vào logo ở trang chủ/feed hỗ trợ cuộn mượt (smooth scroll) lên đầu trang.
+- **Tự động tiếp tục phát video:**
+  - Tự động đóng hộp thoại xác nhận "Vẫn đang xem? / Video đã tạm dừng" để tiếp tục phát nhạc nền hoặc playlist dài.
 
 ---
 
-**Tác giả:** Huy Vũ · **Phiên bản:** 2.1
+## Điều khiển video bằng bàn phím
+
+| Phím | Chức năng | Điều kiện kích hoạt |
+| :--- | :--- | :--- |
+| **A / S / D** | Lùi 10s / Play-Pause / Tiến 10s | Chuột nằm trong player hoặc chế độ Fullscreen |
+| **Numpad 8 / 2** | Tăng / Giảm âm lượng 5% | Toàn cục (khi player đang hoạt động) |
+| **Numpad 4 / 6** | Tua lùi / Tua tiến 10 giây | Toàn cục (khi player đang hoạt động) |
+| **Numpad 5** | Phát / Tạm dừng video | Toàn cục (khi player đang hoạt động) |
+| **Numpad 1, 3, 7, 9** | Vô hiệu hóa (tránh thao tác nhầm) | Toàn cục |
+
+- **Tương thích bộ gõ tiếng Việt:** Phím A/S/D bắt mã phím vật lý `e.code` (`KeyA`, `KeyS`, `KeyD`), không bị ảnh hưởng bởi Unikey / EVKey.
+- **Chống gõ nhầm:** Tự động vô hiệu hóa phím tắt khi người dùng đang nhập văn bản trong ô tìm kiếm, viết bình luận hoặc khung chat trực tiếp.
+- **Clean Seek:** Tự động ẩn thanh điều khiển và con trỏ chuột trong quá trình tua video nhằm giữ khung nhìn tập trung và thông thoáng.
+
+---
+
+## Cấu trúc thư mục
+
+```text
+youtube-customizer/
+├── README.md               # Tài liệu hướng dẫn sử dụng và giới thiệu dự án
+├── tampermonkey.user.js    # Tệp metadata nạp script cho tiện ích Tampermonkey
+└── youtube_customizer.js   # Mã nguồn chính (toàn bộ CSS, giao diện Menu và logic điều khiển)
+```
+
+---
+
+## Hướng dẫn cài đặt
+
+### Yêu cầu tiên quyết
+Cài đặt tiện ích quản lý Userscript trên trình duyệt của bạn:
+- [Tampermonkey](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) (Khuyên dùng cho Chrome, Edge, Cốc Cốc, Brave, Firefox, Opera)
+
+### Cách 1: Cài đặt trực tiếp từ GitHub (Khuyên dùng)
+
+1. Nhấp vào liên kết cài đặt: [**Cài Đặt Script**](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)
+2. Trình quản lý Tampermonkey sẽ tự động mở giao diện cài đặt, chọn **Install** (Cài đặt).
+3. Mở YouTube hoặc tải lại trang (F5) để bắt đầu sử dụng.
+
+### Cách 2: Cài đặt thủ công bằng mã nguồn cục bộ
+
+1. Mở bảng điều khiển Tampermonkey trên trình duyệt, chọn **Tạo script mới** (`+`).
+2. Xóa toàn bộ nội dung mẫu có sẵn.
+3. Mở tệp [`tampermonkey.user.js`](./tampermonkey.user.js), xóa dòng `@require ...`.
+4. Sao chép toàn bộ nội dung từ tệp [`youtube_customizer.js`](./youtube_customizer.js) và dán tiếp nối vào bên dưới phần header metadata.
+5. Chọn **File** → **Save** (hoặc nhấn tổ hợp phím `Ctrl + S`), sau đó tải lại YouTube.
+
+---
+
+## Tác giả & Giấy phép
+
+- **Tác giả:** Huy Vũ ([@huyvu2512](https://github.com/huyvu2512))
+- **Giấy phép:** Dự án được phân phối theo giấy phép [MIT License](./LICENSE).
