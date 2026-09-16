@@ -12,6 +12,4 @@
 // @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js
 // @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js
 // ==/UserScript==
-//
-// Cài local (trước khi push GitHub): Tampermonkey → Sửa script → Xóa @require,
-// dán toàn bộ nội dung file youtube_customizer.js vào cuối file này.
+
