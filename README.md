@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-2.2-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-2.3-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,12 +25,9 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v2.2** nâng cấp toàn diện hiệu năng và độ ổn định:
-- Tích hợp menu cài đặt nhanh chuẩn phong cách giao diện YouTube (nằm cạnh nút "+ Tạo") với khả năng mở tức thì không độ trễ.
-- Thêm tùy chọn ẩn mục Chơi game (Playables) trên toàn bộ thanh điều hướng và feed.
-- Tối ưu hiệu năng xem Live Stream (Zero-Lag Live Chat) mà không làm ẩn khung chat.
-- Khóa an toàn nút phóng to (Fullscreen Safe Lock) chống lỗi kẹt giao diện inline khi vừa tải trang.
-- Hệ thống phím tắt điều khiển Numpad & A-S-D thông minh, tương thích hoàn toàn với bộ gõ tiếng Việt.
+Phiên bản **v2.3** nâng cấp:
+- **Tương thích hoàn hảo Giao diện Sáng/Tối cho Logo Premium:** Tự động điều chỉnh màu sắc chữ "Premium" (đen trên nền sáng, trắng trên nền tối) tức thì theo thời gian thực (Zero-reload Realtime Switch) khi người dùng đổi theme YouTube mà không cần bấm F5 tải lại trang.
+- Kế thừa toàn bộ tối ưu hiệu năng và tính năng của v2.2 (Menu cài đặt chuẩn YouTube, tùy chỉnh 3-4-5 cột, ẩn Shorts & Playables, Clean Search, Zero-Lag Live Chat, Fullscreen Safe Lock, phím tắt A-S-D / Numpad).
 
 ---
 
@@ -58,6 +55,7 @@ Phiên bản **v2.2** nâng cấp toàn diện hiệu năng và độ ổn đị
   - Tự động vô hiệu hóa tạm thời nút phóng to (1.5 giây) khi vừa tải hoặc F5 lại trang video, chống lỗi kẹt giao diện inline/toàn màn hình của trình phát YouTube.
 - **Logo YouTube Premium:**
   - Thay thế logo mặc định bằng biểu tượng YouTube Premium sắc nét, đồng thời ẩn mã vùng quốc gia.
+  - Tự động thích ứng màu sắc theo giao diện Sáng / Tối (Light / Dark theme) ngay lập tức khi đổi giao diện mà không cần tải lại trang.
   - Nhấp chuột vào logo ở trang chủ/feed hỗ trợ cuộn mượt (smooth scroll) lên đầu trang.
 - **Tự động tiếp tục phát video:**
   - Tự động đóng hộp thoại xác nhận "Vẫn đang xem? / Video đã tạm dừng" để tiếp tục phát nhạc nền hoặc playlist dài.

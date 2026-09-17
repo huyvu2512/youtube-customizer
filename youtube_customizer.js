@@ -1,5 +1,5 @@
 // ==UserScript==
-// YouTube Customizer v2.2 — https://github.com/huyvu2512/youtube-customizer
+// YouTube Customizer v2.3 — https://github.com/huyvu2512/youtube-customizer
 // ==/UserScript==
 (function() {
     'use strict';
@@ -200,19 +200,29 @@
                 align-items: center;
                 width: 101px !important;
                 height: 20px !important;
-                color: var(--yt-spec-text-primary, #f1f1f1) !important;
+                color: var(--yt-spec-wordmark-text, var(--yt-spec-text-primary, #0f0f0f)) !important;
                 pointer-events: none;
             }
-            html:not([dark]) :root.ytc-premium-logo .custom-premium-logo {
-                color: #0f0f0f !important;
+            /* Giao diện sáng (Light Theme): chữ Premium màu đen chuẩn YouTube (#0f0f0f) */
+            html:not([dark]).ytc-premium-logo .custom-premium-logo,
+            html:not([dark]) .custom-premium-logo,
+            :root:not([dark]).ytc-premium-logo .custom-premium-logo {
+                color: var(--yt-spec-wordmark-text, #0f0f0f) !important;
             }
-            html[dark] :root.ytc-premium-logo .custom-premium-logo {
-                color: #f1f1f1 !important;
+            /* Giao diện tối (Dark Theme): chữ Premium màu trắng chuẩn YouTube (#f1f1f1) */
+            html[dark].ytc-premium-logo .custom-premium-logo,
+            html[dark] .custom-premium-logo,
+            :root[dark].ytc-premium-logo .custom-premium-logo {
+                color: var(--yt-spec-wordmark-text, #f1f1f1) !important;
             }
             .custom-premium-logo svg {
                 width: 101px !important;
                 height: 20px !important;
-                fill: currentColor;
+                fill: currentColor !important;
+            }
+            .custom-premium-logo svg #youtube-paths_yt19,
+            .custom-premium-logo svg #youtube-paths_yt19 path {
+                fill: currentColor !important;
             }
 
             /* Khóa nút phóng to khi video đang load (chống lỗi kẹt giao diện) */
@@ -828,7 +838,7 @@
             panel.innerHTML = safeHTML(`
                 <div class="ytc-header">
                     <span>YouTube Customizer</span>
-                    <span class="ytc-header-badge">v2.2</span>
+                    <span class="ytc-header-badge">v2.3</span>
                 </div>
 
                 <!-- Số cột trang chủ -->
