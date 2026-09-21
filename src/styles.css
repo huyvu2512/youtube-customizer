@@ -421,7 +421,7 @@ html:not([dark]) #ytc-settings-btn:hover {
 
 #ytc-settings-panel {
     position: fixed;
-    width: 310px;
+    width: 350px;
     max-height: calc(100vh - 80px);
     overflow-y: auto;
     background: var(--yt-spec-brand-background-primary, #282828);
@@ -470,10 +470,10 @@ html:not([dark]) #ytc-settings-btn:hover {
 .ytc-tabs {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
     background: rgba(255, 255, 255, 0.06);
     border-radius: 8px;
-    padding: 3px;
+    padding: 4px;
     margin: 4px 0 6px 0;
 }
 .ytc-tab-btn {
@@ -481,12 +481,12 @@ html:not([dark]) #ytc-settings-btn:hover {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    padding: 6px 2px;
+    gap: 5px;
+    padding: 6px 6px;
     border: none;
     background: transparent;
     color: #aaa;
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 500;
     border-radius: 6px;
     cursor: pointer;
@@ -767,7 +767,18 @@ html:not([dark]) .ytc-mode-btn.active {
     margin: 0 2px;
 }
 
-/* KHUNG STREAMER CHAT BOX (TRONG SUỐT) */
+/* ĐẢM BẢO ẨN TUYỆT ĐỐI KHI TẮT CHAT */
+html:not([data-ytc-chat="danmaku"]) #ytc-danmaku-container,
+body:not([data-ytc-chat="danmaku"]) #ytc-danmaku-container {
+    display: none !important;
+}
+
+html:not([data-ytc-chat="streamer"]) #ytc-streamer-box,
+body:not([data-ytc-chat="streamer"]) #ytc-streamer-box {
+    display: none !important;
+}
+
+/* KHUNG LIVE CHAT BOX (TRONG SUỐT / XÓA PHÔNG MẶC ĐỊNH) */
 #ytc-streamer-box {
     position: absolute;
     width: 340px;
@@ -781,32 +792,39 @@ html:not([dark]) .ytc-mode-btn.active {
     flex-direction: column;
     pointer-events: auto;
     box-sizing: border-box;
-    transition: opacity 0.3s ease;
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
     user-select: none;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 #ytc-streamer-box:hover {
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
-    background: rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25), 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+    background: rgba(0, 0, 0, 0.35) !important;
 }
 
 .ytc-box-header {
-    height: 22px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 2px 8px;
-    background: rgba(0, 0, 0, 0.5);
-    color: #ccc;
-    font-size: 11px;
+    padding: 2px 10px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #eee;
+    font-size: 11.5px;
+    font-weight: 500;
     cursor: move;
     opacity: 0;
-    transition: opacity 0.2s;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
     flex-shrink: 0;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
 }
 
 #ytc-streamer-box:hover .ytc-box-header {
     opacity: 1;
+    pointer-events: auto;
 }
 
 .ytc-box-messages {
@@ -868,13 +886,15 @@ html:not([dark]) .ytc-mode-btn.active {
     height: 14px;
     cursor: nwse-resize;
     opacity: 0;
-    transition: opacity 0.2s;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
     border-right: 2px solid rgba(255, 255, 255, 0.6);
     border-bottom: 2px solid rgba(255, 255, 255, 0.6);
 }
 
 #ytc-streamer-box:hover .ytc-box-resize {
     opacity: 1;
+    pointer-events: auto;
 }
 
 @keyframes ytc-fade-in {
@@ -886,3 +906,76 @@ html:not([dark]) .ytc-mode-btn.active {
     opacity: 0 !important;
     pointer-events: none !important;
 }
+
+/* --------------------------------------------------------------------------
+   HIỆU ỨNG TUA VIDEO (+10s / -10s SEEK OSD)
+   -------------------------------------------------------------------------- */
+.ytc-seek-osd {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 60;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.ytc-seek-osd.back {
+    left: 12%;
+}
+
+.ytc-seek-osd.fwd {
+    right: 12%;
+}
+
+.ytc-seek-osd-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.65);
+    color: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    user-select: none;
+}
+
+.ytc-seek-osd-inner svg {
+    width: 28px;
+    height: 28px;
+}
+
+.ytc-seek-osd-inner span {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.ytc-seek-osd.animate {
+    opacity: 1;
+    animation: ytcSeekPulse 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes ytcSeekPulse {
+    0% {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.7);
+    }
+    30% {
+        opacity: 1;
+        transform: translateY(-50%) scale(1.08);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.95);
+    }
+}
+

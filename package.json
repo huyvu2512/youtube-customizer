@@ -1,6 +1,6 @@
 {
   "name": "youtube-customizer",
-  "version": "2.9.6",
+  "version": "2.9.7",
   "description": "YouTube Customizer — Userscript Tampermonkey tùy biến giao diện YouTube, tối ưu hiệu năng và điều khiển video thông minh",
   "type": "module",
   "scripts": {

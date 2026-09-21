@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-2.9.6-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-2.9.7-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,17 +25,15 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v2.9.6** nâng cấp:
-- **Vẽ lại toàn bộ hệ thống biểu tượng SVG chuẩn Material Design:**
-  - Chuyển đổi toàn diện các icon dạng stroke bị lỗi hiển thị/bệt hình sang dạng SVG path rỗng tâm chuẩn YouTube Material:
-    - **Mở khóa tua Live Stream:** Biểu tượng vòng xoay tua ngược thời gian kết hợp kim đồng hồ thanh thoát.
-    - **Tab Lọc:** Biểu tượng phễu lọc 3 tầng hiện đại, hiển thị sắc sảo ở cả trạng thái kích hoạt và mặc định.
-    - **Ẩn Khám phá chủ đề:** Biểu tượng la bàn 4 hướng sắc nét, khắc phục hoàn toàn lỗi hiển thị thành hình tròn đặc.
-    - **Ẩn logo góc video:** Biểu tượng màn hình đục rỗng với con dấu watermark sắc gọn ở góc dưới cùng bên phải, không còn bị biến dạng thành khối chữ nhật đặc.
-    - **Live Chat:** Biểu tượng bong bóng trò chuyện có 3 chấm tròn đục rỗng thanh thoát.
-- **Tối ưu phân nhóm menu cài đặt:**
-  - Chuyển tính năng **Ẩn Khám phá chủ đề** sang mục **Lọc**.
-  - Chuyển tính năng **Mở khóa tua Live Stream** (Live DVR) và **Live Chat** (Danmaku / Streamer Box) sang mục **Giao diện**.
+Phiên bản **v2.9.7** nâng cấp:
+- **Mở rộng khung Menu cài đặt 4 Tab:** Tăng chiều rộng menu lên 350px và điều chỉnh khoảng cách tab, giúp các tab có tên dài như "Giao diện" và "Trình phát" hiển thị rộng rãi, không bị co hẹp hay khó bấm.
+- **Bổ sung hiệu ứng OSD tua video (+10s / -10s):** Khi sử dụng phím Numpad 4/6 hoặc A/D, màn hình video sẽ hiển thị hiệu ứng OSD tròn gợn sóng mờ dạng vòng xoay trực quan kèm số giây tua (+10s ở bên phải, -10s ở bên trái) tương tự cử chỉ tua chuẩn của YouTube.
+- **Tối ưu hóa và sửa triệt để Live Chat:**
+  - **Khóa ẩn tuyệt đối khi tắt:** Khi chọn chế độ "Tắt", khung chat bị triệt tiêu hoàn toàn (display: none !important), không còn tình trạng sót khung trên màn hình video.
+  - **Khắc phục lỗi không nhận tin nhắn:** Sửa cơ chế kết nối iframe chatframe, hỗ trợ nạp ngay các tin nhắn sẵn có và tự động lắng nghe tin nhắn mới cho cả chế độ Ngang (Danmaku) và Nổi (Live Chat).
+  - **Xóa phông chuẩn xác khi không di chuột:** Mặc định khung chat hoàn toàn trong suốt không viền; chỉ khi di chuột vào khung chat thì thanh tiêu đề, nút kéo thả và viền điều chỉnh kích thước mới xuất hiện nhẹ nhàng, không bị chập chờn.
+  - **Đổi tên hiển thị:** Đổi tiêu đề thanh điều khiển từ "Chat Streamer" thành "Live Chat".
+- **Kế thừa các tối ưu của v2.9.6:** Bộ biểu tượng SVG vẽ lại chuẩn Material Design sắc nét, phân nhóm tab chuẩn xác, triệt tiêu lỗi phím Numpad và tự đóng banner thông báo.
 - **Triệt tiêu toàn diện lỗi phím Numpad (Chống nhảy % video & chống Home/End/PageUp/PageDown):** Chặn độc lập 100% tất cả các phím Numpad (ở cả 2 tầng sự kiện `keydown` và `keyup`), không phụ thuộc vào trạng thái tải của player. Khắc phục triệt để hiện tượng ấn 1, 7 nhảy đầu/cuối video, 3, 9 cuộn trang khi tắt NumLock và 1-9 nhảy % video khi bật NumLock.
 - **Tự động đóng banner & thông báo gián đoạn:** Tự động phát hiện và đóng/ẩn ngay lập tức các thông báo toast gây phiền toái như *"Bạn đang gặp sự cố gây gián đoạn?"* (*"Experiencing interruptions? Find out why"*), banner mời dùng thử Premium, khảo sát và popup phiền phức trên giao diện xem video.
 - **Chuẩn hóa phím tắt Numpad & A-S-D / J-K-L:**

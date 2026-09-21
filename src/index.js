@@ -80,6 +80,7 @@ export function applyConfigToRoot() {
     root.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
     root.classList.toggle('ytc-disable-ambient', !!currentConfig.disableAmbient);
     root.setAttribute('data-ytc-cols', String(currentConfig.columns || 4));
+    root.setAttribute('data-ytc-chat', currentConfig.chatOverlay || 'off');
 
     if (document.body) {
         document.body.classList.toggle('ytc-hide-shorts', !!currentConfig.hideShorts);
@@ -94,6 +95,7 @@ export function applyConfigToRoot() {
         document.body.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
         document.body.classList.toggle('ytc-disable-ambient', !!currentConfig.disableAmbient);
         document.body.setAttribute('data-ytc-cols', String(currentConfig.columns || 4));
+        document.body.setAttribute('data-ytc-chat', currentConfig.chatOverlay || 'off');
     }
 
     applyHomeGridColumns();
