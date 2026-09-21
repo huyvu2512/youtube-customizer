@@ -100,13 +100,10 @@ youtube-customizer/
 ├── scripts/
 │   └── build.js            # Script đóng gói tự động bằng esbuild
 ├── src/
-│   ├── index.js            # Entrypoint điều phối vòng đời SPA và các sự kiện
-│   ├── config/             # Cấu hình, lưu trữ LocalStorage, áp dụng class lên root
-│   ├── core/               # Tiện ích DOM, observer, throttle, Trusted Types
-│   ├── styles/             # Các tệp CSS tách nhỏ (base, grid, filters, player, menu)
-│   ├── icons/              # Toàn bộ biểu tượng SVG
-│   ├── features/           # Các tính năng độc lập (grid_columns, content_filters, premium_logo, promos, endscreen, player_controls)
-│   └── ui/                 # Giao diện nút bánh răng masthead và menu 4 tab
+│   ├── index.js            # Entrypoint chính, cấu hình và điều phối vòng đời SPA
+│   ├── styles.css          # Toàn bộ định kiểu CSS (giao diện, lưới cột, bộ lọc, player, menu)
+│   ├── features.js         # Toàn bộ tính năng (cột, logo, bộ lọc nội dung, phím tắt, promos)
+│   └── ui.js               # Biểu tượng SVG Lucide, nút bánh răng masthead và menu 4 tab
 ├── LICENSE                 # Giấy phép mã nguồn mở MIT License
 ├── README.md               # Tài liệu hướng dẫn sử dụng và giới thiệu dự án
 ├── tampermonkey.user.js    # Tệp metadata nạp script cho tiện ích Tampermonkey

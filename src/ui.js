@@ -1,30 +1,37 @@
-// BẢNG CÀI ĐẶT DROPDOWN 4 TAB CHUẨN YOUTUBE
-import { currentConfig, saveConfig, applyConfigToRoot } from '../config/index.js';
-import { safeHTML } from '../core/dom.js';
-import {
-    GRID_SVG,
-    SHORTS_SVG,
-    GAMEPAD_SVG,
-    YOUTUBE_SVG,
-    SEARCH_SVG,
-    SPARKLE_SVG,
-    KEYBOARD_SVG,
-    CROWN_SVG,
-    COMPASS_SVG,
-    LAYOUT_TAB_SVG,
-    SHIELD_TAB_SVG,
-    PLAYER_TAB_SVG,
-    POST_SVG,
-    ENDSCREEN_SVG,
-    BELL_OFF_SVG
-} from '../icons/svgs.js';
+// ==========================================================================
+// YOUTUBE CUSTOMIZER - GIAO DIỆN BẢNG CÀI ĐẶT 4 TAB & BIỂU TƯỢNG (UI & ICONS)
+// ==========================================================================
+import { currentConfig, saveConfig, applyConfigToRoot } from './index.js';
+import { safeHTML, whenElement } from './features.js';
 
+// --------------------------------------------------------------------------
+// 1. BIỂU TƯỢNG SVG (LUCIDE ICONS)
+// --------------------------------------------------------------------------
+const GEAR_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>`;
+const GRID_SVG = `<svg viewBox="0 0 24 24"><path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h7v7h-7v-7z"/></svg>`;
+const SHORTS_SVG = `<svg viewBox="0 0 24 24"><path d="M17.77 10.32l-1.2-.5L18 9.06c1.84-.96 2.53-3.23 1.56-5.06s-3.24-2.53-5.07-1.56L6 6.94c-1.29.68-2.07 2.04-2 3.49.07 1.42.93 2.67 2.22 3.25.03.01 1.2.5 1.2.5L6 14.93c-1.83.97-2.53 3.24-1.56 5.07.97 1.83 3.24 2.53 5.07 1.56l8.5-4.5c1.29-.68 2.06-2.04 1.99-3.49-.07-1.42-.94-2.68-2.23-3.25zM10 14.5v-5l4.5 2.5-4.5 2.5z"/></svg>`;
+const GAMEPAD_SVG = `<svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S20.17 9 21 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>`;
+const YOUTUBE_SVG = `<svg viewBox="0 0 24 24"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg>`;
+const SEARCH_SVG = `<svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/></svg>`;
+const SPARKLE_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2L9.5 8.5 3 11l6.5 2.5L12 20l2.5-6.5L21 11l-6.5-2.5L12 2z"/></svg>`;
+const KEYBOARD_SVG = `<svg viewBox="0 0 24 24"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg>`;
+const CROWN_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`;
+const COMPASS_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`;
+const LAYOUT_TAB_SVG = `<svg viewBox="0 0 24 24"><path d="M4 4h16v4H4V4zm0 6h7v10H4V10zm9 0h7v10h-7V10z"/></svg>`;
+const SHIELD_TAB_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"/></svg>`;
+const PLAYER_TAB_SVG = `<svg viewBox="0 0 24 24"><path d="M10 8.64L15.27 12 10 15.36V8.64M8 5v14l11-7L8 5z"/></svg>`;
+const POST_SVG = `<svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>`;
+const ENDSCREEN_SVG = `<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H6v-4h6v4zm6 0h-5v-4h5v4zm0-6H6V7h12v4z"/></svg>`;
+const BELL_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>`;
+
+// --------------------------------------------------------------------------
+// 2. BẢNG MENU CÀI ĐẶT (SETTINGS PANEL)
+// --------------------------------------------------------------------------
 let menuDismissBound = false;
-export function bindMenuDismiss(panel) {
+function bindMenuDismiss(panel) {
     if (menuDismissBound) return;
     menuDismissBound = true;
 
-    // Bấm ra ngoài để đóng menu
     document.addEventListener('click', (e) => {
         if (panel && panel.classList.contains('open')) {
             if (!e.target.closest('#ytc-settings-panel') && !e.target.closest('#ytc-settings-btn')) {
@@ -33,7 +40,6 @@ export function bindMenuDismiss(panel) {
         }
     });
 
-    // Bấm Esc để đóng menu
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && panel && panel.classList.contains('open')) {
             panel.classList.remove('open');
@@ -41,7 +47,7 @@ export function bindMenuDismiss(panel) {
     });
 }
 
-export function createSettingsPanel(btn) {
+function createSettingsPanel(btn) {
     let panel = document.getElementById('ytc-settings-panel');
     if (!panel) {
         panel = document.createElement('div');
@@ -52,7 +58,6 @@ export function createSettingsPanel(btn) {
                 <span class="ytc-header-badge">v2.6</span>
             </div>
 
-            <!-- Thanh Tabs điều hướng 4 nhóm -->
             <div class="ytc-tabs">
                 <button class="ytc-tab-btn active" data-tab="layout" title="Bố cục & Giao diện">
                     ${LAYOUT_TAB_SVG}
@@ -74,7 +79,6 @@ export function createSettingsPanel(btn) {
 
             <!-- TAB 1: GIAO DIỆN & BỐ CỤC -->
             <div class="ytc-tab-pane active" id="ytc-pane-layout">
-                <!-- Số cột trang chủ -->
                 <div class="ytc-item" id="ytc-row-cols">
                     <div class="ytc-item-left">
                         ${GRID_SVG}
@@ -87,7 +91,6 @@ export function createSettingsPanel(btn) {
                     </div>
                 </div>
 
-                <!-- Logo Premium -->
                 <div class="ytc-item" data-toggle="premiumLogo">
                     <div class="ytc-item-left">
                         ${YOUTUBE_SVG}
@@ -99,7 +102,6 @@ export function createSettingsPanel(btn) {
                     </label>
                 </div>
 
-                <!-- Ẩn Khám phá các chủ đề khác -->
                 <div class="ytc-item" data-toggle="hideExploreTopics">
                     <div class="ytc-item-left">
                         ${COMPASS_SVG}
@@ -114,7 +116,6 @@ export function createSettingsPanel(btn) {
 
             <!-- TAB 2: LỌC NỘI DUNG SẠCH -->
             <div class="ytc-tab-pane" id="ytc-pane-filter">
-                <!-- Ẩn Shorts -->
                 <div class="ytc-item" data-toggle="hideShorts">
                     <div class="ytc-item-left">
                         ${SHORTS_SVG}
@@ -126,7 +127,6 @@ export function createSettingsPanel(btn) {
                     </label>
                 </div>
 
-                <!-- Ẩn Chơi game (Playables) -->
                 <div class="ytc-item" data-toggle="hidePlayables">
                     <div class="ytc-item-left">
                         ${GAMEPAD_SVG}
@@ -138,7 +138,6 @@ export function createSettingsPanel(btn) {
                     </label>
                 </div>
 
-                <!-- Ẩn mục video Hội viên -->
                 <div class="ytc-item" data-toggle="hideMembersOnly">
                     <div class="ytc-item-left">
                         ${CROWN_SVG}
@@ -150,7 +149,6 @@ export function createSettingsPanel(btn) {
                     </label>
                 </div>
 
-                <!-- Ẩn bài đăng cộng đồng (MỚI) -->
                 <div class="ytc-item" data-toggle="hideCommunity">
                     <div class="ytc-item-left">
                         ${POST_SVG}
@@ -162,7 +160,6 @@ export function createSettingsPanel(btn) {
                     </label>
                 </div>
 
-                <!-- Lọc tìm kiếm sạch (Clean Search) -->
                 <div class="ytc-item" data-toggle="cleanSearch">
                     <div class="ytc-item-left">
                         ${SEARCH_SVG}
@@ -177,7 +174,6 @@ export function createSettingsPanel(btn) {
 
             <!-- TAB 3: TRÌNH PHÁT & VIDEO -->
             <div class="ytc-tab-pane" id="ytc-pane-player">
-                <!-- Tắt hiệu ứng ánh sáng (Disable Ambient) -->
                 <div class="ytc-item" data-toggle="disableAmbient">
                     <div class="ytc-item-left">
                         ${SPARKLE_SVG}
@@ -189,7 +185,6 @@ export function createSettingsPanel(btn) {
                     </label>
                 </div>
 
-                <!-- Ẩn thẻ kết thúc & chú thích (MỚI) -->
                 <div class="ytc-item" data-toggle="hideEndscreen">
                     <div class="ytc-item-left">
                         ${ENDSCREEN_SVG}
@@ -201,7 +196,6 @@ export function createSettingsPanel(btn) {
                     </label>
                 </div>
 
-                <!-- Tự động đóng banner khuyến mại (MỚI) -->
                 <div class="ytc-item" data-toggle="autoDismissPromos">
                     <div class="ytc-item-left">
                         ${BELL_OFF_SVG}
@@ -216,7 +210,6 @@ export function createSettingsPanel(btn) {
 
             <!-- TAB 4: PHÍM TẮT & TIỆN ÍCH -->
             <div class="ytc-tab-pane" id="ytc-pane-shortcuts">
-                <!-- Phím tắt A-S-D / Numpad -->
                 <div class="ytc-item" data-toggle="keyboardControls">
                     <div class="ytc-item-left">
                         ${KEYBOARD_SVG}
@@ -228,7 +221,6 @@ export function createSettingsPanel(btn) {
                     </label>
                 </div>
 
-                <!-- Hướng dẫn phím tắt -->
                 <div class="ytc-shortcut-hint">
                     <div><kbd>A</kbd> / <kbd>D</kbd> : Tua lùi / tiến 5 giây</div>
                     <div style="margin-top:4px"><kbd>S</kbd> : Tạm dừng / phát tiếp</div>
@@ -239,7 +231,7 @@ export function createSettingsPanel(btn) {
         `);
         (document.body || document.documentElement).appendChild(panel);
 
-        // Sự kiện chuyển Tab trong Menu
+        // Chuyển Tab trong Menu
         panel.querySelectorAll('.ytc-tab-btn').forEach((tabBtn) => {
             tabBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -253,7 +245,7 @@ export function createSettingsPanel(btn) {
             });
         });
 
-        // Sự kiện chọn số cột
+        // Chọn số cột
         panel.querySelectorAll('.ytc-col-btn').forEach((colBtn) => {
             colBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -268,7 +260,7 @@ export function createSettingsPanel(btn) {
             });
         });
 
-        // Sự kiện bật/tắt Toggle Switch
+        // Bật/tắt Toggle Switch
         panel.querySelectorAll('.ytc-item[data-toggle]').forEach((item) => {
             const key = item.getAttribute('data-toggle');
             const checkbox = item.querySelector('input[type="checkbox"]');
@@ -307,4 +299,51 @@ export function createSettingsPanel(btn) {
     });
 
     bindMenuDismiss(panel);
+}
+
+// --------------------------------------------------------------------------
+// 3. NÚT CÀI ĐẶT BÁNH RĂNG TRÊN MASTHEAD & OBSERVER
+// --------------------------------------------------------------------------
+export function ensureSettingsElements() {
+    const endContainer = document.querySelector('ytd-masthead #end, #masthead #end, #end.ytd-masthead');
+    if (!endContainer) return;
+
+    let btn = document.getElementById('ytc-settings-btn');
+    const isNewBtn = !btn;
+    if (isNewBtn) {
+        btn = document.createElement('button');
+        btn.id = 'ytc-settings-btn';
+        btn.title = 'YouTube Customizer';
+        btn.innerHTML = safeHTML(GEAR_SVG);
+    }
+
+    if (btn.parentElement !== endContainer || btn !== endContainer.firstElementChild) {
+        endContainer.insertBefore(btn, endContainer.firstElementChild);
+    }
+
+    createSettingsPanel(btn);
+}
+
+export function setupSettingsObserver() {
+    ensureSettingsElements();
+
+    const attach = (masthead) => {
+        ensureSettingsElements();
+        new MutationObserver(() => {
+            ensureSettingsElements();
+        }).observe(masthead, { childList: true, subtree: true });
+    };
+
+    const masthead = document.querySelector('ytd-masthead');
+    if (masthead) attach(masthead);
+    else whenElement('ytd-masthead', attach);
+
+    let retryCount = 0;
+    const retryInterval = setInterval(() => {
+        retryCount++;
+        ensureSettingsElements();
+        if (retryCount >= 6 && document.getElementById('ytc-settings-btn')) {
+            clearInterval(retryInterval);
+        }
+    }, 500);
 }
