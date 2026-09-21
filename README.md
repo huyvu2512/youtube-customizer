@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-2.9-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-2.9.1-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,7 +25,9 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v2.9** nâng cấp:
+Phiên bản **v2.9.1** nâng cấp:
+- **Tooltip hướng dẫn trực quan:** Tích hợp mô tả tính năng ngắn gọn, đúng trọng tâm hiển thị qua khung tooltip mặc định của trình duyệt khi di chuột vào từng mục trong bảng cài đặt.
+- **Tối ưu hóa Live Chat:** Đổi tên hiển thị thành **Live Chat**, mặc định áp dụng tính năng tự động ẩn khi tua lùi video và loại bỏ tùy chọn thừa trong menu.
 - **Live Chat Overlay trên Video (Danmaku & Khung Streamer):** Hiển thị luồng chat trực tiếp hoặc replay nổi ngay trên video player với 2 chế độ tùy chọn:
   - **Chạy ngang (Danmaku / Bullet Chat):** Tin nhắn lướt ngang màn hình từ phải sang trái theo từng làn, phân biệt màu sắc Mod (xanh dương) và Hội viên (xanh lá).
   - **Khung nổi Streamer trong suốt:** Khung chat không nền giống trên luồng phát của streamer, có thể kéo thả di chuyển vị trí và co giãn kích thước tùy ý, hiển thị avatar/logo và huy hiệu.
@@ -43,7 +45,7 @@ Phiên bản **v2.9** nâng cấp:
 - **Menu cài đặt phân nhóm 4 Tab hiện đại:**
   - **Giao diện:** Tùy chọn số cột trang chủ (3, 4, 5 cột), Bật/tắt Logo YouTube Premium, Ẩn Khám phá các chủ đề khác.
   - **Lọc nội dung:** Ẩn Shorts hoàn toàn, Ẩn Chơi game (Playables), Ẩn video Hội viên (Ưu tiên & Đặc quyền), Ẩn bài đăng cộng đồng, Lọc tìm kiếm sạch (Clean Search).
-  - **Trình phát:** Chat trên Video (Tắt / Ngang / Nổi), Ẩn chat khi tua lùi, Tắt ánh sáng viền video (Ambient Mode / Cinematics), Ẩn thẻ kết thúc & thẻ chú thích video, Ẩn logo góc video (Watermark), Mở khóa tua Live Stream (Live DVR), Tự động đóng banner quảng cáo/thông báo.
+  - **Trình phát:** Live Chat (Tắt / Ngang / Nổi - tự động ẩn khi tua lùi), Tắt ánh sáng viền video (Ambient Mode / Cinematics), Ẩn thẻ kết thúc & thẻ chú thích video, Ẩn logo góc video (Watermark), Mở khóa tua Live Stream (Live DVR), Tự động đóng banner quảng cáo/thông báo.
   - **Phím tắt:** Bật/tắt phím tắt A-S-D & Numpad kèm bảng tra cứu phím tắt nhanh ngay trong menu.
   - Toàn bộ thiết lập được lưu tự động vào `localStorage` và cập nhật tức thì (Live Update) mà không cần tải lại trang.
 - **Live Chat Overlay trên Video (Danmaku & Streamer Box):**

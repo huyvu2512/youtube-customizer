@@ -872,7 +872,7 @@ function checkLiveHeadStatus() {
         isLive = !!(d && d.isLive);
     } catch (e) {}
 
-    if (!isLive || !currentConfig.chatOverlayHideOnRewind) {
+    if (!isLive) {
         setChatOverlayHidden(false);
         return;
     }
