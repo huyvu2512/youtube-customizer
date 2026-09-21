@@ -92,13 +92,32 @@ Phiên bản **v2.6** mang đến bước cải tiến lớn:
 
 ## Cấu trúc thư mục
 
+Dự án được tổ chức theo kiến trúc module hóa:
+
 ```text
 youtube-customizer/
+├── package.json            # Cấu hình dự án và lệnh build (npm run build / npm run dev)
+├── scripts/
+│   └── build.js            # Script đóng gói tự động bằng esbuild
+├── src/
+│   ├── index.js            # Entrypoint điều phối vòng đời SPA và các sự kiện
+│   ├── config/             # Cấu hình, lưu trữ LocalStorage, áp dụng class lên root
+│   ├── core/               # Tiện ích DOM, observer, throttle, Trusted Types
+│   ├── styles/             # Các tệp CSS tách nhỏ (base, grid, filters, player, menu)
+│   ├── icons/              # Toàn bộ biểu tượng SVG
+│   ├── features/           # Các tính năng độc lập (grid_columns, content_filters, premium_logo, promos, endscreen, player_controls)
+│   └── ui/                 # Giao diện nút bánh răng masthead và menu 4 tab
 ├── LICENSE                 # Giấy phép mã nguồn mở MIT License
 ├── README.md               # Tài liệu hướng dẫn sử dụng và giới thiệu dự án
 ├── tampermonkey.user.js    # Tệp metadata nạp script cho tiện ích Tampermonkey
-└── youtube_customizer.js   # Mã nguồn chính (toàn bộ CSS, giao diện Menu và logic điều khiển)
+└── youtube_customizer.js   # Tệp phân phối chính được biên dịch từ thư mục src/
 ```
+
+### Lệnh phát triển
+
+- **Cài đặt thư viện phát triển:** `npm install`
+- **Đóng gói mã nguồn:** `npm run build` (tạo tệp `youtube_customizer.js`)
+- **Chế độ theo dõi tự động (Watch mode):** `npm run dev` (tự động build lại ngay khi lưu tệp trong `src/`)
 
 ---
 

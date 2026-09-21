@@ -1,0 +1,23 @@
+{
+  "name": "youtube-customizer",
+  "version": "2.6.0",
+  "description": "YouTube Customizer — Userscript Tampermonkey tùy biến giao diện YouTube, tối ưu hiệu năng và điều khiển video thông minh",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "dev": "node scripts/build.js --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huyvu2512/youtube-customizer.git"
+  },
+  "author": "Huy Vũ",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/huyvu2512/youtube-customizer/issues"
+  },
+  "homepage": "https://github.com/huyvu2512/youtube-customizer#readme",
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

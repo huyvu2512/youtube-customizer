@@ -1,0 +1,85 @@
+/* ==============================================
+   LƯỚI VIDEO TRANG CHỦ & FEED: ÉP 3/4/5 CỘT CHUẨN XÁC
+   (Độ ưu tiên cao nhất, cố định vĩnh viễn khi F5 tải lại trang)
+   ============================================== */
+
+@media (min-width: 900px) {
+    /* Quy tắc mặc định cơ bản cho lưới video */
+    ytd-browse[page-subtype="home"] ytd-rich-grid-renderer,
+    ytd-browse[page-subtype="subscriptions"] ytd-rich-grid-renderer,
+    ytd-browse[page-subtype="channels"] ytd-rich-grid-renderer,
+    #page-manager ytd-browse ytd-rich-grid-renderer,
+    ytd-rich-grid-renderer.ytc-grid,
+    ytd-rich-grid-renderer {
+        --ytd-rich-grid-items-per-row: 4 !important;
+        --ytd-rich-grid-posts-per-row: 4 !important;
+        --ytd-rich-grid-item-max-width: none !important;
+    }
+
+    /* Cấu hình khi người dùng chọn 3 cột (Độ ưu tiên cao nhất, không bị ghi đè khi F5) */
+    html[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,
+    html[data-ytc-cols="3"] ytd-rich-grid-renderer,
+    body[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,
+    body[data-ytc-cols="3"] ytd-rich-grid-renderer,
+    [data-ytc-cols="3"] #page-manager ytd-browse ytd-rich-grid-renderer,
+    [data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,
+    [data-ytc-cols="3"] ytd-browse ytd-rich-grid-renderer,
+    [data-ytc-cols="3"] ytd-rich-grid-renderer {
+        --ytd-rich-grid-items-per-row: 3 !important;
+        --ytd-rich-grid-posts-per-row: 3 !important;
+        --ytd-rich-grid-item-max-width: none !important;
+    }
+
+    /* Cấu hình khi người dùng chọn 4 cột */
+    html[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,
+    html[data-ytc-cols="4"] ytd-rich-grid-renderer,
+    body[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,
+    body[data-ytc-cols="4"] ytd-rich-grid-renderer,
+    [data-ytc-cols="4"] #page-manager ytd-browse ytd-rich-grid-renderer,
+    [data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,
+    [data-ytc-cols="4"] ytd-browse ytd-rich-grid-renderer,
+    [data-ytc-cols="4"] ytd-rich-grid-renderer {
+        --ytd-rich-grid-items-per-row: 4 !important;
+        --ytd-rich-grid-posts-per-row: 4 !important;
+        --ytd-rich-grid-item-max-width: none !important;
+    }
+
+    /* Cấu hình khi người dùng chọn 5 cột (Độ ưu tiên cao nhất, không bị ghi đè khi F5) */
+    html[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,
+    html[data-ytc-cols="5"] ytd-rich-grid-renderer,
+    body[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,
+    body[data-ytc-cols="5"] ytd-rich-grid-renderer,
+    [data-ytc-cols="5"] #page-manager ytd-browse ytd-rich-grid-renderer,
+    [data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,
+    [data-ytc-cols="5"] ytd-browse ytd-rich-grid-renderer,
+    [data-ytc-cols="5"] ytd-rich-grid-renderer {
+        --ytd-rich-grid-items-per-row: 5 !important;
+        --ytd-rich-grid-posts-per-row: 5 !important;
+        --ytd-rich-grid-item-max-width: none !important;
+    }
+
+    /* Ép chiều rộng mỗi thẻ video co giãn chuẩn xác theo số cột */
+    #contents.ytd-rich-grid-row ytd-rich-item-renderer,
+    ytd-rich-grid-renderer ytd-rich-item-renderer {
+        width: calc(100% / var(--ytd-rich-grid-items-per-row, 4) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
+        max-width: calc(100% / var(--ytd-rich-grid-items-per-row, 4) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
+    }
+
+    [data-ytc-cols="3"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,
+    [data-ytc-cols="3"] ytd-rich-grid-renderer ytd-rich-item-renderer {
+        width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
+        max-width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
+    }
+
+    [data-ytc-cols="4"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,
+    [data-ytc-cols="4"] ytd-rich-grid-renderer ytd-rich-item-renderer {
+        width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
+        max-width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
+    }
+
+    [data-ytc-cols="5"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,
+    [data-ytc-cols="5"] ytd-rich-grid-renderer ytd-rich-item-renderer {
+        width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
+        max-width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
+    }
+}

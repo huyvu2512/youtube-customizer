@@ -1,0 +1,285 @@
+/* ==============================================
+   GIAO DIỆN CÀI ĐẶT: NÚT BÁNH RĂNG & MENU 4 TAB
+   ============================================== */
+
+/* Nút Cài đặt (bánh răng) trên Masthead */
+#ytc-settings-btn {
+    order: -1 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--yt-spec-text-primary, #f1f1f1);
+    cursor: pointer;
+    margin-right: 8px;
+    flex-shrink: 0;
+    transition: background-color 0.15s;
+    position: relative;
+}
+#ytc-settings-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+html:not([dark]) #ytc-settings-btn:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+#ytc-settings-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Bảng menu cài đặt */
+#ytc-settings-panel {
+    position: fixed;
+    width: 310px;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    background: var(--yt-spec-brand-background-primary, #282828);
+    color: var(--yt-spec-text-primary, #f1f1f1);
+    border-radius: 12px;
+    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.4);
+    padding: 12px;
+    z-index: 9999;
+    font-family: "Roboto", "Arial", sans-serif;
+    font-size: 14px;
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    user-select: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+#ytc-settings-panel::-webkit-scrollbar {
+    width: 4px;
+}
+#ytc-settings-panel::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+}
+#ytc-settings-panel.open {
+    display: flex;
+}
+
+.ytc-header {
+    font-weight: 600;
+    font-size: 15px;
+    padding: 4px 6px 8px 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.ytc-header-badge {
+    font-size: 11px;
+    background: #ff0033;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* Thanh Tabs điều hướng 4 nhóm */
+.ytc-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 3px;
+    margin: 4px 0 6px 0;
+}
+.ytc-tab-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 2px;
+    border: none;
+    background: transparent;
+    color: #aaa;
+    font-size: 11.5px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+.ytc-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+.ytc-tab-btn.active {
+    background: #f1f1f1;
+    color: #0f0f0f;
+    font-weight: 600;
+}
+.ytc-tab-btn svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+    flex-shrink: 0;
+}
+.ytc-tab-pane {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+}
+.ytc-tab-pane.active {
+    display: flex;
+}
+
+.ytc-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.ytc-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.ytc-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.ytc-item-left svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    opacity: 0.9;
+    flex-shrink: 0;
+}
+
+/* Toggle Switch */
+.ytc-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+}
+.ytc-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.ytc-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #606060;
+    border-radius: 20px;
+    transition: background-color 0.2s;
+}
+.ytc-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+.ytc-switch input:checked + .ytc-slider {
+    background-color: #3ea6ff;
+}
+.ytc-switch input:checked + .ytc-slider:before {
+    transform: translateX(16px);
+}
+
+/* Nhóm nút chọn số cột */
+.ytc-cols-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px;
+    border-radius: 6px;
+}
+.ytc-col-btn {
+    border: none;
+    background: transparent;
+    color: #aaa;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.ytc-col-btn.active {
+    background: #f1f1f1;
+    color: #0f0f0f;
+}
+
+/* Hướng dẫn phím tắt */
+.ytc-shortcut-hint {
+    font-size: 12px;
+    color: var(--yt-spec-text-secondary, #aaa);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 8px 10px;
+    border-radius: 6px;
+    line-height: 1.6;
+    margin-top: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.ytc-shortcut-hint kbd {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--yt-spec-text-primary, #fff);
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* Tương thích Light Theme */
+html:not([dark]) #ytc-settings-panel {
+    background: #ffffff;
+    color: #0f0f0f;
+    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+html:not([dark]) .ytc-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+html:not([dark]) .ytc-tabs {
+    background: rgba(0, 0, 0, 0.05);
+}
+html:not([dark]) .ytc-tab-btn {
+    color: #606060;
+}
+html:not([dark]) .ytc-tab-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: #0f0f0f;
+}
+html:not([dark]) .ytc-tab-btn.active {
+    background: #0f0f0f;
+    color: #ffffff;
+}
+html:not([dark]) .ytc-shortcut-hint {
+    background: rgba(0, 0, 0, 0.04);
+    color: #606060;
+    border-color: rgba(0, 0, 0, 0.08);
+}
+html:not([dark]) .ytc-shortcut-hint kbd {
+    background: rgba(0, 0, 0, 0.1);
+    color: #0f0f0f;
+}
+
+.ytc-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 4px 0;
+}
