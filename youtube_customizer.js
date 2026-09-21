@@ -1,5 +1,5 @@
 // ==UserScript==
-// YouTube Customizer v2.5.3 — https://github.com/huyvu2512/youtube-customizer
+// YouTube Customizer v2.6 — https://github.com/huyvu2512/youtube-customizer
 // ==/UserScript==
 (function() {
     'use strict';
@@ -12,6 +12,9 @@
         hidePlayables: true,    // Ẩn Chơi game (Playables)
         hideMembersOnly: true,  // Ẩn mục video Hội viên
         hideExploreTopics: true,// Ẩn Khám phá các chủ đề khác
+        hideCommunity: true,    // Ẩn bài đăng cộng đồng
+        hideEndscreen: true,    // Ẩn thẻ kết thúc & chú thích
+        autoDismissPromos: true,// Tự động đóng banner khuyến mại
         premiumLogo: true,      // Logo YouTube Premium
         cleanSearch: true,      // Ẩn video tài trợ / quảng cáo tìm kiếm
         disableAmbient: true,   // Tắt Ambient Mode (Cinematics)
@@ -43,6 +46,9 @@
         root.classList.toggle('ytc-hide-playables', !!currentConfig.hidePlayables);
         root.classList.toggle('ytc-hide-members', !!currentConfig.hideMembersOnly);
         root.classList.toggle('ytc-hide-explore', !!currentConfig.hideExploreTopics);
+        root.classList.toggle('ytc-hide-community', !!currentConfig.hideCommunity);
+        root.classList.toggle('ytc-hide-endscreen', !!currentConfig.hideEndscreen);
+        root.classList.toggle('ytc-auto-dismiss', !!currentConfig.autoDismissPromos);
         root.classList.toggle('ytc-premium-logo', !!currentConfig.premiumLogo);
         root.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
         root.classList.toggle('ytc-disable-ambient', !!currentConfig.disableAmbient);
@@ -53,6 +59,9 @@
             document.body.classList.toggle('ytc-hide-playables', !!currentConfig.hidePlayables);
             document.body.classList.toggle('ytc-hide-members', !!currentConfig.hideMembersOnly);
             document.body.classList.toggle('ytc-hide-explore', !!currentConfig.hideExploreTopics);
+            document.body.classList.toggle('ytc-hide-community', !!currentConfig.hideCommunity);
+            document.body.classList.toggle('ytc-hide-endscreen', !!currentConfig.hideEndscreen);
+            document.body.classList.toggle('ytc-auto-dismiss', !!currentConfig.autoDismissPromos);
             document.body.classList.toggle('ytc-premium-logo', !!currentConfig.premiumLogo);
             document.body.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
             document.body.classList.toggle('ytc-disable-ambient', !!currentConfig.disableAmbient);
@@ -285,6 +294,48 @@
                 display: none !important;
             }
 
+            /* Ẩn Bài đăng cộng đồng trên Trang chủ và Feed */
+            .ytc-hide-community ytd-rich-section-renderer:has(ytd-post-renderer),
+            .ytc-hide-community ytd-rich-section-renderer:has(ytd-backstage-post-renderer),
+            .ytc-hide-community ytd-rich-section-renderer:has(ytd-backstage-post-thread-renderer),
+            .ytc-hide-community ytd-rich-section-renderer:has(ytd-post-multi-image-renderer),
+            .ytc-hide-community ytd-rich-section-renderer:has(ytd-poll-renderer),
+            .ytc-hide-community ytd-rich-section-renderer.ytc-shelf-community,
+            .ytc-hide-community ytd-rich-item-renderer:has(ytd-post-renderer),
+            .ytc-hide-community ytd-rich-item-renderer:has(ytd-backstage-post-renderer),
+            .ytc-hide-community ytd-rich-item-renderer.ytc-item-community,
+            .ytc-hide-community ytd-post-renderer,
+            .ytc-hide-community ytd-backstage-post-renderer,
+            .ytc-hide-community ytd-backstage-post-thread-renderer {
+                display: none !important;
+            }
+
+            /* Ẩn thẻ gợi ý kết thúc video & thẻ chú thích */
+            .ytc-hide-endscreen .ytp-ce-element,
+            .ytc-hide-endscreen .ytp-ce-covering-overlay,
+            .ytc-hide-endscreen .ytp-ce-element-show,
+            .ytc-hide-endscreen .ytp-ce-video,
+            .ytc-hide-endscreen .ytp-ce-playlist,
+            .ytc-hide-endscreen .ytp-ce-channel,
+            .ytc-hide-endscreen .ytp-ce-subscribe,
+            .ytc-hide-endscreen .ytp-cards-button,
+            .ytc-hide-endscreen .ytp-cards-teaser,
+            .ytc-hide-endscreen .ytp-cards-teaser-box,
+            .ytc-hide-endscreen .ytp-card {
+                display: none !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+            }
+
+            /* Tự động ẩn banner khuyến mại phiền toái */
+            .ytc-auto-dismiss ytd-mealbar-promo-renderer,
+            .ytc-auto-dismiss yt-mealbar-promo-renderer,
+            .ytc-auto-dismiss ytd-upsell-dialog-renderer,
+            .ytc-auto-dismiss ytd-single-option-survey-renderer,
+            .ytc-auto-dismiss ytd-in-feed-survey-renderer {
+                display: none !important;
+            }
+
             /* Logo Premium: Khoảng cách chuẩn với nút tab điều hướng (guide button) & định dạng logo */
             :root.ytc-premium-logo #start.ytd-masthead ytd-topbar-logo-renderer,
             :root.ytc-premium-logo ytd-topbar-logo-renderer#logo {
@@ -446,7 +497,9 @@
             /* Bảng menu cài đặt */
             #ytc-settings-panel {
                 position: fixed;
-                width: 280px;
+                width: 310px;
+                max-height: calc(100vh - 80px);
+                overflow-y: auto;
                 background: var(--yt-spec-brand-background-primary, #282828);
                 color: var(--yt-spec-text-primary, #f1f1f1);
                 border-radius: 12px;
@@ -461,6 +514,13 @@
                 user-select: none;
                 border: 1px solid rgba(255, 255, 255, 0.1);
             }
+            #ytc-settings-panel::-webkit-scrollbar {
+                width: 4px;
+            }
+            #ytc-settings-panel::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 2px;
+            }
             #ytc-settings-panel.open {
                 display: flex;
             }
@@ -468,7 +528,7 @@
             .ytc-header {
                 font-weight: 600;
                 font-size: 15px;
-                padding: 4px 8px 8px 8px;
+                padding: 4px 6px 8px 6px;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
                 display: flex;
                 align-items: center;
@@ -481,6 +541,57 @@
                 padding: 2px 6px;
                 border-radius: 4px;
                 font-weight: bold;
+            }
+
+            /* Thanh Tabs điều hướng 4 nhóm */
+            .ytc-tabs {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                background: rgba(255, 255, 255, 0.06);
+                border-radius: 8px;
+                padding: 3px;
+                margin: 4px 0 6px 0;
+            }
+            .ytc-tab-btn {
+                flex: 1;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+                padding: 6px 2px;
+                border: none;
+                background: transparent;
+                color: #aaa;
+                font-size: 11.5px;
+                font-weight: 500;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all 0.15s ease;
+                white-space: nowrap;
+            }
+            .ytc-tab-btn:hover {
+                background: rgba(255, 255, 255, 0.08);
+                color: #fff;
+            }
+            .ytc-tab-btn.active {
+                background: #f1f1f1;
+                color: #0f0f0f;
+                font-weight: 600;
+            }
+            .ytc-tab-btn svg {
+                width: 14px;
+                height: 14px;
+                fill: currentColor;
+                flex-shrink: 0;
+            }
+            .ytc-tab-pane {
+                display: none;
+                flex-direction: column;
+                gap: 4px;
+            }
+            .ytc-tab-pane.active {
+                display: flex;
             }
 
             .ytc-item {
@@ -506,6 +617,7 @@
                 height: 20px;
                 fill: currentColor;
                 opacity: 0.9;
+                flex-shrink: 0;
             }
 
             /* Toggle Switch */
@@ -571,6 +683,61 @@
             }
             .ytc-col-btn.active {
                 background: #f1f1f1;
+                color: #0f0f0f;
+            }
+
+            /* Hướng dẫn phím tắt */
+            .ytc-shortcut-hint {
+                font-size: 12px;
+                color: var(--yt-spec-text-secondary, #aaa);
+                background: rgba(255, 255, 255, 0.04);
+                padding: 8px 10px;
+                border-radius: 6px;
+                line-height: 1.6;
+                margin-top: 4px;
+                border: 1px solid rgba(255, 255, 255, 0.06);
+            }
+            .ytc-shortcut-hint kbd {
+                background: rgba(255, 255, 255, 0.15);
+                color: var(--yt-spec-text-primary, #fff);
+                padding: 2px 5px;
+                border-radius: 3px;
+                font-family: monospace;
+                font-size: 11px;
+                font-weight: bold;
+            }
+
+            /* Tương thích Light Theme */
+            html:not([dark]) #ytc-settings-panel {
+                background: #ffffff;
+                color: #0f0f0f;
+                box-shadow: 0 4px 32px rgba(0, 0, 0, 0.15);
+                border: 1px solid rgba(0, 0, 0, 0.1);
+            }
+            html:not([dark]) .ytc-header {
+                border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            }
+            html:not([dark]) .ytc-tabs {
+                background: rgba(0, 0, 0, 0.05);
+            }
+            html:not([dark]) .ytc-tab-btn {
+                color: #606060;
+            }
+            html:not([dark]) .ytc-tab-btn:hover {
+                background: rgba(0, 0, 0, 0.06);
+                color: #0f0f0f;
+            }
+            html:not([dark]) .ytc-tab-btn.active {
+                background: #0f0f0f;
+                color: #ffffff;
+            }
+            html:not([dark]) .ytc-shortcut-hint {
+                background: rgba(0, 0, 0, 0.04);
+                color: #606060;
+                border-color: rgba(0, 0, 0, 0.08);
+            }
+            html:not([dark]) .ytc-shortcut-hint kbd {
+                background: rgba(0, 0, 0, 0.1);
                 color: #0f0f0f;
             }
 
@@ -799,9 +966,16 @@
                     sec.classList.add('ytc-shelf-explore');
                 }
             }
+            if (!sec.classList.contains('ytc-shelf-community')) {
+                if (
+                    sec.querySelector('ytd-post-renderer, ytd-backstage-post-renderer, ytd-backstage-post-thread-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer')
+                ) {
+                    sec.classList.add('ytc-shelf-community');
+                }
+            }
         });
 
-        // 2. Quét từng thẻ video riêng lẻ (Ưu tiên hội viên & Chỉ dành cho hội viên)
+        // 2. Quét từng thẻ video riêng lẻ (Ưu tiên hội viên & Chỉ dành cho hội viên & Bài đăng)
         const videoCards = root.querySelectorAll('ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer');
         videoCards.forEach((card) => {
             if (!card.classList.contains('ytc-item-members')) {
@@ -820,26 +994,48 @@
                     card.classList.add('ytc-item-members');
                 }
             }
+            if (!card.classList.contains('ytc-item-community')) {
+                if (card.querySelector('ytd-post-renderer, ytd-backstage-post-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer')) {
+                    card.classList.add('ytc-item-community');
+                }
+            }
+        });
+    }
+
+    // Tự động đóng banner khuyến mại phiền toái (Mealbar promo, Upsell dialog, Survey)
+    function dismissPromoBanners(scope) {
+        if (!currentConfig.autoDismissPromos) return;
+        const root = scope && scope.querySelectorAll ? scope : document;
+        const promos = root.querySelectorAll('ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer, ytd-upsell-dialog-renderer, ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer');
+        promos.forEach((promo) => {
+            const dismissBtn = promo.querySelector('#dismiss-button button, yt-button-renderer#dismiss-button button, yt-button-renderer#dismiss-button, #dismiss-button, button[aria-label*="Không"], button[aria-label*="Dismiss"], button[aria-label*="No thanks"]');
+            if (dismissBtn) {
+                try { dismissBtn.click(); } catch(e) {}
+            }
         });
     }
 
     const scheduleFeedScan = rafThrottle((root) => {
         scanAndTagFeedContent(root);
         applyHomeGridColumns();
+        dismissPromoBanners(root);
     });
 
     function setupFeedShelvesObserver() {
         scheduleFeedScan(document);
         applyHomeGridColumns();
+        dismissPromoBanners(document);
 
         const attach = (container) => {
             scheduleFeedScan(container);
             applyHomeGridColumns();
+            dismissPromoBanners(container);
             new MutationObserver((mutations) => {
                 for (const mutation of mutations) {
                     if (mutation.addedNodes.length) {
                         scheduleFeedScan(container);
                         applyHomeGridColumns();
+                        dismissPromoBanners(container);
                         break;
                     }
                 }
@@ -1092,17 +1288,23 @@
         });
     }
 
-    // 6. GIAO DIỆN BẢNG CÀI ĐẶT (SETTINGS MENU CHUẨN YOUTUBE)
+    // 6. GIAO DIỆN BẢNG CÀI ĐẶT (SETTINGS MENU CHUẨN YOUTUBE 4 TABS)
     const GEAR_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>`;
     const GRID_SVG = `<svg viewBox="0 0 24 24"><path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h7v7h-7v-7z"/></svg>`;
     const SHORTS_SVG = `<svg viewBox="0 0 24 24"><path d="M17.77 10.32l-1.2-.5L18 9.06c1.84-.96 2.53-3.23 1.56-5.06s-3.24-2.53-5.07-1.56L6 6.94c-1.29.68-2.07 2.04-2 3.49.07 1.42.93 2.67 2.22 3.25.03.01 1.2.5 1.2.5L6 14.93c-1.83.97-2.53 3.24-1.56 5.07.97 1.83 3.24 2.53 5.07 1.56l8.5-4.5c1.29-.68 2.06-2.04 1.99-3.49-.07-1.42-.94-2.68-2.23-3.25zM10 14.5v-5l4.5 2.5-4.5 2.5z"/></svg>`;
     const GAMEPAD_SVG = `<svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S20.17 9 21 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>`;
     const YOUTUBE_SVG = `<svg viewBox="0 0 24 24"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg>`;
-    const SEARCH_SVG = `<svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`;
+    const SEARCH_SVG = `<svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/></svg>`;
     const SPARKLE_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2L9.5 8.5 3 11l6.5 2.5L12 20l2.5-6.5L21 11l-6.5-2.5L12 2z"/></svg>`;
     const KEYBOARD_SVG = `<svg viewBox="0 0 24 24"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg>`;
     const CROWN_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`;
     const COMPASS_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`;
+    const LAYOUT_TAB_SVG = `<svg viewBox="0 0 24 24"><path d="M4 4h16v4H4V4zm0 6h7v10H4V10zm9 0h7v10h-7V10z"/></svg>`;
+    const SHIELD_TAB_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"/></svg>`;
+    const PLAYER_TAB_SVG = `<svg viewBox="0 0 24 24"><path d="M10 8.64L15.27 12 10 15.36V8.64M8 5v14l11-7L8 5z"/></svg>`;
+    const POST_SVG = `<svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>`;
+    const ENDSCREEN_SVG = `<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H6v-4h6v4zm6 0h-5v-4h5v4zm0-6H6V7h12v4z"/></svg>`;
+    const BELL_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>`;
 
     function ensureSettingsElements() {
         const endContainer = document.querySelector('ytd-masthead #end, #masthead #end, #end.ytd-masthead');
@@ -1133,123 +1335,209 @@
             panel.innerHTML = safeHTML(`
                 <div class="ytc-header">
                     <span>YouTube Customizer</span>
-                    <span class="ytc-header-badge">v2.5.3</span>
+                    <span class="ytc-header-badge">v2.6</span>
                 </div>
 
-                <!-- Số cột trang chủ -->
-                <div class="ytc-item" id="ytc-row-cols">
-                    <div class="ytc-item-left">
-                        ${GRID_SVG}
-                        <span>Số cột trang chủ</span>
-                    </div>
-                    <div class="ytc-cols-group">
-                        <button class="ytc-col-btn ${currentConfig.columns === 3 ? 'active' : ''}" data-cols="3">3</button>
-                        <button class="ytc-col-btn ${currentConfig.columns === 4 ? 'active' : ''}" data-cols="4">4</button>
-                        <button class="ytc-col-btn ${currentConfig.columns === 5 ? 'active' : ''}" data-cols="5">5</button>
-                    </div>
-                </div>
-
-                <div class="ytc-divider"></div>
-
-                <!-- Ẩn Shorts -->
-                <div class="ytc-item" data-toggle="hideShorts">
-                    <div class="ytc-item-left">
-                        ${SHORTS_SVG}
-                        <span>Ẩn mục Shorts</span>
-                    </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-shorts" ${currentConfig.hideShorts ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <!-- Ẩn Chơi game (Playables) -->
-                <div class="ytc-item" data-toggle="hidePlayables">
-                    <div class="ytc-item-left">
-                        ${GAMEPAD_SVG}
-                        <span>Ẩn mục Chơi game</span>
-                    </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-playables" ${currentConfig.hidePlayables ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <!-- Ẩn mục video Hội viên -->
-                <div class="ytc-item" data-toggle="hideMembersOnly">
-                    <div class="ytc-item-left">
-                        ${CROWN_SVG}
-                        <span>Ẩn video Hội viên</span>
-                    </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-members" ${currentConfig.hideMembersOnly ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <!-- Ẩn Khám phá các chủ đề khác -->
-                <div class="ytc-item" data-toggle="hideExploreTopics">
-                    <div class="ytc-item-left">
-                        ${COMPASS_SVG}
-                        <span>Ẩn Khám phá chủ đề</span>
-                    </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-explore" ${currentConfig.hideExploreTopics ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <!-- Logo Premium -->
-                <div class="ytc-item" data-toggle="premiumLogo">
-                    <div class="ytc-item-left">
-                        ${YOUTUBE_SVG}
-                        <span>Logo Premium</span>
-                    </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-logo" ${currentConfig.premiumLogo ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <!-- Lọc tìm kiếm sạch (Clean Search) -->
-                <div class="ytc-item" data-toggle="cleanSearch">
-                    <div class="ytc-item-left">
-                        ${SEARCH_SVG}
-                        <span>Lọc tìm kiếm sạch</span>
-                    </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-search" ${currentConfig.cleanSearch ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <!-- Tắt hiệu ứng ánh sáng (Disable Ambient) -->
-                <div class="ytc-item" data-toggle="disableAmbient">
-                    <div class="ytc-item-left">
-                        ${SPARKLE_SVG}
-                        <span>Tắt ánh sáng video</span>
-                    </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-ambient" ${currentConfig.disableAmbient ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-divider"></div>
-
-                <!-- Phím tắt A-S-D / Numpad -->
-                <div class="ytc-item" data-toggle="keyboardControls">
-                    <div class="ytc-item-left">
+                <!-- Thanh Tabs điều hướng 4 nhóm -->
+                <div class="ytc-tabs">
+                    <button class="ytc-tab-btn active" data-tab="layout" title="Bố cục & Giao diện">
+                        ${LAYOUT_TAB_SVG}
+                        <span>Giao diện</span>
+                    </button>
+                    <button class="ytc-tab-btn" data-tab="filter" title="Lọc nội dung sạch">
+                        ${SHIELD_TAB_SVG}
+                        <span>Lọc</span>
+                    </button>
+                    <button class="ytc-tab-btn" data-tab="player" title="Trình phát & Video">
+                        ${PLAYER_TAB_SVG}
+                        <span>Trình phát</span>
+                    </button>
+                    <button class="ytc-tab-btn" data-tab="shortcuts" title="Phím tắt & Tiện ích">
                         ${KEYBOARD_SVG}
-                        <span>Phím tắt (A-S-D, Numpad)</span>
+                        <span>Phím tắt</span>
+                    </button>
+                </div>
+
+                <!-- TAB 1: GIAO DIỆN & BỐ CỤC -->
+                <div class="ytc-tab-pane active" id="ytc-pane-layout">
+                    <!-- Số cột trang chủ -->
+                    <div class="ytc-item" id="ytc-row-cols">
+                        <div class="ytc-item-left">
+                            ${GRID_SVG}
+                            <span>Số cột trang chủ</span>
+                        </div>
+                        <div class="ytc-cols-group">
+                            <button class="ytc-col-btn ${currentConfig.columns === 3 ? 'active' : ''}" data-cols="3">3</button>
+                            <button class="ytc-col-btn ${currentConfig.columns === 4 ? 'active' : ''}" data-cols="4">4</button>
+                            <button class="ytc-col-btn ${currentConfig.columns === 5 ? 'active' : ''}" data-cols="5">5</button>
+                        </div>
                     </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-keys" ${currentConfig.keyboardControls ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
+
+                    <!-- Logo Premium -->
+                    <div class="ytc-item" data-toggle="premiumLogo">
+                        <div class="ytc-item-left">
+                            ${YOUTUBE_SVG}
+                            <span>Logo Premium</span>
+                        </div>
+                        <label class="ytc-switch">
+                            <input type="checkbox" id="ytc-chk-logo" ${currentConfig.premiumLogo ? 'checked' : ''}>
+                            <span class="ytc-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Ẩn Khám phá các chủ đề khác -->
+                    <div class="ytc-item" data-toggle="hideExploreTopics">
+                        <div class="ytc-item-left">
+                            ${COMPASS_SVG}
+                            <span>Ẩn Khám phá chủ đề</span>
+                        </div>
+                        <label class="ytc-switch">
+                            <input type="checkbox" id="ytc-chk-explore" ${currentConfig.hideExploreTopics ? 'checked' : ''}>
+                            <span class="ytc-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- TAB 2: LỌC NỘI DUNG SẠCH -->
+                <div class="ytc-tab-pane" id="ytc-pane-filter">
+                    <!-- Ẩn Shorts -->
+                    <div class="ytc-item" data-toggle="hideShorts">
+                        <div class="ytc-item-left">
+                            ${SHORTS_SVG}
+                            <span>Ẩn mục Shorts</span>
+                        </div>
+                        <label class="ytc-switch">
+                            <input type="checkbox" id="ytc-chk-shorts" ${currentConfig.hideShorts ? 'checked' : ''}>
+                            <span class="ytc-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Ẩn Chơi game (Playables) -->
+                    <div class="ytc-item" data-toggle="hidePlayables">
+                        <div class="ytc-item-left">
+                            ${GAMEPAD_SVG}
+                            <span>Ẩn mục Chơi game</span>
+                        </div>
+                        <label class="ytc-switch">
+                            <input type="checkbox" id="ytc-chk-playables" ${currentConfig.hidePlayables ? 'checked' : ''}>
+                            <span class="ytc-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Ẩn mục video Hội viên -->
+                    <div class="ytc-item" data-toggle="hideMembersOnly">
+                        <div class="ytc-item-left">
+                            ${CROWN_SVG}
+                            <span>Ẩn video Hội viên</span>
+                        </div>
+                        <label class="ytc-switch">
+                            <input type="checkbox" id="ytc-chk-members" ${currentConfig.hideMembersOnly ? 'checked' : ''}>
+                            <span class="ytc-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Ẩn bài đăng cộng đồng (MỚI) -->
+                    <div class="ytc-item" data-toggle="hideCommunity">
+                        <div class="ytc-item-left">
+                            ${POST_SVG}
+                            <span>Ẩn bài đăng cộng đồng</span>
+                        </div>
+                        <label class="ytc-switch">
+                            <input type="checkbox" id="ytc-chk-community" ${currentConfig.hideCommunity ? 'checked' : ''}>
+                            <span class="ytc-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Lọc tìm kiếm sạch (Clean Search) -->
+                    <div class="ytc-item" data-toggle="cleanSearch">
+                        <div class="ytc-item-left">
+                            ${SEARCH_SVG}
+                            <span>Lọc tìm kiếm sạch</span>
+                        </div>
+                        <label class="ytc-switch">
+                            <input type="checkbox" id="ytc-chk-search" ${currentConfig.cleanSearch ? 'checked' : ''}>
+                            <span class="ytc-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- TAB 3: TRÌNH PHÁT & VIDEO -->
+                <div class="ytc-tab-pane" id="ytc-pane-player">
+                    <!-- Tắt hiệu ứng ánh sáng (Disable Ambient) -->
+                    <div class="ytc-item" data-toggle="disableAmbient">
+                        <div class="ytc-item-left">
+                            ${SPARKLE_SVG}
+                            <span>Tắt ánh sáng video</span>
+                        </div>
+                        <label class="ytc-switch">
+                            <input type="checkbox" id="ytc-chk-ambient" ${currentConfig.disableAmbient ? 'checked' : ''}>
+                            <span class="ytc-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Ẩn thẻ kết thúc & chú thích (MỚI) -->
+                    <div class="ytc-item" data-toggle="hideEndscreen">
+                        <div class="ytc-item-left">
+                            ${ENDSCREEN_SVG}
+                            <span>Ẩn thẻ kết thúc/chú thích</span>
+                        </div>
+                        <label class="ytc-switch">
+                            <input type="checkbox" id="ytc-chk-endscreen" ${currentConfig.hideEndscreen ? 'checked' : ''}>
+                            <span class="ytc-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Tự động đóng banner khuyến mại (MỚI) -->
+                    <div class="ytc-item" data-toggle="autoDismissPromos">
+                        <div class="ytc-item-left">
+                            ${BELL_OFF_SVG}
+                            <span>Tự đóng banner quảng cáo</span>
+                        </div>
+                        <label class="ytc-switch">
+                            <input type="checkbox" id="ytc-chk-promos" ${currentConfig.autoDismissPromos ? 'checked' : ''}>
+                            <span class="ytc-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- TAB 4: PHÍM TẮT & TIỆN ÍCH -->
+                <div class="ytc-tab-pane" id="ytc-pane-shortcuts">
+                    <!-- Phím tắt A-S-D / Numpad -->
+                    <div class="ytc-item" data-toggle="keyboardControls">
+                        <div class="ytc-item-left">
+                            ${KEYBOARD_SVG}
+                            <span>Phím tắt (A-S-D, Numpad)</span>
+                        </div>
+                        <label class="ytc-switch">
+                            <input type="checkbox" id="ytc-chk-keys" ${currentConfig.keyboardControls ? 'checked' : ''}>
+                            <span class="ytc-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Hướng dẫn phím tắt -->
+                    <div class="ytc-shortcut-hint">
+                        <div><kbd>A</kbd> / <kbd>D</kbd> : Tua lùi / tiến 5 giây</div>
+                        <div style="margin-top:4px"><kbd>S</kbd> : Tạm dừng / phát tiếp</div>
+                        <div style="margin-top:4px"><kbd>1-9 (Numpad)</kbd> : Tua nhanh 10s - 90s</div>
+                        <div style="margin-top:4px"><kbd>Shift + Numpad</kbd> : Tua lùi theo giây</div>
+                    </div>
                 </div>
             `);
             (document.body || document.documentElement).appendChild(panel);
+
+            // Sự kiện chuyển Tab trong Menu
+            panel.querySelectorAll('.ytc-tab-btn').forEach((tabBtn) => {
+                tabBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const tabKey = tabBtn.getAttribute('data-tab');
+                    panel.querySelectorAll('.ytc-tab-btn').forEach(b => b.classList.remove('active'));
+                    panel.querySelectorAll('.ytc-tab-pane').forEach(p => p.classList.remove('active'));
+
+                    tabBtn.classList.add('active');
+                    const targetPane = panel.querySelector(`#ytc-pane-${tabKey}`);
+                    if (targetPane) targetPane.classList.add('active');
+                });
+            });
 
             // Sự kiện chọn số cột
             panel.querySelectorAll('.ytc-col-btn').forEach((colBtn) => {
@@ -1364,6 +1652,7 @@
         ensureSettingsElements();
         bindGlobalKeys();
         setupFullscreenLock();
+        dismissPromoBanners(document);
         if (location.pathname.startsWith('/watch')) {
             setWatchLoading(true);
         } else if (isHomeFeedPath()) {

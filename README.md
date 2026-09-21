@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-2.5.3-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-2.6-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,37 +25,41 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v2.5.3** nâng cấp:
-- **Cố định vĩnh viễn Số cột trang chủ (Khắc phục lỗi F5 bị hoàn tác về 4 cột):** Nâng cấp bộ chọn CSS với độ ưu tiên cao nhất (`(1, 1, 3)`), áp dụng trực tiếp độ rộng thẻ video cho từng chế độ 3, 4, 5 cột và kết hợp MutationObserver đồng bộ liên tục khi YouTube tải dữ liệu feed. Đảm bảo khi người dùng chọn 3 hoặc 5 cột thì khi F5 tải lại trang giao diện vẫn hiển thị chuẩn xác 100%.
-- **Khắc phục triệt để lỗi không hiển thị Logo Premium:** Xử lý chuẩn xác các trường hợp YouTube kích hoạt doodle hoặc gắn thuộc tính `hidden` trong quá trình nạp trang/Polymer hydration; đảm bảo luôn hiển thị duy nhất 1 logo YouTube Premium chính thức với mã quốc gia chuẩn xác.
-- **Cố định vị trí Nút Cài đặt (Khắc phục lỗi Skeleton Loading):** Đưa nút cài đặt trực tiếp vào đầu vùng container masthead với thuộc tính `order: -1 !important`. Loại bỏ triệt để hiện tượng nút cài đặt bị đẩy xuống cuối dãy nút khi các vòng tròn placeholder skeleton loading xuất hiện lúc vừa nạp trang.
-- **Căn chỉnh lại khoảng cách Logo và Nút Menu Tab:** Thu gọn khoảng cách giữa nút menu 3 thanh ngang (`≡`) và logo YouTube Premium về đúng tỷ lệ chuẩn của YouTube (bằng một nửa so với trước).
-- **Ẩn triệt để Video Hội viên (Ưu tiên & Đặc quyền):** Tự động lọc sạch cả video "Ưu tiên hội viên" (Members first / Early access), video đặc quyền hội viên ("Chỉ dành cho hội viên") và các kệ giới thiệu trên toàn bộ YouTube.
-- Kế thừa toàn bộ tối ưu hiệu năng và tính năng của các phiên bản trước (Tùy chỉnh 3-4-5 cột, ẩn Shorts & Playables, Clean Search, Zero-Lag Live Chat, Fullscreen Safe Lock, phím tắt A-S-D / Numpad).
+Phiên bản **v2.6** mang đến bước cải tiến lớn:
+- **Phân nhóm cài đặt trong Menu theo 4 Tab:** Bảng cài đặt được tái cấu trúc thành 4 danh mục trực quan gồm **🏠 Giao diện**, **🛡️ Lọc nội dung**, **🎬 Trình phát** và **⌨️ Phím tắt**. Giúp giao diện gọn gàng, không bị dài tràn màn hình và dễ dàng tinh chỉnh từng nhóm chức năng.
+- **Ẩn thẻ kết thúc video (Endscreen Cards) & Thẻ chú thích (Info Cards):** Tự động ẩn các khung hình chữ nhật gợi ý video tiếp theo thường đè lên 15–20 giây cuối video (`.ytp-ce-element`), đồng thời ẩn nút biểu tượng chữ `(i)` và thẻ gợi ý góc trên bên phải giúp người xem trọn vẹn toàn bộ phần kết của video.
+- **Ẩn Bài đăng cộng đồng trên Trang chủ (Hide Community Posts):** Lọc sạch các bài thăm dò ý kiến (polls), bài viết chia sẻ hình ảnh dạng bài đăng cộng đồng xen kẽ giữa các video trên feed/trang chủ.
+- **Tự động đóng các Banner thông báo phiền toái (Auto-dismiss Promos):** Tự động đóng các thanh thông báo ưu đãi (`ytd-mealbar-promo-renderer`), banner mua YouTube Premium, khảo sát ý kiến và popup đề xuất ứng dụng/thiết bị.
+- **Kế thừa các tối ưu cốt lõi:** Cố định số cột 3-4-5 không bị hoàn tác khi F5, sửa triệt để logo Premium kèm mã quốc gia chuẩn xác, ẩn Shorts/Playables/Hội viên/Khám phá chủ đề, Clean Search và phím tắt A-S-D / Numpad.
 
 ---
 
 ## Tính năng chính
 
-- **Menu cài đặt nhanh chuẩn giao diện YouTube:**
-  - Nút icon bánh răng SVG tinh gọn được gắn trực tiếp trên thanh điều hướng cạnh nút "+ Tạo", tự động phục hồi nếu YouTube nạp lại thanh header khi đăng nhập.
-  - Bảng menu dropdown thiết kế tối giản theo chuẩn Dark theme của YouTube, hiển thị ngay dưới nút bấm với phản hồi tức thì (zero-delay) và tự động đóng khi nhấp chuột ra ngoài hoặc nhấn phím `Esc`.
-  - Công tắc bật/tắt (toggle switches) mượt mà, phản hồi chính xác khi click cả vào nhãn chữ lẫn nút gạt.
-  - Toàn bộ thiết lập được lưu trữ tự động vào `localStorage` và áp dụng thay đổi tức thì (Live Update) mà không cần tải lại trang.
+- **Menu cài đặt phân nhóm 4 Tab hiện đại:**
+  - **Giao diện:** Tùy chọn số cột trang chủ (3, 4, 5 cột), Bật/tắt Logo YouTube Premium, Ẩn Khám phá các chủ đề khác.
+  - **Lọc nội dung:** Ẩn Shorts hoàn toàn, Ẩn Chơi game (Playables), Ẩn video Hội viên (Ưu tiên & Đặc quyền), Ẩn bài đăng cộng đồng, Lọc tìm kiếm sạch (Clean Search).
+  - **Trình phát:** Tắt ánh sáng viền video (Ambient Mode / Cinematics), Ẩn thẻ kết thúc & thẻ chú thích video, Tự động đóng banner quảng cáo/thông báo.
+  - **Phím tắt:** Bật/tắt phím tắt A-S-D & Numpad kèm bảng tra cứu phím tắt nhanh ngay trong menu.
+  - Toàn bộ thiết lập được lưu tự động vào `localStorage` và cập nhật tức thì (Live Update) mà không cần tải lại trang.
+- **Ẩn thẻ kết thúc & Chú thích video (Clean Endscreen):**
+  - Vô hiệu hóa triệt để các khung gợi ý video đè lên phần outro (`.ytp-ce-element`, `.ytp-ce-covering-image`, `.ytp-ce-element-shadow`).
+  - Ẩn nút thẻ chú thích góc trên bên phải player (`.ytp-cards-button`) và thanh thông báo teaser (`.ytp-cards-teaser`).
+- **Ẩn Bài đăng cộng đồng trên Trang chủ:**
+  - Tự động phát hiện và triệt tiêu các bài đăng cộng đồng (kèm khảo sát, hình ảnh) dạng `ytd-post-renderer`, `ytd-backstage-post-thread-renderer` và kệ cộng đồng `ytd-rich-shelf-renderer` trên feed.
+- **Tự động đóng Banner thông báo phiền toái:**
+  - Tự động kích hoạt nút đóng (`#dismiss-button`) trên các banner mealbar promo (`ytd-mealbar-promo-renderer`), banner dùng thử Premium, popup khảo sát.
 - **Tùy biến lưới video linh hoạt:**
-  - Hỗ trợ chuyển đổi nhanh bố cục hiển thị **3 cột**, **4 cột** hoặc **5 cột** trên trang chủ và kênh đăng ký đối với màn hình rộng.
-  - Tự động bo góc và cắt gọn thumbnail khi hover, chống lỗi tràn viền hoặc co kéo sai tỉ lệ khung hình.
+  - Hỗ trợ chuyển đổi nhanh bố cục hiển thị **3 cột**, **4 cột** hoặc **5 cột** trên trang chủ và kênh đăng ký, giữ cố định vĩnh viễn ngay cả khi F5 tải lại trang.
 - **Ẩn hoàn toàn nội dung Shorts & Chơi game (Playables):**
-  - **Shorts:** Áp dụng bộ chọn CSS hiện đại `:has()` để triệt tiêu toàn bộ kệ Shorts trên trang chủ, trang đăng ký và mục Shorts trên thanh điều hướng bên trái, không để lại khoảng trắng dư thừa.
-  - **Playables:** Tự động ẩn toàn bộ kệ mini-game và mục "Chơi game" trên thanh sidebar và trang chủ.
+  - Ẩn triệt để kệ Shorts, Playables trên trang chủ, trang đăng ký và thanh điều hướng bên trái.
 - **Ẩn video Hội viên & Kệ Khám phá chủ đề khác:**
-  - **Video Hội viên:** Tự động ẩn cả video "Ưu tiên hội viên" (Early access) lẫn video "Chỉ dành cho hội viên" và kệ quảng bá gói hội viên ("Hưởng thêm nhiều lợi ích từ hội viên") trên feed, kết quả tìm kiếm và trang xem video.
-  - **Khám phá chủ đề:** Triệt tiêu kệ thẻ chip chủ đề ("Khám phá các chủ đề khác") làm rối mắt giữa dòng video chính.
+  - Ẩn cả video "Ưu tiên hội viên" (Early access) lẫn video "Chỉ dành cho hội viên" và kệ quảng bá gói hội viên.
 - **Clean Search (Ẩn video tài trợ):**
-  - Tự động ẩn các thẻ video quảng cáo và nội dung được tài trợ (`Sponsored`) trong kết quả tìm kiếm và các trang feed.
+  - Tự động ẩn các thẻ video quảng cáo và nội dung được tài trợ (`Sponsored`).
 - **Tối ưu hiệu năng Live Chat & đồ họa:**
-  - **Zero-Lag Live Chat:** Áp dụng cơ chế CSS containment (`contain: layout style paint !important`) và lazy-render (`content-visibility: auto`) cho khung chat trực tiếp (`#chat`), loại bỏ hoàn toàn hiện tượng tụt khung hình (FPS drop) khi chat nhảy liên tục mà vẫn giữ nguyên vẹn khung chat.
-  - **Giảm tải GPU:** Vô hiệu hóa hiệu ứng sáng viền video (Ambient Mode / Cinematics) giúp tiết kiệm tài nguyên GPU.
+  - **Zero-Lag Live Chat:** Áp dụng CSS containment và lazy-render loại bỏ giật lag khung chat.
+  - **Giảm tải GPU:** Tắt hiệu ứng Ambient Mode (Cinematics) giúp tiết kiệm tài nguyên máy tính.
   - **Tối ưu bình luận:** Áp dụng cơ chế lazy-render cho danh sách bình luận dưới video.
   - **Zero CPU idle:** Không sử dụng event listener bắt chuột toàn cục (`mouseover`/`mousemove`), không gây tốn pin hay tải CPU lúc rảnh.
 - **Khóa an toàn nút phóng to (Fullscreen Safe Lock):**
