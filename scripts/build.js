@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.1.2
-// @description  YouTube Customizer v3.1.2 — Tối ưu khoảng cách Danmaku (thưa thớt, không dồn cục lúc đầu bật, dãn cách 10 làn chống đè).
+// @version      3.1.3
+// @description  YouTube Customizer v3.1.3 — Khung nổi Streamer nền trong suốt, giữ góc tương đối khi phóng to/thu nhỏ, chữ gọn và hiển thị nhiều bình luận hơn.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

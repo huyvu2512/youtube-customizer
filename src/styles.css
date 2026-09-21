@@ -790,16 +790,12 @@ html:not([dark]) .ytc-mode-btn.active {
 
 /* ĐIỀU KHIỂN HIỂN THỊ THEO TRẠNG THÁI CONFIG */
 html[data-ytc-chat="danmaku"] #ytc-danmaku-container,
-body[data-ytc-chat="danmaku"] #ytc-danmaku-container,
-html[data-ytc-chat="both"] #ytc-danmaku-container,
-body[data-ytc-chat="both"] #ytc-danmaku-container {
+body[data-ytc-chat="danmaku"] #ytc-danmaku-container {
     display: block !important;
 }
 
 html[data-ytc-chat="streamer"] #ytc-streamer-box,
-body[data-ytc-chat="streamer"] #ytc-streamer-box,
-html[data-ytc-chat="both"] #ytc-streamer-box,
-body[data-ytc-chat="both"] #ytc-streamer-box {
+body[data-ytc-chat="streamer"] #ytc-streamer-box {
     display: flex !important;
 }
 
@@ -817,51 +813,52 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
     display: none !important;
 }
 
-/* KHUNG LIVE CHAT BOX (KÍNH MỜ / HUD OVERLAY THỜI THƯỢNG) */
+/* KHUNG LIVE CHAT BOX (NỀN TRONG SUỐT HUD OVERLAY CHO STREAMER) */
 #ytc-streamer-box {
     position: absolute;
-    width: 340px;
+    width: 320px;
     min-height: 120px;
-    max-height: 400px;
-    background: rgba(0, 0, 0, 0.4) !important;
-    backdrop-filter: blur(4px);
-    border-radius: 8px;
+    max-height: 80%;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 6px;
     z-index: 38 !important;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     pointer-events: auto;
     box-sizing: border-box;
-    transition: background-color 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
     user-select: none;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
 }
 
 #ytc-streamer-box:hover,
 #ytc-streamer-box.ytc-box-initial {
-    box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.5), 0 8px 32px rgba(0, 0, 0, 0.8) !important;
-    background: rgba(15, 15, 15, 0.85) !important;
-    border-color: rgba(255, 255, 255, 0.4) !important;
+    background: rgba(0, 0, 0, 0.45) !important;
+    backdrop-filter: blur(4px) !important;
+    border: 1px dashed rgba(255, 255, 255, 0.35) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6) !important;
 }
 
 .ytc-box-header {
-    height: 26px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 2px 10px;
-    background: rgba(0, 0, 0, 0.85);
+    padding: 2px 8px;
+    background: rgba(0, 0, 0, 0.75);
     color: #eee;
-    font-size: 11.5px;
+    font-size: 11px;
     font-weight: 600;
     cursor: move;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;
     flex-shrink: 0;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
 }
 
 #ytc-streamer-box:hover .ytc-box-header,
@@ -882,31 +879,31 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    gap: 6px;
-    padding: 8px;
+    gap: 3px;
+    padding: 4px 6px;
     pointer-events: none;
 }
 
 .ytc-box-item {
     display: flex;
     align-items: flex-start;
-    gap: 6px;
-    font-size: 14px;
-    line-height: 1.35;
+    gap: 4px;
+    font-size: 12px;
+    line-height: 1.25;
     color: #fff;
     text-shadow: 
         1px 1px 2px #000, 
         -1px -1px 2px #000, 
         1px -1px 2px #000, 
-        -1px 1px 2px #000,
+        -1px 1px 2px #000, 
         0 0 3px #000;
     animation: ytc-fade-in 0.2s ease-out;
     word-break: break-word;
 }
 
 .ytc-box-avatar {
-    width: 22px;
-    height: 22px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     flex-shrink: 0;
     margin-top: 1px;
@@ -919,20 +916,20 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
 .ytc-box-badge {
     display: inline-flex;
     vertical-align: -2px;
-    margin-right: 4px;
+    margin-right: 3px;
 }
 .ytc-box-badge img,
 .ytc-box-badge svg {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
 }
 
 .ytc-box-resize {
     position: absolute;
     right: 2px;
     bottom: 2px;
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     cursor: nwse-resize;
     opacity: 0;
     pointer-events: none;

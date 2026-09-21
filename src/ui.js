@@ -73,7 +73,7 @@ function createSettingsPanel() {
         panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v3.1.2</span>
+                <span class="ytc-header-badge">v3.1.3</span>
             </div>
 
             <div class="ytc-tabs">
@@ -140,7 +140,6 @@ function createSettingsPanel() {
                         <button class="ytc-mode-btn ${(!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') ? 'active' : ''}" data-overlay="off" title="Tắt chat trên video">Tắt</button>
                         <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'danmaku' ? 'active' : ''}" data-overlay="danmaku" title="Chữ chạy ngang màn hình dạng Danmaku">Ngang</button>
                         <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'streamer' ? 'active' : ''}" data-overlay="streamer" title="Khung chat nổi của streamer, kéo thả và co giãn tự do">Nổi</button>
-                        <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'both' ? 'active' : ''}" data-overlay="both" title="Hiển thị đồng thời cả chữ chạy ngang và khung nổi">Cả hai</button>
                     </div>
                 </div>
             </div>

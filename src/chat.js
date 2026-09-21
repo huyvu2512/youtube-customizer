@@ -32,19 +32,44 @@ function isDuplicateMessage(id, author, text) {
 }
 
 // --------------------------------------------------------------------------
-// 1. LƯU TRỮ VÀ KHÔI PHỤC VỊ TRÍ KHUNG NỔI STREAMER
+// 1. LƯU TRỮ VÀ KHÔI PHỤC VỊ TRÍ KHUNG NỔI STREAMER (TỈ LỆ TƯƠNG ĐỐI THEO GÓC)
 // --------------------------------------------------------------------------
 function getSavedChatBoxPos() {
     try {
         const stored = localStorage.getItem(CHATBOX_POS_KEY);
         if (stored) return JSON.parse(stored);
     } catch (e) {}
-    return null; // Trả về null nếu chưa từng lưu để đặt ở chính giữa mặc định
+    return null;
 }
 
-function saveChatBoxPos(pos) {
+function saveChatBoxPos(box, player) {
+    if (!box) return;
+    const p = player || document.querySelector('#movie_player, .html5-video-player');
+    if (!p) return;
+
+    const pW = p.offsetWidth || p.clientWidth || window.innerWidth;
+    const pH = p.offsetHeight || p.clientHeight || window.innerHeight;
+    const bW = box.offsetWidth || 300;
+    const bH = box.offsetHeight || 200;
+
+    const left = parseInt(box.style.left, 10) || 0;
+    const top = parseInt(box.style.top, 10) || 0;
+
+    const maxLeft = Math.max(1, pW - bW);
+    const maxTop = Math.max(1, pH - bH);
+
+    // Lưu tỉ lệ tương đối ratioX, ratioY (từ 0.0 đến 1.0)
+    // để khi phóng to hoặc thu nhỏ, khung chat luôn nhảy đúng góc tương ứng
+    const ratioX = Math.max(0, Math.min(1, left / maxLeft));
+    const ratioY = Math.max(0, Math.min(1, top / maxTop));
+
     try {
-        localStorage.setItem(CHATBOX_POS_KEY, JSON.stringify(pos));
+        localStorage.setItem(CHATBOX_POS_KEY, JSON.stringify({
+            ratioX,
+            ratioY,
+            width: box.style.width,
+            height: box.style.height
+        }));
     } catch (e) {}
 }
 
@@ -54,8 +79,8 @@ export function centerChatBox(box, player) {
     const pWidth = p ? (p.offsetWidth || p.clientWidth) : window.innerWidth;
     const pHeight = p ? (p.offsetHeight || p.clientHeight) : window.innerHeight;
 
-    const boxW = Math.min(380, Math.max(280, Math.round(pWidth * 0.36)));
-    const boxH = Math.min(320, Math.max(180, Math.round(pHeight * 0.42)));
+    const boxW = Math.min(340, Math.max(260, Math.round(pWidth * 0.32)));
+    const boxH = Math.min(300, Math.max(160, Math.round(pHeight * 0.4)));
     const left = Math.max(10, Math.round((pWidth - boxW) / 2));
     const top = Math.max(10, Math.round((pHeight - boxH) / 2));
 
@@ -65,22 +90,42 @@ export function centerChatBox(box, player) {
     box.style.bottom = 'auto';
     box.style.width = `${boxW}px`;
     box.style.height = `${boxH}px`;
+
+    saveChatBoxPos(box, p);
 }
 
-function clampBoxPosition(box, player) {
+export function applyChatBoxPos(box, player) {
     if (!box) return;
     const p = player || document.querySelector('#movie_player, .html5-video-player');
     if (!p) return;
 
-    const pWidth = p.offsetWidth || p.clientWidth || window.innerWidth;
-    const pHeight = p.offsetHeight || p.clientHeight || window.innerHeight;
+    const pW = p.offsetWidth || p.clientWidth || window.innerWidth;
+    const pH = p.offsetHeight || p.clientHeight || window.innerHeight;
+    if (pW <= 0 || pH <= 0) return;
 
-    let left = parseInt(box.style.left, 10);
-    let top = parseInt(box.style.top, 10);
-
-    if (isNaN(left) || isNaN(top) || left > pWidth - 80 || top > pHeight - 50 || left < 0 || top < 0) {
+    const pos = getSavedChatBoxPos();
+    if (!pos || pos.ratioX === undefined) {
         centerChatBox(box, p);
+        return;
     }
+
+    if (pos.width) box.style.width = pos.width;
+    if (pos.height) box.style.height = pos.height;
+
+    const bW = box.offsetWidth || 300;
+    const bH = box.offsetHeight || 200;
+
+    const maxLeft = Math.max(0, pW - bW);
+    const maxTop = Math.max(0, pH - bH);
+
+    // Tọa độ tính theo tỉ lệ ratioX, ratioY đảm bảo ở góc nào thì phóng to/thu nhỏ vẫn ở đúng góc đó!
+    const newLeft = Math.round(pos.ratioX * maxLeft);
+    const newTop = Math.round(pos.ratioY * maxTop);
+
+    box.style.left = `${newLeft}px`;
+    box.style.top = `${newTop}px`;
+    box.style.right = 'auto';
+    box.style.bottom = 'auto';
 }
 
 function showInitialBox(box) {
@@ -128,17 +173,7 @@ export function ensureChatOverlayContainers() {
         streamerBox = document.createElement('div');
         streamerBox.id = 'ytc-streamer-box';
 
-        const pos = getSavedChatBoxPos();
-        if (pos && (pos.left || pos.right)) {
-            if (pos.left) streamerBox.style.left = pos.left;
-            else if (pos.right) streamerBox.style.right = pos.right;
-            if (pos.top) streamerBox.style.top = pos.top;
-            if (pos.width) streamerBox.style.width = pos.width;
-            if (pos.height) streamerBox.style.height = pos.height;
-        } else {
-            // Lần đầu bật: hiện ở CHÍNH GIỮA khung video để người dùng nhận ra ngay
-            centerChatBox(streamerBox, player);
-        }
+        applyChatBoxPos(streamerBox, player);
 
         streamerBox.innerHTML = safeHTML(`
             <div class="ytc-box-header" title="Giữ chuột để kéo thả vị trí (nhấp đúp để đặt lại về giữa)">
@@ -166,13 +201,6 @@ function setupChatBoxInteractions(box, player) {
             e.preventDefault();
             e.stopPropagation();
             centerChatBox(box, player);
-            saveChatBoxPos({
-                left: box.style.left,
-                top: box.style.top,
-                right: '',
-                width: box.style.width,
-                height: box.style.height
-            });
         });
 
         header.addEventListener('mousedown', (e) => {
@@ -202,13 +230,7 @@ function setupChatBoxInteractions(box, player) {
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
 
-                saveChatBoxPos({
-                    left: box.style.left,
-                    top: box.style.top,
-                    right: '',
-                    width: box.style.width,
-                    height: box.style.height
-                });
+                saveChatBoxPos(box, player);
             }
 
             document.addEventListener('mousemove', onMouseMove);
@@ -240,13 +262,7 @@ function setupChatBoxInteractions(box, player) {
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
 
-                saveChatBoxPos({
-                    left: box.style.left,
-                    top: box.style.top,
-                    right: box.style.right,
-                    width: box.style.width,
-                    height: box.style.height
-                });
+                saveChatBoxPos(box, player);
             }
 
             document.addEventListener('mousemove', onMouseMove);
@@ -254,14 +270,14 @@ function setupChatBoxInteractions(box, player) {
         });
     }
 
-    // Tự động căn chỉnh lại vị trí khi thay đổi kích thước cửa sổ hoặc toàn màn hình
+    // Tự động căn chỉnh lại vị trí theo tỉ lệ góc khi thay đổi kích thước cửa sổ hoặc toàn màn hình
     window.addEventListener('resize', () => {
         const p = document.querySelector('#movie_player, .html5-video-player');
-        if (box && p) clampBoxPosition(box, p);
+        if (box && p) applyChatBoxPos(box, p);
     });
     document.addEventListener('fullscreenchange', () => {
         const p = document.querySelector('#movie_player, .html5-video-player');
-        if (box && p) clampBoxPosition(box, p);
+        if (box && p) applyChatBoxPos(box, p);
     });
 }
 
@@ -439,8 +455,8 @@ export function displayChatMessage(data, isBacklog = false) {
 
     ensureChatOverlayContainers();
 
-    const showDanmaku = currentConfig.chatOverlay === 'danmaku' || currentConfig.chatOverlay === 'both';
-    const showStreamer = currentConfig.chatOverlay === 'streamer' || currentConfig.chatOverlay === 'both';
+    const showDanmaku = currentConfig.chatOverlay === 'danmaku';
+    const showStreamer = currentConfig.chatOverlay === 'streamer';
 
     // Chế độ 1: Danmaku chạy ngang (Đưa vào hàng đợi điều phối thông minh)
     // BẮT BUỘC: Tin nhắn cũ (backlog lúc mới bật/kết nối iframe) KHÔNG BAO GIỜ bắn vào Danmaku!
@@ -455,8 +471,8 @@ export function displayChatMessage(data, isBacklog = false) {
         const msgContainer = streamerMessages || document.querySelector('#ytc-streamer-box .ytc-box-messages');
         if (!msgContainer) return;
 
-        // Nếu là backlog mà trong khung đã có >= 3 tin thì không nhồi thêm
-        if (msgIsBacklog && msgContainer.children.length >= 3) return;
+        // Nếu là backlog mà trong khung đã có >= 8 tin thì không nhồi thêm
+        if (msgIsBacklog && msgContainer.children.length >= 8) return;
 
         // Xóa thông báo loading nếu có
         const loading = msgContainer.querySelector('.ytc-box-loading');
@@ -478,7 +494,7 @@ export function displayChatMessage(data, isBacklog = false) {
 
         msgContainer.appendChild(item);
 
-        while (msgContainer.children.length > 25) {
+        while (msgContainer.children.length > 40) {
             msgContainer.firstElementChild.remove();
         }
 
@@ -488,7 +504,7 @@ export function displayChatMessage(data, isBacklog = false) {
                 item.style.opacity = '0';
                 setTimeout(() => item.remove(), 600);
             }
-        }, 16000);
+        }, 30000);
     }
 }
 
@@ -542,20 +558,20 @@ function queryAllLiveChatMessages() {
 
 export function requestExistingMessages() {
     // Nếu chỉ bật Danmaku thì KHÔNG nạp tin nhắn cũ để tránh dồn cục lúc đầu bật!
-    if (currentConfig.chatOverlay === 'danmaku' || currentConfig.chatOverlay === 'off') {
+    if (currentConfig.chatOverlay !== 'streamer') {
         return;
     }
 
     function doFetch() {
         const allExisting = queryAllLiveChatMessages();
         if (allExisting && allExisting.length > 0) {
-            // Chỉ nạp tối đa 3 tin gần nhất cho khung nổi
-            const recent = allExisting.slice(-3);
+            // Nạp 8 tin gần nhất cho khung nổi để khung không bị trống
+            const recent = allExisting.slice(-8);
             recent.forEach((node, i) => {
                 const data = extractMessageData(node);
                 if (data) {
                     data.isBacklog = true;
-                    setTimeout(() => displayChatMessage(data, true), i * 150);
+                    setTimeout(() => displayChatMessage(data, true), i * 100);
                 }
             });
             return true;
@@ -650,8 +666,8 @@ export function updateChatOverlayVisibility() {
     const streamer = document.getElementById('ytc-streamer-box') || streamerBox;
     const player = document.querySelector('#movie_player, .html5-video-player');
 
-    const showDanmaku = mode === 'danmaku' || mode === 'both';
-    const showStreamer = mode === 'streamer' || mode === 'both';
+    const showDanmaku = mode === 'danmaku';
+    const showStreamer = mode === 'streamer';
 
     if (danmaku) {
         danmaku.style.display = showDanmaku ? 'block' : 'none';
@@ -673,17 +689,16 @@ export function updateChatOverlayVisibility() {
         if (msgs) {
             msgs.innerHTML = '';
             if (showStreamer) {
-                // Thêm thông báo kết nối để người dùng lập tức thấy khung nổi
                 const loading = document.createElement('div');
                 loading.className = 'ytc-box-item ytc-box-loading';
-                loading.style.cssText = 'padding:12px 10px;text-align:center;color:#fff;font-size:13px;font-style:italic;';
-                loading.textContent = '💬 Đang kết nối Live Chat... (Kéo thả để đổi vị trí)';
+                loading.style.cssText = 'padding:8px;text-align:center;color:#fff;font-size:12px;font-style:italic;';
+                loading.textContent = '💬 Đang kết nối Live Chat...';
                 msgs.appendChild(loading);
             }
         }
 
         if (showStreamer && player) {
-            centerChatBox(streamer, player);
+            applyChatBoxPos(streamer, player);
             showInitialBox(streamer);
         }
     }
@@ -705,7 +720,7 @@ export function updateChatOverlayVisibility() {
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
         if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
-            if (currentConfig.chatOverlay === 'danmaku' || currentConfig.chatOverlay === 'both') {
+            if (currentConfig.chatOverlay === 'danmaku') {
                 startDanmakuScheduler();
             }
             requestExistingMessages();
@@ -731,8 +746,8 @@ export function initIframeChatSender() {
     function sendExisting(items) {
         const existing = getAllChatElements(items);
         if (existing && existing.length) {
-            // Đánh dấu isBacklog: true để Danmaku bỏ qua hoàn toàn, chỉ gửi tối đa 3 tin cho khung nổi nếu cần
-            const recent = Array.from(existing).slice(-3);
+            // Đánh dấu isBacklog: true để Danmaku bỏ qua hoàn toàn, gửi tối đa 8 tin cho khung nổi nếu cần
+            const recent = Array.from(existing).slice(-8);
             recent.forEach((node) => {
                 const data = extractMessageData(node);
                 if (data) {
