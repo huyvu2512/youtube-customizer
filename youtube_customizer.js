@@ -1,5 +1,5 @@
 // ==UserScript==
-// YouTube Customizer v2.7 — https://github.com/huyvu2512/youtube-customizer
+// YouTube Customizer v2.8 — https://github.com/huyvu2512/youtube-customizer
 // ==/UserScript==
 (() => {
   // src/styles.css
@@ -414,6 +414,47 @@
       }
     }, true);
   }
+  var liveDvrHooked = false;
+  function initLiveDvrHook() {
+    if (liveDvrHooked) return;
+    liveDvrHooked = true;
+    function patchData(data) {
+      if (!currentConfig.unlockLiveDvr) return;
+      if (!data || typeof data !== "object") return;
+      if (data.videoDetails && data.videoDetails.isLive) {
+        if (data.videoDetails.isLiveDvrEnabled === false) {
+          data.videoDetails.isLiveDvrEnabled = true;
+        }
+      }
+    }
+    try {
+      let _initial = window.ytInitialPlayerResponse;
+      if (_initial) patchData(_initial);
+      Object.defineProperty(window, "ytInitialPlayerResponse", {
+        get() {
+          return _initial;
+        },
+        set(val) {
+          _initial = val;
+          patchData(_initial);
+        },
+        configurable: true,
+        enumerable: true
+      });
+    } catch (e) {
+    }
+    try {
+      const origParse = JSON.parse;
+      JSON.parse = function(text, reviver) {
+        const res = origParse.apply(this, arguments);
+        if (currentConfig.unlockLiveDvr && typeof text === "string" && text.includes("isLiveDvrEnabled") && res && typeof res === "object" && res.videoDetails && res.videoDetails.isLive && res.videoDetails.isLiveDvrEnabled === false) {
+          res.videoDetails.isLiveDvrEnabled = true;
+        }
+        return res;
+      };
+    } catch (e) {
+    }
+  }
 
   // src/ui.js
   var GEAR_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>`;
@@ -433,6 +474,7 @@
   var ENDSCREEN_SVG = `<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H6v-4h6v4zm6 0h-5v-4h5v4zm0-6H6V7h12v4z"/></svg>`;
   var BELL_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>`;
   var WATERMARK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>`;
+  var REWIND_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>`;
   var menuDismissBound = false;
   function bindMenuDismiss(panel) {
     if (menuDismissBound) return;
@@ -458,7 +500,7 @@
       panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v2.7</span>
+                <span class="ytc-header-badge">v2.8</span>
             </div>
 
             <div class="ytc-tabs">
@@ -621,6 +663,17 @@
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
+
+                <div class="ytc-item" data-toggle="unlockLiveDvr">
+                    <div class="ytc-item-left">
+                        ${REWIND_SVG}
+                        <span>Mở khóa tua Live Stream</span>
+                    </div>
+                    <label class="ytc-switch">
+                        <input type="checkbox" id="ytc-chk-livedvr" ${currentConfig.unlockLiveDvr ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
             </div>
 
             <!-- TAB 4: PHÍM TẮT & TIỆN ÍCH -->
@@ -738,6 +791,7 @@
   }
 
   // src/index.js
+  initLiveDvrHook();
   var CONFIG_KEY = "ytc_config_v2";
   var DEFAULT_CONFIG = {
     columns: 4,
@@ -756,6 +810,8 @@
     // Ẩn thẻ kết thúc & chú thích
     hideWatermark: true,
     // Ẩn logo hình mờ kênh ở góc video
+    unlockLiveDvr: true,
+    // Mở khóa tua lại Live Stream
     autoDismissPromos: true,
     // Tự động đóng banner khuyến mại
     premiumLogo: true,

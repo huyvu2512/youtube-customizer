@@ -13,9 +13,13 @@ import {
     setWatchLoading,
     setupFullscreenLock,
     isHomeFeedPath,
-    whenElement
+    whenElement,
+    initLiveDvrHook
 } from './features.js';
 import { ensureSettingsElements, setupSettingsObserver } from './ui.js';
+
+// Khởi chạy hook can thiệp Live Stream DVR càng sớm càng tốt
+initLiveDvrHook();
 
 // --------------------------------------------------------------------------
 // 1. CẤU HÌNH & LƯU TRỮ (LOCALSTORAGE)
@@ -31,6 +35,7 @@ export const DEFAULT_CONFIG = {
     hideCommunity: true,    // Ẩn bài đăng cộng đồng
     hideEndscreen: true,    // Ẩn thẻ kết thúc & chú thích
     hideWatermark: true,    // Ẩn logo hình mờ kênh ở góc video
+    unlockLiveDvr: true,    // Mở khóa tua lại Live Stream
     autoDismissPromos: true,// Tự động đóng banner khuyến mại
     premiumLogo: true,      // Logo YouTube Premium
     cleanSearch: true,      // Ẩn video tài trợ / quảng cáo tìm kiếm

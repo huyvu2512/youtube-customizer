@@ -504,3 +504,58 @@ export function bindGlobalKeys() {
         }
     }, true);
 }
+
+// --------------------------------------------------------------------------
+// 6. MỞ KHÓA TUA LẠI LIVE STREAM (FORCE ENABLE LIVE DVR)
+// --------------------------------------------------------------------------
+let liveDvrHooked = false;
+export function initLiveDvrHook() {
+    if (liveDvrHooked) return;
+    liveDvrHooked = true;
+
+    function patchData(data) {
+        if (!currentConfig.unlockLiveDvr) return;
+        if (!data || typeof data !== 'object') return;
+        if (data.videoDetails && data.videoDetails.isLive) {
+            if (data.videoDetails.isLiveDvrEnabled === false) {
+                data.videoDetails.isLiveDvrEnabled = true;
+            }
+        }
+    }
+
+    // 1. Can thiệp dữ liệu khởi tạo trang ban đầu
+    try {
+        let _initial = window.ytInitialPlayerResponse;
+        if (_initial) patchData(_initial);
+        Object.defineProperty(window, 'ytInitialPlayerResponse', {
+            get() { return _initial; },
+            set(val) {
+                _initial = val;
+                patchData(_initial);
+            },
+            configurable: true,
+            enumerable: true
+        });
+    } catch (e) {}
+
+    // 2. Can thiệp dữ liệu khi chuyển trang SPA qua JSON.parse
+    try {
+        const origParse = JSON.parse;
+        JSON.parse = function(text, reviver) {
+            const res = origParse.apply(this, arguments);
+            if (
+                currentConfig.unlockLiveDvr &&
+                typeof text === 'string' &&
+                text.includes('isLiveDvrEnabled') &&
+                res &&
+                typeof res === 'object' &&
+                res.videoDetails &&
+                res.videoDetails.isLive &&
+                res.videoDetails.isLiveDvrEnabled === false
+            ) {
+                res.videoDetails.isLiveDvrEnabled = true;
+            }
+            return res;
+        };
+    } catch (e) {}
+}

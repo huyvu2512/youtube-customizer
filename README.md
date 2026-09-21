@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-2.7-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-2.8-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,7 +25,8 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v2.7** nâng cấp:
+Phiên bản **v2.8** nâng cấp:
+- **Mở khóa tua Live Stream (Force Enable Live DVR):** Tự động khôi phục thanh trượt tua lại (Seekbar scrubber) trên các luồng phát trực tiếp (YouTube Live) mà chủ kênh tắt tính năng tua, cho phép xem lại các diễn biến vừa diễn ra mà không bị khóa cứng ở mốc thời gian thực (Real-time).
 - **Ẩn logo hình mờ (Watermark) ở góc video:** Tự động xóa bỏ hoàn toàn biểu tượng/avatar của kênh hiển thị ở góc dưới cùng bên phải của trình phát video (`.iv-branding`, `.ytp-iv-video-content .iv-branding`, `.ytp-branding-logo`), giúp khung hình video hoàn toàn thông thoáng.
 - **Tối giản hóa kiến trúc mã nguồn:** Toàn bộ mã nguồn phát triển trong `src/` được tổ chức tinh gọn thành 4 tệp chuyên biệt, build tự động siêu tốc bằng `esbuild`.
 - **Phân nhóm cài đặt trong Menu theo 4 Tab:** Bảng cài đặt 4 danh mục trực quan gồm **Giao diện**, **Lọc nội dung**, **Trình phát** và **Phím tắt**.
@@ -38,9 +39,11 @@ Phiên bản **v2.7** nâng cấp:
 - **Menu cài đặt phân nhóm 4 Tab hiện đại:**
   - **Giao diện:** Tùy chọn số cột trang chủ (3, 4, 5 cột), Bật/tắt Logo YouTube Premium, Ẩn Khám phá các chủ đề khác.
   - **Lọc nội dung:** Ẩn Shorts hoàn toàn, Ẩn Chơi game (Playables), Ẩn video Hội viên (Ưu tiên & Đặc quyền), Ẩn bài đăng cộng đồng, Lọc tìm kiếm sạch (Clean Search).
-  - **Trình phát:** Tắt ánh sáng viền video (Ambient Mode / Cinematics), Ẩn thẻ kết thúc & thẻ chú thích video, Ẩn logo góc video (Watermark), Tự động đóng banner quảng cáo/thông báo.
+  - **Trình phát:** Tắt ánh sáng viền video (Ambient Mode / Cinematics), Ẩn thẻ kết thúc & thẻ chú thích video, Ẩn logo góc video (Watermark), Mở khóa tua Live Stream (Live DVR), Tự động đóng banner quảng cáo/thông báo.
   - **Phím tắt:** Bật/tắt phím tắt A-S-D & Numpad kèm bảng tra cứu phím tắt nhanh ngay trong menu.
   - Toàn bộ thiết lập được lưu tự động vào `localStorage` và cập nhật tức thì (Live Update) mà không cần tải lại trang.
+- **Mở khóa tua Live Stream (Force Enable Live DVR):**
+  - Can thiệp an toàn vào dữ liệu khởi tạo luồng stream (`isLiveDvrEnabled: true`), phục hồi thanh tua thời gian cho các buổi phát trực tiếp bị người phát khóa tính năng tua lùi.
 - **Ẩn logo hình mờ kênh ở góc video (Clean Video Watermark):**
   - Tự động ẩn biểu tượng logo hoặc ảnh đại diện kênh xuất hiện ở góc dưới cùng bên phải trình phát video.
 - **Ẩn thẻ kết thúc & Chú thích video (Clean Endscreen):**
