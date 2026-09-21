@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-2.9.4-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-2.9.5-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,7 +25,10 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v2.9.4** nâng cấp:
+Phiên bản **v2.9.5** nâng cấp:
+- **Tối ưu phân nhóm menu cài đặt:**
+  - Chuyển tính năng **Ẩn Khám phá chủ đề** sang mục **Lọc** (cùng nhóm các tính năng lọc và dọn dẹp nội dung).
+  - Chuyển tính năng **Mở khóa tua Live Stream** (Live DVR) và **Live Chat** (Danmaku / Streamer Box) sang mục **Giao diện** (cùng nhóm tinh chỉnh hiển thị trực quan).
 - **Triệt tiêu toàn diện lỗi phím Numpad (Chống nhảy % video & chống Home/End/PageUp/PageDown):** Chặn độc lập 100% tất cả các phím Numpad (ở cả 2 tầng sự kiện `keydown` và `keyup`), không phụ thuộc vào trạng thái tải của player. Khắc phục triệt để hiện tượng ấn 1, 7 nhảy đầu/cuối video, 3, 9 cuộn trang khi tắt NumLock và 1-9 nhảy % video khi bật NumLock.
 - **Tự động đóng banner & thông báo gián đoạn:** Tự động phát hiện và đóng/ẩn ngay lập tức các thông báo toast gây phiền toái như *"Bạn đang gặp sự cố gây gián đoạn?"* (*"Experiencing interruptions? Find out why"*), banner mời dùng thử Premium, khảo sát và popup phiền phức trên giao diện xem video.
 - **Chuẩn hóa phím tắt Numpad & A-S-D / J-K-L:**
@@ -52,9 +55,9 @@ Phiên bản **v2.9.4** nâng cấp:
 ## Tính năng chính
 
 - **Menu cài đặt phân nhóm 4 Tab hiện đại:**
-  - **Giao diện:** Tùy chọn số cột trang chủ (3, 4, 5 cột), Bật/tắt Logo YouTube Premium, Ẩn Khám phá các chủ đề khác.
-  - **Lọc nội dung:** Ẩn Shorts hoàn toàn, Ẩn Chơi game (Playables), Ẩn video Hội viên (Ưu tiên & Đặc quyền), Ẩn bài đăng cộng đồng, Lọc tìm kiếm sạch (Clean Search).
-  - **Trình phát:** Live Chat (Tắt / Ngang / Nổi - tự động ẩn khi tua lùi), Tắt ánh sáng viền video (Ambient Mode / Cinematics), Ẩn thẻ kết thúc & thẻ chú thích video, Ẩn logo góc video (Watermark), Mở khóa tua Live Stream (Live DVR), Tự động đóng banner quảng cáo/thông báo.
+  - **Giao diện:** Tùy chọn số cột trang chủ (3, 4, 5 cột), Bật/tắt Logo YouTube Premium, Mở khóa tua Live Stream (Live DVR), Live Chat (Tắt / Ngang / Nổi - tự động ẩn khi tua lùi).
+  - **Lọc nội dung:** Ẩn Shorts hoàn toàn, Ẩn Chơi game (Playables), Ẩn video Hội viên (Ưu tiên & Đặc quyền), Ẩn bài đăng cộng đồng, Lọc tìm kiếm sạch (Clean Search), Ẩn Khám phá các chủ đề khác.
+  - **Trình phát:** Tắt ánh sáng viền video (Ambient Mode / Cinematics), Ẩn thẻ kết thúc & thẻ chú thích video, Ẩn logo góc video (Watermark), Tự động đóng banner quảng cáo/thông báo.
   - **Phím tắt:** Bật/tắt phím tắt A-S-D & Numpad kèm bảng tra cứu phím tắt nhanh ngay trong menu.
   - Toàn bộ thiết lập được lưu tự động vào `localStorage` và cập nhật tức thì (Live Update) mà không cần tải lại trang.
 - **Live Chat Overlay trên Video (Danmaku & Streamer Box):**

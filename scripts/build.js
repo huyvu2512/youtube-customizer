@@ -11,7 +11,14 @@ const outFile = path.join(rootDir, 'youtube_customizer.js');
 const isWatch = process.argv.includes('--watch');
 
 const banner = `// ==UserScript==
-// YouTube Customizer v2.9.4 — https://github.com/huyvu2512/youtube-customizer
+// @name         YouTube Customizer
+// @namespace    http://tampermonkey.net/
+// @version      2.9.5
+// @description  YouTube Customizer v2.9.5 — Tối ưu phân nhóm menu cài đặt (chuyển Khám phá chủ đề sang Lọc, chuyển Mở khóa tua Live Stream & Live Chat sang Giao diện), triệt tiêu lỗi phím Numpad, tự đóng banner & thông báo gián đoạn, logo Premium.
+// @author       Huy Vũ
+// @match        https://www.youtube.com/*
+// @run-at       document-start
+// @grant        none
 // ==/UserScript==`;
 
 async function buildWithEsbuild() {

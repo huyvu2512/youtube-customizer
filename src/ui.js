@@ -72,7 +72,7 @@ function createSettingsPanel() {
         panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v2.9.4</span>
+                <span class="ytc-header-badge">v2.9.5</span>
             </div>
 
             <div class="ytc-tabs">
@@ -119,15 +119,27 @@ function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hideExploreTopics" title="Ẩn kệ Khám phá các chủ đề khác chen giữa video trang chủ">
+                <div class="ytc-item" data-toggle="unlockLiveDvr" title="Mở khóa tua lùi thời gian trên các luồng Live Stream bị chủ kênh cấm tua">
                     <div class="ytc-item-left">
-                        ${COMPASS_SVG}
-                        <span>Ẩn Khám phá chủ đề</span>
+                        ${REWIND_SVG}
+                        <span>Mở khóa tua Live Stream</span>
                     </div>
                     <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-explore" ${currentConfig.hideExploreTopics ? 'checked' : ''}>
+                        <input type="checkbox" id="ytc-chk-livedvr" ${currentConfig.unlockLiveDvr ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
+                </div>
+
+                <div class="ytc-item" id="ytc-row-chatoverlay" title="Hiển thị chat trực tiếp nổi trên màn hình video (tự động ẩn khi tua lùi video)">
+                    <div class="ytc-item-left">
+                        ${MESSAGE_SVG}
+                        <span>Live Chat</span>
+                    </div>
+                    <div class="ytc-mode-group">
+                        <button class="ytc-mode-btn ${(!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') ? 'active' : ''}" data-overlay="off" title="Tắt chat trên video">Tắt</button>
+                        <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'danmaku' ? 'active' : ''}" data-overlay="danmaku" title="Chữ chạy ngang màn hình dạng Danmaku">Ngang</button>
+                        <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'streamer' ? 'active' : ''}" data-overlay="streamer" title="Khung chat trong suốt của streamer, kéo thả và co giãn tự do">Nổi</button>
+                    </div>
                 </div>
             </div>
 
@@ -187,6 +199,17 @@ function createSettingsPanel() {
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
+
+                <div class="ytc-item" data-toggle="hideExploreTopics" title="Ẩn kệ Khám phá các chủ đề khác chen giữa video trang chủ">
+                    <div class="ytc-item-left">
+                        ${COMPASS_SVG}
+                        <span>Ẩn Khám phá chủ đề</span>
+                    </div>
+                    <label class="ytc-switch">
+                        <input type="checkbox" id="ytc-chk-explore" ${currentConfig.hideExploreTopics ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
             </div>
 
             <!-- TAB 3: TRÌNH PHÁT & VIDEO -->
@@ -234,29 +257,6 @@ function createSettingsPanel() {
                         <input type="checkbox" id="ytc-chk-promos" ${currentConfig.autoDismissPromos ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="unlockLiveDvr" title="Mở khóa tua lùi thời gian trên các luồng Live Stream bị chủ kênh cấm tua">
-                    <div class="ytc-item-left">
-                        ${REWIND_SVG}
-                        <span>Mở khóa tua Live Stream</span>
-                    </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-livedvr" ${currentConfig.unlockLiveDvr ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" id="ytc-row-chatoverlay" title="Hiển thị chat trực tiếp nổi trên màn hình video (tự động ẩn khi tua lùi video)">
-                    <div class="ytc-item-left">
-                        ${MESSAGE_SVG}
-                        <span>Live Chat</span>
-                    </div>
-                    <div class="ytc-mode-group">
-                        <button class="ytc-mode-btn ${(!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') ? 'active' : ''}" data-overlay="off" title="Tắt chat trên video">Tắt</button>
-                        <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'danmaku' ? 'active' : ''}" data-overlay="danmaku" title="Chữ chạy ngang màn hình dạng Danmaku">Ngang</button>
-                        <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'streamer' ? 'active' : ''}" data-overlay="streamer" title="Khung chat trong suốt của streamer, kéo thả và co giãn tự do">Nổi</button>
-                    </div>
                 </div>
             </div>
 
