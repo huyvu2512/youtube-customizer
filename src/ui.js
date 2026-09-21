@@ -72,7 +72,7 @@ function createSettingsPanel() {
         panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v2.9.1</span>
+                <span class="ytc-header-badge">v2.9.2</span>
             </div>
 
             <div class="ytc-tabs">
@@ -262,7 +262,7 @@ function createSettingsPanel() {
 
             <!-- TAB 4: PHÍM TẮT & TIỆN ÍCH -->
             <div class="ytc-tab-pane" id="ytc-pane-shortcuts">
-                <div class="ytc-item" data-toggle="keyboardControls" title="Bật/tắt cụm phím tắt A-S-D điều khiển phát/tua và Numpad âm lượng">
+                <div class="ytc-item" data-toggle="keyboardControls" title="Phím tắt: A/D hoặc 4/6 tua 10s, S hoặc 5 dừng/phát, 8/2 âm lượng (chặn nhảy % khi bật NumLock)">
                     <div class="ytc-item-left">
                         ${KEYBOARD_SVG}
                         <span>Phím tắt (A-S-D, Numpad)</span>
@@ -274,10 +274,11 @@ function createSettingsPanel() {
                 </div>
 
                 <div class="ytc-shortcut-hint" title="Bảng hướng dẫn các phím tắt điều khiển nhanh">
-                    <div><kbd>A</kbd> / <kbd>D</kbd> : Tua lùi / tiến 5 giây</div>
-                    <div style="margin-top:4px"><kbd>S</kbd> : Tạm dừng / phát tiếp</div>
-                    <div style="margin-top:4px"><kbd>1-9 (Numpad)</kbd> : Tua nhanh 10s - 90s</div>
-                    <div style="margin-top:4px"><kbd>Shift + Numpad</kbd> : Tua lùi theo giây</div>
+                    <div><kbd>A</kbd> / <kbd>D</kbd> (hoặc <kbd>J</kbd> / <kbd>L</kbd>) : Tua lùi / tiến 10 giây</div>
+                    <div style="margin-top:4px"><kbd>S</kbd> (hoặc <kbd>K</kbd>) : Tạm dừng / phát tiếp</div>
+                    <div style="margin-top:4px"><kbd>4</kbd> / <kbd>6</kbd> (Numpad) : Tua lùi / tiến 10 giây</div>
+                    <div style="margin-top:4px"><kbd>8</kbd> / <kbd>2</kbd> (Numpad) : Tăng / giảm âm lượng</div>
+                    <div style="margin-top:4px"><kbd>5</kbd> (Numpad) : Tạm dừng / phát tiếp</div>
                 </div>
             </div>
         `);

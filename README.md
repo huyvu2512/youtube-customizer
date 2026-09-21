@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-2.9.1-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-2.9.2-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,7 +25,14 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v2.9.1** nâng cấp:
+Phiên bản **v2.9.2** nâng cấp:
+- **Chuẩn hóa phím tắt Numpad & A-S-D / J-K-L:**
+  - Numpad 4 / 6: Tua lùi / Tua tiến 10 giây.
+  - Numpad 8 / 2: Tăng / Giảm âm lượng (chuẩn OSD YouTube).
+  - Numpad 5: Tạm dừng / Phát tiếp video.
+  - A / D hoặc J / L: Tua lùi / Tua tiến 10 giây.
+  - S hoặc K: Tạm dừng / Phát tiếp video.
+  - Chặn triệt để toàn bộ các phím Numpad khác (0, 1, 3, 7, 9, dấu chấm, +, -, *, /, Enter) không cho YouTube nhận diện phím số 1-9 nhảy % video khi bật NumLock.
 - **Tooltip hướng dẫn trực quan:** Tích hợp mô tả tính năng ngắn gọn, đúng trọng tâm hiển thị qua khung tooltip mặc định của trình duyệt khi di chuột vào từng mục trong bảng cài đặt.
 - **Tối ưu hóa Live Chat:** Đổi tên hiển thị thành **Live Chat**, mặc định áp dụng tính năng tự động ẩn khi tua lùi video và loại bỏ tùy chọn thừa trong menu.
 - **Live Chat Overlay trên Video (Danmaku & Khung Streamer):** Hiển thị luồng chat trực tiếp hoặc replay nổi ngay trên video player với 2 chế độ tùy chọn:

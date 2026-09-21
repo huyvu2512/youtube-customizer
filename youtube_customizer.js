@@ -1,5 +1,5 @@
 // ==UserScript==
-// YouTube Customizer v2.9.1 — https://github.com/huyvu2512/youtube-customizer
+// YouTube Customizer v2.9.2 — https://github.com/huyvu2512/youtube-customizer
 // ==/UserScript==
 (() => {
   // src/styles.css
@@ -336,29 +336,37 @@
   }
   function changeVolume(player, delta) {
     if (!player) return;
-    const key = delta > 0 ? "ArrowUp" : "ArrowDown";
-    const keyCode = delta > 0 ? 38 : 40;
-    const vBefore = typeof player.getVolume === "function" ? player.getVolume() : null;
-    player.dispatchEvent(new KeyboardEvent("keydown", {
-      key,
-      code: key,
-      keyCode,
-      which: keyCode,
-      bubbles: true,
-      cancelable: true
-    }));
-    const vAfter = typeof player.getVolume === "function" ? player.getVolume() : null;
-    if (vBefore !== null && vAfter !== null && vBefore === vAfter) {
-      const next = Math.max(0, Math.min(100, Math.round(vBefore + delta)));
-      player.setVolume?.(next);
-      if (delta > 0 && player.isMuted?.()) player.unMute?.();
+    try {
+      if (delta > 0 && typeof player.volumeUp === "function") {
+        player.volumeUp();
+        if (typeof player.unMute === "function" && player.isMuted?.()) player.unMute();
+        return;
+      } else if (delta < 0 && typeof player.volumeDown === "function") {
+        player.volumeDown();
+        return;
+      }
+    } catch (e) {
+    }
+    try {
+      if (typeof player.getVolume === "function" && typeof player.setVolume === "function") {
+        const cur = player.getVolume();
+        const next = Math.max(0, Math.min(100, cur + delta));
+        player.setVolume(next);
+        if (delta > 0 && typeof player.unMute === "function" && player.isMuted?.()) player.unMute();
+        return;
+      }
+    } catch (e) {
+    }
+    const video = getPlayerVideo(player);
+    if (video) {
+      video.volume = Math.max(0, Math.min(1, video.volume + delta / 100));
     }
   }
   var keysBound = false;
   function bindGlobalKeys() {
     if (keysBound) return;
     keysBound = true;
-    document.addEventListener("keydown", (e) => {
+    const handleKeyDown = (e) => {
       if (!currentConfig.keyboardControls) return;
       if (e.isComposing || e.keyCode === 229) return;
       const target = e.target;
@@ -370,31 +378,31 @@
       let captured = false;
       let isSeekAction = false;
       const code = e.code || "";
-      const isNumpad = e.location === 3 || code.startsWith("Numpad");
+      const isNumpad = e.location === 3 || code.startsWith("Numpad") || e.keyCode >= 96 && e.keyCode <= 111 || e.keyCode === 12;
       const asdAllowed = canUseAsdKeys(player);
       if (isNumpad) {
         captured = true;
-        if (e.key === "8" || e.key === "ArrowUp" || code === "Numpad8" || code === "NumpadAdd" || e.key === "+") {
+        if (code === "Numpad8" || e.key === "8" || e.key === "ArrowUp" || e.keyCode === 104 || e.keyCode === 38) {
           changeVolume(player, 5);
-        } else if (e.key === "2" || e.key === "ArrowDown" || code === "Numpad2" || code === "NumpadSubtract" || e.key === "-") {
+        } else if (code === "Numpad2" || e.key === "2" || e.key === "ArrowDown" || e.keyCode === 98 || e.keyCode === 40) {
           changeVolume(player, -5);
-        } else if (e.key === "4" || e.key === "ArrowLeft" || code === "Numpad4") {
+        } else if (code === "Numpad4" || e.key === "4" || e.key === "ArrowLeft" || e.keyCode === 100 || e.keyCode === 37) {
           seekBySeconds(player, -10);
           isSeekAction = true;
-        } else if (e.key === "6" || e.key === "ArrowRight" || code === "Numpad6") {
+        } else if (code === "Numpad6" || e.key === "6" || e.key === "ArrowRight" || e.keyCode === 102 || e.keyCode === 39) {
           seekBySeconds(player, 10);
           isSeekAction = true;
-        } else if (e.key === "5" || e.key === "Clear" || code === "Numpad5" || e.keyCode === 12) {
+        } else if (code === "Numpad5" || e.key === "5" || e.key === "Clear" || e.keyCode === 101 || e.keyCode === 12) {
           togglePlayback(player);
         }
-      } else if (asdAllowed && code === "KeyA") {
+      } else if (asdAllowed && (code === "KeyA" || !e.ctrlKey && !e.altKey && !e.metaKey && (code === "KeyJ" || e.key === "j" || e.key === "J"))) {
         captured = true;
         seekBySeconds(player, -10);
         isSeekAction = true;
-      } else if (asdAllowed && code === "KeyS") {
+      } else if (asdAllowed && (code === "KeyS" || !e.ctrlKey && !e.altKey && !e.metaKey && (code === "KeyK" || e.key === "k" || e.key === "K"))) {
         captured = true;
         togglePlayback(player);
-      } else if (asdAllowed && code === "KeyD") {
+      } else if (asdAllowed && (code === "KeyD" || !e.ctrlKey && !e.altKey && !e.metaKey && (code === "KeyL" || e.key === "l" || e.key === "L"))) {
         captured = true;
         seekBySeconds(player, 10);
         isSeekAction = true;
@@ -405,6 +413,7 @@
       }
       if (captured) {
         e.preventDefault();
+        e.stopPropagation();
         e.stopImmediatePropagation();
       } else if (["ArrowLeft", "ArrowRight", "j", "l", "J", "L"].includes(e.key)) {
         isSeekAction = true;
@@ -412,7 +421,9 @@
       if (isSeekAction) {
         triggerCleanSeek(player);
       }
-    }, true);
+    };
+    window.addEventListener("keydown", handleKeyDown, true);
+    document.addEventListener("keydown", handleKeyDown, true);
   }
   var liveDvrHooked = false;
   function initLiveDvrHook() {
@@ -801,7 +812,7 @@
       panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v2.9.1</span>
+                <span class="ytc-header-badge">v2.9.2</span>
             </div>
 
             <div class="ytc-tabs">
@@ -991,7 +1002,7 @@
 
             <!-- TAB 4: PHÍM TẮT & TIỆN ÍCH -->
             <div class="ytc-tab-pane" id="ytc-pane-shortcuts">
-                <div class="ytc-item" data-toggle="keyboardControls" title="Bật/tắt cụm phím tắt A-S-D điều khiển phát/tua và Numpad âm lượng">
+                <div class="ytc-item" data-toggle="keyboardControls" title="Phím tắt: A/D hoặc 4/6 tua 10s, S hoặc 5 dừng/phát, 8/2 âm lượng (chặn nhảy % khi bật NumLock)">
                     <div class="ytc-item-left">
                         ${KEYBOARD_SVG}
                         <span>Phím tắt (A-S-D, Numpad)</span>
@@ -1003,10 +1014,11 @@
                 </div>
 
                 <div class="ytc-shortcut-hint" title="Bảng hướng dẫn các phím tắt điều khiển nhanh">
-                    <div><kbd>A</kbd> / <kbd>D</kbd> : Tua lùi / tiến 5 giây</div>
-                    <div style="margin-top:4px"><kbd>S</kbd> : Tạm dừng / phát tiếp</div>
-                    <div style="margin-top:4px"><kbd>1-9 (Numpad)</kbd> : Tua nhanh 10s - 90s</div>
-                    <div style="margin-top:4px"><kbd>Shift + Numpad</kbd> : Tua lùi theo giây</div>
+                    <div><kbd>A</kbd> / <kbd>D</kbd> (hoặc <kbd>J</kbd> / <kbd>L</kbd>) : Tua lùi / tiến 10 giây</div>
+                    <div style="margin-top:4px"><kbd>S</kbd> (hoặc <kbd>K</kbd>) : Tạm dừng / phát tiếp</div>
+                    <div style="margin-top:4px"><kbd>4</kbd> / <kbd>6</kbd> (Numpad) : Tua lùi / tiến 10 giây</div>
+                    <div style="margin-top:4px"><kbd>8</kbd> / <kbd>2</kbd> (Numpad) : Tăng / giảm âm lượng</div>
+                    <div style="margin-top:4px"><kbd>5</kbd> (Numpad) : Tạm dừng / phát tiếp</div>
                 </div>
             </div>
         `);

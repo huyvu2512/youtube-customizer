@@ -416,24 +416,30 @@ function triggerCleanSeek(player) {
 
 function changeVolume(player, delta) {
     if (!player) return;
-    const key = delta > 0 ? 'ArrowUp' : 'ArrowDown';
-    const keyCode = delta > 0 ? 38 : 40;
-    const vBefore = typeof player.getVolume === 'function' ? player.getVolume() : null;
+    try {
+        if (delta > 0 && typeof player.volumeUp === 'function') {
+            player.volumeUp();
+            if (typeof player.unMute === 'function' && player.isMuted?.()) player.unMute();
+            return;
+        } else if (delta < 0 && typeof player.volumeDown === 'function') {
+            player.volumeDown();
+            return;
+        }
+    } catch (e) {}
 
-    player.dispatchEvent(new KeyboardEvent('keydown', {
-        key,
-        code: key,
-        keyCode,
-        which: keyCode,
-        bubbles: true,
-        cancelable: true
-    }));
+    try {
+        if (typeof player.getVolume === 'function' && typeof player.setVolume === 'function') {
+            const cur = player.getVolume();
+            const next = Math.max(0, Math.min(100, cur + delta));
+            player.setVolume(next);
+            if (delta > 0 && typeof player.unMute === 'function' && player.isMuted?.()) player.unMute();
+            return;
+        }
+    } catch (e) {}
 
-    const vAfter = typeof player.getVolume === 'function' ? player.getVolume() : null;
-    if (vBefore !== null && vAfter !== null && vBefore === vAfter) {
-        const next = Math.max(0, Math.min(100, Math.round(vBefore + delta)));
-        player.setVolume?.(next);
-        if (delta > 0 && player.isMuted?.()) player.unMute?.();
+    const video = getPlayerVideo(player);
+    if (video) {
+        video.volume = Math.max(0, Math.min(1, video.volume + delta / 100));
     }
 }
 
@@ -442,7 +448,7 @@ export function bindGlobalKeys() {
     if (keysBound) return;
     keysBound = true;
 
-    document.addEventListener('keydown', (e) => {
+    const handleKeyDown = (e) => {
         if (!currentConfig.keyboardControls) return;
         if (e.isComposing || e.keyCode === 229) return;
 
@@ -457,32 +463,46 @@ export function bindGlobalKeys() {
         let captured = false;
         let isSeekAction = false;
         const code = e.code || '';
-        const isNumpad = (e.location === 3) || code.startsWith('Numpad');
+        const isNumpad = (e.location === 3) || 
+                         code.startsWith('Numpad') || 
+                         (e.keyCode >= 96 && e.keyCode <= 111) || 
+                         (e.keyCode === 12);
         const asdAllowed = canUseAsdKeys(player);
 
         if (isNumpad) {
             captured = true;
-            if (e.key === '8' || e.key === 'ArrowUp' || code === 'Numpad8' || code === 'NumpadAdd' || e.key === '+') {
+            // Numpad 8: Tăng âm lượng
+            if (code === 'Numpad8' || e.key === '8' || e.key === 'ArrowUp' || e.keyCode === 104 || e.keyCode === 38) {
                 changeVolume(player, 5);
-            } else if (e.key === '2' || e.key === 'ArrowDown' || code === 'Numpad2' || code === 'NumpadSubtract' || e.key === '-') {
+            }
+            // Numpad 2: Giảm âm lượng
+            else if (code === 'Numpad2' || e.key === '2' || e.key === 'ArrowDown' || e.keyCode === 98 || e.keyCode === 40) {
                 changeVolume(player, -5);
-            } else if (e.key === '4' || e.key === 'ArrowLeft' || code === 'Numpad4') {
+            }
+            // Numpad 4: Tua lùi 10 giây
+            else if (code === 'Numpad4' || e.key === '4' || e.key === 'ArrowLeft' || e.keyCode === 100 || e.keyCode === 37) {
                 seekBySeconds(player, -10);
                 isSeekAction = true;
-            } else if (e.key === '6' || e.key === 'ArrowRight' || code === 'Numpad6') {
+            }
+            // Numpad 6: Tua tiến 10 giây
+            else if (code === 'Numpad6' || e.key === '6' || e.key === 'ArrowRight' || e.keyCode === 102 || e.keyCode === 39) {
                 seekBySeconds(player, 10);
                 isSeekAction = true;
-            } else if (e.key === '5' || e.key === 'Clear' || code === 'Numpad5' || e.keyCode === 12) {
+            }
+            // Numpad 5: Tạm dừng / phát tiếp
+            else if (code === 'Numpad5' || e.key === '5' || e.key === 'Clear' || e.keyCode === 101 || e.keyCode === 12) {
                 togglePlayback(player);
             }
-        } else if (asdAllowed && code === 'KeyA') {
+            // Các phím Numpad khác (0, 1, 3, 7, 9, ., +, -, *, /, Enter, NumLock...):
+            // captured = true chặn hoàn toàn không làm gì cả, chống triệt để lỗi bấm số 1-9 nhảy % video khi bật NumLock
+        } else if (asdAllowed && (code === 'KeyA' || (!e.ctrlKey && !e.altKey && !e.metaKey && (code === 'KeyJ' || e.key === 'j' || e.key === 'J')))) {
             captured = true;
             seekBySeconds(player, -10);
             isSeekAction = true;
-        } else if (asdAllowed && code === 'KeyS') {
+        } else if (asdAllowed && (code === 'KeyS' || (!e.ctrlKey && !e.altKey && !e.metaKey && (code === 'KeyK' || e.key === 'k' || e.key === 'K')))) {
             captured = true;
             togglePlayback(player);
-        } else if (asdAllowed && code === 'KeyD') {
+        } else if (asdAllowed && (code === 'KeyD' || (!e.ctrlKey && !e.altKey && !e.metaKey && (code === 'KeyL' || e.key === 'l' || e.key === 'L')))) {
             captured = true;
             seekBySeconds(player, 10);
             isSeekAction = true;
@@ -494,6 +514,7 @@ export function bindGlobalKeys() {
 
         if (captured) {
             e.preventDefault();
+            e.stopPropagation();
             e.stopImmediatePropagation();
         } else if (['ArrowLeft', 'ArrowRight', 'j', 'l', 'J', 'L'].includes(e.key)) {
             isSeekAction = true;
@@ -502,7 +523,10 @@ export function bindGlobalKeys() {
         if (isSeekAction) {
             triggerCleanSeek(player);
         }
-    }, true);
+    };
+
+    window.addEventListener('keydown', handleKeyDown, true);
+    document.addEventListener('keydown', handleKeyDown, true);
 }
 
 // --------------------------------------------------------------------------

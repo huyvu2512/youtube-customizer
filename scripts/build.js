@@ -11,7 +11,7 @@ const outFile = path.join(rootDir, 'youtube_customizer.js');
 const isWatch = process.argv.includes('--watch');
 
 const banner = `// ==UserScript==
-// YouTube Customizer v2.9.1 — https://github.com/huyvu2512/youtube-customizer
+// YouTube Customizer v2.9.2 — https://github.com/huyvu2512/youtube-customizer
 // ==/UserScript==`;
 
 async function buildWithEsbuild() {
