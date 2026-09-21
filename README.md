@@ -4,8 +4,8 @@
 
 **Userscript Tampermonkey tùy biến giao diện YouTube, tối ưu hiệu năng và điều khiển video thông minh**
 
-[![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
-[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![Version](https://img.shields.io/badge/Version-2.6-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
@@ -26,7 +26,7 @@
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
 Phiên bản **v2.6** mang đến bước cải tiến lớn:
-- **Phân nhóm cài đặt trong Menu theo 4 Tab:** Bảng cài đặt được tái cấu trúc thành 4 danh mục trực quan gồm **🏠 Giao diện**, **🛡️ Lọc nội dung**, **🎬 Trình phát** và **⌨️ Phím tắt**. Giúp giao diện gọn gàng, không bị dài tràn màn hình và dễ dàng tinh chỉnh từng nhóm chức năng.
+- **Phân nhóm cài đặt trong Menu theo 4 Tab:** Bảng cài đặt được tái cấu trúc thành 4 danh mục trực quan gồm **Giao diện**, **Lọc nội dung**, **Trình phát** và **Phím tắt**. Giúp giao diện gọn gàng, không bị dài tràn màn hình và dễ dàng tinh chỉnh từng nhóm chức năng.
 - **Ẩn thẻ kết thúc video (Endscreen Cards) & Thẻ chú thích (Info Cards):** Tự động ẩn các khung hình chữ nhật gợi ý video tiếp theo thường đè lên 15–20 giây cuối video (`.ytp-ce-element`), đồng thời ẩn nút biểu tượng chữ `(i)` và thẻ gợi ý góc trên bên phải giúp người xem trọn vẹn toàn bộ phần kết của video.
 - **Ẩn Bài đăng cộng đồng trên Trang chủ (Hide Community Posts):** Lọc sạch các bài thăm dò ý kiến (polls), bài viết chia sẻ hình ảnh dạng bài đăng cộng đồng xen kẽ giữa các video trên feed/trang chủ.
 - **Tự động đóng các Banner thông báo phiền toái (Auto-dismiss Promos):** Tự động đóng các thanh thông báo ưu đãi (`ytd-mealbar-promo-renderer`), banner mua YouTube Premium, khảo sát ý kiến và popup đề xuất ứng dụng/thiết bị.
@@ -110,7 +110,7 @@ Cài đặt tiện ích quản lý Userscript trên trình duyệt của bạn:
 
 ### Cách 1: Cài đặt trực tiếp từ GitHub (Khuyên dùng)
 
-[![Cài đặt Script](https://img.shields.io/badge/CÀI%20ĐẶT-SCRIPT-2ea44f?style=for-the-badge&logo=tampermonkey)](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)
+[![Cài đặt Script](https://img.shields.io/badge/CÀI%20ĐẶT-SCRIPT-2ea44f?style=for-the-badge)](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)
 
 1. Nhấp vào nút **CÀI ĐẶT SCRIPT** ở trên (hoặc mở [liên kết tệp script](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)).
 2. Tiện ích Tampermonkey sẽ tự động mở giao diện cài đặt, chọn **Install** (hoặc **Update** nếu đã cài bản cũ).
