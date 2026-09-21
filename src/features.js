@@ -644,6 +644,7 @@ export function bindGlobalKeys() {
         }
 
         if (isSeekAction && player) {
+            recordUserSeek();
             triggerCleanSeek(player);
         }
     };
@@ -740,5 +741,106 @@ export {
     initChatOverlay,
     requestExistingMessages
 } from './chat.js';
+
+// --------------------------------------------------------------------------
+// 8. TỰ ĐỘNG GIỮ MỐC TRỰC TIẾP (AUTO LIVE SYNC)
+// --------------------------------------------------------------------------
+let autoLiveSyncTimer = null;
+let lastSnapTime = 0;
+let lastUserSeekTime = 0;
+
+export function recordUserSeek() {
+    lastUserSeekTime = Date.now();
+}
+
+export function initAutoLiveSync() {
+    if (autoLiveSyncTimer) return;
+
+    function checkLiveSync() {
+        if (!currentConfig.autoLiveSync) return;
+
+        const player = document.querySelector('#movie_player, .html5-video-player');
+        if (!player) return;
+
+        const video = player.querySelector('video');
+        if (!video || video.paused || video.ended) return;
+
+        // Nếu người dùng vừa chủ động tua lại để xem, tạm hoãn auto sync 25 giây
+        if (Date.now() - lastUserSeekTime < 25000) return;
+
+        const liveBadge = player.querySelector('.ytp-live-badge');
+        if (!liveBadge) return; // Không phải luồng phát trực tiếp (Live)
+
+        // Tính toán độ lệch thời gian thực tế so với mốc Live Head qua seekable end
+        let delay = 0;
+        try {
+            if (video.seekable && video.seekable.length > 0) {
+                const liveEdge = video.seekable.end(video.seekable.length - 1);
+                if (isFinite(liveEdge) && isFinite(video.currentTime)) {
+                    delay = Math.max(0, liveEdge - video.currentTime);
+                }
+            }
+        } catch (e) {}
+
+        const isBadgeBehind = !liveBadge.hasAttribute('disabled');
+        const isBehind = isBadgeBehind || delay > 2.5;
+
+        // Đang ở sát mốc trực tiếp: đưa tốc độ phát về 1.0 bình thường nếu trước đó đang tăng tốc đuổi kịp
+        if (!isBehind) {
+            if (video.playbackRate === 1.08) {
+                video.playbackRate = 1.0;
+            }
+            return;
+        }
+
+        const now = Date.now();
+
+        // Trường hợp 1: Chậm đáng kể (> 5.5s) hoặc nút trực tiếp bật sáng mà độ lệch > 3.5s
+        // -> Nhấp nút trực tiếp để lập tức chuyển video về mốc phát trực tiếp
+        if (delay > 5.5 || (isBadgeBehind && delay > 3.5)) {
+            if (now - lastSnapTime > 5000) {
+                lastSnapTime = now;
+                try {
+                    liveBadge.click();
+                } catch (e) {
+                    if (typeof player.seekTo === 'function') {
+                        player.seekTo(Infinity, true);
+                    }
+                }
+                if (video.playbackRate === 1.08) {
+                    video.playbackRate = 1.0;
+                }
+            }
+        }
+        // Trường hợp 2: Chậm nhẹ (2.0s - 5.5s)
+        // -> Tăng tốc độ phát 1.08x để bắt kịp êm ái, hoàn toàn không giật hình hay ngắt tiếng
+        else if (delay > 2.0) {
+            if (video.playbackRate === 1.0) {
+                video.playbackRate = 1.08;
+            }
+        }
+    }
+
+    autoLiveSyncTimer = setInterval(checkLiveSync, 1500);
+
+    // Khi người dùng chuyển tab quay lại YouTube, kiểm tra và bắt kịp ngay lập tức
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && currentConfig.autoLiveSync) {
+            setTimeout(checkLiveSync, 300);
+        }
+    });
+
+    // Lắng nghe người dùng click trực tiếp vào nút Live Badge để xóa cờ hoãn tua
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.ytp-live-badge')) {
+            lastUserSeekTime = 0;
+            lastSnapTime = Date.now();
+        }
+        if (e.target.closest('.ytp-progress-bar')) {
+            recordUserSeek();
+        }
+    }, true);
+}
+
 
 

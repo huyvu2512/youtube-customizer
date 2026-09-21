@@ -17,7 +17,8 @@ import {
     initLiveDvrHook,
     initChatOverlay,
     updateChatOverlayVisibility,
-    initIframeChatSender
+    initIframeChatSender,
+    initAutoLiveSync
 } from './features.js';
 import { ensureSettingsElements, setupSettingsObserver } from './ui.js';
 
@@ -44,6 +45,7 @@ export const DEFAULT_CONFIG = {
     chatOverlay: 'off',     // 'off', 'danmaku', 'streamer'
     chatOverlayHideOnRewind: true, // Tự động ẩn khi tua về quá khứ
     autoDismissPromos: true,// Tự động đóng banner khuyến mại & thông báo gián đoạn
+    autoLiveSync: true,     // Tự động giữ mốc trực tiếp khi xem Live Stream
     premiumLogo: true,      // Logo YouTube Premium
     cleanSearch: true,      // Ẩn video tài trợ / quảng cáo tìm kiếm
     disableAmbient: true,   // Tắt Ambient Mode (Cinematics)
@@ -150,6 +152,7 @@ if (window.self !== window.top) {
         setupFullscreenLock();
         dismissPromoBanners(document);
         initChatOverlay();
+        initAutoLiveSync();
 
         if (location.pathname.startsWith('/watch')) {
             setWatchLoading(true);
@@ -180,6 +183,7 @@ if (window.self !== window.top) {
     setupFeedShelvesObserver();
     setupFullscreenLock();
     initChatOverlay();
+    initAutoLiveSync();
 
     if (location.pathname.startsWith('/watch')) {
         setWatchLoading(true);

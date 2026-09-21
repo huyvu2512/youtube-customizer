@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.0.3
-// @description  YouTube Customizer v3.0.3 — Tối ưu triệt để RAM & CPU, sửa lỗi ẩn Live Chat cả dạng ngang lẫn khung nổi.
+// @version      3.1.0
+// @description  YouTube Customizer v3.1.0 — Thêm tính năng tự động giữ mốc trực tiếp (Auto Live), tối ưu Live Chat và hiệu năng toàn diện.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -1092,6 +1092,7 @@
         isSeekAction = true;
       }
       if (isSeekAction && player) {
+        recordUserSeek();
         triggerCleanSeek(player);
       }
     };
@@ -1156,6 +1157,78 @@
     } catch (e) {
     }
   }
+  var autoLiveSyncTimer = null;
+  var lastSnapTime = 0;
+  var lastUserSeekTime = 0;
+  function recordUserSeek() {
+    lastUserSeekTime = Date.now();
+  }
+  function initAutoLiveSync() {
+    if (autoLiveSyncTimer) return;
+    function checkLiveSync() {
+      if (!currentConfig.autoLiveSync) return;
+      const player = document.querySelector("#movie_player, .html5-video-player");
+      if (!player) return;
+      const video = player.querySelector("video");
+      if (!video || video.paused || video.ended) return;
+      if (Date.now() - lastUserSeekTime < 25e3) return;
+      const liveBadge = player.querySelector(".ytp-live-badge");
+      if (!liveBadge) return;
+      let delay = 0;
+      try {
+        if (video.seekable && video.seekable.length > 0) {
+          const liveEdge = video.seekable.end(video.seekable.length - 1);
+          if (isFinite(liveEdge) && isFinite(video.currentTime)) {
+            delay = Math.max(0, liveEdge - video.currentTime);
+          }
+        }
+      } catch (e) {
+      }
+      const isBadgeBehind = !liveBadge.hasAttribute("disabled");
+      const isBehind = isBadgeBehind || delay > 2.5;
+      if (!isBehind) {
+        if (video.playbackRate === 1.08) {
+          video.playbackRate = 1;
+        }
+        return;
+      }
+      const now = Date.now();
+      if (delay > 5.5 || isBadgeBehind && delay > 3.5) {
+        if (now - lastSnapTime > 5e3) {
+          lastSnapTime = now;
+          try {
+            liveBadge.click();
+          } catch (e) {
+            if (typeof player.seekTo === "function") {
+              player.seekTo(Infinity, true);
+            }
+          }
+          if (video.playbackRate === 1.08) {
+            video.playbackRate = 1;
+          }
+        }
+      } else if (delay > 2) {
+        if (video.playbackRate === 1) {
+          video.playbackRate = 1.08;
+        }
+      }
+    }
+    autoLiveSyncTimer = setInterval(checkLiveSync, 1500);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && currentConfig.autoLiveSync) {
+        setTimeout(checkLiveSync, 300);
+      }
+    });
+    document.addEventListener("click", (e) => {
+      if (e.target.closest(".ytp-live-badge")) {
+        lastUserSeekTime = 0;
+        lastSnapTime = Date.now();
+      }
+      if (e.target.closest(".ytp-progress-bar")) {
+        recordUserSeek();
+      }
+    }, true);
+  }
 
   // src/ui.js
   var GEAR_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>`;
@@ -1177,6 +1250,7 @@
   var WATERMARK_SVG = `<svg viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14zm-7-6h5v4h-5v-4z"/></svg>`;
   var REWIND_SVG = `<svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8zm-1 4v5l4.25 2.52.77-1.28-3.52-2.09V9H11z"/></svg>`;
   var MESSAGE_SVG = `<svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zm-9-5h2v2h-2zm-4 0h2v2H7zm8 0h2v2h-2z"/></svg>`;
+  var RADIO_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg>`;
   var menuDismissBound = false;
   function bindGlobalMenuDismiss() {
     if (menuDismissBound) return;
@@ -1215,7 +1289,7 @@
       panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v3.0.3</span>
+                <span class="ytc-header-badge">v3.1.0</span>
             </div>
 
             <div class="ytc-tabs">
@@ -1401,6 +1475,17 @@
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
+
+                <div class="ytc-item" data-toggle="autoLiveSync" title="Tự động giữ mốc trực tiếp khi xem Live Stream, chống trễ hình khi mạng lag hoặc chuyển tab">
+                    <div class="ytc-item-left">
+                        ${RADIO_SVG}
+                        <span>Tự động trực tiếp (Auto Live)</span>
+                    </div>
+                    <label class="ytc-switch">
+                        <input type="checkbox" id="ytc-chk-autolive" ${currentConfig.autoLiveSync ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
             </div>
 
             <!-- TAB 4: PHÍM TẮT & TIỆN ÍCH -->
@@ -1561,6 +1646,8 @@
     // Tự động ẩn khi tua về quá khứ
     autoDismissPromos: true,
     // Tự động đóng banner khuyến mại & thông báo gián đoạn
+    autoLiveSync: true,
+    // Tự động giữ mốc trực tiếp khi xem Live Stream
     premiumLogo: true,
     // Logo YouTube Premium
     cleanSearch: true,
@@ -1652,6 +1739,7 @@
       setupFullscreenLock();
       dismissPromoBanners(document);
       initChatOverlay();
+      initAutoLiveSync();
       if (location.pathname.startsWith("/watch")) {
         setWatchLoading(true);
       } else if (isHomeFeedPath()) {
@@ -1679,6 +1767,7 @@
     setupFeedShelvesObserver();
     setupFullscreenLock();
     initChatOverlay();
+    initAutoLiveSync();
     if (location.pathname.startsWith("/watch")) {
       setWatchLoading(true);
     }
