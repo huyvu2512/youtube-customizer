@@ -421,49 +421,63 @@ function getPlayerVideo(player) {
 let lastSeekAt = 0;
 const SEEK_COOLDOWN_MS = 80;
 
-let seekOsdTimer = null;
-function showSeekOsd(player, delta) {
-    if (!player) return;
-    let osd = player.querySelector('.ytc-seek-osd');
-    if (!osd) {
-        osd = document.createElement('div');
-        osd.className = 'ytc-seek-osd';
-        player.appendChild(osd);
+function dispatchYtSeek(key, delta) {
+    const keyCode = key === 'j' ? 74 : (key === 'l' ? 76 : (key === 'k' ? 75 : 0));
+    const code = key === 'j' ? 'KeyJ' : (key === 'l' ? 'KeyL' : (key === 'k' ? 'KeyK' : ''));
+    
+    const evDown = new KeyboardEvent('keydown', {
+        key,
+        code,
+        keyCode,
+        which: keyCode,
+        charCode: keyCode,
+        bubbles: true,
+        cancelable: true,
+        composed: true
+    });
+    evDown._ytcDispatched = true;
+
+    const evUp = new KeyboardEvent('keyup', {
+        key,
+        code,
+        keyCode,
+        which: keyCode,
+        charCode: keyCode,
+        bubbles: true,
+        cancelable: true,
+        composed: true
+    });
+    evUp._ytcDispatched = true;
+
+    const player = document.querySelector('#movie_player') || document.querySelector('.html5-video-player');
+    const target = player || document.body || document;
+
+    target.dispatchEvent(evDown);
+    window.dispatchEvent(evDown);
+    target.dispatchEvent(evUp);
+    window.dispatchEvent(evUp);
+
+    // Fallback nếu trình duyệt chặn synthetic event sau 60ms
+    if (player && delta) {
+        const tBefore = player.getCurrentTime ? player.getCurrentTime() : 0;
+        setTimeout(() => {
+            const tAfter = player.getCurrentTime ? player.getCurrentTime() : 0;
+            if (Math.abs(tAfter - tBefore) < 1) {
+                if (typeof player.seekBy === 'function') {
+                    player.seekBy(delta);
+                } else {
+                    const video = getPlayerVideo(player);
+                    if (video) video.currentTime += delta;
+                }
+            }
+        }, 60);
     }
-
-    const isFwd = delta > 0;
-    const sign = isFwd ? '+' : '-';
-    const text = `${sign}${Math.abs(delta)}s`;
-    const sideClass = isFwd ? 'fwd' : 'back';
-    const iconSvg = isFwd
-        ? `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg>`
-        : `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 18V6l-8.5 6 8.5 6zm9-12v12l-8.5-6 8.5-6z"/></svg>`;
-
-    osd.className = `ytc-seek-osd ${sideClass}`;
-    osd.innerHTML = safeHTML(`
-        <div class="ytc-seek-osd-inner">
-            ${iconSvg}
-            <span>${text}</span>
-        </div>
-    `);
-
-    osd.classList.remove('animate');
-    void osd.offsetWidth; // Ép reflow để kích hoạt lại animation
-    osd.classList.add('animate');
-
-    clearTimeout(seekOsdTimer);
-    seekOsdTimer = setTimeout(() => {
-        osd.classList.remove('animate');
-    }, 700);
 }
 
 function seekBySeconds(player, delta) {
     const now = Date.now();
     if (now - lastSeekAt < SEEK_COOLDOWN_MS) return false;
     lastSeekAt = now;
-
-    // Hiển thị hiệu ứng OSD +10s / -10s trực quan
-    showSeekOsd(player, delta);
 
     try {
         if (typeof player.seekBy === 'function') {
@@ -546,23 +560,13 @@ function changeVolume(player, delta) {
     }
 }
 
-function dispatchYtKey(key) {
-    document.dispatchEvent(new KeyboardEvent('keydown', {
-        key,
-        code: key === 'j' ? 'KeyJ' : key === 'k' ? 'KeyK' : 'KeyL',
-        keyCode: key === 'j' ? 74 : key === 'k' ? 75 : 76,
-        which: key === 'j' ? 74 : key === 'k' ? 75 : 76,
-        bubbles: true,
-        cancelable: true,
-    }));
-}
-
 let keysBound = false;
 export function bindGlobalKeys() {
     if (keysBound) return;
     keysBound = true;
 
     const handleKeyDown = (e) => {
+        if (e._ytcDispatched) return;
         if (!currentConfig.keyboardControls) return;
         if (e.isComposing || e.keyCode === 229) return;
 
@@ -595,35 +599,35 @@ export function bindGlobalKeys() {
             else if (code === 'Numpad2' || e.key === '2' || e.key === 'ArrowDown' || e.keyCode === 98 || e.keyCode === 40) {
                 if (player) changeVolume(player, -5);
             }
-            // Numpad 4: Tua lùi 10 giây
+            // Numpad 4: Tua lùi 10 giây (kích hoạt phím J mặc định của YouTube để hiện hiệu ứng tròn tua)
             else if (code === 'Numpad4' || e.key === '4' || e.key === 'ArrowLeft' || e.keyCode === 100 || e.keyCode === 37) {
-                if (player && !seekBySeconds(player, -10)) dispatchYtKey('j');
+                dispatchYtSeek('j', -10);
                 isSeekAction = true;
             }
-            // Numpad 6: Tua tiến 10 giây
+            // Numpad 6: Tua tiến 10 giây (kích hoạt phím L mặc định của YouTube để hiện hiệu ứng tròn tua)
             else if (code === 'Numpad6' || e.key === '6' || e.key === 'ArrowRight' || e.keyCode === 102 || e.keyCode === 39) {
-                if (player && !seekBySeconds(player, 10)) dispatchYtKey('l');
+                dispatchYtSeek('l', 10);
                 isSeekAction = true;
             }
-            // Numpad 5: Tạm dừng / phát tiếp
+            // Numpad 5: Tạm dừng / phát tiếp (kích hoạt phím K mặc định của YouTube)
             else if (code === 'Numpad5' || e.key === '5' || e.key === 'Clear' || e.keyCode === 101 || e.keyCode === 12) {
-                if (player && !togglePlayback(player)) dispatchYtKey('k');
+                dispatchYtSeek('k');
             }
             // Tất cả phím Numpad còn lại (1, 3, 7, 9, 0, ., +, -, *, /, Enter, NumLock...):
             // captured = true đã được thiết lập ở trên, chặn đứng hoàn toàn, không thực hiện gì cả.
             // Triệt tiêu 100% lỗi bấm 1, 7 nhảy đầu/cuối video, 3, 9 cuộn trang khi tắt NumLock và nhảy % video khi bật NumLock!
         }
-        // --- ĐIỀU KHIỂN BẰNG A / S / D hoặc J / K / L ---
-        else if (asdAllowed && (code === 'KeyA' || (!e.ctrlKey && !e.altKey && !e.metaKey && (code === 'KeyJ' || e.key === 'j' || e.key === 'J')))) {
+        // --- ĐIỀU KHIỂN BẰNG A / S / D (Kích hoạt phím J/K/L mặc định của YouTube) ---
+        else if (asdAllowed && code === 'KeyA') {
             captured = true;
-            if (player && !seekBySeconds(player, -10)) dispatchYtKey('j');
+            dispatchYtSeek('j', -10);
             isSeekAction = true;
-        } else if (asdAllowed && (code === 'KeyS' || (!e.ctrlKey && !e.altKey && !e.metaKey && (code === 'KeyK' || e.key === 'k' || e.key === 'K')))) {
+        } else if (asdAllowed && code === 'KeyS') {
             captured = true;
-            if (player && !togglePlayback(player)) dispatchYtKey('k');
-        } else if (asdAllowed && (code === 'KeyD' || (!e.ctrlKey && !e.altKey && !e.metaKey && (code === 'KeyL' || e.key === 'l' || e.key === 'L')))) {
+            dispatchYtSeek('k');
+        } else if (asdAllowed && code === 'KeyD') {
             captured = true;
-            if (player && !seekBySeconds(player, 10)) dispatchYtKey('l');
+            dispatchYtSeek('l', 10);
             isSeekAction = true;
         } else if (!e.ctrlKey && !e.altKey && !e.metaKey && (code === 'KeyF' || e.key === 'f' || e.key === 'F')) {
             if (isWatchLoading) {
@@ -645,6 +649,7 @@ export function bindGlobalKeys() {
     };
 
     const handleKeyUp = (e) => {
+        if (e._ytcDispatched) return;
         if (!currentConfig.keyboardControls) return;
         const target = e.target;
         if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {

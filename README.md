@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-2.9.7-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-2.9.8-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,9 +25,9 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v2.9.7** nâng cấp:
+Phiên bản **v2.9.8** nâng cấp:
+- **Kích hoạt hiệu ứng tua mặc định của YouTube cho Numpad 4/6 và A/D:** Thay vì tạo hiệu ứng riêng, khi bấm Numpad 4 hoặc phím A sẽ kích hoạt phím J mặc định của YouTube (tua lùi 10 giây kèm hiệu ứng vòng xoay tròn mặc định của YouTube); khi bấm Numpad 6 hoặc phím D sẽ kích hoạt phím L mặc định của YouTube (tua tiến 10 giây kèm hiệu ứng mặc định). Bấm Numpad 5 hoặc S kích hoạt phím K dừng/phát.
 - **Mở rộng khung Menu cài đặt 4 Tab:** Tăng chiều rộng menu lên 350px và điều chỉnh khoảng cách tab, giúp các tab có tên dài như "Giao diện" và "Trình phát" hiển thị rộng rãi, không bị co hẹp hay khó bấm.
-- **Bổ sung hiệu ứng OSD tua video (+10s / -10s):** Khi sử dụng phím Numpad 4/6 hoặc A/D, màn hình video sẽ hiển thị hiệu ứng OSD tròn gợn sóng mờ dạng vòng xoay trực quan kèm số giây tua (+10s ở bên phải, -10s ở bên trái) tương tự cử chỉ tua chuẩn của YouTube.
 - **Tối ưu hóa và sửa triệt để Live Chat:**
   - **Khóa ẩn tuyệt đối khi tắt:** Khi chọn chế độ "Tắt", khung chat bị triệt tiêu hoàn toàn (display: none !important), không còn tình trạng sót khung trên màn hình video.
   - **Khắc phục lỗi không nhận tin nhắn:** Sửa cơ chế kết nối iframe chatframe, hỗ trợ nạp ngay các tin nhắn sẵn có và tự động lắng nghe tin nhắn mới cho cả chế độ Ngang (Danmaku) và Nổi (Live Chat).
