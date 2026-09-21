@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      2.9.9.1
-// @description  YouTube Customizer v2.9.9.1 — Tách riêng module chat.js, sửa triệt để Live Chat (bắt tin nhắn trực tiếp trên Main DOM và Iframe), chuẩn hóa Danmaku & Streamer Box.
+// @version      2.9.9.2
+// @description  YouTube Customizer v2.9.9.2 — Khắc phục triệt để Live Chat nổi (hiện chính giữa video lần đầu bật, giữ khung ban đầu, xóa phông sau khi di chuột ra, làm mới tức thì và bắt tin nhắn chuẩn xác).
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

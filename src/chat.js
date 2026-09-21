@@ -41,13 +41,52 @@ function getSavedChatBoxPos() {
         const stored = localStorage.getItem(CHATBOX_POS_KEY);
         if (stored) return JSON.parse(stored);
     } catch (e) {}
-    return { top: '15%', right: '20px', left: '', width: '340px', height: '260px' };
+    return null; // Trả về null nếu chưa từng lưu để đặt ở chính giữa mặc định
 }
 
 function saveChatBoxPos(pos) {
     try {
         localStorage.setItem(CHATBOX_POS_KEY, JSON.stringify(pos));
     } catch (e) {}
+}
+
+function centerChatBox(box, player) {
+    if (!box || !player) return;
+    const pRect = player.getBoundingClientRect();
+    const pWidth = pRect.width || player.offsetWidth || window.innerWidth;
+    const pHeight = pRect.height || player.offsetHeight || window.innerHeight;
+
+    const boxW = Math.min(380, Math.max(280, Math.round(pWidth * 0.38)));
+    const boxH = Math.min(300, Math.max(180, Math.round(pHeight * 0.42)));
+    const left = Math.max(10, Math.round((pWidth - boxW) / 2));
+    const top = Math.max(10, Math.round((pHeight - boxH) / 2));
+
+    box.style.left = `${left}px`;
+    box.style.top = `${top}px`;
+    box.style.right = 'auto';
+    box.style.bottom = 'auto';
+    box.style.width = `${boxW}px`;
+    box.style.height = `${boxH}px`;
+}
+
+function showInitialBox(box) {
+    if (!box) return;
+    box.classList.add('ytc-box-initial');
+    let hasEntered = false;
+
+    const onEnter = () => {
+        hasEntered = true;
+    };
+    const onLeave = () => {
+        if (hasEntered) {
+            box.classList.remove('ytc-box-initial');
+            box.removeEventListener('mouseenter', onEnter);
+            box.removeEventListener('mouseleave', onLeave);
+        }
+    };
+
+    box.addEventListener('mouseenter', onEnter);
+    box.addEventListener('mouseleave', onLeave);
 }
 
 // --------------------------------------------------------------------------
@@ -76,18 +115,19 @@ export function ensureChatOverlayContainers() {
         streamerBox.id = 'ytc-streamer-box';
 
         const pos = getSavedChatBoxPos();
-        if (pos.left) streamerBox.style.left = pos.left;
-        else if (pos.right) streamerBox.style.right = pos.right;
-        else streamerBox.style.right = '20px';
-
-        if (pos.top) streamerBox.style.top = pos.top;
-        else streamerBox.style.top = '15%';
-
-        if (pos.width) streamerBox.style.width = pos.width;
-        if (pos.height) streamerBox.style.height = pos.height;
+        if (pos && (pos.left || pos.right)) {
+            if (pos.left) streamerBox.style.left = pos.left;
+            else if (pos.right) streamerBox.style.right = pos.right;
+            if (pos.top) streamerBox.style.top = pos.top;
+            if (pos.width) streamerBox.style.width = pos.width;
+            if (pos.height) streamerBox.style.height = pos.height;
+        } else {
+            // Lần đầu bật: hiện ở CHÍNH GIỮA khung video để người dùng nhận ra ngay
+            centerChatBox(streamerBox, player);
+        }
 
         streamerBox.innerHTML = safeHTML(`
-            <div class="ytc-box-header" title="Giữ chuột để kéo thả vị trí">
+            <div class="ytc-box-header" title="Giữ chuột để kéo thả vị trí (nhấp đúp để đặt lại về giữa)">
                 <span>💬 Live Chat</span>
                 <span style="font-size:10px;opacity:0.7">Kéo thả</span>
             </div>
@@ -96,12 +136,10 @@ export function ensureChatOverlayContainers() {
         `);
 
         player.appendChild(streamerBox);
-        streamerMessages = streamerBox.querySelector('.ytc-box-messages');
-
         setupChatBoxInteractions(streamerBox, player);
     }
 
-    updateChatOverlayVisibility();
+    streamerMessages = streamerBox.querySelector('.ytc-box-messages');
 }
 
 function setupChatBoxInteractions(box, player) {
@@ -110,6 +148,19 @@ function setupChatBoxInteractions(box, player) {
 
     // Kéo thả vị trí (Drag & Drop)
     if (header) {
+        header.addEventListener('dblclick', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            centerChatBox(box, player);
+            saveChatBoxPos({
+                left: box.style.left,
+                top: box.style.top,
+                right: '',
+                width: box.style.width,
+                height: box.style.height
+            });
+        });
+
         header.addEventListener('mousedown', (e) => {
             if (e.button !== 0) return;
             e.preventDefault();
@@ -271,7 +322,10 @@ export function displayChatMessage(data) {
     }
 
     // Chế độ 2: Khung nổi Streamer
-    if (currentConfig.chatOverlay === 'streamer' && streamerMessages) {
+    if (currentConfig.chatOverlay === 'streamer') {
+        const msgContainer = streamerMessages || document.querySelector('#ytc-streamer-box .ytc-box-messages');
+        if (!msgContainer) return;
+
         const item = document.createElement('div');
         item.className = 'ytc-box-item';
 
@@ -286,10 +340,10 @@ export function displayChatMessage(data) {
             </div>
         `);
 
-        streamerMessages.appendChild(item);
+        msgContainer.appendChild(item);
 
-        while (streamerMessages.children.length > 12) {
-            streamerMessages.firstElementChild.remove();
+        while (msgContainer.children.length > 15) {
+            msgContainer.firstElementChild.remove();
         }
 
         setTimeout(() => {
@@ -305,15 +359,14 @@ export function displayChatMessage(data) {
 // --------------------------------------------------------------------------
 // 4. QUAN SÁT VÀ NẠP TIN NHẮN TỪ TẤT CẢ CÁC NGUỒN (MAIN DOM & IFRAME)
 // --------------------------------------------------------------------------
-function getChatItemsContainer(scope) {
-    const root = scope || document;
-    return root.querySelector(
-        'yt-live-chat-item-list-renderer #items, ' +
-        '#items.yt-live-chat-item-list-renderer, ' +
-        '#item-scroller #items, ' +
-        '#chat #items, ' +
-        'div#items'
-    );
+function ensureYouTubeLiveChatOpen() {
+    const chatFrame = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy');
+    if (chatFrame && chatFrame.hasAttribute('collapsed')) {
+        const expandBtn = document.querySelector('#show-hide-button button, ytd-live-chat-frame #show-hide-button button, #chat-container #show-hide-button button, [aria-label*="Hiện cuộc trò chuyện"], [aria-label*="Show chat"], [aria-label*="Live chat"]');
+        if (expandBtn) {
+            try { expandBtn.click(); } catch(e) {}
+        }
+    }
 }
 
 function getAllChatElements(scope) {
@@ -326,83 +379,68 @@ function getAllChatElements(scope) {
     );
 }
 
-function attachChatObserver(itemsContainer) {
-    if (!itemsContainer || itemsContainer._ytcObsBound) return;
-    itemsContainer._ytcObsBound = true;
-
-    // Nạp ngay các tin nhắn gần nhất hiện có
-    const existing = getAllChatElements(itemsContainer);
-    if (existing.length) {
-        Array.from(existing).slice(-8).forEach((node, i) => {
-            const data = extractMessageData(node);
-            if (data) {
-                setTimeout(() => displayChatMessage(data), i * 350);
-            }
-        });
+function queryAllLiveChatMessages() {
+    const msgs = [];
+    // 1. Quét trong main document
+    const mainEls = getAllChatElements(document);
+    if (mainEls && mainEls.length) {
+        mainEls.forEach(el => msgs.push(el));
     }
 
-    const obs = new MutationObserver((mutations) => {
-        for (const m of mutations) {
-            for (const node of m.addedNodes) {
-                if (node.nodeType === 1) {
-                    if (node.matches && node.matches('yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, [class*="yt-live-chat-"]')) {
-                        const data = extractMessageData(node);
-                        if (data) displayChatMessage(data);
-                    } else if (node.querySelectorAll) {
-                        const subs = getAllChatElements(node);
-                        subs.forEach((s) => {
-                            const data = extractMessageData(s);
-                            if (data) displayChatMessage(data);
-                        });
-                    }
+    // 2. Quét trong iframe (nếu có)
+    const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]');
+    frames.forEach(frame => {
+        try {
+            const doc = frame.contentDocument || frame.contentWindow?.document;
+            if (doc) {
+                const iframeEls = getAllChatElements(doc);
+                if (iframeEls && iframeEls.length) {
+                    iframeEls.forEach(el => msgs.push(el));
                 }
             }
-        }
+        } catch (e) {}
     });
 
-    obs.observe(itemsContainer, { childList: true });
+    return msgs;
 }
 
 export function requestExistingMessages() {
-    // 1. Thử quét trong Main Document
-    const mainItems = getChatItemsContainer(document);
-    if (mainItems) {
-        const existing = getAllChatElements(mainItems);
-        if (existing.length) {
-            Array.from(existing).slice(-8).forEach((node, i) => {
+    ensureYouTubeLiveChatOpen();
+
+    function doFetch() {
+        const allExisting = queryAllLiveChatMessages();
+        if (allExisting && allExisting.length > 0) {
+            const recent = allExisting.slice(-15);
+            recent.forEach((node, i) => {
                 const data = extractMessageData(node);
                 if (data) {
-                    setTimeout(() => displayChatMessage(data), i * 350);
+                    setTimeout(() => displayChatMessage(data), i * 80);
                 }
             });
-            return;
+            return true;
         }
+        return false;
     }
 
-    // 2. Thử gửi postMessage và đọc contentDocument từ iframe (nếu có)
-    const frame = document.querySelector('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]');
-    if (frame) {
+    // Quét ngay lập tức
+    const found = doFetch();
+
+    // Nếu chưa có (chat đang tải hoặc bung ra), thử lại nhiều mốc thời gian
+    if (!found) {
+        setTimeout(doFetch, 500);
+        setTimeout(doFetch, 1200);
+        setTimeout(doFetch, 2500);
+    }
+
+    // Gửi postMessage tới iframe nếu có
+    const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]');
+    frames.forEach(frame => {
         if (frame.contentWindow) {
             try {
                 frame.contentWindow.postMessage({ type: 'YTC_REQUEST_EXISTING_MSGS' }, '*');
             } catch (e) {}
         }
-        try {
-            const doc = frame.contentDocument || frame.contentWindow?.document;
-            const iframeItems = getChatItemsContainer(doc);
-            if (iframeItems) {
-                const existing = getAllChatElements(iframeItems);
-                if (existing.length) {
-                    Array.from(existing).slice(-8).forEach((node, i) => {
-                        const data = extractMessageData(node);
-                        if (data) {
-                            setTimeout(() => displayChatMessage(data), i * 350);
-                        }
-                    });
-                }
-            }
-        } catch (e) {}
-    }
+    });
 }
 
 export function updateChatOverlayVisibility() {
@@ -415,17 +453,21 @@ export function updateChatOverlayVisibility() {
 
     if (danmaku) {
         danmaku.style.display = mode === 'danmaku' ? 'block' : 'none';
-        if (mode !== 'danmaku') danmaku.innerHTML = '';
+        danmaku.innerHTML = '';
     }
     if (streamer) {
         streamer.style.display = mode === 'streamer' ? 'flex' : 'none';
-        if (mode !== 'streamer') {
-            const msgs = streamer.querySelector('.ytc-box-messages');
-            if (msgs) msgs.innerHTML = '';
+        const msgs = streamer.querySelector('.ytc-box-messages');
+        if (msgs) msgs.innerHTML = '';
+
+        if (mode === 'streamer') {
+            showInitialBox(streamer);
         }
     }
 
     if (mode !== 'off') {
+        // Bắt buộc mỗi lần bật là làm mới luôn!
+        seenMessageIds.clear();
         requestExistingMessages();
     }
 }
@@ -498,7 +540,7 @@ export function initIframeChatSender() {
     function sendExisting(items) {
         const existing = getAllChatElements(items);
         if (existing && existing.length) {
-            const recent = Array.from(existing).slice(-8);
+            const recent = Array.from(existing).slice(-10);
             recent.forEach((node) => {
                 const data = extractMessageData(node);
                 if (data) {
@@ -525,7 +567,7 @@ export function initIframeChatSender() {
     }
 
     function tryFindItems() {
-        const items = getChatItemsContainer(document);
+        const items = document.querySelector('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #chat #items, div#items');
         if (items) {
             attach(items);
             return true;
@@ -543,8 +585,58 @@ export function initIframeChatSender() {
 
     window.addEventListener('message', (e) => {
         if (e.data && e.data.type === 'YTC_REQUEST_EXISTING_MSGS') {
-            const items = getChatItemsContainer(document);
+            const items = document.querySelector('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #chat #items, div#items') || document;
             if (items) sendExisting(items);
+        }
+    });
+}
+
+function processChatNode(node) {
+    if (!node || node.nodeType !== 1) return;
+
+    if (node.matches && node.matches('yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, yt-live-chat-paid-sticker-renderer')) {
+        const data = extractMessageData(node);
+        if (data) {
+            displayChatMessage(data);
+        } else {
+            setTimeout(() => {
+                const retryData = extractMessageData(node);
+                if (retryData) displayChatMessage(retryData);
+            }, 60);
+        }
+    }
+
+    if (node.querySelectorAll) {
+        const subs = getAllChatElements(node);
+        if (subs.length > 0) {
+            subs.forEach(s => {
+                const data = extractMessageData(s);
+                if (data) displayChatMessage(data);
+                else {
+                    setTimeout(() => {
+                        const retryData = extractMessageData(s);
+                        if (retryData) displayChatMessage(retryData);
+                    }, 60);
+                }
+            });
+        }
+    }
+}
+
+function observeItemsDirectly() {
+    const itemsContainers = document.querySelectorAll('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items');
+    itemsContainers.forEach(items => {
+        if (items && !items._ytcDirectObs) {
+            items._ytcDirectObs = true;
+            const itemsObs = new MutationObserver((mutations) => {
+                if (!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') return;
+                for (const m of mutations) {
+                    for (const node of m.addedNodes) {
+                        processChatNode(node);
+                    }
+                }
+            });
+            itemsObs.observe(items, { childList: true });
         }
     });
 }
@@ -563,26 +655,35 @@ export function initChatOverlay() {
         }
     });
 
-    // 2. Quét và gắn observer cho Main Document (Nơi YouTube nhúng native Polymer chat)
-    function scanMainDocument() {
-        const items = getChatItemsContainer(document);
-        if (items) {
-            attachChatObserver(items);
+    // 2. Quan sát trực tiếp mọi tin nhắn mới thêm vào DOM (bất kể nằm ở đâu)
+    const chatMessageObserver = new MutationObserver((mutations) => {
+        if (!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') return;
+
+        for (const m of mutations) {
+            for (const node of m.addedNodes) {
+                processChatNode(node);
+            }
         }
-    }
+        observeItemsDirectly();
+    });
+
+    const rootTarget = document.querySelector('ytd-watch-flexy, ytd-app') || document.body || document.documentElement;
+    chatMessageObserver.observe(rootTarget, { childList: true, subtree: true });
+
+    // Gắn trực tiếp cho container chat nếu đã có sẵn
+    observeItemsDirectly();
 
     // 3. Quét và gắn observer cho Iframe (nếu có)
     function scanIframe() {
+        observeItemsDirectly();
         const frame = document.querySelector('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]');
         if (!frame) return;
 
         try {
             const doc = frame.contentDocument || frame.contentWindow?.document;
-            if (doc && doc.body) {
-                const items = getChatItemsContainer(doc);
-                if (items) {
-                    attachChatObserver(items);
-                }
+            if (doc && doc.body && !doc._ytcObsBound) {
+                doc._ytcObsBound = true;
+                chatMessageObserver.observe(doc.body, { childList: true, subtree: true });
             }
         } catch (e) {}
 
@@ -591,34 +692,22 @@ export function initChatOverlay() {
             frame.addEventListener('load', () => {
                 try {
                     const doc = frame.contentDocument || frame.contentWindow?.document;
-                    if (doc) {
-                        const items = getChatItemsContainer(doc);
-                        if (items) attachChatObserver(items);
+                    if (doc && doc.body && !doc._ytcObsBound) {
+                        doc._ytcObsBound = true;
+                        chatMessageObserver.observe(doc.body, { childList: true, subtree: true });
                     }
                 } catch (e) {}
             });
         }
     }
 
-    scanMainDocument();
     scanIframe();
-
-    // Theo dõi DOM thay đổi để bắt kịp khi chat được nạp động
-    const chatObserver = new MutationObserver(() => {
-        scanMainDocument();
-        scanIframe();
-    });
-
-    const root = document.querySelector('ytd-app') || document.body || document.documentElement;
-    chatObserver.observe(root, { childList: true, subtree: true });
 
     if (liveCheckTimer) clearInterval(liveCheckTimer);
     liveCheckTimer = setInterval(checkLiveHeadStatus, 600);
 
-    // Định kỳ quét bảo đảm không bị sót khi chuyển đổi video trong SPA
     setInterval(() => {
         if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
-            scanMainDocument();
             scanIframe();
         }
     }, 2500);
