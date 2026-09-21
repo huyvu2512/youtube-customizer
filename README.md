@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.1.0-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.1.1-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,17 +25,19 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.1.0** nâng cấp:
-- **Thêm tính năng Tự động trực tiếp (Auto Live / Auto Sync Live Head):**
-  - Tự động phát hiện và triệt tiêu hiện tượng luồng phát trực tiếp bị trễ hình hoặc chậm nhịp so với thời gian thực do micro-buffering, giật khung hình hoặc chuyển tab trình duyệt.
-  - Cơ chế kép thông minh:
-    - Khi chậm nhẹ (2.0s - 5.5s): Tự động tăng tốc độ phát lên 1.08x để bắt kịp mốc trực tiếp êm ái, không giật hình, không ngắt quãng âm thanh và tự động trở về 1.0x khi đã đuổi kịp.
-    - Khi chậm nhiều (> 5.5s) hoặc quay lại từ tab khác: Tự động kích hoạt chuyển ngay về mốc Live Head thời gian thực.
-  - Tích hợp thời gian chờ 25 giây khi người dùng chủ động tua lùi để xem lại diễn biến mà không bị nhảy về mốc trực tiếp ngoài ý muốn.
-- **Kế thừa các tối ưu của v3.0.3:**
-  - Tối ưu triệt để RAM & CPU: Loại bỏ toàn bộ MutationObserver diện rộng, chỉ quan sát đơn điểm trên `#items` danh sách tin nhắn.
-  - Loại bỏ hoàn toàn bộ chọn CSS `:has()` trên `ytd-watch-flexy`, triệt tiêu giật lag.
-  - Sửa lỗi Live Chat bị ẩn / không hiển thị trên cả chế độ Ngang và Khung nổi.
+Phiên bản **v3.1.1** nâng cấp:
+- **Chạy ngầm Live Chat độc lập bằng Video ID (Tắt gốc vẫn chạy):**
+  - Khi người dùng đóng hoặc ẩn khung chat gốc YouTube, extension tự động khởi tạo luồng ngầm độc lập dựa trên ID video để thu thập tin nhắn trực tiếp mà không cần can thiệp hay ép mở thanh chat mặc định của YouTube.
+  - Người dùng có thể thoải mái đóng/mở thanh chat YouTube tùy ý mà Danmaku và Khung nổi vẫn hoạt động liên tục.
+- **Sửa toàn diện Khung nổi Streamer (Streamer Box):**
+  - Tự động đặt ở chính giữa khung video khi kích hoạt để người dùng nhận biết ngay lập tức.
+  - Hiển thị thông báo trạng thái kết nối tức thì khi vừa bật, loại bỏ hiện tượng khung chat rỗng không hiển thị gì.
+  - Giao diện kính mờ HUD hiện đại với viền sáng rõ nét, tự động căn chỉnh tọa độ chống tràn màn hình khi thay đổi kích thước cửa sổ hoặc xem toàn màn hình (Fullscreen).
+- **Thêm chế độ hiển thị "Cả hai":**
+  - Cho phép bật đồng thời cả chữ chạy ngang Danmaku lẫn Khung nổi Streamer trên màn hình video.
+- **Kế thừa các tối ưu của v3.1.0 & v3.0.3:**
+  - Tính năng Tự động trực tiếp (Auto Live) giữ mốc thời gian thực khi luồng phát bị chậm hoặc chuyển tab.
+  - Tối ưu triệt để RAM & CPU với observer đơn điểm trên `#items`.
 - **Kế thừa các tối ưu của v2.9.9.1 & v2.9.8:**
   - Tách riêng module chat.js chuyên biệt, nạp tin nhắn song song qua postMessage và DOM hook.
   - Kích hoạt hiệu ứng tua mặc định của YouTube cho Numpad 4/6 và A/D.
@@ -67,7 +69,7 @@ Phiên bản **v3.1.0** nâng cấp:
 ## Tính năng chính
 
 - **Menu cài đặt phân nhóm 4 Tab hiện đại:**
-  - **Giao diện:** Tùy chọn số cột trang chủ (3, 4, 5 cột), Bật/tắt Logo YouTube Premium, Mở khóa tua Live Stream (Live DVR), Live Chat (Tắt / Ngang / Nổi - tự động ẩn khi tua lùi).
+  - **Giao diện:** Tùy chọn số cột trang chủ (3, 4, 5 cột), Bật/tắt Logo YouTube Premium, Mở khóa tua Live Stream (Live DVR), Live Chat (Tắt / Ngang / Nổi / Cả hai).
   - **Lọc nội dung:** Ẩn Shorts hoàn toàn, Ẩn Chơi game (Playables), Ẩn video Hội viên (Ưu tiên & Đặc quyền), Ẩn bài đăng cộng đồng, Lọc tìm kiếm sạch (Clean Search), Ẩn Khám phá các chủ đề khác.
   - **Trình phát:** Tắt ánh sáng viền video (Ambient Mode / Cinematics), Ẩn thẻ kết thúc & thẻ chú thích video, Ẩn logo góc video (Watermark), Tự động đóng banner quảng cáo/thông báo, Tự động giữ mốc trực tiếp (Auto Live).
   - **Phím tắt:** Bật/tắt phím tắt A-S-D & Numpad kèm bảng tra cứu phím tắt nhanh ngay trong menu.
@@ -76,7 +78,7 @@ Phiên bản **v3.1.0** nâng cấp:
   - Tự động duy trì thời gian thực trên các luồng phát Live Stream YouTube.
   - Tự động tăng tốc nhẹ (1.08x) để bắt kịp khi chậm nhẹ hoặc nhảy về Live Head khi chậm nhiều, loại bỏ tình trạng stream bị tụt lùi thời gian do micro-buffering hoặc chuyển tab nền.
 - **Live Chat Overlay trên Video (Danmaku & Streamer Box):**
-  - Hỗ trợ 2 chế độ hiển thị: Chạy ngang (Danmaku) và Khung nổi Streamer trong suốt (hỗ trợ kéo thả chuột và co giãn kích thước đặt ở mọi góc video).
+  - Hỗ trợ 3 chế độ hiển thị: Chạy ngang (Danmaku), Khung nổi Streamer trong suốt và Cả hai đồng thời.
   - Phân biệt màu sắc rõ ràng: Mod màu xanh dương, Hội viên màu xanh lá, Chủ kênh màu vàng, người thường màu trắng; phông chữ có viền bóng đậm nét chống chói trên mọi khung cảnh video.
   - Tự động ẩn khi tua video về quá khứ và hiện lại khi quay về mốc thời gian thực.
   - Hỗ trợ cho cả phiên Live đang phát trực tiếp lẫn video đã kết thúc có Chat Replay.
