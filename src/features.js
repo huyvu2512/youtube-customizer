@@ -500,6 +500,17 @@ function changeVolume(player, delta) {
     }
 }
 
+function dispatchYtKey(key) {
+    document.dispatchEvent(new KeyboardEvent('keydown', {
+        key,
+        code: key === 'j' ? 'KeyJ' : key === 'k' ? 'KeyK' : 'KeyL',
+        keyCode: key === 'j' ? 74 : key === 'k' ? 75 : 76,
+        which: key === 'j' ? 74 : key === 'k' ? 75 : 76,
+        bubbles: true,
+        cancelable: true,
+    }));
+}
+
 let keysBound = false;
 export function bindGlobalKeys() {
     if (keysBound) return;
@@ -514,54 +525,59 @@ export function bindGlobalKeys() {
             return;
         }
 
-        const player = document.querySelector('#movie_player');
-        if (!player) return;
-
-        let captured = false;
-        let isSeekAction = false;
         const code = e.code || '';
         const isNumpad = (e.location === 3) || 
                          code.startsWith('Numpad') || 
                          (e.keyCode >= 96 && e.keyCode <= 111) || 
                          (e.keyCode === 12);
+
+        const player = document.querySelector('#movie_player');
         const asdAllowed = canUseAsdKeys(player);
 
+        let captured = false;
+        let isSeekAction = false;
+
+        // --- ĐIỀU KHIỂN BẰNG NUMPAD ---
         if (isNumpad) {
-            captured = true;
+            captured = true; // Chặn 100% tất cả các phím Numpad để YouTube không nhận diện số 0-9 nhảy % video và không bị Home/End/PageUp/PageDown
+
             // Numpad 8: Tăng âm lượng
             if (code === 'Numpad8' || e.key === '8' || e.key === 'ArrowUp' || e.keyCode === 104 || e.keyCode === 38) {
-                changeVolume(player, 5);
+                if (player) changeVolume(player, 5);
             }
             // Numpad 2: Giảm âm lượng
             else if (code === 'Numpad2' || e.key === '2' || e.key === 'ArrowDown' || e.keyCode === 98 || e.keyCode === 40) {
-                changeVolume(player, -5);
+                if (player) changeVolume(player, -5);
             }
             // Numpad 4: Tua lùi 10 giây
             else if (code === 'Numpad4' || e.key === '4' || e.key === 'ArrowLeft' || e.keyCode === 100 || e.keyCode === 37) {
-                seekBySeconds(player, -10);
+                if (player && !seekBySeconds(player, -10)) dispatchYtKey('j');
                 isSeekAction = true;
             }
             // Numpad 6: Tua tiến 10 giây
             else if (code === 'Numpad6' || e.key === '6' || e.key === 'ArrowRight' || e.keyCode === 102 || e.keyCode === 39) {
-                seekBySeconds(player, 10);
+                if (player && !seekBySeconds(player, 10)) dispatchYtKey('l');
                 isSeekAction = true;
             }
             // Numpad 5: Tạm dừng / phát tiếp
             else if (code === 'Numpad5' || e.key === '5' || e.key === 'Clear' || e.keyCode === 101 || e.keyCode === 12) {
-                togglePlayback(player);
+                if (player && !togglePlayback(player)) dispatchYtKey('k');
             }
-            // Các phím Numpad khác (0, 1, 3, 7, 9, ., +, -, *, /, Enter, NumLock...):
-            // captured = true chặn hoàn toàn không làm gì cả, chống triệt để lỗi bấm số 1-9 nhảy % video khi bật NumLock
-        } else if (asdAllowed && (code === 'KeyA' || (!e.ctrlKey && !e.altKey && !e.metaKey && (code === 'KeyJ' || e.key === 'j' || e.key === 'J')))) {
+            // Tất cả phím Numpad còn lại (1, 3, 7, 9, 0, ., +, -, *, /, Enter, NumLock...):
+            // captured = true đã được thiết lập ở trên, chặn đứng hoàn toàn, không thực hiện gì cả.
+            // Triệt tiêu 100% lỗi bấm 1, 7 nhảy đầu/cuối video, 3, 9 cuộn trang khi tắt NumLock và nhảy % video khi bật NumLock!
+        }
+        // --- ĐIỀU KHIỂN BẰNG A / S / D hoặc J / K / L ---
+        else if (asdAllowed && (code === 'KeyA' || (!e.ctrlKey && !e.altKey && !e.metaKey && (code === 'KeyJ' || e.key === 'j' || e.key === 'J')))) {
             captured = true;
-            seekBySeconds(player, -10);
+            if (player && !seekBySeconds(player, -10)) dispatchYtKey('j');
             isSeekAction = true;
         } else if (asdAllowed && (code === 'KeyS' || (!e.ctrlKey && !e.altKey && !e.metaKey && (code === 'KeyK' || e.key === 'k' || e.key === 'K')))) {
             captured = true;
-            togglePlayback(player);
+            if (player && !togglePlayback(player)) dispatchYtKey('k');
         } else if (asdAllowed && (code === 'KeyD' || (!e.ctrlKey && !e.altKey && !e.metaKey && (code === 'KeyL' || e.key === 'l' || e.key === 'L')))) {
             captured = true;
-            seekBySeconds(player, 10);
+            if (player && !seekBySeconds(player, 10)) dispatchYtKey('l');
             isSeekAction = true;
         } else if (!e.ctrlKey && !e.altKey && !e.metaKey && (code === 'KeyF' || e.key === 'f' || e.key === 'F')) {
             if (isWatchLoading) {
@@ -577,13 +593,33 @@ export function bindGlobalKeys() {
             isSeekAction = true;
         }
 
-        if (isSeekAction) {
+        if (isSeekAction && player) {
             triggerCleanSeek(player);
+        }
+    };
+
+    const handleKeyUp = (e) => {
+        if (!currentConfig.keyboardControls) return;
+        const target = e.target;
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+            return;
+        }
+        const code = e.code || '';
+        const isNumpad = (e.location === 3) || 
+                         code.startsWith('Numpad') || 
+                         (e.keyCode >= 96 && e.keyCode <= 111) || 
+                         (e.keyCode === 12);
+        if (isNumpad) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
         }
     };
 
     window.addEventListener('keydown', handleKeyDown, true);
     document.addEventListener('keydown', handleKeyDown, true);
+    window.addEventListener('keyup', handleKeyUp, true);
+    document.addEventListener('keyup', handleKeyUp, true);
 }
 
 // --------------------------------------------------------------------------

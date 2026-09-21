@@ -1,5 +1,5 @@
 // ==UserScript==
-// YouTube Customizer v2.9.3 — https://github.com/huyvu2512/youtube-customizer
+// YouTube Customizer v2.9.4 — https://github.com/huyvu2512/youtube-customizer
 // ==/UserScript==
 (() => {
   // src/styles.css
@@ -407,6 +407,16 @@
       video.volume = Math.max(0, Math.min(1, video.volume + delta / 100));
     }
   }
+  function dispatchYtKey(key) {
+    document.dispatchEvent(new KeyboardEvent("keydown", {
+      key,
+      code: key === "j" ? "KeyJ" : key === "k" ? "KeyK" : "KeyL",
+      keyCode: key === "j" ? 74 : key === "k" ? 75 : 76,
+      which: key === "j" ? 74 : key === "k" ? 75 : 76,
+      bubbles: true,
+      cancelable: true
+    }));
+  }
   var keysBound = false;
   function bindGlobalKeys() {
     if (keysBound) return;
@@ -418,38 +428,37 @@
       if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) {
         return;
       }
-      const player = document.querySelector("#movie_player");
-      if (!player) return;
-      let captured = false;
-      let isSeekAction = false;
       const code = e.code || "";
       const isNumpad = e.location === 3 || code.startsWith("Numpad") || e.keyCode >= 96 && e.keyCode <= 111 || e.keyCode === 12;
+      const player = document.querySelector("#movie_player");
       const asdAllowed = canUseAsdKeys(player);
+      let captured = false;
+      let isSeekAction = false;
       if (isNumpad) {
         captured = true;
         if (code === "Numpad8" || e.key === "8" || e.key === "ArrowUp" || e.keyCode === 104 || e.keyCode === 38) {
-          changeVolume(player, 5);
+          if (player) changeVolume(player, 5);
         } else if (code === "Numpad2" || e.key === "2" || e.key === "ArrowDown" || e.keyCode === 98 || e.keyCode === 40) {
-          changeVolume(player, -5);
+          if (player) changeVolume(player, -5);
         } else if (code === "Numpad4" || e.key === "4" || e.key === "ArrowLeft" || e.keyCode === 100 || e.keyCode === 37) {
-          seekBySeconds(player, -10);
+          if (player && !seekBySeconds(player, -10)) dispatchYtKey("j");
           isSeekAction = true;
         } else if (code === "Numpad6" || e.key === "6" || e.key === "ArrowRight" || e.keyCode === 102 || e.keyCode === 39) {
-          seekBySeconds(player, 10);
+          if (player && !seekBySeconds(player, 10)) dispatchYtKey("l");
           isSeekAction = true;
         } else if (code === "Numpad5" || e.key === "5" || e.key === "Clear" || e.keyCode === 101 || e.keyCode === 12) {
-          togglePlayback(player);
+          if (player && !togglePlayback(player)) dispatchYtKey("k");
         }
       } else if (asdAllowed && (code === "KeyA" || !e.ctrlKey && !e.altKey && !e.metaKey && (code === "KeyJ" || e.key === "j" || e.key === "J"))) {
         captured = true;
-        seekBySeconds(player, -10);
+        if (player && !seekBySeconds(player, -10)) dispatchYtKey("j");
         isSeekAction = true;
       } else if (asdAllowed && (code === "KeyS" || !e.ctrlKey && !e.altKey && !e.metaKey && (code === "KeyK" || e.key === "k" || e.key === "K"))) {
         captured = true;
-        togglePlayback(player);
+        if (player && !togglePlayback(player)) dispatchYtKey("k");
       } else if (asdAllowed && (code === "KeyD" || !e.ctrlKey && !e.altKey && !e.metaKey && (code === "KeyL" || e.key === "l" || e.key === "L"))) {
         captured = true;
-        seekBySeconds(player, 10);
+        if (player && !seekBySeconds(player, 10)) dispatchYtKey("l");
         isSeekAction = true;
       } else if (!e.ctrlKey && !e.altKey && !e.metaKey && (code === "KeyF" || e.key === "f" || e.key === "F")) {
         if (isWatchLoading) {
@@ -463,12 +472,28 @@
       } else if (["ArrowLeft", "ArrowRight", "j", "l", "J", "L"].includes(e.key)) {
         isSeekAction = true;
       }
-      if (isSeekAction) {
+      if (isSeekAction && player) {
         triggerCleanSeek(player);
+      }
+    };
+    const handleKeyUp = (e) => {
+      if (!currentConfig.keyboardControls) return;
+      const target = e.target;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) {
+        return;
+      }
+      const code = e.code || "";
+      const isNumpad = e.location === 3 || code.startsWith("Numpad") || e.keyCode >= 96 && e.keyCode <= 111 || e.keyCode === 12;
+      if (isNumpad) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
       }
     };
     window.addEventListener("keydown", handleKeyDown, true);
     document.addEventListener("keydown", handleKeyDown, true);
+    window.addEventListener("keyup", handleKeyUp, true);
+    document.addEventListener("keyup", handleKeyUp, true);
   }
   var liveDvrHooked = false;
   function initLiveDvrHook() {
@@ -857,7 +882,7 @@
       panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v2.9.3</span>
+                <span class="ytc-header-badge">v2.9.4</span>
             </div>
 
             <div class="ytc-tabs">
@@ -1279,6 +1304,7 @@
   }
   injectStyles(styles_default);
   applyConfigToRoot();
+  bindGlobalKeys();
   function onNavigate() {
     applyConfigToRoot();
     scheduleLogoScan(document);

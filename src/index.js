@@ -127,6 +127,7 @@ function injectStyles(css) {
 
 injectStyles(styles);
 applyConfigToRoot();
+bindGlobalKeys();
 
 // --------------------------------------------------------------------------
 // 3. ĐIỀU PHỐI VÒNG ĐỜI SPA
