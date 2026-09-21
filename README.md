@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-2.4-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-2.5-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,9 +25,12 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v2.4** nâng cấp:
-- **Tùy chọn Ẩn video Hội viên (Members-only) & Kệ Khám phá chủ đề khác:** Bổ sung 2 công tắc mới trong Menu cài đặt để làm sạch trang chủ hoàn toàn khỏi các kệ video chỉ dành cho hội viên ("Hưởng thêm nhiều lợi ích từ hội viên") và danh sách chủ đề đề xuất ("Khám phá các chủ đề khác"), loại bỏ triệt để khoảng trắng thừa.
-- **Tương thích hoàn hảo Giao diện Sáng/Tối cho Logo Premium:** Tự động điều chỉnh màu sắc chữ "Premium" và mã quốc gia (đen trên nền sáng, trắng trên nền tối) tức thì theo thời gian thực (Zero-reload Realtime Switch) khi người dùng đổi theme YouTube mà không cần bấm F5 tải lại trang.
+Phiên bản **v2.5** nâng cấp:
+- **Ẩn triệt để Video Hội viên (Ưu tiên & Đặc quyền):** Mở rộng bộ lọc của công tắc "Ẩn video Hội viên" để quét sạch toàn diện cả các video dán nhãn "Ưu tiên hội viên" (Members first / Early access), video đặc quyền hội viên ("Chỉ dành cho hội viên") và các kệ giới thiệu đặc quyền trên trang chủ, kênh đăng ký, trang tìm kiếm và thanh gợi ý xem tiếp.
+- **Chuẩn hóa Logo YouTube Premium & Mã quốc gia:**
+  - Tách biệt khoảng cách thẩm mỹ chuẩn giữa nút tab điều hướng (`≡` guide menu) và Logo YouTube Premium, khắc phục triệt để lỗi logo bị dính sát vào nút tab.
+  - Căn chỉnh mã quốc gia (`#country-code`, ví dụ: VN, US, JP,...) nằm chuẩn xác ở góc trên bên phải của chữ "Premium" theo tỷ lệ gốc của YouTube Premium, loại bỏ hoàn toàn lỗi đè chữ lên nhau.
+  - Tự động điều chỉnh màu sắc chữ "Premium" và mã quốc gia theo giao diện Sáng / Tối trong thời gian thực (Zero-reload Realtime Switch) mà không cần F5.
 - Kế thừa toàn bộ tối ưu hiệu năng và tính năng của các phiên bản trước (Menu cài đặt chuẩn YouTube, tùy chỉnh 3-4-5 cột, ẩn Shorts & Playables, Clean Search, Zero-Lag Live Chat, Fullscreen Safe Lock, phím tắt A-S-D / Numpad).
 
 ---
@@ -45,8 +48,8 @@ Phiên bản **v2.4** nâng cấp:
 - **Ẩn hoàn toàn nội dung Shorts & Chơi game (Playables):**
   - **Shorts:** Áp dụng bộ chọn CSS hiện đại `:has()` để triệt tiêu toàn bộ kệ Shorts trên trang chủ, trang đăng ký và mục Shorts trên thanh điều hướng bên trái, không để lại khoảng trắng dư thừa.
   - **Playables:** Tự động ẩn toàn bộ kệ mini-game và mục "Chơi game" trên thanh sidebar và trang chủ.
-- **Ẩn video Hội viên & Kệ Khám phá chủ đề khác (Mới ở v2.4):**
-  - **Video Hội viên:** Tự động ẩn kệ quảng bá gói hội viên ("Hưởng thêm nhiều lợi ích từ hội viên") và các video giới hạn đặc quyền hội viên trên feed trang chủ.
+- **Ẩn video Hội viên & Kệ Khám phá chủ đề khác:**
+  - **Video Hội viên:** Tự động ẩn cả video "Ưu tiên hội viên" (Early access) lẫn video "Chỉ dành cho hội viên" và kệ quảng bá gói hội viên ("Hưởng thêm nhiều lợi ích từ hội viên") trên feed, kết quả tìm kiếm và trang xem video.
   - **Khám phá chủ đề:** Triệt tiêu kệ thẻ chip chủ đề ("Khám phá các chủ đề khác") làm rối mắt giữa dòng video chính.
 - **Clean Search (Ẩn video tài trợ):**
   - Tự động ẩn các thẻ video quảng cáo và nội dung được tài trợ (`Sponsored`) trong kết quả tìm kiếm và các trang feed.
@@ -57,8 +60,9 @@ Phiên bản **v2.4** nâng cấp:
   - **Zero CPU idle:** Không sử dụng event listener bắt chuột toàn cục (`mouseover`/`mousemove`), không gây tốn pin hay tải CPU lúc rảnh.
 - **Khóa an toàn nút phóng to (Fullscreen Safe Lock):**
   - Tự động vô hiệu hóa tạm thời nút phóng to (1.5 giây) khi vừa tải hoặc F5 lại trang video, chống lỗi kẹt giao diện inline/toàn màn hình của trình phát YouTube.
-- **Logo YouTube Premium:**
-  - Thay thế logo mặc định bằng biểu tượng YouTube Premium sắc nét, giữ nguyên mã quốc gia (VN, US, JP,...) của người dùng.
+- **Logo YouTube Premium & Mã quốc gia chuẩn xác:**
+  - Thay thế logo mặc định bằng biểu tượng YouTube Premium sắc nét với khoảng cách chuẩn so với nút menu tab.
+  - Giữ nguyên mã quốc gia (VN, US, JP,...) và hiển thị chuẩn xác ở góc trên bên phải của chữ Premium, không bao giờ bị đè chữ.
   - Tự động thích ứng màu sắc của cả logo lẫn mã quốc gia theo giao diện Sáng / Tối (Light / Dark theme) ngay lập tức khi đổi giao diện mà không cần tải lại trang.
   - Nhấp chuột vào logo ở trang chủ/feed hỗ trợ cuộn mượt (smooth scroll) lên đầu trang.
 - **Tự động tiếp tục phát video:**

@@ -1,5 +1,5 @@
 // ==UserScript==
-// YouTube Customizer v2.4 — https://github.com/huyvu2512/youtube-customizer
+// YouTube Customizer v2.5 — https://github.com/huyvu2512/youtube-customizer
 // ==/UserScript==
 (function() {
     'use strict';
@@ -180,16 +180,41 @@
                 display: none !important;
             }
 
-            /* Ẩn mục video Hội viên (Members-only) */
+            /* Ẩn mục video Hội viên (Chỉ dành cho hội viên & Ưu tiên hội viên) */
             .ytc-hide-members ytd-rich-section-renderer:has(.badge-style-type-members-only),
+            .ytc-hide-members ytd-rich-section-renderer:has(.badge-style-type-members-first),
+            .ytc-hide-members ytd-rich-section-renderer:has([badge-style="MEMBERS_FIRST"]),
+            .ytc-hide-members ytd-rich-section-renderer:has([badge-style="MEMBERS_ONLY"]),
             .ytc-hide-members ytd-rich-section-renderer:has([aria-label*="hội viên"]),
             .ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Hội viên"]),
             .ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Members only"]),
             .ytc-hide-members ytd-rich-section-renderer:has([aria-label*="members only"]),
+            .ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Members first"]),
+            .ytc-hide-members ytd-rich-section-renderer:has([aria-label*="members first"]),
             .ytc-hide-members ytd-rich-section-renderer:has(a[href*="/membership"]),
             .ytc-hide-members ytd-rich-section-renderer:has(a[href*="/memberships"]),
             .ytc-hide-members ytd-rich-section-renderer.ytc-shelf-members,
-            .ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-only) {
+            .ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-only),
+            .ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-first),
+            .ytc-hide-members ytd-rich-item-renderer:has([badge-style="MEMBERS_FIRST"]),
+            .ytc-hide-members ytd-rich-item-renderer:has([badge-style="MEMBERS_ONLY"]),
+            .ytc-hide-members ytd-rich-item-renderer:has([aria-label*="hội viên"]),
+            .ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Hội viên"]),
+            .ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Members only"]),
+            .ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Members first"]),
+            .ytc-hide-members ytd-rich-item-renderer.ytc-item-members,
+            .ytc-hide-members ytd-video-renderer:has(.badge-style-type-members-only),
+            .ytc-hide-members ytd-video-renderer:has(.badge-style-type-members-first),
+            .ytc-hide-members ytd-video-renderer:has([badge-style="MEMBERS_FIRST"]),
+            .ytc-hide-members ytd-video-renderer:has([badge-style="MEMBERS_ONLY"]),
+            .ytc-hide-members ytd-video-renderer:has([aria-label*="hội viên"]),
+            .ytc-hide-members ytd-video-renderer:has([aria-label*="Hội viên"]),
+            .ytc-hide-members ytd-video-renderer.ytc-item-members,
+            .ytc-hide-members ytd-compact-video-renderer:has(.badge-style-type-members-only),
+            .ytc-hide-members ytd-compact-video-renderer:has(.badge-style-type-members-first),
+            .ytc-hide-members ytd-compact-video-renderer:has([badge-style="MEMBERS_FIRST"]),
+            .ytc-hide-members ytd-compact-video-renderer:has([badge-style="MEMBERS_ONLY"]),
+            .ytc-hide-members ytd-compact-video-renderer.ytc-item-members {
                 display: none !important;
             }
 
@@ -213,25 +238,28 @@
                 display: none !important;
             }
 
-            /* Logo Premium: Ẩn logo mặc định nhưng giữ nguyên mã quốc gia và đồng bộ theme */
-            :root.ytc-premium-logo ytd-topbar-logo-renderer #country-code {
-                display: inline-block !important;
-                color: var(--yt-spec-text-secondary, #909090) !important;
+            /* Logo Premium: Khoảng cách chuẩn với nút tab điều hướng (guide button) & định dạng logo */
+            :root.ytc-premium-logo #start.ytd-masthead ytd-topbar-logo-renderer,
+            :root.ytc-premium-logo ytd-topbar-logo-renderer#logo {
+                margin-left: 16px !important;
+                display: flex !important;
+                align-items: center !important;
             }
-            html:not([dark]).ytc-premium-logo ytd-topbar-logo-renderer #country-code,
-            html:not([dark]) ytd-topbar-logo-renderer #country-code {
-                color: var(--yt-spec-text-secondary, #606060) !important;
+            :root.ytc-premium-logo ytd-topbar-logo-renderer #logo {
+                padding: 18px 4px 18px 16px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                box-sizing: content-box !important;
             }
-            html[dark].ytc-premium-logo ytd-topbar-logo-renderer #country-code,
-            html[dark] ytd-topbar-logo-renderer #country-code {
-                color: var(--yt-spec-text-secondary, #909090) !important;
-            }
-            :root.ytc-premium-logo ytd-topbar-logo-renderer #country-code:empty {
-                display: none !important;
-            }
-            :root.ytc-premium-logo ytd-logo {
+            :root.ytc-premium-logo ytd-topbar-logo-renderer #logo > div,
+            :root.ytc-premium-logo ytd-topbar-logo-renderer ytd-logo {
                 width: 101px !important;
                 min-width: 101px !important;
+                max-width: 101px !important;
+                height: 20px !important;
+                display: flex !important;
+                align-items: center !important;
+                overflow: visible !important;
             }
             :root.ytc-premium-logo ytd-logo > *:not(.custom-premium-logo) {
                 display: none !important;
@@ -270,6 +298,36 @@
             .custom-premium-logo svg #youtube-paths_yt19,
             .custom-premium-logo svg #youtube-paths_yt19 path {
                 fill: currentColor !important;
+            }
+
+            /* Mã quốc gia (#country-code): Đặt ở góc trên bên phải chữ Premium (không bị đè) & đồng bộ theme */
+            :root.ytc-premium-logo ytd-topbar-logo-renderer #country-code {
+                display: inline-block !important;
+                font-size: 10px !important;
+                font-weight: 400 !important;
+                font-family: "Roboto", "Arial", sans-serif !important;
+                line-height: 10px !important;
+                color: var(--yt-spec-text-secondary, #909090) !important;
+                margin-top: 14px !important;
+                margin-left: 4px !important;
+                margin-right: 0 !important;
+                margin-bottom: 0 !important;
+                align-self: flex-start !important;
+                vertical-align: top !important;
+                position: relative !important;
+                top: 0 !important;
+                left: 0 !important;
+            }
+            html:not([dark]).ytc-premium-logo ytd-topbar-logo-renderer #country-code,
+            html:not([dark]) ytd-topbar-logo-renderer #country-code {
+                color: var(--yt-spec-text-secondary, #606060) !important;
+            }
+            html[dark].ytc-premium-logo ytd-topbar-logo-renderer #country-code,
+            html[dark] ytd-topbar-logo-renderer #country-code {
+                color: var(--yt-spec-text-secondary, #909090) !important;
+            }
+            :root.ytc-premium-logo ytd-topbar-logo-renderer #country-code:empty {
+                display: none !important;
             }
 
             /* Khóa nút phóng to khi video đang load (chống lỗi kẹt giao diện) */
@@ -604,19 +662,24 @@
         else whenElement('ytd-masthead', attach);
     }
 
-    // Quét và gắn cờ các mục kệ (shelves) Hội viên & Khám phá chủ đề để ẩn sạch
-    function scanAndTagShelves(scope) {
-        if (!isHomeFeedPath()) return;
+    // Quét và gắn cờ các kệ (shelves) & thẻ video Hội viên (Ưu tiên / Chỉ dành cho hội viên) & Khám phá chủ đề
+    function scanAndTagFeedContent(scope) {
         const root = scope && scope.querySelectorAll ? scope : document;
+
+        // 1. Quét các kệ (shelves)
         const sections = root.querySelectorAll('ytd-rich-section-renderer');
         sections.forEach((sec) => {
             if (!sec.classList.contains('ytc-shelf-members')) {
                 const text = sec.textContent || '';
                 if (
                     text.includes('lợi ích từ hội viên') ||
+                    text.includes('Ưu tiên hội viên') ||
+                    text.includes('ưu tiên hội viên') ||
                     (text.includes('hội viên') && text.includes('YouTube chọn lọc')) ||
                     text.includes('Get more from memberships') ||
-                    sec.querySelector('.badge-style-type-members-only, a[href*="/membership"], a[href*="/memberships"]')
+                    text.includes('Members only') ||
+                    text.includes('Members first') ||
+                    sec.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], a[href*="/membership"], a[href*="/memberships"]')
                 ) {
                     sec.classList.add('ytc-shelf-members');
                 }
@@ -627,36 +690,57 @@
                     text.includes('Khám phá các chủ đề') ||
                     text.includes('Explore other topics') ||
                     text.includes('Explore topics') ||
-                    sec.querySelector('yt-chip-cloud-chip-renderer, yt-chip-cloud-renderer')
+                    sec.querySelector('yt-chip-cloud-chip-renderer, yt-chip-cloud-renderer, ytd-feed-filter-chip-bar-renderer')
                 ) {
                     sec.classList.add('ytc-shelf-explore');
+                }
+            }
+        });
+
+        // 2. Quét từng thẻ video riêng lẻ (Ưu tiên hội viên & Chỉ dành cho hội viên)
+        const videoCards = root.querySelectorAll('ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer');
+        videoCards.forEach((card) => {
+            if (!card.classList.contains('ytc-item-members')) {
+                const text = card.textContent || '';
+                if (
+                    text.includes('Ưu tiên hội viên') ||
+                    text.includes('ưu tiên hội viên') ||
+                    text.includes('Chỉ dành cho hội viên') ||
+                    text.includes('chỉ dành cho hội viên') ||
+                    text.includes('Members first') ||
+                    text.includes('Members only') ||
+                    text.includes('Members-only') ||
+                    text.includes('Early access') ||
+                    card.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], [aria-label*="hội viên"], [aria-label*="Hội viên"], [aria-label*="Members"]')
+                ) {
+                    card.classList.add('ytc-item-members');
                 }
             }
         });
     }
 
     const scheduleFeedScan = rafThrottle((root) => {
-        scanAndTagShelves(root);
+        scanAndTagFeedContent(root);
     });
 
     function setupFeedShelvesObserver() {
         scheduleFeedScan(document);
 
-        const attach = (grid) => {
-            scheduleFeedScan(grid);
+        const attach = (container) => {
+            scheduleFeedScan(container);
             new MutationObserver((mutations) => {
                 for (const mutation of mutations) {
                     if (mutation.addedNodes.length) {
-                        scheduleFeedScan(grid);
+                        scheduleFeedScan(container);
                         break;
                     }
                 }
-            }).observe(grid, { childList: true, subtree: true });
+            }).observe(container, { childList: true, subtree: true });
         };
 
-        const grid = document.querySelector('ytd-rich-grid-renderer');
-        if (grid) attach(grid);
-        else whenElement('ytd-rich-grid-renderer', attach);
+        const target = document.getElementById('page-manager') || document.querySelector('ytd-page-manager') || document.body;
+        if (target) attach(target);
+        else whenElement('#page-manager', attach);
     }
 
     // Cuộn lên đầu trang khi bấm vào logo ở trang chủ/feed
@@ -944,7 +1028,7 @@
             panel.innerHTML = safeHTML(`
                 <div class="ytc-header">
                     <span>YouTube Customizer</span>
-                    <span class="ytc-header-badge">v2.4</span>
+                    <span class="ytc-header-badge">v2.5</span>
                 </div>
 
                 <!-- Số cột trang chủ -->
