@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      2.9.9
-// @description  YouTube Customizer v2.9.9 — Sửa triệt để Live Chat (Danmaku ngang & Khung nổi Streamer) qua kênh truyền hai chiều đa frame, bắt tin nhắn tức thì, chuẩn hóa hoạt ảnh.
+// @version      2.9.9.1
+// @description  YouTube Customizer v2.9.9.1 — Tách riêng module chat.js, sửa triệt để Live Chat (bắt tin nhắn trực tiếp trên Main DOM và Iframe), chuẩn hóa Danmaku & Streamer Box.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -1107,7 +1107,7 @@
       panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v2.9.9</span>
+                <span class="ytc-header-badge">v2.9.9.1</span>
             </div>
 
             <div class="ytc-tabs">

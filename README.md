@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-2.9.9-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-2.9.9.1-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,8 +25,8 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v2.9.9** nâng cấp:
-- **Sửa triệt để tính năng Live Chat (Danmaku ngang và Khung nổi Streamer):**
+Phiên bản **v2.9.9.1** nâng cấp:
+- **Tách riêng module chat.js & Sửa triệt để tính năng Live Chat (Danmaku ngang và Khung nổi Streamer):**
   - **Kênh truyền hai chiều đa frame (postMessage + DOM hook song song):** Giải quyết dứt điểm vấn đề cách ly sandbox iframe của trình duyệt. Script chạy độc lập bên trong iframe chat trực tiếp và truyền dữ liệu qua postMessage về cửa sổ chính, kết hợp cơ chế khử trùng lặp tin nhắn và bắt tin nhắn theo thời gian thực 100% tin cậy.
   - **Sửa lỗi nhận diện Live Head:** Khắc phục lỗi đảo ngược điều kiện trạng thái trực tiếp (nút .ytp-live-badge mang thuộc tính disabled khi đang ở đầu luồng phát), ngăn ngừa tình trạng chat bị ẩn nhầm trên các luồng trực tiếp.
   - **Nạp tin nhắn tức thì khi vừa bật:** Khi chuyển sang chế độ "Ngang" hoặc "Nổi", hệ thống yêu cầu nạp ngay các tin nhắn gần nhất và hiển thị nối tiếp mượt mà thay vì chờ tin nhắn mới.
