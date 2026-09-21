@@ -16,12 +16,15 @@ import {
     whenElement,
     initLiveDvrHook,
     initChatOverlay,
-    updateChatOverlayVisibility
+    updateChatOverlayVisibility,
+    initIframeChatSender
 } from './features.js';
 import { ensureSettingsElements, setupSettingsObserver } from './ui.js';
 
-// Khởi chạy hook can thiệp Live Stream DVR càng sớm càng tốt
-initLiveDvrHook();
+// Khởi chạy hook can thiệp Live Stream DVR càng sớm càng tốt (chỉ trong top window)
+if (window.self === window.top) {
+    initLiveDvrHook();
+}
 
 // --------------------------------------------------------------------------
 // 1. CẤU HÌNH & LƯU TRỮ (LOCALSTORAGE)
@@ -127,65 +130,71 @@ function injectStyles(css) {
     }
 }
 
-injectStyles(styles);
-applyConfigToRoot();
-bindGlobalKeys();
-
-// --------------------------------------------------------------------------
-// 3. ĐIỀU PHỐI VÒNG ĐỜI SPA
-// --------------------------------------------------------------------------
-function onNavigate() {
+if (window.self !== window.top) {
+    if (location.pathname.includes('live_chat')) {
+        initIframeChatSender();
+    }
+} else {
+    injectStyles(styles);
     applyConfigToRoot();
-    scheduleLogoScan(document);
-    ensureSettingsElements();
     bindGlobalKeys();
+
+    // --------------------------------------------------------------------------
+    // 3. ĐIỀU PHỐI VÒNG ĐỜI SPA
+    // --------------------------------------------------------------------------
+    function onNavigate() {
+        applyConfigToRoot();
+        scheduleLogoScan(document);
+        ensureSettingsElements();
+        bindGlobalKeys();
+        setupFullscreenLock();
+        dismissPromoBanners(document);
+        initChatOverlay();
+
+        if (location.pathname.startsWith('/watch')) {
+            setWatchLoading(true);
+        } else if (isHomeFeedPath()) {
+            applyHomeGridColumns();
+            scheduleFeedScan(document);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', onNavigate, { once: true });
+    } else {
+        onNavigate();
+    }
+
+    document.addEventListener('yt-navigate-start', () => {
+        if (location.pathname.startsWith('/watch')) {
+            setWatchLoading(true);
+        }
+    });
+
+    document.addEventListener('yt-navigate-finish', onNavigate);
+    window.addEventListener('resize', applyHomeGridColumns);
+
+    // Kích hoạt các observer bền bỉ
+    setupLogoObserver();
+    setupSettingsObserver();
+    setupFeedShelvesObserver();
     setupFullscreenLock();
-    dismissPromoBanners(document);
     initChatOverlay();
 
     if (location.pathname.startsWith('/watch')) {
         setWatchLoading(true);
-    } else if (isHomeFeedPath()) {
-        applyHomeGridColumns();
-        scheduleFeedScan(document);
     }
-}
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', onNavigate, { once: true });
-} else {
-    onNavigate();
-}
+    if (isHomeFeedPath()) {
+        whenElement('ytd-rich-grid-renderer', applyHomeGridColumns);
 
-document.addEventListener('yt-navigate-start', () => {
-    if (location.pathname.startsWith('/watch')) {
-        setWatchLoading(true);
+        let gridRetryCount = 0;
+        const gridRetryInterval = setInterval(() => {
+            gridRetryCount++;
+            applyHomeGridColumns();
+            if (gridRetryCount >= 10 && document.querySelector('ytd-rich-grid-renderer ytd-rich-item-renderer')) {
+                clearInterval(gridRetryInterval);
+            }
+        }, 250);
     }
-});
-
-document.addEventListener('yt-navigate-finish', onNavigate);
-window.addEventListener('resize', applyHomeGridColumns);
-
-// Kích hoạt các observer bền bỉ
-setupLogoObserver();
-setupSettingsObserver();
-setupFeedShelvesObserver();
-setupFullscreenLock();
-initChatOverlay();
-
-if (location.pathname.startsWith('/watch')) {
-    setWatchLoading(true);
-}
-
-if (isHomeFeedPath()) {
-    whenElement('ytd-rich-grid-renderer', applyHomeGridColumns);
-
-    let gridRetryCount = 0;
-    const gridRetryInterval = setInterval(() => {
-        gridRetryCount++;
-        applyHomeGridColumns();
-        if (gridRetryCount >= 10 && document.querySelector('ytd-rich-grid-renderer ytd-rich-item-renderer')) {
-            clearInterval(gridRetryInterval);
-        }
-    }, 250);
 }

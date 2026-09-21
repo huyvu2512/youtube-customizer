@@ -707,11 +707,14 @@ html:not([dark]) .ytc-mode-btn.active {
     pointer-events: none;
     overflow: hidden;
     z-index: 25;
+    container-type: inline-size;
     transition: opacity 0.3s ease;
+    display: none;
 }
 
 .ytc-danmaku-item {
     position: absolute;
+    left: 100%;
     white-space: nowrap;
     font-weight: 700;
     font-size: 18px;
@@ -733,10 +736,21 @@ html:not([dark]) .ytc-mode-btn.active {
 
 @keyframes ytc-danmaku-slide {
     from {
-        transform: translate3d(100vw, 0, 0);
+        transform: translateX(0);
     }
     to {
-        transform: translate3d(-100%, 0, 0);
+        transform: translateX(calc(-100% - 100cqi));
+    }
+}
+
+@supports not (container-type: inline-size) {
+    @keyframes ytc-danmaku-slide {
+        from {
+            transform: translateX(0);
+        }
+        to {
+            transform: translateX(calc(-100% - 100vw));
+        }
     }
 }
 
@@ -760,21 +774,38 @@ html:not([dark]) .ytc-mode-btn.active {
     font-weight: 600;
 }
 
-.ytc-chat-text img.emoji {
-    width: 20px;
-    height: 20px;
+.ytc-chat-text img,
+.ytc-chat-text img.emoji,
+.ytc-chat-text img.small-emoji {
+    max-height: 22px;
+    max-width: 28px;
     vertical-align: -3px;
     margin: 0 2px;
+    display: inline-block;
 }
 
-/* ĐẢM BẢO ẨN TUYỆT ĐỐI KHI TẮT CHAT */
-html:not([data-ytc-chat="danmaku"]) #ytc-danmaku-container,
-body:not([data-ytc-chat="danmaku"]) #ytc-danmaku-container {
+/* ĐIỀU KHIỂN HIỂN THỊ THEO TRẠNG THÁI CONFIG */
+html[data-ytc-chat="danmaku"] #ytc-danmaku-container,
+body[data-ytc-chat="danmaku"] #ytc-danmaku-container {
+    display: block !important;
+}
+
+html[data-ytc-chat="streamer"] #ytc-streamer-box,
+body[data-ytc-chat="streamer"] #ytc-streamer-box {
+    display: flex !important;
+}
+
+html[data-ytc-chat="off"] #ytc-danmaku-container,
+body[data-ytc-chat="off"] #ytc-danmaku-container,
+html[data-ytc-chat="streamer"] #ytc-danmaku-container,
+body[data-ytc-chat="streamer"] #ytc-danmaku-container {
     display: none !important;
 }
 
-html:not([data-ytc-chat="streamer"]) #ytc-streamer-box,
-body:not([data-ytc-chat="streamer"]) #ytc-streamer-box {
+html[data-ytc-chat="off"] #ytc-streamer-box,
+body[data-ytc-chat="off"] #ytc-streamer-box,
+html[data-ytc-chat="danmaku"] #ytc-streamer-box,
+body[data-ytc-chat="danmaku"] #ytc-streamer-box {
     display: none !important;
 }
 

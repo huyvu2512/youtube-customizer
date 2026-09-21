@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-2.9.8-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-2.9.9-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,14 +25,16 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v2.9.8** nâng cấp:
-- **Kích hoạt hiệu ứng tua mặc định của YouTube cho Numpad 4/6 và A/D:** Thay vì tạo hiệu ứng riêng, khi bấm Numpad 4 hoặc phím A sẽ kích hoạt phím J mặc định của YouTube (tua lùi 10 giây kèm hiệu ứng vòng xoay tròn mặc định của YouTube); khi bấm Numpad 6 hoặc phím D sẽ kích hoạt phím L mặc định của YouTube (tua tiến 10 giây kèm hiệu ứng mặc định). Bấm Numpad 5 hoặc S kích hoạt phím K dừng/phát.
-- **Mở rộng khung Menu cài đặt 4 Tab:** Tăng chiều rộng menu lên 350px và điều chỉnh khoảng cách tab, giúp các tab có tên dài như "Giao diện" và "Trình phát" hiển thị rộng rãi, không bị co hẹp hay khó bấm.
-- **Tối ưu hóa và sửa triệt để Live Chat:**
-  - **Khóa ẩn tuyệt đối khi tắt:** Khi chọn chế độ "Tắt", khung chat bị triệt tiêu hoàn toàn (display: none !important), không còn tình trạng sót khung trên màn hình video.
-  - **Khắc phục lỗi không nhận tin nhắn:** Sửa cơ chế kết nối iframe chatframe, hỗ trợ nạp ngay các tin nhắn sẵn có và tự động lắng nghe tin nhắn mới cho cả chế độ Ngang (Danmaku) và Nổi (Live Chat).
-  - **Xóa phông chuẩn xác khi không di chuột:** Mặc định khung chat hoàn toàn trong suốt không viền; chỉ khi di chuột vào khung chat thì thanh tiêu đề, nút kéo thả và viền điều chỉnh kích thước mới xuất hiện nhẹ nhàng, không bị chập chờn.
-  - **Đổi tên hiển thị:** Đổi tiêu đề thanh điều khiển từ "Chat Streamer" thành "Live Chat".
+Phiên bản **v2.9.9** nâng cấp:
+- **Sửa triệt để tính năng Live Chat (Danmaku ngang và Khung nổi Streamer):**
+  - **Kênh truyền hai chiều đa frame (postMessage + DOM hook song song):** Giải quyết dứt điểm vấn đề cách ly sandbox iframe của trình duyệt. Script chạy độc lập bên trong iframe chat trực tiếp và truyền dữ liệu qua postMessage về cửa sổ chính, kết hợp cơ chế khử trùng lặp tin nhắn và bắt tin nhắn theo thời gian thực 100% tin cậy.
+  - **Sửa lỗi nhận diện Live Head:** Khắc phục lỗi đảo ngược điều kiện trạng thái trực tiếp (nút .ytp-live-badge mang thuộc tính disabled khi đang ở đầu luồng phát), ngăn ngừa tình trạng chat bị ẩn nhầm trên các luồng trực tiếp.
+  - **Nạp tin nhắn tức thì khi vừa bật:** Khi chuyển sang chế độ "Ngang" hoặc "Nổi", hệ thống yêu cầu nạp ngay các tin nhắn gần nhất và hiển thị nối tiếp mượt mà thay vì chờ tin nhắn mới.
+  - **Chuẩn hóa hoạt ảnh Danmaku:** Tối ưu hóa quỹ đạo bay từ cạnh phải sang cạnh trái của trình phát video dựa trên container query (100cqi), loại bỏ hoàn toàn độ trễ xuất phát ngoài khung nhìn.
+- **Kế thừa các tối ưu của v2.9.8:**
+  - Kích hoạt hiệu ứng tua mặc định của YouTube cho Numpad 4/6 và A/D (thông qua dispatch phím J/L chuẩn).
+  - Mở rộng menu 4 tab (350px) không bị co hẹp.
+  - Tự động xóa phông khung Live Chat khi không di chuột và ẩn hoàn toàn khi tắt.
 - **Kế thừa các tối ưu của v2.9.6:** Bộ biểu tượng SVG vẽ lại chuẩn Material Design sắc nét, phân nhóm tab chuẩn xác, triệt tiêu lỗi phím Numpad và tự đóng banner thông báo.
 - **Triệt tiêu toàn diện lỗi phím Numpad (Chống nhảy % video & chống Home/End/PageUp/PageDown):** Chặn độc lập 100% tất cả các phím Numpad (ở cả 2 tầng sự kiện `keydown` và `keyup`), không phụ thuộc vào trạng thái tải của player. Khắc phục triệt để hiện tượng ấn 1, 7 nhảy đầu/cuối video, 3, 9 cuộn trang khi tắt NumLock và 1-9 nhảy % video khi bật NumLock.
 - **Tự động đóng banner & thông báo gián đoạn:** Tự động phát hiện và đóng/ẩn ngay lập tức các thông báo toast gây phiền toái như *"Bạn đang gặp sự cố gây gián đoạn?"* (*"Experiencing interruptions? Find out why"*), banner mời dùng thử Premium, khảo sát và popup phiền phức trên giao diện xem video.
