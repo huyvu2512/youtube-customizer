@@ -11,8 +11,6 @@ let danmakuContainer = null;
 let streamerBox = null;
 let streamerMessages = null;
 let liveCheckTimer = null;
-let currentLaneIndex = 0;
-const TOTAL_LANES = 6;
 
 // Bộ nhớ đệm khử trùng lặp tin nhắn
 const seenMessageIds = new Set();
@@ -242,14 +240,112 @@ function setupChatBoxInteractions(box, player) {
 }
 
 // --------------------------------------------------------------------------
-// 3. TRÍCH XUẤT VÀ HIỂN THỊ TIN NHẮN (DANMAKU / STREAMER BOX)
+// 3. ĐIỀU PHỐI VÀ QUẢN LÝ LÀN CHẠY DANMAKU (TRÁNH CHỒNG ĐÈ, CHẠY LIÊN TỤC)
+// --------------------------------------------------------------------------
+const TOTAL_LANES = 8;
+const laneNextAvailableTime = new Array(TOTAL_LANES).fill(0);
+const danmakuQueue = [];
+let danmakuSchedulerTimer = null;
+
+function getAvailableLane(now) {
+    const freeLanes = [];
+    for (let i = 0; i < TOTAL_LANES; i++) {
+        if (laneNextAvailableTime[i] <= now) {
+            freeLanes.push(i);
+        }
+    }
+
+    if (freeLanes.length === 0) return -1;
+
+    // Ưu tiên làn đã rảnh lâu nhất để phân bố đều và dãn cách tối đa giữa các cmt
+    freeLanes.sort((a, b) => laneNextAvailableTime[a] - laneNextAvailableTime[b]);
+    return freeLanes[0];
+}
+
+function spawnDanmakuItem(data, laneIndex) {
+    if (!danmakuContainer || !data || !data.messageHtml) return;
+
+    const item = document.createElement('div');
+    item.className = 'ytc-danmaku-item';
+
+    // Dãn cách các làn đều từ 5% đến 60% chiều cao màn hình (không che thanh điều khiển)
+    const topPercent = 5 + laneIndex * 7.0;
+    item.style.top = `${topPercent}%`;
+
+    // Chế độ chat chạy ngang: Không cần @ tên nữa, vào thẳng nội dung!
+    item.innerHTML = safeHTML(`
+        <span class="ytc-chat-text ${data.authorClass || ''}">${data.messageHtml}</span>
+    `);
+
+    danmakuContainer.appendChild(item);
+
+    // Tính toán thời gian bận của làn để cmt sau KHÔNG BAO GIỜ bị đè/chèn vào cmt trước
+    const plainText = (data.messageHtml || '').replace(/<[^>]*>/g, '');
+    const textLen = plainText.length || 8;
+    // Dãn cách an toàn: tối thiểu 1800ms, cộng thêm theo độ dài cmt
+    const busyDuration = Math.min(4200, Math.max(1800, textLen * 95 + 1100));
+    laneNextAvailableTime[laneIndex] = Date.now() + busyDuration;
+
+    item.addEventListener('animationend', () => item.remove());
+    setTimeout(() => {
+        if (item.isConnected) item.remove();
+    }, 12000);
+}
+
+function processDanmakuQueue() {
+    if (danmakuQueue.length === 0) return;
+
+    const now = Date.now();
+    const lane = getAvailableLane(now);
+
+    if (lane !== -1) {
+        const nextData = danmakuQueue.shift();
+        spawnDanmakuItem(nextData, lane);
+    }
+
+    // Kiểm soát quá tải (VD 1 phút 100-200 cmt):
+    // Giữ tối đa 25 cmt mới nhất trong hàng đợi để vừa cập nhật mới nhất vừa không bị chèn
+    if (danmakuQueue.length > 25) {
+        while (danmakuQueue.length > 20) {
+            // Ưu tiên giữ lại Super Chat hoặc tin nhắn hội viên, lọc bớt cmt thường cũ
+            const idx = danmakuQueue.findIndex(d => !d.authorClass && !d.messageHtml.includes('purchase-amount'));
+            if (idx !== -1) {
+                danmakuQueue.splice(idx, 1);
+            } else {
+                danmakuQueue.shift();
+            }
+        }
+    }
+}
+
+function startDanmakuScheduler() {
+    if (!danmakuSchedulerTimer) {
+        // Chạy đều đặn mỗi 70ms: nhịp nhàng, liên tục, không bao giờ bị dừng 2s ngắt quãng
+        danmakuSchedulerTimer = setInterval(processDanmakuQueue, 70);
+    }
+}
+
+function stopDanmakuScheduler() {
+    if (danmakuSchedulerTimer) {
+        clearInterval(danmakuSchedulerTimer);
+        danmakuSchedulerTimer = null;
+    }
+    danmakuQueue.length = 0;
+    laneNextAvailableTime.fill(0);
+}
+
+// --------------------------------------------------------------------------
+// 4. TRÍCH XUẤT VÀ HIỂN THỊ TIN NHẮN (DANMAKU / STREAMER BOX)
 // --------------------------------------------------------------------------
 export function extractMessageData(node) {
     if (!node || node.nodeType !== 1) return null;
 
     const authorEl = node.querySelector('#author-name');
     const rawAuthor = authorEl ? authorEl.textContent.trim() : '';
-    const author = rawAuthor.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    let author = rawAuthor.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    if (author.startsWith('@')) {
+        author = author.substring(1);
+    }
 
     const isMod = !!node.querySelector('yt-live-chat-author-badge-renderer[aria-label*="Kiểm duyệt"], [type="moderator"], .moderator') || node.classList.contains('author-type-moderator');
     const isMember = !!node.querySelector('yt-live-chat-author-badge-renderer[aria-label*="Hội viên"], [type="member"], .member') || node.classList.contains('author-type-member');
@@ -299,26 +395,10 @@ export function displayChatMessage(data) {
 
     ensureChatOverlayContainers();
 
-    // Chế độ 1: Danmaku chạy ngang
+    // Chế độ 1: Danmaku chạy ngang (Đưa vào hàng đợi điều phối thông minh)
     if (currentConfig.chatOverlay === 'danmaku' && danmakuContainer) {
-        const item = document.createElement('div');
-        item.className = 'ytc-danmaku-item';
-
-        currentLaneIndex = (currentLaneIndex + 1) % TOTAL_LANES;
-        const topPercent = 6 + currentLaneIndex * 7.5;
-        item.style.top = `${topPercent}%`;
-
-        item.innerHTML = safeHTML(`
-            <span class="ytc-chat-author ${data.authorClass || ''}">@${data.author}:</span>
-            <span class="ytc-chat-text">${data.messageHtml}</span>
-        `);
-
-        danmakuContainer.appendChild(item);
-        item.addEventListener('animationend', () => item.remove());
-
-        setTimeout(() => {
-            if (item.isConnected) item.remove();
-        }, 10000);
+        danmakuQueue.push(data);
+        startDanmakuScheduler();
     }
 
     // Chế độ 2: Khung nổi Streamer
@@ -342,7 +422,7 @@ export function displayChatMessage(data) {
 
         msgContainer.appendChild(item);
 
-        while (msgContainer.children.length > 15) {
+        while (msgContainer.children.length > 20) {
             msgContainer.firstElementChild.remove();
         }
 
@@ -352,7 +432,7 @@ export function displayChatMessage(data) {
                 item.style.opacity = '0';
                 setTimeout(() => item.remove(), 600);
             }
-        }, 14000);
+        }, 16000);
     }
 }
 
@@ -454,6 +534,12 @@ export function updateChatOverlayVisibility() {
     if (danmaku) {
         danmaku.style.display = mode === 'danmaku' ? 'block' : 'none';
         danmaku.innerHTML = '';
+        if (mode === 'danmaku') {
+            stopDanmakuScheduler();
+            startDanmakuScheduler();
+        } else {
+            stopDanmakuScheduler();
+        }
     }
     if (streamer) {
         streamer.style.display = mode === 'streamer' ? 'flex' : 'none';

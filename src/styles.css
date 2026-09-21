@@ -728,7 +728,7 @@ html:not([dark]) .ytc-mode-btn.active {
         -1px 1px 2px #000,
         0 0 4px #000;
     will-change: transform;
-    animation: ytc-danmaku-slide 7.5s linear forwards;
+    animation: ytc-danmaku-slide 8.5s linear forwards;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -760,13 +760,16 @@ html:not([dark]) .ytc-mode-btn.active {
     font-weight: 700;
     flex-shrink: 0;
 }
-.ytc-chat-author.mod {
+.ytc-chat-author.mod,
+.ytc-chat-text.mod {
     color: #3ea6ff !important;
 }
-.ytc-chat-author.member {
+.ytc-chat-author.member,
+.ytc-chat-text.member {
     color: #2ba640 !important;
 }
-.ytc-chat-author.owner {
+.ytc-chat-author.owner,
+.ytc-chat-text.owner {
     color: #ffd600 !important;
 }
 
