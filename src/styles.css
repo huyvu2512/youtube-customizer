@@ -843,14 +843,14 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
 }
 
 .ytc-box-header {
-    height: 24px;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 2px 8px;
+    padding: 1px 6px;
     background: rgba(0, 0, 0, 0.75);
     color: #eee;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     cursor: move;
     opacity: 0;
@@ -879,17 +879,17 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    gap: 3px;
-    padding: 4px 6px;
+    gap: 1.5px;
+    padding: 2px 4px;
     pointer-events: none;
 }
 
 .ytc-box-item {
     display: flex;
     align-items: flex-start;
-    gap: 4px;
-    font-size: 12px;
-    line-height: 1.25;
+    gap: 3px;
+    font-size: 11px;
+    line-height: 1.18;
     color: #fff;
     text-shadow: 
         1px 1px 2px #000, 
@@ -897,16 +897,16 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
         1px -1px 2px #000, 
         -1px 1px 2px #000, 
         0 0 3px #000;
-    animation: ytc-fade-in 0.2s ease-out;
+    animation: ytc-fade-in 0.15s ease-out;
     word-break: break-word;
 }
 
 .ytc-box-avatar {
-    width: 16px;
-    height: 16px;
+    width: 11px;
+    height: 11px;
     border-radius: 50%;
     flex-shrink: 0;
-    margin-top: 1px;
+    margin-top: 1.5px;
 }
 
 .ytc-box-content {
@@ -915,21 +915,21 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
 
 .ytc-box-badge {
     display: inline-flex;
-    vertical-align: -2px;
-    margin-right: 3px;
+    vertical-align: -1px;
+    margin-right: 2px;
 }
 .ytc-box-badge img,
 .ytc-box-badge svg {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
 }
 
 .ytc-box-resize {
     position: absolute;
     right: 2px;
     bottom: 2px;
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     cursor: nwse-resize;
     opacity: 0;
     pointer-events: none;

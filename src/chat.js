@@ -550,8 +550,9 @@ export function displayChatMessage(data, isBacklog = false) {
         `);
 
         msgContainer.appendChild(item);
+        msgContainer.scrollTop = msgContainer.scrollHeight;
 
-        while (msgContainer.children.length > 40) {
+        while (msgContainer.children.length > 60) {
             msgContainer.firstElementChild.remove();
         }
 
@@ -561,7 +562,7 @@ export function displayChatMessage(data, isBacklog = false) {
                 item.style.opacity = '0';
                 setTimeout(() => item.remove(), 600);
             }
-        }, 30000);
+        }, 45000);
     }
 }
 
@@ -855,6 +856,22 @@ export function initIframeChatSender() {
             if (items) sendExisting(items);
         }
     });
+
+    // Chống đứng chat YouTube (Auto unpause & Auto scroll bottom)
+    setInterval(() => {
+        try {
+            // 1. Nhấn nút "Tin nhắn mới" / "Cuộc trò chuyện bị tạm dừng" nếu bị YouTube dừng
+            const showMoreBtn = document.querySelector('#show-more button, yt-live-chat-item-list-renderer #show-more, [aria-label*="Cuộc trò chuyện bị tạm dừng"], [aria-label*="Chat paused"], [aria-label*="Tin nhắn mới"], [aria-label*="New messages"]');
+            if (showMoreBtn) {
+                showMoreBtn.click();
+            }
+            // 2. Luôn ghim cuộn xuống cuối cùng để YouTube không tự pause
+            const scroller = document.querySelector('#item-scroller, yt-live-chat-item-list-renderer #item-scroller');
+            if (scroller) {
+                scroller.scrollTop = scroller.scrollHeight;
+            }
+        } catch (e) {}
+    }, 1500);
 }
 
 function processChatNode(node) {
@@ -921,8 +938,15 @@ export function initChatOverlay() {
         if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
             findAndObserveItems();
             ensureBackgroundLiveChat();
+            // Chống đứng chat YouTube trong Main DOM nếu có
+            try {
+                const showMore = document.querySelector('#show-more button, yt-live-chat-item-list-renderer #show-more, [aria-label*="Cuộc trò chuyện bị tạm dừng"], [aria-label*="Chat paused"], [aria-label*="Tin nhắn mới"], [aria-label*="New messages"]');
+                if (showMore) showMore.click();
+                const scroller = document.querySelector('#item-scroller, yt-live-chat-item-list-renderer #item-scroller');
+                if (scroller) scroller.scrollTop = scroller.scrollHeight;
+            } catch (e) {}
         }
-    }, 2500);
+    }, 2000);
 
     if (location.pathname.startsWith('/watch') || location.pathname.startsWith('/live')) {
         whenElement('#movie_player, .html5-video-player', () => {

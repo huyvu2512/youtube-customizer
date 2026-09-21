@@ -55,7 +55,10 @@ export const DEFAULT_CONFIG = {
 export function loadConfig() {
     try {
         const stored = localStorage.getItem(CONFIG_KEY);
-        return stored ? Object.assign({}, DEFAULT_CONFIG, JSON.parse(stored)) : Object.assign({}, DEFAULT_CONFIG);
+        const cfg = stored ? Object.assign({}, DEFAULT_CONFIG, JSON.parse(stored)) : Object.assign({}, DEFAULT_CONFIG);
+        // BẮT BUỘC: Live Chat luôn luôn mặc định TẮT khi mở trang / F5!
+        cfg.chatOverlay = 'off';
+        return cfg;
     } catch (e) {
         return Object.assign({}, DEFAULT_CONFIG);
     }
@@ -63,7 +66,9 @@ export function loadConfig() {
 
 export function saveConfig(cfg) {
     try {
-        localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
+        // Không bao giờ lưu trạng thái bật chat vào localStorage (chỉ bật tạm thời cho video hiện tại)
+        const toSave = { ...cfg, chatOverlay: 'off' };
+        localStorage.setItem(CONFIG_KEY, JSON.stringify(toSave));
     } catch (e) {}
 }
 
@@ -145,6 +150,15 @@ if (window.self !== window.top) {
     // 3. ĐIỀU PHỐI VÒNG ĐỜI SPA
     // --------------------------------------------------------------------------
     function onNavigate() {
+        // Chuyển video khác: BẮT BUỘC TẮT LUÔN Live Chat!
+        currentConfig.chatOverlay = 'off';
+        const panel = document.getElementById('yt-customizer-panel');
+        if (panel) {
+            panel.querySelectorAll('.ytc-mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-overlay') === 'off');
+            });
+        }
+
         applyConfigToRoot();
         scheduleLogoScan(document);
         ensureSettingsElements();
@@ -169,6 +183,9 @@ if (window.self !== window.top) {
     }
 
     document.addEventListener('yt-navigate-start', () => {
+        // Chuyển video khác: Tắt Live Chat ngay lập tức
+        currentConfig.chatOverlay = 'off';
+        updateChatOverlayVisibility();
         if (location.pathname.startsWith('/watch')) {
             setWatchLoading(true);
         }

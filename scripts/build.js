@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.1.4
-// @description  YouTube Customizer v3.1.4 — Khung nổi Streamer bám góc tuyệt đối khi phóng to/thu nhỏ (CSS corner anchor) và tự động ẩn chat gốc YouTube.
+// @version      3.1.5
+// @description  YouTube Customizer v3.1.5 — Khung nổi Streamer 11px siêu gọn, chống đứng Live Chat và tự động tắt Live Chat khi chuyển video/F5.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
