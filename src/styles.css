@@ -282,8 +282,12 @@ yt-live-chat-membership-item-renderer {
 .ytc-auto-dismiss yt-mealbar-promo-renderer,
 .ytc-auto-dismiss ytd-upsell-dialog-renderer,
 .ytc-auto-dismiss ytd-single-option-survey-renderer,
-.ytc-auto-dismiss ytd-in-feed-survey-renderer {
+.ytc-auto-dismiss ytd-in-feed-survey-renderer,
+.ytc-auto-dismiss yt-bubble-hint-renderer,
+.ytc-auto-dismiss .ytc-dismissed-toast {
     display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 :root.ytc-premium-logo #start.ytd-masthead ytd-topbar-logo-renderer,

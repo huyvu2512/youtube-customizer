@@ -72,7 +72,7 @@ function createSettingsPanel() {
         panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v2.9.2</span>
+                <span class="ytc-header-badge">v2.9.3</span>
             </div>
 
             <div class="ytc-tabs">
@@ -225,10 +225,10 @@ function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="autoDismissPromos" title="Tự động tắt banner mời dùng thử Premium, gói hội viên và thông báo phiền toái">
+                <div class="ytc-item" data-toggle="autoDismissPromos" title="Tự động tắt banner Premium, khảo sát và thông báo sự cố gián đoạn phiền toái">
                     <div class="ytc-item-left">
                         ${BELL_OFF_SVG}
-                        <span>Tự đóng banner quảng cáo</span>
+                        <span>Tự đóng banner & thông báo</span>
                     </div>
                     <label class="ytc-switch">
                         <input type="checkbox" id="ytc-chk-promos" ${currentConfig.autoDismissPromos ? 'checked' : ''}>

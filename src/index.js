@@ -40,7 +40,7 @@ export const DEFAULT_CONFIG = {
     unlockLiveDvr: true,    // Mở khóa tua lại Live Stream
     chatOverlay: 'off',     // 'off', 'danmaku', 'streamer'
     chatOverlayHideOnRewind: true, // Tự động ẩn khi tua về quá khứ
-    autoDismissPromos: true,// Tự động đóng banner khuyến mại
+    autoDismissPromos: true,// Tự động đóng banner khuyến mại & thông báo gián đoạn
     premiumLogo: true,      // Logo YouTube Premium
     cleanSearch: true,      // Ẩn video tài trợ / quảng cáo tìm kiếm
     disableAmbient: true,   // Tắt Ambient Mode (Cinematics)
