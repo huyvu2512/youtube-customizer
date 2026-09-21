@@ -2,7 +2,7 @@
 // YOUTUBE CUSTOMIZER - GIAO DIỆN BẢNG CÀI ĐẶT 4 TAB & BIỂU TƯỢNG (UI & ICONS)
 // ==========================================================================
 import { currentConfig, saveConfig, applyConfigToRoot } from './index.js';
-import { safeHTML, whenElement } from './features.js';
+import { safeHTML, whenElement, rafThrottle } from './features.js';
 
 // --------------------------------------------------------------------------
 // 1. BIỂU TƯỢNG SVG (LUCIDE ICONS)
@@ -31,11 +31,12 @@ const MESSAGE_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 // 2. BẢNG MENU CÀI ĐẶT (SETTINGS PANEL)
 // --------------------------------------------------------------------------
 let menuDismissBound = false;
-function bindMenuDismiss(panel) {
+function bindGlobalMenuDismiss() {
     if (menuDismissBound) return;
     menuDismissBound = true;
 
     document.addEventListener('click', (e) => {
+        const panel = document.getElementById('ytc-settings-panel');
         if (panel && panel.classList.contains('open')) {
             if (!e.target.closest('#ytc-settings-panel') && !e.target.closest('#ytc-settings-btn')) {
                 panel.classList.remove('open');
@@ -44,13 +45,26 @@ function bindMenuDismiss(panel) {
     });
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && panel && panel.classList.contains('open')) {
-            panel.classList.remove('open');
+        if (e.key === 'Escape') {
+            const panel = document.getElementById('ytc-settings-panel');
+            if (panel && panel.classList.contains('open')) {
+                panel.classList.remove('open');
+            }
         }
     });
+
+    window.addEventListener('resize', () => {
+        const panel = document.getElementById('ytc-settings-panel');
+        const btn = document.getElementById('ytc-settings-btn');
+        if (panel && panel.classList.contains('open') && btn) {
+            const rect = btn.getBoundingClientRect();
+            panel.style.top = (rect.bottom + 8) + 'px';
+            panel.style.right = Math.max(12, window.innerWidth - rect.right - 10) + 'px';
+        }
+    }, { passive: true });
 }
 
-function createSettingsPanel(btn) {
+function createSettingsPanel() {
     let panel = document.getElementById('ytc-settings-panel');
     if (!panel) {
         panel = document.createElement('div');
@@ -343,26 +357,14 @@ function createSettingsPanel(btn) {
                 }
             });
         });
+
+        // Ngăn click trong menu nổi bọt ra ngoài đóng menu
+        panel.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
     }
 
-    function updatePanelPosition() {
-        const rect = btn.getBoundingClientRect();
-        panel.style.top = (rect.bottom + 8) + 'px';
-        panel.style.right = Math.max(12, window.innerWidth - rect.right - 10) + 'px';
-    }
-
-    btn.addEventListener('mouseenter', updatePanelPosition, { passive: true });
-    window.addEventListener('resize', () => {
-        if (panel.classList.contains('open')) updatePanelPosition();
-    }, { passive: true });
-
-    btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (!panel.style.top) updatePanelPosition();
-        panel.classList.toggle('open');
-    });
-
-    bindMenuDismiss(panel);
+    return panel;
 }
 
 // --------------------------------------------------------------------------
@@ -373,8 +375,7 @@ export function ensureSettingsElements() {
     if (!endContainer) return;
 
     let btn = document.getElementById('ytc-settings-btn');
-    const isNewBtn = !btn;
-    if (isNewBtn) {
+    if (!btn) {
         btn = document.createElement('button');
         btn.id = 'ytc-settings-btn';
         btn.title = 'YouTube Customizer';
@@ -385,17 +386,37 @@ export function ensureSettingsElements() {
         endContainer.insertBefore(btn, endContainer.firstElementChild);
     }
 
-    createSettingsPanel(btn);
+    const panel = createSettingsPanel();
+    bindGlobalMenuDismiss();
+
+    // Gắn sự kiện click và hover cho nút bánh răng DUY NHẤT 1 LẦN
+    if (!btn._ytcBound) {
+        btn._ytcBound = true;
+
+        const updatePosition = () => {
+            const rect = btn.getBoundingClientRect();
+            panel.style.top = (rect.bottom + 8) + 'px';
+            panel.style.right = Math.max(12, window.innerWidth - rect.right - 10) + 'px';
+        };
+
+        btn.addEventListener('mouseenter', updatePosition, { passive: true });
+
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            updatePosition();
+            panel.classList.toggle('open');
+        });
+    }
 }
 
 export function setupSettingsObserver() {
     ensureSettingsElements();
 
+    const throttledEnsure = rafThrottle(ensureSettingsElements);
+
     const attach = (masthead) => {
-        ensureSettingsElements();
-        new MutationObserver(() => {
-            ensureSettingsElements();
-        }).observe(masthead, { childList: true, subtree: true });
+        throttledEnsure();
+        new MutationObserver(throttledEnsure).observe(masthead, { childList: true, subtree: true });
     };
 
     const masthead = document.querySelector('ytd-masthead');

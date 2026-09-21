@@ -109,18 +109,18 @@ Dự án được tổ chức theo kiến trúc module hóa:
 
 ```text
 youtube-customizer/
-├── package.json            # Cấu hình dự án và lệnh build (npm run build / npm run dev)
+├── package.json            # Cấu hình dự án và lệnh build
 ├── scripts/
-│   └── build.js            # Script đóng gói tự động bằng esbuild
+│   └── build.js            # Script đóng gói bằng esbuild
 ├── src/
-│   ├── index.js            # Entrypoint chính, cấu hình và điều phối vòng đời SPA
-│   ├── styles.css          # Toàn bộ định kiểu CSS (giao diện, lưới cột, bộ lọc, player, menu)
-│   ├── features.js         # Toàn bộ tính năng (cột, logo, bộ lọc nội dung, phím tắt, promos)
-│   └── ui.js               # Biểu tượng SVG Lucide, nút bánh răng masthead và menu 4 tab
-├── LICENSE                 # Giấy phép mã nguồn mở MIT License
-├── README.md               # Tài liệu hướng dẫn sử dụng và giới thiệu dự án
-├── tampermonkey.user.js    # Tệp metadata nạp script cho tiện ích Tampermonkey
-└── youtube_customizer.js   # Tệp phân phối chính được biên dịch từ thư mục src/
+│   ├── index.js            # Khởi tạo và điều phối vòng đời
+│   ├── styles.css          # Định kiểu CSS toàn bộ giao diện
+│   ├── features.js         # Tập hợp toàn bộ tính năng
+│   └── ui.js               # Biểu tượng và menu 4 tab
+├── LICENSE                 # Giấy phép nguồn mở MIT
+├── README.md               # Tài liệu hướng dẫn sử dụng
+├── tampermonkey.user.js    # Header nạp Tampermonkey
+└── youtube_customizer.js   # Bundle phân phối chính
 ```
 
 ### Lệnh phát triển
