@@ -1,5 +1,5 @@
 // ==UserScript==
-// YouTube Customizer v2.5 — https://github.com/huyvu2512/youtube-customizer
+// YouTube Customizer v2.5.1 — https://github.com/huyvu2512/youtube-customizer
 // ==/UserScript==
 (function() {
     'use strict';
@@ -241,7 +241,7 @@
             /* Logo Premium: Khoảng cách chuẩn với nút tab điều hướng (guide button) & định dạng logo */
             :root.ytc-premium-logo #start.ytd-masthead ytd-topbar-logo-renderer,
             :root.ytc-premium-logo ytd-topbar-logo-renderer#logo {
-                margin-left: 16px !important;
+                margin-left: 0 !important;
                 display: flex !important;
                 align-items: center !important;
             }
@@ -251,8 +251,15 @@
                 align-items: center !important;
                 box-sizing: content-box !important;
             }
-            :root.ytc-premium-logo ytd-topbar-logo-renderer #logo > div,
-            :root.ytc-premium-logo ytd-topbar-logo-renderer ytd-logo {
+            /* Ẩn triệt để yoodle renderer và các logo phụ để không bao giờ hiện 2 logo */
+            ytd-topbar-logo-renderer ytd-yoodle-renderer,
+            ytd-yoodle-renderer ytd-logo,
+            ytd-logo[hidden],
+            ytd-topbar-logo-renderer ytd-yoodle-renderer * {
+                display: none !important;
+            }
+            :root.ytc-premium-logo ytd-topbar-logo-renderer > #logo > div > ytd-logo,
+            :root.ytc-premium-logo ytd-topbar-logo-renderer > #logo ytd-logo:not([hidden]):not(.style-scope.ytd-yoodle-renderer) {
                 width: 101px !important;
                 min-width: 101px !important;
                 max-width: 101px !important;
@@ -358,6 +365,7 @@
 
             /* --- NÚT VÀ BẢNG CÀI ĐẶT (CHUẨN GIAO DIỆN YOUTUBE) --- */
             #ytc-settings-btn {
+                order: -1 !important;
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
@@ -612,6 +620,16 @@
 
     function ensurePremiumLogo(logo) {
         if (!logo) return;
+        // Bỏ qua logo phụ trong ytd-yoodle-renderer hoặc thẻ ẩn (tránh bị hiện 2 logo)
+        if (logo.closest('ytd-yoodle-renderer') || logo.hasAttribute('hidden') || logo.closest('[hidden]')) {
+            const span = logo.querySelector('.custom-premium-logo');
+            if (span) span.remove();
+            return;
+        }
+
+        // Chỉ xử lý logo chính trên thanh topbar masthead
+        if (!logo.closest('ytd-topbar-logo-renderer')) return;
+
         logo.style.overflow = 'visible';
         let parent = logo.parentElement;
         while (parent && parent.tagName.toLowerCase() !== 'ytd-topbar-logo-renderer') {
@@ -635,7 +653,8 @@
 
     const scheduleLogoScan = rafThrottle((root) => {
         const scope = root && root.querySelectorAll ? root : document;
-        scope.querySelectorAll('ytd-logo').forEach(ensurePremiumLogo);
+        const mainLogos = scope.querySelectorAll('ytd-topbar-logo-renderer > #logo > div > ytd-logo, ytd-topbar-logo-renderer > #logo ytd-logo:not([hidden])');
+        mainLogos.forEach(ensurePremiumLogo);
     });
 
     function setupLogoObserver() {
@@ -997,28 +1016,25 @@
     const COMPASS_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`;
 
     function ensureSettingsElements() {
-        if (document.getElementById('ytc-settings-btn')) return;
-
-        // Vị trí đặt nút: thanh topbar masthead #end (cạnh nút "+ Tạo")
         const endContainer = document.querySelector('ytd-masthead #end, #masthead #end, #end.ytd-masthead');
         if (!endContainer) return;
 
-        const buttonsContainer = endContainer.querySelector('#buttons') || endContainer;
-
-        const btn = document.createElement('button');
-        btn.id = 'ytc-settings-btn';
-        btn.title = 'YouTube Customizer';
-        btn.innerHTML = safeHTML(GEAR_SVG);
-
-        // Tìm nút Tạo (+ Tạo / Upload) hoặc nút đầu tiên trong #buttons để chèn vào trước
-        const createBtn = buttonsContainer.querySelector('ytd-button-renderer:has(a[href*="/upload"]), ytd-button-renderer, yt-button-view-model') 
-                       || buttonsContainer.firstElementChild;
-
-        if (createBtn && createBtn.parentElement === buttonsContainer) {
-            buttonsContainer.insertBefore(btn, createBtn);
-        } else {
-            buttonsContainer.prepend(btn);
+        let btn = document.getElementById('ytc-settings-btn');
+        const isNewBtn = !btn;
+        if (isNewBtn) {
+            btn = document.createElement('button');
+            btn.id = 'ytc-settings-btn';
+            btn.title = 'YouTube Customizer';
+            btn.innerHTML = safeHTML(GEAR_SVG);
         }
+
+        // Luôn gắn btn vào đầu endContainer (trước cả skeleton icons và buttons)
+        // Kết hợp cùng CSS 'order: -1 !important' để triệt tiêu hoàn toàn lỗi nhảy vị trí lúc skeleton loading
+        if (btn.parentElement !== endContainer || btn !== endContainer.firstElementChild) {
+            endContainer.insertBefore(btn, endContainer.firstElementChild);
+        }
+
+        if (!isNewBtn && document.getElementById('ytc-settings-panel')) return;
 
         // Tạo bảng menu cài đặt
         let panel = document.getElementById('ytc-settings-panel');
@@ -1028,7 +1044,7 @@
             panel.innerHTML = safeHTML(`
                 <div class="ytc-header">
                     <span>YouTube Customizer</span>
-                    <span class="ytc-header-badge">v2.5</span>
+                    <span class="ytc-header-badge">v2.5.1</span>
                 </div>
 
                 <!-- Số cột trang chủ -->
@@ -1233,9 +1249,7 @@
         const attach = (masthead) => {
             ensureSettingsElements();
             new MutationObserver(() => {
-                if (!document.getElementById('ytc-settings-btn')) {
-                    ensureSettingsElements();
-                }
+                ensureSettingsElements();
             }).observe(masthead, { childList: true, subtree: true });
         };
 
