@@ -242,7 +242,7 @@ function setupChatBoxInteractions(box, player) {
 // --------------------------------------------------------------------------
 // 3. ĐIỀU PHỐI VÀ QUẢN LÝ LÀN CHẠY DANMAKU (TRÁNH CHỒNG ĐÈ, CHẠY LIÊN TỤC)
 // --------------------------------------------------------------------------
-const TOTAL_LANES = 8;
+const TOTAL_LANES = 15;
 const laneNextAvailableTime = new Array(TOTAL_LANES).fill(0);
 const danmakuQueue = [];
 let danmakuSchedulerTimer = null;
@@ -257,9 +257,9 @@ function getAvailableLane(now) {
 
     if (freeLanes.length === 0) return -1;
 
-    // Ưu tiên làn đã rảnh lâu nhất để phân bố đều và dãn cách tối đa giữa các cmt
-    freeLanes.sort((a, b) => laneNextAvailableTime[a] - laneNextAvailableTime[b]);
-    return freeLanes[0];
+    // Chọn NGẪU NHIÊN một trong các làn đang rảnh để trải đều toàn bộ khung hình video
+    const randomIndex = Math.floor(Math.random() * freeLanes.length);
+    return freeLanes[randomIndex];
 }
 
 function spawnDanmakuItem(data, laneIndex) {
@@ -268,8 +268,8 @@ function spawnDanmakuItem(data, laneIndex) {
     const item = document.createElement('div');
     item.className = 'ytc-danmaku-item';
 
-    // Dãn cách các làn đều từ 5% đến 60% chiều cao màn hình (không che thanh điều khiển)
-    const topPercent = 5 + laneIndex * 7.0;
+    // Dãn cách 15 làn ngẫu nhiên phủ khắp toàn bộ chiều cao video (từ 4% đến 88%)
+    const topPercent = 4 + laneIndex * 5.8;
     item.style.top = `${topPercent}%`;
 
     // Chế độ chat chạy ngang: Không cần @ tên nữa, vào thẳng nội dung!
@@ -523,6 +523,55 @@ export function requestExistingMessages() {
     });
 }
 
+function getCurrentVideoId() {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const v = urlParams.get('v');
+        if (v) return v;
+        const player = document.querySelector('#movie_player') || document.querySelector('.html5-video-player');
+        if (player && player.getVideoData) {
+            const data = player.getVideoData();
+            if (data && data.video_id) return data.video_id;
+        }
+    } catch (e) {}
+    return null;
+}
+
+export function syncBackgroundChatIframe() {
+    if (!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') {
+        removeBackgroundChatIframe();
+        return;
+    }
+
+    const videoId = getCurrentVideoId();
+    if (!videoId) {
+        removeBackgroundChatIframe();
+        return;
+    }
+
+    let bgFrame = document.getElementById('ytc-bg-chat-iframe');
+    const targetSrc = `https://www.youtube.com/live_chat?is_popout=1&v=${videoId}`;
+
+    if (bgFrame) {
+        if (bgFrame.getAttribute('data-v') === videoId) {
+            return; // Đang chạy đúng video này rồi
+        }
+        bgFrame.remove();
+    }
+
+    bgFrame = document.createElement('iframe');
+    bgFrame.id = 'ytc-bg-chat-iframe';
+    bgFrame.setAttribute('data-v', videoId);
+    bgFrame.src = targetSrc;
+    bgFrame.style.cssText = 'position:fixed !important; top:-9999px !important; left:-9999px !important; width:10px !important; height:10px !important; opacity:0 !important; pointer-events:none !important; border:none !important; visibility:hidden !important; z-index:-1 !important;';
+    (document.body || document.documentElement).appendChild(bgFrame);
+}
+
+export function removeBackgroundChatIframe() {
+    const bgFrame = document.getElementById('ytc-bg-chat-iframe');
+    if (bgFrame) bgFrame.remove();
+}
+
 export function updateChatOverlayVisibility() {
     const mode = currentConfig.chatOverlay || 'off';
     if (mode !== 'off') {
@@ -555,6 +604,9 @@ export function updateChatOverlayVisibility() {
         // Bắt buộc mỗi lần bật là làm mới luôn!
         seenMessageIds.clear();
         requestExistingMessages();
+        syncBackgroundChatIframe();
+    } else {
+        removeBackgroundChatIframe();
     }
 }
 
@@ -601,22 +653,22 @@ function checkLiveHeadStatus() {
 }
 
 // --------------------------------------------------------------------------
-// 5. KHỞI CHẠY BÊN TRONG IFRAME LIVE CHAT (NẾU YOUTUBE DÙNG IFRAME)
+// 5. KHỞI CHẠY BÊN TRONG IFRAME LIVE CHAT (NẾU YOUTUBE DÙNG IFRAME HOẶC BG IFRAME)
 // --------------------------------------------------------------------------
 export function initIframeChatSender() {
     function handleNode(node) {
         if (node.nodeType === 1) {
-            if (node.matches && node.matches('yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, [class*="yt-live-chat-"]')) {
+            if (node.matches && node.matches('yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, yt-live-chat-paid-sticker-renderer')) {
                 const data = extractMessageData(node);
                 if (data) {
-                    window.top.postMessage({ type: 'YTC_LIVE_CHAT_MSG', payload: data }, '*');
+                    try { window.top.postMessage({ type: 'YTC_LIVE_CHAT_MSG', payload: data }, '*'); } catch (e) {}
                 }
             } else if (node.querySelectorAll) {
                 const subs = getAllChatElements(node);
                 subs.forEach((s) => {
                     const data = extractMessageData(s);
                     if (data) {
-                        window.top.postMessage({ type: 'YTC_LIVE_CHAT_MSG', payload: data }, '*');
+                        try { window.top.postMessage({ type: 'YTC_LIVE_CHAT_MSG', payload: data }, '*'); } catch (e) {}
                     }
                 });
             }
@@ -799,6 +851,9 @@ export function initChatOverlay() {
     }, 2500);
 
     if (location.pathname.startsWith('/watch') || location.pathname.startsWith('/live')) {
-        whenElement('#movie_player, .html5-video-player', ensureChatOverlayContainers);
+        whenElement('#movie_player, .html5-video-player', () => {
+            ensureChatOverlayContainers();
+            syncBackgroundChatIframe();
+        });
     }
 }

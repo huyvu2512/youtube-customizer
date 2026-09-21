@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.0.0-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.0.1-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,12 +25,15 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.0.0** nâng cấp:
+Phiên bản **v3.0.1** nâng cấp:
+- **Danmaku ngẫu nhiên toàn màn hình video:**
+  - Mở rộng lên 15 làn độc lập phủ từ 4% đến 88% chiều cao khung hình video.
+  - Bình luận được phân bổ hoàn toàn ngẫu nhiên trên khắp các làn rảnh, trải đều từ trên xuống dưới thay vì dồn ở nửa trên.
+- **Chạy độc lập 100% không cần mở thanh chat bên phải:**
+  - Tự động đồng bộ luồng live chat ngầm thông qua iframe ẩn độc lập. Người xem có thể đóng hoàn toàn khung chat của YouTube ("X" hoặc "Ẩn cuộc trò chuyện") mà Danmaku và khung nổi vẫn chạy liên tục.
 - **Khắc phục toàn diện Live Chat nổi (Streamer Box & Danmaku):**
-  - **Hiện chính giữa khung video lần đầu bật:** Khi kích hoạt lần đầu hoặc chưa lưu vị trí, khung chat tự động xuất hiện ở ngay chính giữa màn hình video để người dùng nhận biết ngay lập tức. Hỗ trợ nhấp đúp vào thanh tiêu đề để đặt lại khung về chính giữa.
-  - **Giữ viền và tiêu đề rõ ràng lúc bật:** Khung chat hiển thị rõ viền, tiêu đề và nút co giãn ngay khi bật mà không bắt buộc phải rê chuột vào. Chỉ sau khi người dùng di chuột vào khung rồi rê ra ngoài thì chế độ xóa phông/ẩn viền mới bắt đầu có hiệu lực.
-  - **Làm mới dữ liệu tức thì mỗi lần bật:** Mỗi khi chuyển đổi trạng thái chat, hệ thống tự động xóa bộ nhớ đệm trùng lặp, dọn sạch tin nhắn cũ và nạp lại ngay lập tức danh sách tin nhắn mới nhất từ luồng live stream.
-  - **Bắt tin nhắn chuẩn xác đa nguồn:** Khắc phục lỗi MutationObserver chặn nhầm container cấp cha, bổ sung cơ chế quan sát trực tiếp container tin nhắn (#items) và cơ chế thử lại đa mốc thời gian (500ms, 1200ms, 2500ms) để không bỏ sót tin nhắn.
+  - Hiện chính giữa khung video lần đầu bật; giữ viền và tiêu đề rõ ràng đến khi rời chuột.
+  - Làm mới dữ liệu tức thì mỗi lần bật, loại bỏ hiện tượng chạy ngắt quãng.
 - **Kế thừa các tối ưu của v2.9.9.1 & v2.9.8:**
   - Tách riêng module chat.js chuyên biệt, nạp tin nhắn song song qua postMessage và DOM hook.
   - Kích hoạt hiệu ứng tua mặc định của YouTube cho Numpad 4/6 và A/D.

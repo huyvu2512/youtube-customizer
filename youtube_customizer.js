@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.0.0
-// @description  YouTube Customizer v3.0.0 — Nâng cấp toàn diện Live Chat (khung nổi Streamer giữa màn hình, giữ khung ban đầu, tự làm mới và bắt tin nhắn tức thì).
+// @version      3.0.1
+// @description  YouTube Customizer v3.0.1 — Danmaku ngẫu nhiên toàn màn hình video, chạy độc lập không cần mở khung chat, loại bỏ gián đoạn.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -200,7 +200,7 @@
       });
     }
   }
-  var TOTAL_LANES = 8;
+  var TOTAL_LANES = 15;
   var laneNextAvailableTime = new Array(TOTAL_LANES).fill(0);
   var danmakuQueue = [];
   var danmakuSchedulerTimer = null;
@@ -212,14 +212,14 @@
       }
     }
     if (freeLanes.length === 0) return -1;
-    freeLanes.sort((a, b) => laneNextAvailableTime[a] - laneNextAvailableTime[b]);
-    return freeLanes[0];
+    const randomIndex = Math.floor(Math.random() * freeLanes.length);
+    return freeLanes[randomIndex];
   }
   function spawnDanmakuItem(data, laneIndex) {
     if (!danmakuContainer || !data || !data.messageHtml) return;
     const item = document.createElement("div");
     item.className = "ytc-danmaku-item";
-    const topPercent = 5 + laneIndex * 7;
+    const topPercent = 4 + laneIndex * 5.8;
     item.style.top = `${topPercent}%`;
     item.innerHTML = safeHTML(`
         <span class="ytc-chat-text ${data.authorClass || ""}">${data.messageHtml}</span>
@@ -410,6 +410,49 @@
       }
     });
   }
+  function getCurrentVideoId() {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const v = urlParams.get("v");
+      if (v) return v;
+      const player = document.querySelector("#movie_player") || document.querySelector(".html5-video-player");
+      if (player && player.getVideoData) {
+        const data = player.getVideoData();
+        if (data && data.video_id) return data.video_id;
+      }
+    } catch (e) {
+    }
+    return null;
+  }
+  function syncBackgroundChatIframe() {
+    if (!currentConfig.chatOverlay || currentConfig.chatOverlay === "off") {
+      removeBackgroundChatIframe();
+      return;
+    }
+    const videoId = getCurrentVideoId();
+    if (!videoId) {
+      removeBackgroundChatIframe();
+      return;
+    }
+    let bgFrame = document.getElementById("ytc-bg-chat-iframe");
+    const targetSrc = `https://www.youtube.com/live_chat?is_popout=1&v=${videoId}`;
+    if (bgFrame) {
+      if (bgFrame.getAttribute("data-v") === videoId) {
+        return;
+      }
+      bgFrame.remove();
+    }
+    bgFrame = document.createElement("iframe");
+    bgFrame.id = "ytc-bg-chat-iframe";
+    bgFrame.setAttribute("data-v", videoId);
+    bgFrame.src = targetSrc;
+    bgFrame.style.cssText = "position:fixed !important; top:-9999px !important; left:-9999px !important; width:10px !important; height:10px !important; opacity:0 !important; pointer-events:none !important; border:none !important; visibility:hidden !important; z-index:-1 !important;";
+    (document.body || document.documentElement).appendChild(bgFrame);
+  }
+  function removeBackgroundChatIframe() {
+    const bgFrame = document.getElementById("ytc-bg-chat-iframe");
+    if (bgFrame) bgFrame.remove();
+  }
   function updateChatOverlayVisibility() {
     const mode = currentConfig.chatOverlay || "off";
     if (mode !== "off") {
@@ -438,6 +481,9 @@
     if (mode !== "off") {
       seenMessageIds.clear();
       requestExistingMessages();
+      syncBackgroundChatIframe();
+    } else {
+      removeBackgroundChatIframe();
     }
   }
   function setChatOverlayHidden(hidden) {
@@ -478,17 +524,23 @@
   function initIframeChatSender() {
     function handleNode(node) {
       if (node.nodeType === 1) {
-        if (node.matches && node.matches('yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, [class*="yt-live-chat-"]')) {
+        if (node.matches && node.matches("yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, yt-live-chat-paid-sticker-renderer")) {
           const data = extractMessageData(node);
           if (data) {
-            window.top.postMessage({ type: "YTC_LIVE_CHAT_MSG", payload: data }, "*");
+            try {
+              window.top.postMessage({ type: "YTC_LIVE_CHAT_MSG", payload: data }, "*");
+            } catch (e) {
+            }
           }
         } else if (node.querySelectorAll) {
           const subs = getAllChatElements(node);
           subs.forEach((s) => {
             const data = extractMessageData(s);
             if (data) {
-              window.top.postMessage({ type: "YTC_LIVE_CHAT_MSG", payload: data }, "*");
+              try {
+                window.top.postMessage({ type: "YTC_LIVE_CHAT_MSG", payload: data }, "*");
+              } catch (e) {
+              }
             }
           });
         }
@@ -642,7 +694,10 @@
       }
     }, 2500);
     if (location.pathname.startsWith("/watch") || location.pathname.startsWith("/live")) {
-      whenElement("#movie_player, .html5-video-player", ensureChatOverlayContainers);
+      whenElement("#movie_player, .html5-video-player", () => {
+        ensureChatOverlayContainers();
+        syncBackgroundChatIframe();
+      });
     }
   }
 
@@ -1248,7 +1303,7 @@
       panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v3.0.0</span>
+                <span class="ytc-header-badge">v3.0.1</span>
             </div>
 
             <div class="ytc-tabs">
