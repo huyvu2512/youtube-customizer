@@ -821,7 +821,7 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
     max-height: 400px;
     background: transparent !important;
     border-radius: 8px;
-    z-index: 26;
+    z-index: 38 !important;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -940,12 +940,9 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
     to { opacity: 1; transform: translateY(0); }
 }
 
-.ytc-chat-hidden {
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-
 /* CHẾ ĐỘ CHẠY NGẦM KHUNG CHAT GỐC YOUTUBE (KHÔNG HIỆN SIDEBAR NHƯNG VẪN STREAM ĐẦY ĐỦ) */
+body[data-ytc-chat="danmaku"] #chat.ytd-watch-flexy[collapsed],
+body[data-ytc-chat="streamer"] #chat.ytd-watch-flexy[collapsed],
 ytd-live-chat-frame#chat.ytc-silent-mode {
     position: fixed !important;
     top: -9999px !important;
@@ -958,10 +955,13 @@ ytd-live-chat-frame#chat.ytc-silent-mode {
     display: block !important;
 }
 
-/* Khi khung chat ở chế độ silent mode, giải phóng không gian cột phụ để video mở rộng tối đa */
-ytd-watch-flexy:has(ytd-live-chat-frame#chat.ytc-silent-mode) #panels.ytd-watch-flexy,
-ytd-watch-flexy:has(ytd-live-chat-frame#chat.ytc-silent-mode) #chat-container {
-    display: none !important;
+#chat-container.ytc-silent-container {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
 }
 
 

@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.0.2
-// @description  YouTube Customizer v3.0.2 — Sửa lỗi dừng khi chuyển tab, chạy ngầm khung chat gốc siêu ổn định, khôi phục tức thì khi chuyển đổi.
+// @version      3.0.3
+// @description  YouTube Customizer v3.0.3 — Tối ưu triệt để RAM & CPU, sửa lỗi ẩn Live Chat cả dạng ngang lẫn khung nổi.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

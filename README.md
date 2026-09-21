@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.0.2-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.0.3-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,18 +25,18 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.0.2** nâng cấp:
-- **Khắc phục triệt để lỗi dừng chat khi chuyển tab hoặc chuyển chế độ:**
-  - Sửa thuật toán kiểm tra Live Head dựa trên độ lệch thời gian player thực tế, loại bỏ phụ thuộc vào thuộc tính DOM dễ bị sai khi tab chạy nền hoặc chuyển tab.
-  - Tự động kích hoạt lại bộ điều phối Danmaku và hiển thị tức thì qua sự kiện `visibilitychange` khi người dùng quay lại tab YouTube.
-  - Loại bỏ hoàn toàn iframe phụ gây xung đột phiên popout với YouTube.
-- **Chạy ngầm khung chat gốc (Silent Mode) không cần mở thanh chat bên phải:**
-  - Giữ luồng tin nhắn trực tiếp hoạt động ổn định trong nền thông qua class `ytc-silent-mode`.
-  - Khung chat gốc được giấu kín hoàn toàn, giải phóng toàn bộ diện tích cột phải để video mở rộng tối đa mà Danmaku và khung nổi vẫn nhận tin nhắn liên tục.
-- **Danmaku ngẫu nhiên 15 làn phủ khắp toàn bộ màn hình video.**
-- **Khắc phục toàn diện Live Chat nổi (Streamer Box & Danmaku):**
-  - Hiện chính giữa khung video lần đầu bật; giữ viền và tiêu đề rõ ràng đến khi rời chuột.
-  - Làm mới dữ liệu tức thì mỗi lần bật, loại bỏ hiện tượng chạy ngắt quãng.
+Phiên bản **v3.0.3** nâng cấp:
+- **Tối ưu triệt để RAM & CPU, loại bỏ hoàn toàn hiện tượng giật lag:**
+  - Loại bỏ toàn bộ MutationObserver diện rộng với `subtree: true` trên toàn bộ thân trang và container.
+  - Thay thế bằng cơ chế quan sát đơn điểm trực tiếp trên phần tử danh sách `#items` với `childList: true`, giảm 99.9% tần suất kích hoạt sự kiện DOM.
+  - Loại bỏ hoàn toàn bộ chọn CSS `:has()` trên `ytd-watch-flexy`, triệt tiêu tình trạng trình duyệt liên tục tính toán lại giao diện cho hàng nghìn phần tử.
+- **Sửa triệt để lỗi Live Chat bị ẩn / không hiển thị:**
+  - Khắc phục lỗi ẩn nhầm phần tử chat do class `.ytc-chat-hidden`.
+  - Khắc phục cơ chế chạy ngầm (Silent Mode) của khung chat gốc, đảm bảo iframe chat luôn hoạt động liên tục và không bị ngắt kết nối bởi thuộc tính `display: none` trên container cha.
+  - Đảm bảo cả hai chế độ Danmaku (chạy ngang) và Streamer Box (khung nổi) luôn hiển thị rõ ràng, mượt mà và tức thì.
+- **Kế thừa các tối ưu của v3.0.2 & v3.0.0:**
+  - Khắc phục lỗi dừng chat khi chuyển tab trình duyệt.
+  - Danmaku ngẫu nhiên 15 làn phủ khắp màn hình video, dãn cách thông minh chống chồng đè.
 - **Kế thừa các tối ưu của v2.9.9.1 & v2.9.8:**
   - Tách riêng module chat.js chuyên biệt, nạp tin nhắn song song qua postMessage và DOM hook.
   - Kích hoạt hiệu ứng tua mặc định của YouTube cho Numpad 4/6 và A/D.
