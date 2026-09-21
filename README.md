@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-2.9.9.2-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.0.0-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,7 +25,7 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v2.9.9.2** nâng cấp:
+Phiên bản **v3.0.0** nâng cấp:
 - **Khắc phục toàn diện Live Chat nổi (Streamer Box & Danmaku):**
   - **Hiện chính giữa khung video lần đầu bật:** Khi kích hoạt lần đầu hoặc chưa lưu vị trí, khung chat tự động xuất hiện ở ngay chính giữa màn hình video để người dùng nhận biết ngay lập tức. Hỗ trợ nhấp đúp vào thanh tiêu đề để đặt lại khung về chính giữa.
   - **Giữ viền và tiêu đề rõ ràng lúc bật:** Khung chat hiển thị rõ viền, tiêu đề và nút co giãn ngay khi bật mà không bắt buộc phải rê chuột vào. Chỉ sau khi người dùng di chuột vào khung rồi rê ra ngoài thì chế độ xóa phông/ẩn viền mới bắt đầu có hiệu lực.

@@ -72,7 +72,7 @@ function createSettingsPanel() {
         panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v2.9.9.2</span>
+                <span class="ytc-header-badge">v3.0.0</span>
             </div>
 
             <div class="ytc-tabs">

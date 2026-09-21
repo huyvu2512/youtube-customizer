@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      2.9.9.2
-// @description  YouTube Customizer v2.9.9.2 — Khắc phục triệt để Live Chat nổi (hiện chính giữa video lần đầu bật, giữ khung ban đầu, xóa phông sau khi di chuột ra, làm mới tức thì và bắt tin nhắn chuẩn xác).
+// @version      3.0.0
+// @description  YouTube Customizer v3.0.0 — Nâng cấp toàn diện Live Chat (khung nổi Streamer giữa màn hình, giữ khung ban đầu, tự làm mới và bắt tin nhắn tức thì).
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -1187,7 +1187,7 @@
       panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v2.9.9.2</span>
+                <span class="ytc-header-badge">v3.0.0</span>
             </div>
 
             <div class="ytc-tabs">
