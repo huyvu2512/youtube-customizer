@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      2.5.2
-// @description  YouTube Customizer v2.5.2 — Khắc phục triệt để lỗi không hiện logo Premium, sửa lỗi 2 logo và cố định vị trí nút setting khi skeleton loading, tùy chỉnh 3-4-5 cột, ẩn Shorts, Playables, video Hội viên & Khám phá chủ đề.
+// @version      2.5.3
+// @description  YouTube Customizer v2.5.3 — Cố định vĩnh viễn tùy chọn 3-4-5 cột không bị hoàn tác khi F5, khắc phục lỗi logo Premium, ẩn Shorts, Playables, video Hội viên & Khám phá chủ đề.
 // @author       Huy Vũ
 // @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js
 // @match        https://www.youtube.com/*

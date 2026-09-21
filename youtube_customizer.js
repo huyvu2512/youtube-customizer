@@ -1,5 +1,5 @@
 // ==UserScript==
-// YouTube Customizer v2.5.2 — https://github.com/huyvu2512/youtube-customizer
+// YouTube Customizer v2.5.3 — https://github.com/huyvu2512/youtube-customizer
 // ==/UserScript==
 (function() {
     'use strict';
@@ -72,6 +72,7 @@
                LƯỚI VIDEO TRANG CHỦ & FEED: ÉP 4 CỘT CHUẨN XÁC
                ============================================== */
             @media (min-width: 900px) {
+                /* Quy tắc mặc định cơ bản cho lưới video */
                 ytd-browse[page-subtype="home"] ytd-rich-grid-renderer,
                 ytd-browse[page-subtype="subscriptions"] ytd-rich-grid-renderer,
                 ytd-browse[page-subtype="channels"] ytd-rich-grid-renderer,
@@ -83,25 +84,71 @@
                     --ytd-rich-grid-item-max-width: none !important;
                 }
 
-                /* Ép chiều rộng mỗi thẻ video hiển thị đúng 4 cột */
+                /* Cấu hình khi người dùng chọn 3 cột (Độ ưu tiên cao nhất, không bị ghi đè khi F5) */
+                html[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,
+                html[data-ytc-cols="3"] ytd-rich-grid-renderer,
+                body[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,
+                body[data-ytc-cols="3"] ytd-rich-grid-renderer,
+                [data-ytc-cols="3"] #page-manager ytd-browse ytd-rich-grid-renderer,
+                [data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,
+                [data-ytc-cols="3"] ytd-browse ytd-rich-grid-renderer,
+                [data-ytc-cols="3"] ytd-rich-grid-renderer {
+                    --ytd-rich-grid-items-per-row: 3 !important;
+                    --ytd-rich-grid-posts-per-row: 3 !important;
+                    --ytd-rich-grid-item-max-width: none !important;
+                }
+
+                /* Cấu hình khi người dùng chọn 4 cột */
+                html[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,
+                html[data-ytc-cols="4"] ytd-rich-grid-renderer,
+                body[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,
+                body[data-ytc-cols="4"] ytd-rich-grid-renderer,
+                [data-ytc-cols="4"] #page-manager ytd-browse ytd-rich-grid-renderer,
+                [data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,
+                [data-ytc-cols="4"] ytd-browse ytd-rich-grid-renderer,
+                [data-ytc-cols="4"] ytd-rich-grid-renderer {
+                    --ytd-rich-grid-items-per-row: 4 !important;
+                    --ytd-rich-grid-posts-per-row: 4 !important;
+                    --ytd-rich-grid-item-max-width: none !important;
+                }
+
+                /* Cấu hình khi người dùng chọn 5 cột (Độ ưu tiên cao nhất, không bị ghi đè khi F5) */
+                html[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,
+                html[data-ytc-cols="5"] ytd-rich-grid-renderer,
+                body[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,
+                body[data-ytc-cols="5"] ytd-rich-grid-renderer,
+                [data-ytc-cols="5"] #page-manager ytd-browse ytd-rich-grid-renderer,
+                [data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,
+                [data-ytc-cols="5"] ytd-browse ytd-rich-grid-renderer,
+                [data-ytc-cols="5"] ytd-rich-grid-renderer {
+                    --ytd-rich-grid-items-per-row: 5 !important;
+                    --ytd-rich-grid-posts-per-row: 5 !important;
+                    --ytd-rich-grid-item-max-width: none !important;
+                }
+
+                /* Ép chiều rộng mỗi thẻ video co giãn chuẩn xác theo số cột */
                 #contents.ytd-rich-grid-row ytd-rich-item-renderer,
                 ytd-rich-grid-renderer ytd-rich-item-renderer {
                     width: calc(100% / var(--ytd-rich-grid-items-per-row, 4) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
                     max-width: calc(100% / var(--ytd-rich-grid-items-per-row, 4) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
                 }
 
-                /* Tùy chỉnh khi người dùng chọn 3 hoặc 5 cột */
-                [data-ytc-cols="3"] ytd-rich-grid-renderer {
-                    --ytd-rich-grid-items-per-row: 3 !important;
-                    --ytd-rich-grid-posts-per-row: 3 !important;
+                [data-ytc-cols="3"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,
+                [data-ytc-cols="3"] ytd-rich-grid-renderer ytd-rich-item-renderer {
+                    width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
+                    max-width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
                 }
-                [data-ytc-cols="4"] ytd-rich-grid-renderer {
-                    --ytd-rich-grid-items-per-row: 4 !important;
-                    --ytd-rich-grid-posts-per-row: 4 !important;
+
+                [data-ytc-cols="4"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,
+                [data-ytc-cols="4"] ytd-rich-grid-renderer ytd-rich-item-renderer {
+                    width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
+                    max-width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
                 }
-                [data-ytc-cols="5"] ytd-rich-grid-renderer {
-                    --ytd-rich-grid-items-per-row: 5 !important;
-                    --ytd-rich-grid-posts-per-row: 5 !important;
+
+                [data-ytc-cols="5"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,
+                [data-ytc-cols="5"] ytd-rich-grid-renderer ytd-rich-item-renderer {
+                    width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
+                    max-width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
                 }
             }
 
@@ -589,7 +636,7 @@
     // 2. LƯỚI CỘT TÙY BIẾN
     function isHomeFeedPath() {
         const p = location.pathname;
-        return p === '/' || p === '/feed/subscriptions' || p.startsWith('/feed');
+        return p === '/' || p.startsWith('/feed') || p.startsWith('/@') || p.startsWith('/channel');
     }
 
     function applyHomeGridColumns() {
@@ -778,17 +825,21 @@
 
     const scheduleFeedScan = rafThrottle((root) => {
         scanAndTagFeedContent(root);
+        applyHomeGridColumns();
     });
 
     function setupFeedShelvesObserver() {
         scheduleFeedScan(document);
+        applyHomeGridColumns();
 
         const attach = (container) => {
             scheduleFeedScan(container);
+            applyHomeGridColumns();
             new MutationObserver((mutations) => {
                 for (const mutation of mutations) {
                     if (mutation.addedNodes.length) {
                         scheduleFeedScan(container);
+                        applyHomeGridColumns();
                         break;
                     }
                 }
@@ -1082,7 +1133,7 @@
             panel.innerHTML = safeHTML(`
                 <div class="ytc-header">
                     <span>YouTube Customizer</span>
-                    <span class="ytc-header-badge">v2.5.2</span>
+                    <span class="ytc-header-badge">v2.5.3</span>
                 </div>
 
                 <!-- Số cột trang chủ -->
@@ -1346,6 +1397,16 @@
     }
     if (isHomeFeedPath()) {
         whenElement('ytd-rich-grid-renderer', applyHomeGridColumns);
+
+        // Quét dự phòng bổ sung để đảm bảo lưới cột được áp dụng ngay sau khi feed tải xong
+        let gridRetryCount = 0;
+        const gridRetryInterval = setInterval(() => {
+            gridRetryCount++;
+            applyHomeGridColumns();
+            if (gridRetryCount >= 10 && document.querySelector('ytd-rich-grid-renderer ytd-rich-item-renderer')) {
+                clearInterval(gridRetryInterval);
+            }
+        }, 250);
     }
 
 })();
