@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-2.3-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-2.4-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,9 +25,10 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v2.3** nâng cấp:
-- **Tương thích hoàn hảo Giao diện Sáng/Tối cho Logo Premium:** Tự động điều chỉnh màu sắc chữ "Premium" (đen trên nền sáng, trắng trên nền tối) tức thì theo thời gian thực (Zero-reload Realtime Switch) khi người dùng đổi theme YouTube mà không cần bấm F5 tải lại trang.
-- Kế thừa toàn bộ tối ưu hiệu năng và tính năng của v2.2 (Menu cài đặt chuẩn YouTube, tùy chỉnh 3-4-5 cột, ẩn Shorts & Playables, Clean Search, Zero-Lag Live Chat, Fullscreen Safe Lock, phím tắt A-S-D / Numpad).
+Phiên bản **v2.4** nâng cấp:
+- **Tùy chọn Ẩn video Hội viên (Members-only) & Kệ Khám phá chủ đề khác:** Bổ sung 2 công tắc mới trong Menu cài đặt để làm sạch trang chủ hoàn toàn khỏi các kệ video chỉ dành cho hội viên ("Hưởng thêm nhiều lợi ích từ hội viên") và danh sách chủ đề đề xuất ("Khám phá các chủ đề khác"), loại bỏ triệt để khoảng trắng thừa.
+- **Tương thích hoàn hảo Giao diện Sáng/Tối cho Logo Premium:** Tự động điều chỉnh màu sắc chữ "Premium" và mã quốc gia (đen trên nền sáng, trắng trên nền tối) tức thì theo thời gian thực (Zero-reload Realtime Switch) khi người dùng đổi theme YouTube mà không cần bấm F5 tải lại trang.
+- Kế thừa toàn bộ tối ưu hiệu năng và tính năng của các phiên bản trước (Menu cài đặt chuẩn YouTube, tùy chỉnh 3-4-5 cột, ẩn Shorts & Playables, Clean Search, Zero-Lag Live Chat, Fullscreen Safe Lock, phím tắt A-S-D / Numpad).
 
 ---
 
@@ -44,6 +45,9 @@ Phiên bản **v2.3** nâng cấp:
 - **Ẩn hoàn toàn nội dung Shorts & Chơi game (Playables):**
   - **Shorts:** Áp dụng bộ chọn CSS hiện đại `:has()` để triệt tiêu toàn bộ kệ Shorts trên trang chủ, trang đăng ký và mục Shorts trên thanh điều hướng bên trái, không để lại khoảng trắng dư thừa.
   - **Playables:** Tự động ẩn toàn bộ kệ mini-game và mục "Chơi game" trên thanh sidebar và trang chủ.
+- **Ẩn video Hội viên & Kệ Khám phá chủ đề khác (Mới ở v2.4):**
+  - **Video Hội viên:** Tự động ẩn kệ quảng bá gói hội viên ("Hưởng thêm nhiều lợi ích từ hội viên") và các video giới hạn đặc quyền hội viên trên feed trang chủ.
+  - **Khám phá chủ đề:** Triệt tiêu kệ thẻ chip chủ đề ("Khám phá các chủ đề khác") làm rối mắt giữa dòng video chính.
 - **Clean Search (Ẩn video tài trợ):**
   - Tự động ẩn các thẻ video quảng cáo và nội dung được tài trợ (`Sponsored`) trong kết quả tìm kiếm và các trang feed.
 - **Tối ưu hiệu năng Live Chat & đồ họa:**

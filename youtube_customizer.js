@@ -1,5 +1,5 @@
 // ==UserScript==
-// YouTube Customizer v2.3 — https://github.com/huyvu2512/youtube-customizer
+// YouTube Customizer v2.4 — https://github.com/huyvu2512/youtube-customizer
 // ==/UserScript==
 (function() {
     'use strict';
@@ -10,6 +10,8 @@
         columns: 4,             // 3, 4 hoặc 5 cột (mặc định 4)
         hideShorts: true,       // Ẩn Shorts hoàn toàn
         hidePlayables: true,    // Ẩn Chơi game (Playables)
+        hideMembersOnly: true,  // Ẩn mục video Hội viên
+        hideExploreTopics: true,// Ẩn Khám phá các chủ đề khác
         premiumLogo: true,      // Logo YouTube Premium
         cleanSearch: true,      // Ẩn video tài trợ / quảng cáo tìm kiếm
         disableAmbient: true,   // Tắt Ambient Mode (Cinematics)
@@ -39,6 +41,8 @@
 
         root.classList.toggle('ytc-hide-shorts', !!currentConfig.hideShorts);
         root.classList.toggle('ytc-hide-playables', !!currentConfig.hidePlayables);
+        root.classList.toggle('ytc-hide-members', !!currentConfig.hideMembersOnly);
+        root.classList.toggle('ytc-hide-explore', !!currentConfig.hideExploreTopics);
         root.classList.toggle('ytc-premium-logo', !!currentConfig.premiumLogo);
         root.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
         root.classList.toggle('ytc-disable-ambient', !!currentConfig.disableAmbient);
@@ -47,6 +51,8 @@
         if (document.body) {
             document.body.classList.toggle('ytc-hide-shorts', !!currentConfig.hideShorts);
             document.body.classList.toggle('ytc-hide-playables', !!currentConfig.hidePlayables);
+            document.body.classList.toggle('ytc-hide-members', !!currentConfig.hideMembersOnly);
+            document.body.classList.toggle('ytc-hide-explore', !!currentConfig.hideExploreTopics);
             document.body.classList.toggle('ytc-premium-logo', !!currentConfig.premiumLogo);
             document.body.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
             document.body.classList.toggle('ytc-disable-ambient', !!currentConfig.disableAmbient);
@@ -171,6 +177,31 @@
             .ytc-hide-playables ytd-mini-guide-entry-renderer[aria-label*="Playables"],
             .ytc-hide-playables #endpoint[title*="Chơi game"],
             .ytc-hide-playables #endpoint[title*="Playables"] {
+                display: none !important;
+            }
+
+            /* Ẩn mục video Hội viên (Members-only) */
+            .ytc-hide-members ytd-rich-section-renderer:has(.badge-style-type-members-only),
+            .ytc-hide-members ytd-rich-section-renderer:has([aria-label*="hội viên"]),
+            .ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Hội viên"]),
+            .ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Members only"]),
+            .ytc-hide-members ytd-rich-section-renderer:has([aria-label*="members only"]),
+            .ytc-hide-members ytd-rich-section-renderer:has(a[href*="/membership"]),
+            .ytc-hide-members ytd-rich-section-renderer:has(a[href*="/memberships"]),
+            .ytc-hide-members ytd-rich-section-renderer.ytc-shelf-members,
+            .ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-only) {
+                display: none !important;
+            }
+
+            /* Ẩn mục Khám phá các chủ đề khác (Explore topics) */
+            .ytc-hide-explore ytd-rich-section-renderer:has(yt-chip-cloud-chip-renderer),
+            .ytc-hide-explore ytd-rich-section-renderer:has(yt-chip-cloud-renderer),
+            .ytc-hide-explore ytd-rich-section-renderer:has(ytd-feed-filter-chip-bar-renderer),
+            .ytc-hide-explore ytd-rich-section-renderer:has(#chips),
+            .ytc-hide-explore ytd-rich-section-renderer.ytc-shelf-explore,
+            .ytc-hide-explore ytd-rich-section-renderer:has([title*="Khám phá các chủ đề"]),
+            .ytc-hide-explore ytd-rich-section-renderer:has([title*="Explore other topics"]),
+            .ytc-hide-explore ytd-rich-section-renderer:has([title*="Explore topics"]) {
                 display: none !important;
             }
 
@@ -573,6 +604,61 @@
         else whenElement('ytd-masthead', attach);
     }
 
+    // Quét và gắn cờ các mục kệ (shelves) Hội viên & Khám phá chủ đề để ẩn sạch
+    function scanAndTagShelves(scope) {
+        if (!isHomeFeedPath()) return;
+        const root = scope && scope.querySelectorAll ? scope : document;
+        const sections = root.querySelectorAll('ytd-rich-section-renderer');
+        sections.forEach((sec) => {
+            if (!sec.classList.contains('ytc-shelf-members')) {
+                const text = sec.textContent || '';
+                if (
+                    text.includes('lợi ích từ hội viên') ||
+                    (text.includes('hội viên') && text.includes('YouTube chọn lọc')) ||
+                    text.includes('Get more from memberships') ||
+                    sec.querySelector('.badge-style-type-members-only, a[href*="/membership"], a[href*="/memberships"]')
+                ) {
+                    sec.classList.add('ytc-shelf-members');
+                }
+            }
+            if (!sec.classList.contains('ytc-shelf-explore')) {
+                const text = sec.textContent || '';
+                if (
+                    text.includes('Khám phá các chủ đề') ||
+                    text.includes('Explore other topics') ||
+                    text.includes('Explore topics') ||
+                    sec.querySelector('yt-chip-cloud-chip-renderer, yt-chip-cloud-renderer')
+                ) {
+                    sec.classList.add('ytc-shelf-explore');
+                }
+            }
+        });
+    }
+
+    const scheduleFeedScan = rafThrottle((root) => {
+        scanAndTagShelves(root);
+    });
+
+    function setupFeedShelvesObserver() {
+        scheduleFeedScan(document);
+
+        const attach = (grid) => {
+            scheduleFeedScan(grid);
+            new MutationObserver((mutations) => {
+                for (const mutation of mutations) {
+                    if (mutation.addedNodes.length) {
+                        scheduleFeedScan(grid);
+                        break;
+                    }
+                }
+            }).observe(grid, { childList: true, subtree: true });
+        };
+
+        const grid = document.querySelector('ytd-rich-grid-renderer');
+        if (grid) attach(grid);
+        else whenElement('ytd-rich-grid-renderer', attach);
+    }
+
     // Cuộn lên đầu trang khi bấm vào logo ở trang chủ/feed
     document.addEventListener('click', (e) => {
         if (!e.target.closest('ytd-topbar-logo-renderer')) return;
@@ -823,6 +909,8 @@
     const SEARCH_SVG = `<svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`;
     const SPARKLE_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2L9.5 8.5 3 11l6.5 2.5L12 20l2.5-6.5L21 11l-6.5-2.5L12 2z"/></svg>`;
     const KEYBOARD_SVG = `<svg viewBox="0 0 24 24"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg>`;
+    const CROWN_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`;
+    const COMPASS_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>`;
 
     function ensureSettingsElements() {
         if (document.getElementById('ytc-settings-btn')) return;
@@ -856,7 +944,7 @@
             panel.innerHTML = safeHTML(`
                 <div class="ytc-header">
                     <span>YouTube Customizer</span>
-                    <span class="ytc-header-badge">v2.3</span>
+                    <span class="ytc-header-badge">v2.4</span>
                 </div>
 
                 <!-- Số cột trang chủ -->
@@ -894,6 +982,30 @@
                     </div>
                     <label class="ytc-switch">
                         <input type="checkbox" id="ytc-chk-playables" ${currentConfig.hidePlayables ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Ẩn mục video Hội viên -->
+                <div class="ytc-item" data-toggle="hideMembersOnly">
+                    <div class="ytc-item-left">
+                        ${CROWN_SVG}
+                        <span>Ẩn video Hội viên</span>
+                    </div>
+                    <label class="ytc-switch">
+                        <input type="checkbox" id="ytc-chk-members" ${currentConfig.hideMembersOnly ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Ẩn Khám phá các chủ đề khác -->
+                <div class="ytc-item" data-toggle="hideExploreTopics">
+                    <div class="ytc-item-left">
+                        ${COMPASS_SVG}
+                        <span>Ẩn Khám phá chủ đề</span>
+                    </div>
+                    <label class="ytc-switch">
+                        <input type="checkbox" id="ytc-chk-explore" ${currentConfig.hideExploreTopics ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -1069,6 +1181,7 @@
             setWatchLoading(true);
         } else if (isHomeFeedPath()) {
             applyHomeGridColumns();
+            scheduleFeedScan(document);
         }
     }
 
@@ -1090,6 +1203,7 @@
     // Kích hoạt các observer bền bỉ theo dõi masthead & feed
     setupLogoObserver();
     setupSettingsObserver();
+    setupFeedShelvesObserver();
     setupFullscreenLock();
     if (location.pathname.startsWith('/watch')) {
         setWatchLoading(true);
