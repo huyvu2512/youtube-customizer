@@ -945,4 +945,23 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
     pointer-events: none !important;
 }
 
+/* CHẾ ĐỘ CHẠY NGẦM KHUNG CHAT GỐC YOUTUBE (KHÔNG HIỆN SIDEBAR NHƯNG VẪN STREAM ĐẦY ĐỦ) */
+ytd-live-chat-frame#chat.ytc-silent-mode {
+    position: fixed !important;
+    top: -9999px !important;
+    left: -9999px !important;
+    width: 320px !important;
+    height: 500px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    z-index: -9999 !important;
+    display: block !important;
+}
+
+/* Khi khung chat ở chế độ silent mode, giải phóng không gian cột phụ để video mở rộng tối đa */
+ytd-watch-flexy:has(ytd-live-chat-frame#chat.ytc-silent-mode) #panels.ytd-watch-flexy,
+ytd-watch-flexy:has(ytd-live-chat-frame#chat.ytc-silent-mode) #chat-container {
+    display: none !important;
+}
+
 

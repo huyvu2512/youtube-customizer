@@ -293,6 +293,7 @@ function spawnDanmakuItem(data, laneIndex) {
 }
 
 function processDanmakuQueue() {
+    if (document.hidden) return; // Không bắn animation khi tab đang ở nền để tránh dồn cục
     if (danmakuQueue.length === 0) return;
 
     const now = Date.now();
@@ -523,53 +524,43 @@ export function requestExistingMessages() {
     });
 }
 
-function getCurrentVideoId() {
-    try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const v = urlParams.get('v');
-        if (v) return v;
-        const player = document.querySelector('#movie_player') || document.querySelector('.html5-video-player');
-        if (player && player.getVideoData) {
-            const data = player.getVideoData();
-            if (data && data.video_id) return data.video_id;
+function ensureNativeChatStreaming() {
+    const chat = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy, #chat');
+    if (!chat) return;
+
+    if (chat.hasAttribute('collapsed')) {
+        const expandBtn = document.querySelector(
+            '#show-hide-button button, ' +
+            'ytd-live-chat-frame #show-hide-button button, ' +
+            '#chat-container #show-hide-button button, ' +
+            'ytd-button-renderer#show-hide-button button, ' +
+            '#chat-messages #show-hide-button button, ' +
+            '[aria-label*="Hiện cuộc trò chuyện"], [aria-label*="Show chat"], [aria-label*="Live chat"]'
+        );
+        if (expandBtn) {
+            try { expandBtn.click(); } catch(e) {}
+        } else {
+            chat.removeAttribute('collapsed');
         }
-    } catch (e) {}
-    return null;
+    }
 }
 
-export function syncBackgroundChatIframe() {
+export function manageNativeChatVisibility() {
+    const chat = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy, #chat');
+    if (!chat) return;
+
     if (!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') {
-        removeBackgroundChatIframe();
+        chat.classList.remove('ytc-silent-mode');
         return;
     }
 
-    const videoId = getCurrentVideoId();
-    if (!videoId) {
-        removeBackgroundChatIframe();
-        return;
+    // Nếu người dùng không mở khung chat gốc (như ảnh 1):
+    // Giữ khung chat chạy ngầm (silent-mode) để nhận tin nhắn mà không làm phiền màn hình
+    if (chat.hasAttribute('collapsed') || !chat.querySelector('#items')) {
+        chat.classList.add('ytc-silent-mode');
+        chat.removeAttribute('collapsed');
+        ensureNativeChatStreaming();
     }
-
-    let bgFrame = document.getElementById('ytc-bg-chat-iframe');
-    const targetSrc = `https://www.youtube.com/live_chat?is_popout=1&v=${videoId}`;
-
-    if (bgFrame) {
-        if (bgFrame.getAttribute('data-v') === videoId) {
-            return; // Đang chạy đúng video này rồi
-        }
-        bgFrame.remove();
-    }
-
-    bgFrame = document.createElement('iframe');
-    bgFrame.id = 'ytc-bg-chat-iframe';
-    bgFrame.setAttribute('data-v', videoId);
-    bgFrame.src = targetSrc;
-    bgFrame.style.cssText = 'position:fixed !important; top:-9999px !important; left:-9999px !important; width:10px !important; height:10px !important; opacity:0 !important; pointer-events:none !important; border:none !important; visibility:hidden !important; z-index:-1 !important;';
-    (document.body || document.documentElement).appendChild(bgFrame);
-}
-
-export function removeBackgroundChatIframe() {
-    const bgFrame = document.getElementById('ytc-bg-chat-iframe');
-    if (bgFrame) bgFrame.remove();
 }
 
 export function updateChatOverlayVisibility() {
@@ -579,6 +570,9 @@ export function updateChatOverlayVisibility() {
     }
     const danmaku = document.getElementById('ytc-danmaku-container') || danmakuContainer;
     const streamer = document.getElementById('ytc-streamer-box') || streamerBox;
+
+    // Luôn khôi phục hiển thị, không để bị dính class hidden
+    setChatOverlayHidden(false);
 
     if (danmaku) {
         danmaku.style.display = mode === 'danmaku' ? 'block' : 'none';
@@ -603,10 +597,11 @@ export function updateChatOverlayVisibility() {
     if (mode !== 'off') {
         // Bắt buộc mỗi lần bật là làm mới luôn!
         seenMessageIds.clear();
+        manageNativeChatVisibility();
         requestExistingMessages();
-        syncBackgroundChatIframe();
     } else {
-        removeBackgroundChatIframe();
+        const chat = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy, #chat');
+        if (chat) chat.classList.remove('ytc-silent-mode');
     }
 }
 
@@ -620,13 +615,18 @@ function setChatOverlayHidden(hidden) {
 }
 
 function checkLiveHeadStatus() {
+    if (document.hidden) return; // Không can thiệp khi tab đang ở nền
+
     if (!currentConfig.chatOverlayHideOnRewind) {
         setChatOverlayHidden(false);
         return;
     }
 
     const player = document.querySelector('#movie_player') || document.querySelector('.html5-video-player');
-    if (!player) return;
+    if (!player) {
+        setChatOverlayHidden(false);
+        return;
+    }
 
     let isLive = false;
     try {
@@ -639,18 +639,34 @@ function checkLiveHeadStatus() {
         return;
     }
 
+    // Kiểm tra dựa trên chênh lệch thời gian so với mốc trực tiếp (Head)
     let isAtHead = true;
     try {
-        const liveBadge = document.querySelector('.ytp-live-badge');
-        if (liveBadge) {
-            // Khi ở Live Head: nút live badge có disabled="" hoặc aria-disabled="true"
-            // Khi tua lùi (quá khứ): disabled bị gỡ bỏ để người dùng có thể bấm nhảy về Trực tiếp
-            isAtHead = liveBadge.hasAttribute('disabled') || liveBadge.getAttribute('aria-disabled') === 'true';
+        if (typeof player.getDuration === 'function' && typeof player.getCurrentTime === 'function') {
+            const duration = player.getDuration();
+            const current = player.getCurrentTime();
+            if (duration > 0 && current > 0) {
+                isAtHead = (duration - current) <= 18;
+            }
         }
     } catch (e) {}
 
     setChatOverlayHidden(!isAtHead);
 }
+
+// Lắng nghe sự kiện chuyển tab trình duyệt để khôi phục ngay lập tức khi quay lại
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        setChatOverlayHidden(false);
+        if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
+            manageNativeChatVisibility();
+            if (currentConfig.chatOverlay === 'danmaku') {
+                startDanmakuScheduler();
+            }
+            requestExistingMessages();
+        }
+    }
+});
 
 // --------------------------------------------------------------------------
 // 5. KHỞI CHẠY BÊN TRONG IFRAME LIVE CHAT (NẾU YOUTUBE DÙNG IFRAME HOẶC BG IFRAME)
@@ -853,7 +869,7 @@ export function initChatOverlay() {
     if (location.pathname.startsWith('/watch') || location.pathname.startsWith('/live')) {
         whenElement('#movie_player, .html5-video-player', () => {
             ensureChatOverlayContainers();
-            syncBackgroundChatIframe();
+            manageNativeChatVisibility();
         });
     }
 }

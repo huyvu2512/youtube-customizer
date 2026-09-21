@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.0.1-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.0.2-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,12 +25,15 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.0.1** nâng cấp:
-- **Danmaku ngẫu nhiên toàn màn hình video:**
-  - Mở rộng lên 15 làn độc lập phủ từ 4% đến 88% chiều cao khung hình video.
-  - Bình luận được phân bổ hoàn toàn ngẫu nhiên trên khắp các làn rảnh, trải đều từ trên xuống dưới thay vì dồn ở nửa trên.
-- **Chạy độc lập 100% không cần mở thanh chat bên phải:**
-  - Tự động đồng bộ luồng live chat ngầm thông qua iframe ẩn độc lập. Người xem có thể đóng hoàn toàn khung chat của YouTube ("X" hoặc "Ẩn cuộc trò chuyện") mà Danmaku và khung nổi vẫn chạy liên tục.
+Phiên bản **v3.0.2** nâng cấp:
+- **Khắc phục triệt để lỗi dừng chat khi chuyển tab hoặc chuyển chế độ:**
+  - Sửa thuật toán kiểm tra Live Head dựa trên độ lệch thời gian player thực tế, loại bỏ phụ thuộc vào thuộc tính DOM dễ bị sai khi tab chạy nền hoặc chuyển tab.
+  - Tự động kích hoạt lại bộ điều phối Danmaku và hiển thị tức thì qua sự kiện `visibilitychange` khi người dùng quay lại tab YouTube.
+  - Loại bỏ hoàn toàn iframe phụ gây xung đột phiên popout với YouTube.
+- **Chạy ngầm khung chat gốc (Silent Mode) không cần mở thanh chat bên phải:**
+  - Giữ luồng tin nhắn trực tiếp hoạt động ổn định trong nền thông qua class `ytc-silent-mode`.
+  - Khung chat gốc được giấu kín hoàn toàn, giải phóng toàn bộ diện tích cột phải để video mở rộng tối đa mà Danmaku và khung nổi vẫn nhận tin nhắn liên tục.
+- **Danmaku ngẫu nhiên 15 làn phủ khắp toàn bộ màn hình video.**
 - **Khắc phục toàn diện Live Chat nổi (Streamer Box & Danmaku):**
   - Hiện chính giữa khung video lần đầu bật; giữ viền và tiêu đề rõ ràng đến khi rời chuột.
   - Làm mới dữ liệu tức thì mỗi lần bật, loại bỏ hiện tượng chạy ngắt quãng.
