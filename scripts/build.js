@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      2.9.5
-// @description  YouTube Customizer v2.9.5 — Tối ưu phân nhóm menu cài đặt (chuyển Khám phá chủ đề sang Lọc, chuyển Mở khóa tua Live Stream & Live Chat sang Giao diện), triệt tiêu lỗi phím Numpad, tự đóng banner & thông báo gián đoạn, logo Premium.
+// @version      2.9.6
+// @description  YouTube Customizer v2.9.6 — Vẽ lại bộ biểu tượng SVG chuẩn Material Design sắc nét (khắc phục lỗi lem màu, bệt hình ở các phím tua Live, thẻ chủ đề, watermark và icon lọc), tối ưu giao diện và phím tắt.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
