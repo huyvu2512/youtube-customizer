@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-2.5.1-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-2.5.2-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,9 +25,9 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v2.5.1** nâng cấp:
-- **Cố định vị trí Nút Cài đặt (Khắc phục lỗi Skeleton Loading):** Đưa nút cài đặt trực tiếp vào vùng đầu của container masthead với thuộc tính `order: -1 !important`. Loại bỏ triệt để hiện tượng nút cài đặt bị đẩy xuống cuối dãy nút khi các vòng tròn placeholder skeleton loading xuất hiện lúc vừa nạp trang.
-- **Khắc phục lỗi hiển thị 2 Logo Premium:** Loại trừ các thẻ logo phụ (Yoodle holiday doodle renderer) để chỉ hiển thị duy nhất một logo YouTube Premium chính thức.
+Phiên bản **v2.5.2** nâng cấp:
+- **Khắc phục triệt để lỗi không hiển thị Logo Premium:** Xử lý chuẩn xác các trường hợp YouTube kích hoạt doodle hoặc gắn thuộc tính `hidden` trong quá trình nạp trang/Polymer hydration; đảm bảo luôn hiển thị duy nhất 1 logo YouTube Premium chính thức với mã quốc gia chuẩn xác.
+- **Cố định vị trí Nút Cài đặt (Khắc phục lỗi Skeleton Loading):** Đưa nút cài đặt trực tiếp vào đầu vùng container masthead với thuộc tính `order: -1 !important`. Loại bỏ triệt để hiện tượng nút cài đặt bị đẩy xuống cuối dãy nút khi các vòng tròn placeholder skeleton loading xuất hiện lúc vừa nạp trang.
 - **Căn chỉnh lại khoảng cách Logo và Nút Menu Tab:** Thu gọn khoảng cách giữa nút menu 3 thanh ngang (`≡`) và logo YouTube Premium về đúng tỷ lệ chuẩn của YouTube (bằng một nửa so với trước).
 - **Ẩn triệt để Video Hội viên (Ưu tiên & Đặc quyền):** Tự động lọc sạch cả video "Ưu tiên hội viên" (Members first / Early access), video đặc quyền hội viên ("Chỉ dành cho hội viên") và các kệ giới thiệu trên toàn bộ YouTube.
 - Kế thừa toàn bộ tối ưu hiệu năng và tính năng của các phiên bản trước (Tùy chỉnh 3-4-5 cột, ẩn Shorts & Playables, Clean Search, Zero-Lag Live Chat, Fullscreen Safe Lock, phím tắt A-S-D / Numpad).

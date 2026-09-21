@@ -1,5 +1,5 @@
 // ==UserScript==
-// YouTube Customizer v2.5.1 — https://github.com/huyvu2512/youtube-customizer
+// YouTube Customizer v2.5.2 — https://github.com/huyvu2512/youtube-customizer
 // ==/UserScript==
 (function() {
     'use strict';
@@ -254,12 +254,12 @@
             /* Ẩn triệt để yoodle renderer và các logo phụ để không bao giờ hiện 2 logo */
             ytd-topbar-logo-renderer ytd-yoodle-renderer,
             ytd-yoodle-renderer ytd-logo,
-            ytd-logo[hidden],
             ytd-topbar-logo-renderer ytd-yoodle-renderer * {
                 display: none !important;
             }
-            :root.ytc-premium-logo ytd-topbar-logo-renderer > #logo > div > ytd-logo,
-            :root.ytc-premium-logo ytd-topbar-logo-renderer > #logo ytd-logo:not([hidden]):not(.style-scope.ytd-yoodle-renderer) {
+            :root.ytc-premium-logo ytd-topbar-logo-renderer #logo ytd-logo:not(.ytd-yoodle-renderer),
+            :root.ytc-premium-logo ytd-topbar-logo-renderer #logo ytd-logo[hidden]:not(.ytd-yoodle-renderer),
+            :root.ytc-premium-logo ytd-topbar-logo-renderer > #logo > div > ytd-logo {
                 width: 101px !important;
                 min-width: 101px !important;
                 max-width: 101px !important;
@@ -267,8 +267,10 @@
                 display: flex !important;
                 align-items: center !important;
                 overflow: visible !important;
+                visibility: visible !important;
+                opacity: 1 !important;
             }
-            :root.ytc-premium-logo ytd-logo > *:not(.custom-premium-logo) {
+            :root.ytc-premium-logo ytd-logo:not(.ytd-yoodle-renderer) > *:not(.custom-premium-logo) {
                 display: none !important;
             }
             ytd-logo, ytd-topbar-logo-renderer {
@@ -279,11 +281,13 @@
             }
             :root.ytc-premium-logo .custom-premium-logo {
                 display: flex !important;
-                align-items: center;
+                align-items: center !important;
                 width: 101px !important;
                 height: 20px !important;
                 color: var(--yt-spec-wordmark-text, var(--yt-spec-text-primary, #0f0f0f)) !important;
                 pointer-events: none;
+                visibility: visible !important;
+                opacity: 1 !important;
             }
             /* Giao diện sáng (Light Theme): chữ Premium màu đen chuẩn YouTube (#0f0f0f) */
             html:not([dark]).ytc-premium-logo .custom-premium-logo,
@@ -620,8 +624,8 @@
 
     function ensurePremiumLogo(logo) {
         if (!logo) return;
-        // Bỏ qua logo phụ trong ytd-yoodle-renderer hoặc thẻ ẩn (tránh bị hiện 2 logo)
-        if (logo.closest('ytd-yoodle-renderer') || logo.hasAttribute('hidden') || logo.closest('[hidden]')) {
+        // Bỏ qua mọi logo phụ nằm trong ytd-yoodle-renderer (doodle hoạt họa/ngày lễ)
+        if (logo.closest('ytd-yoodle-renderer') || logo.classList.contains('ytd-yoodle-renderer')) {
             const span = logo.querySelector('.custom-premium-logo');
             if (span) span.remove();
             return;
@@ -629,6 +633,11 @@
 
         // Chỉ xử lý logo chính trên thanh topbar masthead
         if (!logo.closest('ytd-topbar-logo-renderer')) return;
+
+        // Nếu YouTube tự động gắn thuộc tính hidden lên logo chính (do kích hoạt doodle), gỡ bỏ để logo chính luôn hiển thị
+        if (logo.hasAttribute('hidden')) {
+            logo.removeAttribute('hidden');
+        }
 
         logo.style.overflow = 'visible';
         let parent = logo.parentElement;
@@ -652,33 +661,62 @@
     }
 
     const scheduleLogoScan = rafThrottle((root) => {
-        const scope = root && root.querySelectorAll ? root : document;
-        const mainLogos = scope.querySelectorAll('ytd-topbar-logo-renderer > #logo > div > ytd-logo, ytd-topbar-logo-renderer > #logo ytd-logo:not([hidden])');
-        mainLogos.forEach(ensurePremiumLogo);
+        const doc = (root && root.ownerDocument) || document;
+        const renderers = doc.querySelectorAll('ytd-topbar-logo-renderer');
+        renderers.forEach((renderer) => {
+            const logos = Array.from(renderer.querySelectorAll('ytd-logo')).filter(
+                l => !l.closest('ytd-yoodle-renderer') && !l.classList.contains('ytd-yoodle-renderer')
+            );
+            if (logos.length > 0) {
+                // Đảm bảo chỉ duy nhất logo đầu tiên hợp lệ được giữ làm logo chính
+                ensurePremiumLogo(logos[0]);
+                // Dọn dẹp custom logo trên bất kỳ logo thừa nào khác
+                for (let i = 1; i < logos.length; i++) {
+                    const extraSpan = logos[i].querySelector('.custom-premium-logo');
+                    if (extraSpan) extraSpan.remove();
+                }
+            }
+        });
     });
 
     function setupLogoObserver() {
         scheduleLogoScan(document);
 
         const attach = (masthead) => {
+            scheduleLogoScan(masthead);
             new MutationObserver((mutations) => {
+                let shouldScan = false;
                 for (const mutation of mutations) {
                     if (mutation.type === 'childList') {
                         mutation.addedNodes.forEach((node) => {
-                            if (node.nodeType !== 1) return;
-                            if (node.matches?.('ytd-logo')) scheduleLogoScan(node.parentElement || masthead);
-                            else if (node.querySelector?.('ytd-logo')) scheduleLogoScan(node);
+                            if (node.nodeType === 1 && (node.matches?.('ytd-logo, ytd-topbar-logo-renderer') || node.querySelector?.('ytd-logo'))) {
+                                shouldScan = true;
+                            }
                         });
-                    } else if (mutation.type === 'attributes' && mutation.target.matches?.('ytd-logo')) {
-                        ensurePremiumLogo(mutation.target);
+                    } else if (mutation.type === 'attributes') {
+                        if (mutation.target.matches?.('ytd-logo, ytd-topbar-logo-renderer, #logo')) {
+                            shouldScan = true;
+                        }
                     }
+                    if (shouldScan) break;
                 }
+                if (shouldScan) scheduleLogoScan(masthead);
             }).observe(masthead, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'hidden'] });
         };
 
         const masthead = document.querySelector('ytd-masthead');
         if (masthead) attach(masthead);
         else whenElement('ytd-masthead', attach);
+
+        // Quét dự phòng trong các giây đầu để đảm bảo logo luôn hiện ngay cả khi mạng chậm
+        let retryCount = 0;
+        const retryInterval = setInterval(() => {
+            retryCount++;
+            scheduleLogoScan(document);
+            if (retryCount >= 10 && document.querySelector('ytd-topbar-logo-renderer .custom-premium-logo')) {
+                clearInterval(retryInterval);
+            }
+        }, 300);
     }
 
     // Quét và gắn cờ các kệ (shelves) & thẻ video Hội viên (Ưu tiên / Chỉ dành cho hội viên) & Khám phá chủ đề
@@ -1044,7 +1082,7 @@
             panel.innerHTML = safeHTML(`
                 <div class="ytc-header">
                     <span>YouTube Customizer</span>
-                    <span class="ytc-header-badge">v2.5.1</span>
+                    <span class="ytc-header-badge">v2.5.2</span>
                 </div>
 
                 <!-- Số cột trang chủ -->
