@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-2.6-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-2.7-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,12 +25,11 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v2.6** mang đến bước cải tiến lớn:
-- **Phân nhóm cài đặt trong Menu theo 4 Tab:** Bảng cài đặt được tái cấu trúc thành 4 danh mục trực quan gồm **Giao diện**, **Lọc nội dung**, **Trình phát** và **Phím tắt**. Giúp giao diện gọn gàng, không bị dài tràn màn hình và dễ dàng tinh chỉnh từng nhóm chức năng.
-- **Ẩn thẻ kết thúc video (Endscreen Cards) & Thẻ chú thích (Info Cards):** Tự động ẩn các khung hình chữ nhật gợi ý video tiếp theo thường đè lên 15–20 giây cuối video (`.ytp-ce-element`), đồng thời ẩn nút biểu tượng chữ `(i)` và thẻ gợi ý góc trên bên phải giúp người xem trọn vẹn toàn bộ phần kết của video.
-- **Ẩn Bài đăng cộng đồng trên Trang chủ (Hide Community Posts):** Lọc sạch các bài thăm dò ý kiến (polls), bài viết chia sẻ hình ảnh dạng bài đăng cộng đồng xen kẽ giữa các video trên feed/trang chủ.
-- **Tự động đóng các Banner thông báo phiền toái (Auto-dismiss Promos):** Tự động đóng các thanh thông báo ưu đãi (`ytd-mealbar-promo-renderer`), banner mua YouTube Premium, khảo sát ý kiến và popup đề xuất ứng dụng/thiết bị.
-- **Kế thừa các tối ưu cốt lõi:** Cố định số cột 3-4-5 không bị hoàn tác khi F5, sửa triệt để logo Premium kèm mã quốc gia chuẩn xác, ẩn Shorts/Playables/Hội viên/Khám phá chủ đề, Clean Search và phím tắt A-S-D / Numpad.
+Phiên bản **v2.7** nâng cấp:
+- **Ẩn logo hình mờ (Watermark) ở góc video:** Tự động xóa bỏ hoàn toàn biểu tượng/avatar của kênh hiển thị ở góc dưới cùng bên phải của trình phát video (`.iv-branding`, `.ytp-iv-video-content .iv-branding`, `.ytp-branding-logo`), giúp khung hình video hoàn toàn thông thoáng.
+- **Tối giản hóa kiến trúc mã nguồn:** Toàn bộ mã nguồn phát triển trong `src/` được tổ chức tinh gọn thành 4 tệp chuyên biệt, build tự động siêu tốc bằng `esbuild`.
+- **Phân nhóm cài đặt trong Menu theo 4 Tab:** Bảng cài đặt 4 danh mục trực quan gồm **Giao diện**, **Lọc nội dung**, **Trình phát** và **Phím tắt**.
+- **Kế thừa các tối ưu cốt lõi:** Ẩn thẻ kết thúc (Endscreen Cards) & chú thích (Info Cards), ẩn bài đăng cộng đồng trên feed, tự đóng banner quảng cáo/hội viên, cố định số cột 3-4-5 không bị hoàn tác khi F5, sửa triệt để logo Premium kèm mã quốc gia chuẩn xác, ẩn Shorts/Playables/Hội viên/Khám phá chủ đề, Clean Search và phím tắt A-S-D / Numpad.
 
 ---
 
@@ -39,9 +38,11 @@ Phiên bản **v2.6** mang đến bước cải tiến lớn:
 - **Menu cài đặt phân nhóm 4 Tab hiện đại:**
   - **Giao diện:** Tùy chọn số cột trang chủ (3, 4, 5 cột), Bật/tắt Logo YouTube Premium, Ẩn Khám phá các chủ đề khác.
   - **Lọc nội dung:** Ẩn Shorts hoàn toàn, Ẩn Chơi game (Playables), Ẩn video Hội viên (Ưu tiên & Đặc quyền), Ẩn bài đăng cộng đồng, Lọc tìm kiếm sạch (Clean Search).
-  - **Trình phát:** Tắt ánh sáng viền video (Ambient Mode / Cinematics), Ẩn thẻ kết thúc & thẻ chú thích video, Tự động đóng banner quảng cáo/thông báo.
+  - **Trình phát:** Tắt ánh sáng viền video (Ambient Mode / Cinematics), Ẩn thẻ kết thúc & thẻ chú thích video, Ẩn logo góc video (Watermark), Tự động đóng banner quảng cáo/thông báo.
   - **Phím tắt:** Bật/tắt phím tắt A-S-D & Numpad kèm bảng tra cứu phím tắt nhanh ngay trong menu.
   - Toàn bộ thiết lập được lưu tự động vào `localStorage` và cập nhật tức thì (Live Update) mà không cần tải lại trang.
+- **Ẩn logo hình mờ kênh ở góc video (Clean Video Watermark):**
+  - Tự động ẩn biểu tượng logo hoặc ảnh đại diện kênh xuất hiện ở góc dưới cùng bên phải trình phát video.
 - **Ẩn thẻ kết thúc & Chú thích video (Clean Endscreen):**
   - Vô hiệu hóa triệt để các khung gợi ý video đè lên phần outro (`.ytp-ce-element`, `.ytp-ce-covering-image`, `.ytp-ce-element-shadow`).
   - Ẩn nút thẻ chú thích góc trên bên phải player (`.ytp-cards-button`) và thanh thông báo teaser (`.ytp-cards-teaser`).

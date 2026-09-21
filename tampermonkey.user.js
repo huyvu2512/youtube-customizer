@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      2.6
-// @description  YouTube Customizer v2.6 — Phân nhóm cài đặt 4 Tab hiện đại, ẩn thẻ kết thúc (Endscreen) & chú thích (Cards), ẩn bài đăng cộng đồng, tự động đóng banner quảng cáo/hội viên, cố định số cột 3-4-5, logo Premium, ẩn Shorts & phím tắt tiện lợi.
+// @version      2.7
+// @description  YouTube Customizer v2.7 — Bổ sung tính năng ẩn logo hình mờ (Watermark) ở góc video, phân nhóm cài đặt 4 Tab hiện đại, ẩn thẻ kết thúc, ẩn bài đăng cộng đồng, tự đóng banner quảng cáo, cố định số cột 3-4-5, logo Premium & phím tắt tiện lợi.
 // @author       Huy Vũ
 // @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js
 // @match        https://www.youtube.com/*

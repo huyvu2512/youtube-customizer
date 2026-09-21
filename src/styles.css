@@ -265,6 +265,19 @@ yt-live-chat-membership-item-renderer {
     pointer-events: none !important;
 }
 
+/* Ẩn logo hình mờ kênh ở góc dưới bên phải video */
+.ytc-hide-watermark .annotation-type-custom.iv-branding,
+.ytc-hide-watermark .iv-branding,
+.ytc-hide-watermark .ytp-iv-video-content .iv-branding,
+.ytc-hide-watermark .ytp-branding-logo,
+.ytc-hide-watermark .ytp-featured-channel,
+.ytc-hide-watermark .ytp-branding-element {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+
 .ytc-auto-dismiss ytd-mealbar-promo-renderer,
 .ytc-auto-dismiss yt-mealbar-promo-renderer,
 .ytc-auto-dismiss ytd-upsell-dialog-renderer,
