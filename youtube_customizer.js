@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.1.3
-// @description  YouTube Customizer v3.1.3 — Khung nổi Streamer nền trong suốt, giữ góc tương đối khi phóng to/thu nhỏ, chữ gọn và hiển thị nhiều bình luận hơn.
+// @version      3.1.4
+// @description  YouTube Customizer v3.1.4 — Khung nổi Streamer bám góc tuyệt đối khi phóng to/thu nhỏ (CSS corner anchor) và tự động ẩn chat gốc YouTube.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -43,27 +43,10 @@
     }
     return null;
   }
-  function saveChatBoxPos(box, player) {
-    if (!box) return;
-    const p = player || document.querySelector("#movie_player, .html5-video-player");
-    if (!p) return;
-    const pW = p.offsetWidth || p.clientWidth || window.innerWidth;
-    const pH = p.offsetHeight || p.clientHeight || window.innerHeight;
-    const bW = box.offsetWidth || 300;
-    const bH = box.offsetHeight || 200;
-    const left = parseInt(box.style.left, 10) || 0;
-    const top = parseInt(box.style.top, 10) || 0;
-    const maxLeft = Math.max(1, pW - bW);
-    const maxTop = Math.max(1, pH - bH);
-    const ratioX = Math.max(0, Math.min(1, left / maxLeft));
-    const ratioY = Math.max(0, Math.min(1, top / maxTop));
+  function saveChatBoxPos(data) {
     try {
-      localStorage.setItem(CHATBOX_POS_KEY, JSON.stringify({
-        ratioX,
-        ratioY,
-        width: box.style.width,
-        height: box.style.height
-      }));
+      const existing = getSavedChatBoxPos() || {};
+      localStorage.setItem(CHATBOX_POS_KEY, JSON.stringify({ ...existing, ...data }));
     } catch (e) {
     }
   }
@@ -74,40 +57,67 @@
     const pHeight = p ? p.offsetHeight || p.clientHeight : window.innerHeight;
     const boxW = Math.min(340, Math.max(260, Math.round(pWidth * 0.32)));
     const boxH = Math.min(300, Math.max(160, Math.round(pHeight * 0.4)));
-    const left = Math.max(10, Math.round((pWidth - boxW) / 2));
-    const top = Math.max(10, Math.round((pHeight - boxH) / 2));
-    box.style.left = `${left}px`;
-    box.style.top = `${top}px`;
+    box.style.left = "50%";
+    box.style.top = "50%";
     box.style.right = "auto";
     box.style.bottom = "auto";
+    box.style.transform = "translate(-50%, -50%)";
     box.style.width = `${boxW}px`;
     box.style.height = `${boxH}px`;
-    saveChatBoxPos(box, p);
+    saveChatBoxPos({
+      isCentered: true,
+      anchorX: "left",
+      anchorY: "bottom",
+      offsetX: 10,
+      offsetY: 40,
+      width: box.style.width,
+      height: box.style.height
+    });
   }
   function applyChatBoxPos(box, player) {
     if (!box) return;
     const p = player || document.querySelector("#movie_player, .html5-video-player");
     if (!p) return;
-    const pW = p.offsetWidth || p.clientWidth || window.innerWidth;
-    const pH = p.offsetHeight || p.clientHeight || window.innerHeight;
-    if (pW <= 0 || pH <= 0) return;
     const pos = getSavedChatBoxPos();
-    if (!pos || pos.ratioX === void 0) {
+    if (!pos) {
       centerChatBox(box, p);
       return;
     }
+    if (pos.isCentered) {
+      box.style.left = "50%";
+      box.style.top = "50%";
+      box.style.right = "auto";
+      box.style.bottom = "auto";
+      box.style.transform = "translate(-50%, -50%)";
+      if (pos.width) box.style.width = pos.width;
+      if (pos.height) box.style.height = pos.height;
+      return;
+    }
+    box.style.transform = "none";
     if (pos.width) box.style.width = pos.width;
     if (pos.height) box.style.height = pos.height;
+    const pW = p.offsetWidth || p.clientWidth || window.innerWidth;
+    const pH = p.offsetHeight || p.clientHeight || window.innerHeight;
     const bW = box.offsetWidth || 300;
     const bH = box.offsetHeight || 200;
-    const maxLeft = Math.max(0, pW - bW);
-    const maxTop = Math.max(0, pH - bH);
-    const newLeft = Math.round(pos.ratioX * maxLeft);
-    const newTop = Math.round(pos.ratioY * maxTop);
-    box.style.left = `${newLeft}px`;
-    box.style.top = `${newTop}px`;
-    box.style.right = "auto";
-    box.style.bottom = "auto";
+    if (pos.anchorX === "right") {
+      const rightVal = Math.min(pos.offsetX || 0, Math.max(0, pW - bW));
+      box.style.right = `${rightVal}px`;
+      box.style.left = "auto";
+    } else {
+      const leftVal = Math.min(pos.offsetX || 0, Math.max(0, pW - bW));
+      box.style.left = `${leftVal}px`;
+      box.style.right = "auto";
+    }
+    if (pos.anchorY === "top") {
+      const topVal = Math.min(pos.offsetY || 0, Math.max(0, pH - bH));
+      box.style.top = `${topVal}px`;
+      box.style.bottom = "auto";
+    } else {
+      const bottomVal = Math.min(pos.offsetY || 0, Math.max(0, pH - bH));
+      box.style.bottom = `${bottomVal}px`;
+      box.style.top = "auto";
+    }
   }
   function showInitialBox(box) {
     if (!box) return;
@@ -180,11 +190,45 @@
           box.style.left = `${newLeft}px`;
           box.style.top = `${newTop}px`;
           box.style.right = "auto";
+          box.style.bottom = "auto";
+          box.style.transform = "none";
         }
         function onMouseUp() {
           document.removeEventListener("mousemove", onMouseMove);
           document.removeEventListener("mouseup", onMouseUp);
-          saveChatBoxPos(box, player);
+          const currentPRect = player.getBoundingClientRect();
+          const currentBRect = box.getBoundingClientRect();
+          const distLeft = Math.max(0, currentBRect.left - currentPRect.left);
+          const distRight = Math.max(0, currentPRect.right - currentBRect.right);
+          const distTop = Math.max(0, currentBRect.top - currentPRect.top);
+          const distBottom = Math.max(0, currentPRect.bottom - currentBRect.bottom);
+          const anchorX = distLeft <= distRight ? "left" : "right";
+          const anchorY = distTop <= distBottom ? "top" : "bottom";
+          const offsetX = anchorX === "left" ? distLeft : distRight;
+          const offsetY = anchorY === "top" ? distTop : distBottom;
+          if (anchorX === "left") {
+            box.style.left = `${Math.round(offsetX)}px`;
+            box.style.right = "auto";
+          } else {
+            box.style.right = `${Math.round(offsetX)}px`;
+            box.style.left = "auto";
+          }
+          if (anchorY === "top") {
+            box.style.top = `${Math.round(offsetY)}px`;
+            box.style.bottom = "auto";
+          } else {
+            box.style.bottom = `${Math.round(offsetY)}px`;
+            box.style.top = "auto";
+          }
+          saveChatBoxPos({
+            isCentered: false,
+            anchorX,
+            anchorY,
+            offsetX: Math.round(offsetX),
+            offsetY: Math.round(offsetY),
+            width: box.style.width,
+            height: box.style.height
+          });
         }
         document.addEventListener("mousemove", onMouseMove);
         document.addEventListener("mouseup", onMouseUp);
@@ -208,7 +252,10 @@
         function onMouseUp() {
           document.removeEventListener("mousemove", onMouseMove);
           document.removeEventListener("mouseup", onMouseUp);
-          saveChatBoxPos(box, player);
+          saveChatBoxPos({
+            width: box.style.width,
+            height: box.style.height
+          });
         }
         document.addEventListener("mousemove", onMouseMove);
         document.addEventListener("mouseup", onMouseUp);
@@ -220,8 +267,18 @@
     });
     document.addEventListener("fullscreenchange", () => {
       const p = document.querySelector("#movie_player, .html5-video-player");
-      if (box && p) applyChatBoxPos(box, p);
+      if (box && p) {
+        applyChatBoxPos(box, p);
+        setTimeout(() => applyChatBoxPos(box, p), 100);
+        setTimeout(() => applyChatBoxPos(box, p), 300);
+      }
     });
+    if (window.ResizeObserver && player) {
+      const ro = new ResizeObserver(() => {
+        applyChatBoxPos(box, player);
+      });
+      ro.observe(player);
+    }
   }
   var TOTAL_LANES = 10;
   var laneNextAvailableTime = new Array(TOTAL_LANES).fill(0);
@@ -381,6 +438,18 @@
       }, 3e4);
     }
   }
+  function collapseNativeLiveChat() {
+    const chatFrame = document.querySelector("ytd-live-chat-frame#chat, #chat.ytd-watch-flexy");
+    if (chatFrame && !chatFrame.hasAttribute("collapsed")) {
+      const collapseBtn = document.querySelector('ytd-live-chat-frame #show-hide-button button, #chat-container #show-hide-button button, #show-hide-button button, ytd-live-chat-frame button#collapse-button, [aria-label*="Ẩn cuộc trò chuyện"], [aria-label*="Hide chat"]');
+      if (collapseBtn) {
+        try {
+          collapseBtn.click();
+        } catch (e) {
+        }
+      }
+    }
+  }
   function getAllChatElements(scope) {
     const root = scope || document;
     return root.querySelectorAll(
@@ -528,6 +597,7 @@
       }
     }
     if (mode !== "off") {
+      collapseNativeLiveChat();
       seenMessageIds.clear();
       ensureBackgroundLiveChat();
       requestExistingMessages();
@@ -669,6 +739,9 @@
       whenElement("#movie_player, .html5-video-player", () => {
         ensureChatOverlayContainers();
         ensureBackgroundLiveChat();
+        if (currentConfig.chatOverlay && currentConfig.chatOverlay !== "off") {
+          collapseNativeLiveChat();
+        }
       });
     }
   }
@@ -1349,7 +1422,7 @@
       panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v3.1.3</span>
+                <span class="ytc-header-badge">v3.1.4</span>
             </div>
 
             <div class="ytc-tabs">

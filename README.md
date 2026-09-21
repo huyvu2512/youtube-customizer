@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.1.3-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.1.4-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,15 +25,14 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.1.3** nâng cấp:
-- **Khung nổi Streamer nền trong suốt và giữ đúng góc khi thay đổi kích thước:**
-  - Nền khung chat mặc định hoàn toàn trong suốt, không viền, chữ có đổ bóng đen sắc nét nổi bật trực tiếp trên nền video như khung chat OBS của streamer. Chỉ hiển thị viền đứt đoạn và thanh điều khiển khi rê chuột vào để kéo thả hoặc co giãn.
-  - Tự động lưu vị trí theo tỉ lệ góc (Ratio X/Y). Khi đặt khung chat ở góc màn hình, lúc phóng to (Fullscreen) hay thu nhỏ về cửa sổ thông thường thì khung chat luôn giữ đúng góc tương ứng, không bao giờ bị nhảy về chính giữa hay bị đẩy lệch ra ngoài màn hình.
-  - Tối ưu kích thước chữ gọn gàng hơn (12px), avatar thu nhỏ (16px), khoảng cách giữa các bình luận khít và đẹp mắt hơn.
-  - Tăng số lượng bình luận hiển thị đồng thời (lên đến 40 bình luận) và kéo dài thời gian lưu chữ lên 30 giây để người xem dễ dàng theo dõi mạch trò chuyện.
-- **Loại bỏ chế độ "Cả hai":**
-  - Menu chuyển đổi gọn gàng với 3 tùy chọn rõ ràng: Tắt, Ngang (Danmaku), Nổi (Streamer).
-- **Kế thừa các tính năng nổi bật từ v3.1.2 & v3.1.1:**
+Phiên bản **v3.1.4** nâng cấp:
+- **Khung nổi Streamer bám góc tuyệt đối (CSS Corner Anchor):**
+  - Tự động nhận diện và neo vị trí vào cạnh tương ứng (Góc dưới-trái, dưới-phải, trên-trái, trên-phải). Khi kéo thả khung vào góc dưới màn hình, lúc phóng to toàn màn hình (Fullscreen) hay thu nhỏ về cửa sổ thông thường, khung chat luôn gắn chặt đúng góc đó mà không bao giờ bị nhảy lên giữa màn hình.
+  - Tích hợp ResizeObserver để tự động căn chỉnh khung chat mượt mà ngay khi trình phát video thay đổi kích thước.
+- **Tự động ẩn thanh chat gốc YouTube khi bật overlay:**
+  - Tự động thu gọn (collapse) thanh Live Chat mặc định của YouTube khi bật chế độ Ngang hoặc Nổi, giúp mở rộng tối đa khung hình video và loại bỏ tình trạng thanh chat gốc tự bung ra. Người dùng vẫn có thể chủ động bấm mở lại thanh chat gốc bất cứ lúc nào nếu muốn.
+- **Kế thừa các tính năng nổi bật từ v3.1.3 & v3.1.2:**
+  - Khung nổi Streamer nền trong suốt HUD, chữ 12px gọn gàng, chứa đến 40 bình luận trong 30 giây.
   - Danmaku dãn cách thưa thớt (10 làn chạy, cooldown 420ms chống đè chữ, loại bỏ dồn cục lúc đầu bật).
   - Chạy ngầm Live Chat độc lập bằng Video ID (tắt khung chat gốc YouTube vẫn chạy bình thường).
   - Tính năng Tự động trực tiếp (Auto Live) chống trễ luồng phát.
