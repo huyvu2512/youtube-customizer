@@ -661,3 +661,224 @@ html:not([dark]) .ytc-shortcut-hint kbd {
     background: rgba(255, 255, 255, 0.1);
     margin: 4px 0;
 }
+
+.ytc-mode-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px;
+    border-radius: 6px;
+}
+.ytc-mode-btn {
+    border: none;
+    background: transparent;
+    color: #aaa;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+.ytc-mode-btn.active {
+    background: #f1f1f1;
+    color: #0f0f0f;
+}
+html:not([dark]) .ytc-mode-group {
+    background: rgba(0, 0, 0, 0.05);
+}
+html:not([dark]) .ytc-mode-btn.active {
+    background: #0f0f0f;
+    color: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   CHAT OVERLAY TRÊN VIDEO (DANMAKU & STREAMER BOX)
+   -------------------------------------------------------------------------- */
+#ytc-danmaku-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 25;
+    transition: opacity 0.3s ease;
+}
+
+.ytc-danmaku-item {
+    position: absolute;
+    white-space: nowrap;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 1.3;
+    color: #ffffff;
+    text-shadow: 
+        1px 1px 2px #000, 
+        -1px -1px 2px #000, 
+        1px -1px 2px #000, 
+        -1px 1px 2px #000,
+        0 0 4px #000;
+    will-change: transform;
+    animation: ytc-danmaku-slide 7.5s linear forwards;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    pointer-events: none;
+}
+
+@keyframes ytc-danmaku-slide {
+    from {
+        transform: translate3d(100vw, 0, 0);
+    }
+    to {
+        transform: translate3d(-100%, 0, 0);
+    }
+}
+
+.ytc-chat-author {
+    color: #ffffff;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.ytc-chat-author.mod {
+    color: #3ea6ff !important;
+}
+.ytc-chat-author.member {
+    color: #2ba640 !important;
+}
+.ytc-chat-author.owner {
+    color: #ffd600 !important;
+}
+
+.ytc-chat-text {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.ytc-chat-text img.emoji {
+    width: 20px;
+    height: 20px;
+    vertical-align: -3px;
+    margin: 0 2px;
+}
+
+/* KHUNG STREAMER CHAT BOX (TRONG SUỐT) */
+#ytc-streamer-box {
+    position: absolute;
+    width: 340px;
+    min-height: 120px;
+    max-height: 400px;
+    background: transparent !important;
+    border-radius: 8px;
+    z-index: 26;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    pointer-events: auto;
+    box-sizing: border-box;
+    transition: opacity 0.3s ease;
+    user-select: none;
+}
+
+#ytc-streamer-box:hover {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+    background: rgba(0, 0, 0, 0.2) !important;
+}
+
+.ytc-box-header {
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 8px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #ccc;
+    font-size: 11px;
+    cursor: move;
+    opacity: 0;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+}
+
+#ytc-streamer-box:hover .ytc-box-header {
+    opacity: 1;
+}
+
+.ytc-box-messages {
+    flex: 1;
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 8px;
+    pointer-events: none;
+}
+
+.ytc-box-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 14px;
+    line-height: 1.35;
+    color: #fff;
+    text-shadow: 
+        1px 1px 2px #000, 
+        -1px -1px 2px #000, 
+        1px -1px 2px #000, 
+        -1px 1px 2px #000,
+        0 0 3px #000;
+    animation: ytc-fade-in 0.2s ease-out;
+    word-break: break-word;
+}
+
+.ytc-box-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.ytc-box-content {
+    flex: 1;
+}
+
+.ytc-box-badge {
+    display: inline-flex;
+    vertical-align: -2px;
+    margin-right: 4px;
+}
+.ytc-box-badge img,
+.ytc-box-badge svg {
+    width: 14px;
+    height: 14px;
+}
+
+.ytc-box-resize {
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    width: 14px;
+    height: 14px;
+    cursor: nwse-resize;
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-right: 2px solid rgba(255, 255, 255, 0.6);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+#ytc-streamer-box:hover .ytc-box-resize {
+    opacity: 1;
+}
+
+@keyframes ytc-fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.ytc-chat-hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}

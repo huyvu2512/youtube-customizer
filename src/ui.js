@@ -25,6 +25,7 @@ const ENDSCREEN_SVG = `<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2
 const BELL_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>`;
 const WATERMARK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>`;
 const REWIND_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>`;
+const MESSAGE_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>`;
 
 // --------------------------------------------------------------------------
 // 2. BẢNG MENU CÀI ĐẶT (SETTINGS PANEL)
@@ -57,7 +58,7 @@ function createSettingsPanel(btn) {
         panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v2.8</span>
+                <span class="ytc-header-badge">v2.9</span>
             </div>
 
             <div class="ytc-tabs">
@@ -231,6 +232,29 @@ function createSettingsPanel(btn) {
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
+
+                <div class="ytc-item" id="ytc-row-chatoverlay">
+                    <div class="ytc-item-left">
+                        ${MESSAGE_SVG}
+                        <span>Chat trên Video</span>
+                    </div>
+                    <div class="ytc-mode-group">
+                        <button class="ytc-mode-btn ${(!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') ? 'active' : ''}" data-overlay="off">Tắt</button>
+                        <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'danmaku' ? 'active' : ''}" data-overlay="danmaku">Ngang</button>
+                        <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'streamer' ? 'active' : ''}" data-overlay="streamer">Nổi</button>
+                    </div>
+                </div>
+
+                <div class="ytc-item" data-toggle="chatOverlayHideOnRewind">
+                    <div class="ytc-item-left">
+                        ${REWIND_SVG}
+                        <span>Ẩn chat khi tua lùi</span>
+                    </div>
+                    <label class="ytc-switch">
+                        <input type="checkbox" id="ytc-chk-overlayrewind" ${currentConfig.chatOverlayHideOnRewind ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
             </div>
 
             <!-- TAB 4: PHÍM TẮT & TIỆN ÍCH -->
@@ -280,6 +304,21 @@ function createSettingsPanel(btn) {
 
                 panel.querySelectorAll('.ytc-col-btn').forEach(b => b.classList.remove('active'));
                 colBtn.classList.add('active');
+
+                applyConfigToRoot();
+            });
+        });
+
+        // Chọn chế độ Chat Overlay (Tắt / Ngang / Nổi)
+        panel.querySelectorAll('.ytc-mode-btn').forEach((modeBtn) => {
+            modeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const mode = modeBtn.getAttribute('data-overlay') || 'off';
+                currentConfig.chatOverlay = mode;
+                saveConfig(currentConfig);
+
+                panel.querySelectorAll('.ytc-mode-btn').forEach(b => b.classList.remove('active'));
+                modeBtn.classList.add('active');
 
                 applyConfigToRoot();
             });

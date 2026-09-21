@@ -14,7 +14,9 @@ import {
     setupFullscreenLock,
     isHomeFeedPath,
     whenElement,
-    initLiveDvrHook
+    initLiveDvrHook,
+    initChatOverlay,
+    updateChatOverlayVisibility
 } from './features.js';
 import { ensureSettingsElements, setupSettingsObserver } from './ui.js';
 
@@ -36,6 +38,8 @@ export const DEFAULT_CONFIG = {
     hideEndscreen: true,    // Ẩn thẻ kết thúc & chú thích
     hideWatermark: true,    // Ẩn logo hình mờ kênh ở góc video
     unlockLiveDvr: true,    // Mở khóa tua lại Live Stream
+    chatOverlay: 'off',     // 'off', 'danmaku', 'streamer'
+    chatOverlayHideOnRewind: true, // Tự động ẩn khi tua về quá khứ
     autoDismissPromos: true,// Tự động đóng banner khuyến mại
     premiumLogo: true,      // Logo YouTube Premium
     cleanSearch: true,      // Ẩn video tài trợ / quảng cáo tìm kiếm
@@ -93,6 +97,7 @@ export function applyConfigToRoot() {
     }
 
     applyHomeGridColumns();
+    updateChatOverlayVisibility();
 }
 
 // --------------------------------------------------------------------------
@@ -133,6 +138,7 @@ function onNavigate() {
     bindGlobalKeys();
     setupFullscreenLock();
     dismissPromoBanners(document);
+    initChatOverlay();
 
     if (location.pathname.startsWith('/watch')) {
         setWatchLoading(true);
@@ -162,6 +168,7 @@ setupLogoObserver();
 setupSettingsObserver();
 setupFeedShelvesObserver();
 setupFullscreenLock();
+initChatOverlay();
 
 if (location.pathname.startsWith('/watch')) {
     setWatchLoading(true);

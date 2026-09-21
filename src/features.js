@@ -559,3 +559,361 @@ export function initLiveDvrHook() {
         };
     } catch (e) {}
 }
+
+// --------------------------------------------------------------------------
+// 7. CHAT OVERLAY TRÊN VIDEO (DANMAKU & KHUNG STREAMER TRONG SUỐT)
+// --------------------------------------------------------------------------
+const CHATBOX_POS_KEY = 'ytc_chatbox_pos';
+
+let chatOverlayInitialized = false;
+let danmakuContainer = null;
+let streamerBox = null;
+let streamerMessages = null;
+let chatFrameObserver = null;
+let chatItemsObserver = null;
+let liveCheckTimer = null;
+let currentLaneIndex = 0;
+const TOTAL_LANES = 6;
+
+function getSavedChatBoxPos() {
+    try {
+        const stored = localStorage.getItem(CHATBOX_POS_KEY);
+        if (stored) return JSON.parse(stored);
+    } catch (e) {}
+    return { top: '15%', right: '20px', left: '', width: '340px', height: '260px' };
+}
+
+function saveChatBoxPos(pos) {
+    try {
+        localStorage.setItem(CHATBOX_POS_KEY, JSON.stringify(pos));
+    } catch (e) {}
+}
+
+export function updateChatOverlayVisibility() {
+    const mode = currentConfig.chatOverlay || 'off';
+    if (danmakuContainer) {
+        danmakuContainer.style.display = mode === 'danmaku' ? 'block' : 'none';
+        if (mode !== 'danmaku') danmakuContainer.innerHTML = '';
+    }
+    if (streamerBox) {
+        streamerBox.style.display = mode === 'streamer' ? 'flex' : 'none';
+        if (mode !== 'streamer' && streamerMessages) streamerMessages.innerHTML = '';
+    }
+}
+
+function setChatOverlayHidden(hidden) {
+    if (danmakuContainer) {
+        danmakuContainer.classList.toggle('ytc-chat-hidden', hidden);
+    }
+    if (streamerBox) {
+        streamerBox.classList.toggle('ytc-chat-hidden', hidden);
+    }
+}
+
+function ensureChatOverlayContainers() {
+    const player = document.querySelector('#movie_player') || document.querySelector('.html5-video-player');
+    if (!player) return;
+
+    // 1. Danmaku Container
+    if (!danmakuContainer || !player.contains(danmakuContainer)) {
+        danmakuContainer = document.createElement('div');
+        danmakuContainer.id = 'ytc-danmaku-container';
+        player.appendChild(danmakuContainer);
+    }
+
+    // 2. Streamer Box
+    if (!streamerBox || !player.contains(streamerBox)) {
+        streamerBox = document.createElement('div');
+        streamerBox.id = 'ytc-streamer-box';
+
+        const pos = getSavedChatBoxPos();
+        if (pos.left) streamerBox.style.left = pos.left;
+        else if (pos.right) streamerBox.style.right = pos.right;
+        else streamerBox.style.right = '20px';
+
+        if (pos.top) streamerBox.style.top = pos.top;
+        else streamerBox.style.top = '15%';
+
+        if (pos.width) streamerBox.style.width = pos.width;
+        if (pos.height) streamerBox.style.height = pos.height;
+
+        streamerBox.innerHTML = safeHTML(`
+            <div class="ytc-box-header" title="Giữ chuột để kéo thả vị trí">
+                <span>💬 Chat Streamer</span>
+                <span style="font-size:10px;opacity:0.7">Kéo thả</span>
+            </div>
+            <div class="ytc-box-messages"></div>
+            <div class="ytc-box-resize" title="Kéo để thay đổi kích thước"></div>
+        `);
+
+        player.appendChild(streamerBox);
+        streamerMessages = streamerBox.querySelector('.ytc-box-messages');
+
+        setupChatBoxInteractions(streamerBox, player);
+    }
+
+    updateChatOverlayVisibility();
+}
+
+function setupChatBoxInteractions(box, player) {
+    const header = box.querySelector('.ytc-box-header');
+    const resizeHandle = box.querySelector('.ytc-box-resize');
+
+    // Drag & Drop
+    if (header) {
+        header.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            e.stopPropagation();
+
+            const pRect = player.getBoundingClientRect();
+            const bRect = box.getBoundingClientRect();
+
+            const shiftX = e.clientX - bRect.left;
+            const shiftY = e.clientY - bRect.top;
+
+            function onMouseMove(moveEvent) {
+                let newLeft = moveEvent.clientX - pRect.left - shiftX;
+                let newTop = moveEvent.clientY - pRect.top - shiftY;
+
+                newLeft = Math.max(0, Math.min(newLeft, pRect.width - box.offsetWidth));
+                newTop = Math.max(0, Math.min(newTop, pRect.height - box.offsetHeight));
+
+                box.style.left = `${newLeft}px`;
+                box.style.top = `${newTop}px`;
+                box.style.right = 'auto';
+            }
+
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+
+                saveChatBoxPos({
+                    left: box.style.left,
+                    top: box.style.top,
+                    right: '',
+                    width: box.style.width,
+                    height: box.style.height
+                });
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+    }
+
+    // Co giãn (Resize)
+    if (resizeHandle) {
+        resizeHandle.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            e.stopPropagation();
+
+            const startX = e.clientX;
+            const startY = e.clientY;
+            const startW = box.offsetWidth;
+            const startH = box.offsetHeight;
+
+            function onMouseMove(moveEvent) {
+                const newW = Math.max(200, Math.min(startW + (moveEvent.clientX - startX), player.offsetWidth * 0.8));
+                const newH = Math.max(100, Math.min(startH + (moveEvent.clientY - startY), player.offsetHeight * 0.8));
+
+                box.style.width = `${newW}px`;
+                box.style.height = `${newH}px`;
+            }
+
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+
+                saveChatBoxPos({
+                    left: box.style.left,
+                    top: box.style.top,
+                    right: box.style.right,
+                    width: box.style.width,
+                    height: box.style.height
+                });
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+    }
+}
+
+function processIncomingMessage(node) {
+    if (!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') return;
+
+    const authorEl = node.querySelector('#author-name');
+    const author = authorEl ? authorEl.textContent.trim() : 'Ẩn danh';
+
+    const isMod = !!node.querySelector('yt-live-chat-author-badge-renderer[aria-label*="Kiểm duyệt"], [type="moderator"], .moderator') || node.classList.contains('author-type-moderator');
+    const isMember = !!node.querySelector('yt-live-chat-author-badge-renderer[aria-label*="Hội viên"], [type="member"], .member') || node.classList.contains('author-type-member');
+    const isOwner = !!node.querySelector('yt-live-chat-author-badge-renderer[aria-label*="Chủ sở hữu"], [type="owner"], .owner') || node.classList.contains('author-type-owner');
+
+    const avatarEl = node.querySelector('#author-photo img');
+    const avatarSrc = avatarEl ? (avatarEl.src || avatarEl.getAttribute('src')) : '';
+
+    const badgeEls = Array.from(node.querySelectorAll('#chat-badges yt-live-chat-author-badge-renderer'));
+    const badgesHtml = badgeEls.map(b => b.innerHTML).join('');
+
+    const messageEl = node.querySelector('#message');
+    const messageHtml = messageEl ? messageEl.innerHTML : '';
+
+    if (!messageHtml && !author) return;
+
+    ensureChatOverlayContainers();
+
+    const authorClass = isMod ? 'mod' : (isMember ? 'member' : (isOwner ? 'owner' : ''));
+
+    // Chế độ 1: Danmaku chạy ngang
+    if (currentConfig.chatOverlay === 'danmaku' && danmakuContainer) {
+        const item = document.createElement('div');
+        item.className = 'ytc-danmaku-item';
+
+        currentLaneIndex = (currentLaneIndex + 1) % TOTAL_LANES;
+        const topPercent = 8 + currentLaneIndex * 8;
+        item.style.top = `${topPercent}%`;
+
+        item.innerHTML = safeHTML(`
+            <span class="ytc-chat-author ${authorClass}">@${author}:</span>
+            <span class="ytc-chat-text">${messageHtml}</span>
+        `);
+
+        danmakuContainer.appendChild(item);
+        item.addEventListener('animationend', () => item.remove());
+    }
+
+    // Chế độ 2: Khung nổi Streamer
+    if (currentConfig.chatOverlay === 'streamer' && streamerMessages) {
+        const item = document.createElement('div');
+        item.className = 'ytc-box-item';
+
+        const avatarMarkup = avatarSrc ? `<img class="ytc-box-avatar" src="${avatarSrc}" alt="">` : '';
+        const badgeMarkup = badgesHtml ? `<span class="ytc-box-badge">${badgesHtml}</span>` : '';
+
+        item.innerHTML = safeHTML(`
+            ${avatarMarkup}
+            <div class="ytc-box-content">
+                <span class="ytc-chat-author ${authorClass}">@${author}</span>${badgeMarkup}: 
+                <span class="ytc-chat-text">${messageHtml}</span>
+            </div>
+        `);
+
+        streamerMessages.appendChild(item);
+
+        while (streamerMessages.children.length > 12) {
+            streamerMessages.firstElementChild.remove();
+        }
+
+        setTimeout(() => {
+            if (item.isConnected) {
+                item.style.transition = 'opacity 0.6s ease';
+                item.style.opacity = '0';
+                setTimeout(() => item.remove(), 600);
+            }
+        }, 14000);
+    }
+}
+
+function hookLiveChatFrame(frame) {
+    if (!frame) return;
+
+    function attachToDocument(doc) {
+        if (!doc) return;
+        const items = doc.querySelector('#items.yt-live-chat-item-list-renderer, #item-list #items');
+        if (items) {
+            if (chatItemsObserver) chatItemsObserver.disconnect();
+            chatItemsObserver = new MutationObserver((mutations) => {
+                for (const m of mutations) {
+                    for (const node of m.addedNodes) {
+                        if (node.nodeType === 1 && (node.tagName.toLowerCase().includes('yt-live-chat-text-message') || node.classList.contains('yt-live-chat-text-message-renderer'))) {
+                            processIncomingMessage(node);
+                        }
+                    }
+                }
+            });
+            chatItemsObserver.observe(items, { childList: true });
+        } else {
+            const waitObs = new MutationObserver(() => {
+                const it = doc.querySelector('#items.yt-live-chat-item-list-renderer, #item-list #items');
+                if (it) {
+                    waitObs.disconnect();
+                    attachToDocument(doc);
+                }
+            });
+            waitObs.observe(doc.body || doc.documentElement, { childList: true, subtree: true });
+            setTimeout(() => waitObs.disconnect(), 10000);
+        }
+    }
+
+    try {
+        if (frame.contentDocument && frame.contentDocument.readyState === 'complete') {
+            attachToDocument(frame.contentDocument);
+        }
+    } catch (e) {}
+
+    frame.addEventListener('load', () => {
+        try {
+            if (frame.contentDocument) {
+                attachToDocument(frame.contentDocument);
+            }
+        } catch (e) {}
+    });
+}
+
+function checkLiveHeadStatus() {
+    const player = document.querySelector('#movie_player') || document.querySelector('.html5-video-player');
+    if (!player) return;
+
+    let isLive = false;
+    try {
+        const d = player.getVideoData?.();
+        isLive = !!(d && d.isLive);
+    } catch (e) {}
+
+    if (!isLive || !currentConfig.chatOverlayHideOnRewind) {
+        setChatOverlayHidden(false);
+        return;
+    }
+
+    let isAtHead = true;
+    try {
+        if (typeof player.isAtLiveHead === 'function') {
+            isAtHead = player.isAtLiveHead();
+        } else {
+            const liveBadge = document.querySelector('.ytp-live-badge');
+            isAtHead = liveBadge && !liveBadge.hasAttribute('disabled');
+        }
+    } catch (e) {}
+
+    setChatOverlayHidden(!isAtHead);
+}
+
+export function initChatOverlay() {
+    if (chatOverlayInitialized) return;
+    chatOverlayInitialized = true;
+
+    function scanFrame() {
+        const frame = document.querySelector('iframe#chatframe');
+        if (frame) {
+            hookLiveChatFrame(frame);
+        }
+    }
+
+    scanFrame();
+
+    chatFrameObserver = new MutationObserver(() => {
+        scanFrame();
+    });
+    const root = document.querySelector('ytd-app') || document.body || document.documentElement;
+    chatFrameObserver.observe(root, { childList: true, subtree: true });
+
+    if (liveCheckTimer) clearInterval(liveCheckTimer);
+    liveCheckTimer = setInterval(checkLiveHeadStatus, 600);
+
+    if (location.pathname.startsWith('/watch') || location.pathname.startsWith('/live')) {
+        whenElement('#movie_player', ensureChatOverlayContainers);
+    }
+}
+

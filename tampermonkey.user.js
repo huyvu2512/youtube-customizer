@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      2.8
-// @description  YouTube Customizer v2.8 — Mở khóa tua lại Live Stream (Live DVR), ẩn logo hình mờ góc video, phân nhóm 4 Tab hiện đại, ẩn thẻ kết thúc, ẩn bài đăng cộng đồng, tự đóng banner quảng cáo, cố định số cột 3-4-5, logo Premium & phím tắt tiện lợi.
+// @version      2.9
+// @description  YouTube Customizer v2.9 — Live Chat Overlay trên video (Chạy ngang Danmaku & Khung nổi Streamer trong suốt kéo thả), mở khóa tua Live Stream (Live DVR), ẩn logo góc video, phân nhóm 4 Tab, ẩn thẻ kết thúc, ẩn bài đăng cộng đồng, tự đóng banner, cố định cột 3-4-5, logo Premium & phím tắt.
 // @author       Huy Vũ
 // @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js
 // @match        https://www.youtube.com/*
