@@ -182,9 +182,25 @@
                 display: none !important;
             }
 
-            /* Logo Premium: Ẩn logo mặc định và mã quốc gia bằng CSS ngay từ đầu */
+            /* Logo Premium: Ẩn logo mặc định nhưng giữ nguyên mã quốc gia và đồng bộ theme */
             :root.ytc-premium-logo ytd-topbar-logo-renderer #country-code {
+                display: inline-block !important;
+                color: var(--yt-spec-text-secondary, #909090) !important;
+            }
+            html:not([dark]).ytc-premium-logo ytd-topbar-logo-renderer #country-code,
+            html:not([dark]) ytd-topbar-logo-renderer #country-code {
+                color: var(--yt-spec-text-secondary, #606060) !important;
+            }
+            html[dark].ytc-premium-logo ytd-topbar-logo-renderer #country-code,
+            html[dark] ytd-topbar-logo-renderer #country-code {
+                color: var(--yt-spec-text-secondary, #909090) !important;
+            }
+            :root.ytc-premium-logo ytd-topbar-logo-renderer #country-code:empty {
                 display: none !important;
+            }
+            :root.ytc-premium-logo ytd-logo {
+                width: 101px !important;
+                min-width: 101px !important;
             }
             :root.ytc-premium-logo ytd-logo > *:not(.custom-premium-logo) {
                 display: none !important;

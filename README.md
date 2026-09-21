@@ -54,8 +54,8 @@ Phiên bản **v2.3** nâng cấp:
 - **Khóa an toàn nút phóng to (Fullscreen Safe Lock):**
   - Tự động vô hiệu hóa tạm thời nút phóng to (1.5 giây) khi vừa tải hoặc F5 lại trang video, chống lỗi kẹt giao diện inline/toàn màn hình của trình phát YouTube.
 - **Logo YouTube Premium:**
-  - Thay thế logo mặc định bằng biểu tượng YouTube Premium sắc nét, đồng thời ẩn mã vùng quốc gia.
-  - Tự động thích ứng màu sắc theo giao diện Sáng / Tối (Light / Dark theme) ngay lập tức khi đổi giao diện mà không cần tải lại trang.
+  - Thay thế logo mặc định bằng biểu tượng YouTube Premium sắc nét, giữ nguyên mã quốc gia (VN, US, JP,...) của người dùng.
+  - Tự động thích ứng màu sắc của cả logo lẫn mã quốc gia theo giao diện Sáng / Tối (Light / Dark theme) ngay lập tức khi đổi giao diện mà không cần tải lại trang.
   - Nhấp chuột vào logo ở trang chủ/feed hỗ trợ cuộn mượt (smooth scroll) lên đầu trang.
 - **Tự động tiếp tục phát video:**
   - Tự động đóng hộp thoại xác nhận "Vẫn đang xem? / Video đã tạm dừng" để tiếp tục phát nhạc nền hoặc playlist dài.
