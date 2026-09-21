@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.1.1
-// @description  YouTube Customizer v3.1.1 — Chạy ngầm Live Chat độc lập bằng Video ID (tắt gốc vẫn chạy), sửa hiển thị khung nổi và thêm chế độ Cả hai.
+// @version      3.1.2
+// @description  YouTube Customizer v3.1.2 — Tối ưu khoảng cách Danmaku (thưa thớt, không dồn cục lúc đầu bật, dãn cách 10 làn chống đè).
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -219,10 +219,13 @@
       if (box && p) clampBoxPosition(box, p);
     });
   }
-  var TOTAL_LANES = 15;
+  var TOTAL_LANES = 10;
   var laneNextAvailableTime = new Array(TOTAL_LANES).fill(0);
   var danmakuQueue = [];
   var danmakuSchedulerTimer = null;
+  var lastDanmakuSpawnTime = 0;
+  var lastSpawnedLane = -1;
+  var MIN_GLOBAL_INTERVAL = 420;
   function getAvailableLane(now) {
     const freeLanes = [];
     for (let i = 0; i < TOTAL_LANES; i++) {
@@ -231,14 +234,16 @@
       }
     }
     if (freeLanes.length === 0) return -1;
-    const randomIndex = Math.floor(Math.random() * freeLanes.length);
-    return freeLanes[randomIndex];
+    const differentLanes = freeLanes.filter((l) => l !== lastSpawnedLane);
+    const candidates = differentLanes.length > 0 ? differentLanes : freeLanes;
+    const randomIndex = Math.floor(Math.random() * candidates.length);
+    return candidates[randomIndex];
   }
   function spawnDanmakuItem(data, laneIndex) {
     if (!danmakuContainer || !data || !data.messageHtml) return;
     const item = document.createElement("div");
     item.className = "ytc-danmaku-item";
-    const topPercent = 4 + laneIndex * 5.8;
+    const topPercent = 6 + laneIndex * 8.2;
     item.style.top = `${topPercent}%`;
     item.innerHTML = safeHTML(`
         <span class="ytc-chat-text ${data.authorClass || ""}">${data.messageHtml}</span>
@@ -246,7 +251,7 @@
     danmakuContainer.appendChild(item);
     const plainText = (data.messageHtml || "").replace(/<[^>]*>/g, "");
     const textLen = plainText.length || 8;
-    const busyDuration = Math.min(4200, Math.max(1800, textLen * 95 + 1100));
+    const busyDuration = Math.min(5500, Math.max(3200, textLen * 110 + 2e3));
     laneNextAvailableTime[laneIndex] = Date.now() + busyDuration;
     item.addEventListener("animationend", () => item.remove());
     setTimeout(() => {
@@ -257,13 +262,18 @@
     if (document.hidden) return;
     if (danmakuQueue.length === 0) return;
     const now = Date.now();
+    if (now - lastDanmakuSpawnTime < MIN_GLOBAL_INTERVAL) {
+      return;
+    }
     const lane = getAvailableLane(now);
     if (lane !== -1) {
       const nextData = danmakuQueue.shift();
+      lastDanmakuSpawnTime = now;
+      lastSpawnedLane = lane;
       spawnDanmakuItem(nextData, lane);
     }
-    if (danmakuQueue.length > 25) {
-      while (danmakuQueue.length > 20) {
+    if (danmakuQueue.length > 12) {
+      while (danmakuQueue.length > 8) {
         const idx = danmakuQueue.findIndex((d) => !d.authorClass && !d.messageHtml.includes("purchase-amount"));
         if (idx !== -1) {
           danmakuQueue.splice(idx, 1);
@@ -275,7 +285,7 @@
   }
   function startDanmakuScheduler() {
     if (!danmakuSchedulerTimer) {
-      danmakuSchedulerTimer = setInterval(processDanmakuQueue, 70);
+      danmakuSchedulerTimer = setInterval(processDanmakuQueue, 50);
     }
   }
   function stopDanmakuScheduler() {
@@ -285,6 +295,8 @@
     }
     danmakuQueue.length = 0;
     laneNextAvailableTime.fill(0);
+    lastDanmakuSpawnTime = 0;
+    lastSpawnedLane = -1;
   }
   function extractMessageData(node) {
     if (!node || node.nodeType !== 1) return null;
@@ -324,19 +336,21 @@
       messageHtml: messageHtml || "..."
     };
   }
-  function displayChatMessage(data) {
+  function displayChatMessage(data, isBacklog = false) {
     if (!data || !currentConfig.chatOverlay || currentConfig.chatOverlay === "off") return;
+    const msgIsBacklog = isBacklog || data.isBacklog || false;
     if (isDuplicateMessage(data.id, data.author, data.messageHtml)) return;
     ensureChatOverlayContainers();
     const showDanmaku = currentConfig.chatOverlay === "danmaku" || currentConfig.chatOverlay === "both";
     const showStreamer = currentConfig.chatOverlay === "streamer" || currentConfig.chatOverlay === "both";
-    if (showDanmaku && danmakuContainer) {
+    if (showDanmaku && !msgIsBacklog && danmakuContainer) {
       danmakuQueue.push(data);
       startDanmakuScheduler();
     }
     if (showStreamer) {
       const msgContainer = streamerMessages || document.querySelector("#ytc-streamer-box .ytc-box-messages");
       if (!msgContainer) return;
+      if (msgIsBacklog && msgContainer.children.length >= 3) return;
       const loading = msgContainer.querySelector(".ytc-box-loading");
       if (loading) loading.remove();
       const item = document.createElement("div");
@@ -361,18 +375,6 @@
           setTimeout(() => item.remove(), 600);
         }
       }, 16e3);
-    }
-  }
-  function ensureYouTubeLiveChatOpen() {
-    const chatFrame = document.querySelector("ytd-live-chat-frame#chat, #chat.ytd-watch-flexy");
-    if (chatFrame && chatFrame.hasAttribute("collapsed")) {
-      const expandBtn = document.querySelector('#show-hide-button button, ytd-live-chat-frame #show-hide-button button, #chat-container #show-hide-button button, [aria-label*="Hiện cuộc trò chuyện"], [aria-label*="Show chat"], [aria-label*="Live chat"]');
-      if (expandBtn) {
-        try {
-          expandBtn.click();
-        } catch (e) {
-        }
-      }
     }
   }
   function getAllChatElements(scope) {
@@ -403,15 +405,18 @@
     return msgs;
   }
   function requestExistingMessages() {
-    ensureYouTubeLiveChatOpen();
+    if (currentConfig.chatOverlay === "danmaku" || currentConfig.chatOverlay === "off") {
+      return;
+    }
     function doFetch() {
       const allExisting = queryAllLiveChatMessages();
       if (allExisting && allExisting.length > 0) {
-        const recent = allExisting.slice(-15);
+        const recent = allExisting.slice(-3);
         recent.forEach((node, i) => {
           const data = extractMessageData(node);
           if (data) {
-            setTimeout(() => displayChatMessage(data), i * 80);
+            data.isBacklog = true;
+            setTimeout(() => displayChatMessage(data, true), i * 150);
           }
         });
         return true;
@@ -420,9 +425,8 @@
     }
     const found = doFetch();
     if (!found) {
-      setTimeout(doFetch, 500);
-      setTimeout(doFetch, 1200);
-      setTimeout(doFetch, 2500);
+      setTimeout(doFetch, 800);
+      setTimeout(doFetch, 2e3);
     }
     const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]');
     frames.forEach((frame) => {
@@ -490,6 +494,10 @@
     if (danmaku) {
       danmaku.style.display = showDanmaku ? "block" : "none";
       danmaku.innerHTML = "";
+      danmakuQueue.length = 0;
+      laneNextAvailableTime.fill(0);
+      lastDanmakuSpawnTime = Date.now() + 400;
+      lastSpawnedLane = -1;
       if (showDanmaku) {
         stopDanmakuScheduler();
         startDanmakuScheduler();
@@ -530,8 +538,7 @@
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) {
       if (currentConfig.chatOverlay && currentConfig.chatOverlay !== "off") {
-        manageNativeChatVisibility();
-        if (currentConfig.chatOverlay === "danmaku") {
+        if (currentConfig.chatOverlay === "danmaku" || currentConfig.chatOverlay === "both") {
           startDanmakuScheduler();
         }
         requestExistingMessages();
@@ -555,12 +562,13 @@
     function sendExisting(items) {
       const existing = getAllChatElements(items);
       if (existing && existing.length) {
-        const recent = Array.from(existing).slice(-10);
+        const recent = Array.from(existing).slice(-3);
         recent.forEach((node) => {
           const data = extractMessageData(node);
           if (data) {
+            data.isBacklog = true;
             try {
-              window.top.postMessage({ type: "YTC_LIVE_CHAT_MSG", payload: data }, "*");
+              window.top.postMessage({ type: "YTC_LIVE_CHAT_MSG", payload: data, isBacklog: true }, "*");
             } catch (e) {
             }
           }
@@ -642,7 +650,8 @@
     chatOverlayInitialized = true;
     window.addEventListener("message", (e) => {
       if (e.data && e.data.type === "YTC_LIVE_CHAT_MSG" && e.data.payload) {
-        displayChatMessage(e.data.payload);
+        const isBacklog = !!e.data.isBacklog || !!e.data.payload.isBacklog;
+        displayChatMessage(e.data.payload, isBacklog);
       }
     });
     findAndObserveItems();
@@ -1336,7 +1345,7 @@
       panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v3.1.1</span>
+                <span class="ytc-header-badge">v3.1.2</span>
             </div>
 
             <div class="ytc-tabs">

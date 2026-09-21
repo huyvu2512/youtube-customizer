@@ -266,12 +266,15 @@ function setupChatBoxInteractions(box, player) {
 }
 
 // --------------------------------------------------------------------------
-// 3. ĐIỀU PHỐI VÀ QUẢN LÝ LÀN CHẠY DANMAKU (TRÁNH CHỒNG ĐÈ, CHẠY LIÊN TỤC)
+// 3. ĐIỀU PHỐI VÀ QUẢN LÝ LÀN CHẠY DANMAKU (TRÁNH CHỒNG ĐÈ, BẮT BUỘC THƯA THỚT)
 // --------------------------------------------------------------------------
-const TOTAL_LANES = 15;
+const TOTAL_LANES = 10;
 const laneNextAvailableTime = new Array(TOTAL_LANES).fill(0);
 const danmakuQueue = [];
 let danmakuSchedulerTimer = null;
+let lastDanmakuSpawnTime = 0;
+let lastSpawnedLane = -1;
+const MIN_GLOBAL_INTERVAL = 420; // Khoảng cách tối thiểu giữa 2 tin bất kỳ (ms) để luôn THƯA THỚT, không bị dồn cục
 
 function getAvailableLane(now) {
     const freeLanes = [];
@@ -283,9 +286,12 @@ function getAvailableLane(now) {
 
     if (freeLanes.length === 0) return -1;
 
-    // Chọn NGẪU NHIÊN một trong các làn đang rảnh để trải đều toàn bộ khung hình video
-    const randomIndex = Math.floor(Math.random() * freeLanes.length);
-    return freeLanes[randomIndex];
+    // Ưu tiên chọn làn khác với làn vừa bắn để trải đều, không bắn liên tiếp cùng làn
+    const differentLanes = freeLanes.filter(l => l !== lastSpawnedLane);
+    const candidates = differentLanes.length > 0 ? differentLanes : freeLanes;
+
+    const randomIndex = Math.floor(Math.random() * candidates.length);
+    return candidates[randomIndex];
 }
 
 function spawnDanmakuItem(data, laneIndex) {
@@ -294,8 +300,8 @@ function spawnDanmakuItem(data, laneIndex) {
     const item = document.createElement('div');
     item.className = 'ytc-danmaku-item';
 
-    // Dãn cách 15 làn ngẫu nhiên phủ khắp toàn bộ chiều cao video (từ 4% đến 88%)
-    const topPercent = 4 + laneIndex * 5.8;
+    // 10 làn dãn cách rộng rãi từ 6% đến 82% chiều cao video (mỗi làn cách nhau 8.2%), đảm bảo THƯA và không bao giờ bị đè dọc
+    const topPercent = 6 + laneIndex * 8.2;
     item.style.top = `${topPercent}%`;
 
     // Chế độ chat chạy ngang: Không cần @ tên nữa, vào thẳng nội dung!
@@ -305,11 +311,11 @@ function spawnDanmakuItem(data, laneIndex) {
 
     danmakuContainer.appendChild(item);
 
-    // Tính toán thời gian bận của làn để cmt sau KHÔNG BAO GIỜ bị đè/chèn vào cmt trước
+    // Tính toán thời gian bận của làn để cmt sau trên cùng làn KHÔNG BAO GIỜ chạm đuôi cmt trước
     const plainText = (data.messageHtml || '').replace(/<[^>]*>/g, '');
     const textLen = plainText.length || 8;
-    // Dãn cách an toàn: tối thiểu 1800ms, cộng thêm theo độ dài cmt
-    const busyDuration = Math.min(4200, Math.max(1800, textLen * 95 + 1100));
+    // Dãn cách an toàn trên cùng 1 làn: tối thiểu 3200ms
+    const busyDuration = Math.min(5500, Math.max(3200, textLen * 110 + 2000));
     laneNextAvailableTime[laneIndex] = Date.now() + busyDuration;
 
     item.addEventListener('animationend', () => item.remove());
@@ -323,18 +329,25 @@ function processDanmakuQueue() {
     if (danmakuQueue.length === 0) return;
 
     const now = Date.now();
-    const lane = getAvailableLane(now);
+    // BẮT BUỘC THƯA: Giữ khoảng cách tối thiểu giữa 2 lần xuất hiện bất kỳ
+    if (now - lastDanmakuSpawnTime < MIN_GLOBAL_INTERVAL) {
+        return;
+    }
 
+    const lane = getAvailableLane(now);
     if (lane !== -1) {
         const nextData = danmakuQueue.shift();
+        lastDanmakuSpawnTime = now;
+        lastSpawnedLane = lane;
         spawnDanmakuItem(nextData, lane);
     }
 
-    // Kiểm soát quá tải (VD 1 phút 100-200 cmt):
-    // Giữ tối đa 25 cmt mới nhất trong hàng đợi để vừa cập nhật mới nhất vừa không bị chèn
-    if (danmakuQueue.length > 25) {
-        while (danmakuQueue.length > 20) {
-            // Ưu tiên giữ lại Super Chat hoặc tin nhắn hội viên, lọc bớt cmt thường cũ
+    // Kiểm soát quá tải (khi livestream đông người chat như 100-200 cmt/phút):
+    // Giữ tối đa 12 cmt trong hàng đợi, tự động lọc bớt các cmt thường cũ
+    // để cmt luôn mới nhất theo thời gian thực mà không bao giờ bị nghẽn hay dồn ứ
+    if (danmakuQueue.length > 12) {
+        while (danmakuQueue.length > 8) {
+            // Ưu tiên giữ lại Super Chat hoặc tin nhắn hội viên, lọc bớt cmt thường
             const idx = danmakuQueue.findIndex(d => !d.authorClass && !d.messageHtml.includes('purchase-amount'));
             if (idx !== -1) {
                 danmakuQueue.splice(idx, 1);
@@ -347,8 +360,8 @@ function processDanmakuQueue() {
 
 function startDanmakuScheduler() {
     if (!danmakuSchedulerTimer) {
-        // Chạy đều đặn mỗi 70ms: nhịp nhàng, liên tục, không bao giờ bị dừng 2s ngắt quãng
-        danmakuSchedulerTimer = setInterval(processDanmakuQueue, 70);
+        // Chạy kiểm tra mỗi 50ms để bắt nhịp ngay khi hết cooldown MIN_GLOBAL_INTERVAL
+        danmakuSchedulerTimer = setInterval(processDanmakuQueue, 50);
     }
 }
 
@@ -359,6 +372,8 @@ function stopDanmakuScheduler() {
     }
     danmakuQueue.length = 0;
     laneNextAvailableTime.fill(0);
+    lastDanmakuSpawnTime = 0;
+    lastSpawnedLane = -1;
 }
 
 // --------------------------------------------------------------------------
@@ -415,8 +430,10 @@ export function extractMessageData(node) {
     };
 }
 
-export function displayChatMessage(data) {
+export function displayChatMessage(data, isBacklog = false) {
     if (!data || !currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') return;
+
+    const msgIsBacklog = isBacklog || data.isBacklog || false;
 
     if (isDuplicateMessage(data.id, data.author, data.messageHtml)) return;
 
@@ -426,7 +443,9 @@ export function displayChatMessage(data) {
     const showStreamer = currentConfig.chatOverlay === 'streamer' || currentConfig.chatOverlay === 'both';
 
     // Chế độ 1: Danmaku chạy ngang (Đưa vào hàng đợi điều phối thông minh)
-    if (showDanmaku && danmakuContainer) {
+    // BẮT BUỘC: Tin nhắn cũ (backlog lúc mới bật/kết nối iframe) KHÔNG BAO GIỜ bắn vào Danmaku!
+    // Tránh hoàn toàn việc vừa bật lên là bị dồn cục cả đống chữ đè lên nhau.
+    if (showDanmaku && !msgIsBacklog && danmakuContainer) {
         danmakuQueue.push(data);
         startDanmakuScheduler();
     }
@@ -435,6 +454,9 @@ export function displayChatMessage(data) {
     if (showStreamer) {
         const msgContainer = streamerMessages || document.querySelector('#ytc-streamer-box .ytc-box-messages');
         if (!msgContainer) return;
+
+        // Nếu là backlog mà trong khung đã có >= 3 tin thì không nhồi thêm
+        if (msgIsBacklog && msgContainer.children.length >= 3) return;
 
         // Xóa thông báo loading nếu có
         const loading = msgContainer.querySelector('.ytc-box-loading');
@@ -519,16 +541,21 @@ function queryAllLiveChatMessages() {
 }
 
 export function requestExistingMessages() {
-    ensureYouTubeLiveChatOpen();
+    // Nếu chỉ bật Danmaku thì KHÔNG nạp tin nhắn cũ để tránh dồn cục lúc đầu bật!
+    if (currentConfig.chatOverlay === 'danmaku' || currentConfig.chatOverlay === 'off') {
+        return;
+    }
 
     function doFetch() {
         const allExisting = queryAllLiveChatMessages();
         if (allExisting && allExisting.length > 0) {
-            const recent = allExisting.slice(-15);
+            // Chỉ nạp tối đa 3 tin gần nhất cho khung nổi
+            const recent = allExisting.slice(-3);
             recent.forEach((node, i) => {
                 const data = extractMessageData(node);
                 if (data) {
-                    setTimeout(() => displayChatMessage(data), i * 80);
+                    data.isBacklog = true;
+                    setTimeout(() => displayChatMessage(data, true), i * 150);
                 }
             });
             return true;
@@ -541,9 +568,8 @@ export function requestExistingMessages() {
 
     // Nếu chưa có (chat đang tải hoặc bung ra), thử lại nhiều mốc thời gian
     if (!found) {
-        setTimeout(doFetch, 500);
-        setTimeout(doFetch, 1200);
-        setTimeout(doFetch, 2500);
+        setTimeout(doFetch, 800);
+        setTimeout(doFetch, 2000);
     }
 
     // Gửi postMessage tới iframe nếu có
@@ -630,6 +656,10 @@ export function updateChatOverlayVisibility() {
     if (danmaku) {
         danmaku.style.display = showDanmaku ? 'block' : 'none';
         danmaku.innerHTML = '';
+        danmakuQueue.length = 0;
+        laneNextAvailableTime.fill(0);
+        lastDanmakuSpawnTime = Date.now() + 400; // Đệm thời gian để cmt đầu tiên xuất hiện tự nhiên
+        lastSpawnedLane = -1;
         if (showDanmaku) {
             stopDanmakuScheduler();
             startDanmakuScheduler();
@@ -675,8 +705,7 @@ export function updateChatOverlayVisibility() {
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
         if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
-            manageNativeChatVisibility();
-            if (currentConfig.chatOverlay === 'danmaku') {
+            if (currentConfig.chatOverlay === 'danmaku' || currentConfig.chatOverlay === 'both') {
                 startDanmakuScheduler();
             }
             requestExistingMessages();
@@ -702,11 +731,13 @@ export function initIframeChatSender() {
     function sendExisting(items) {
         const existing = getAllChatElements(items);
         if (existing && existing.length) {
-            const recent = Array.from(existing).slice(-10);
+            // Đánh dấu isBacklog: true để Danmaku bỏ qua hoàn toàn, chỉ gửi tối đa 3 tin cho khung nổi nếu cần
+            const recent = Array.from(existing).slice(-3);
             recent.forEach((node) => {
                 const data = extractMessageData(node);
                 if (data) {
-                    try { window.top.postMessage({ type: 'YTC_LIVE_CHAT_MSG', payload: data }, '*'); } catch (e) {}
+                    data.isBacklog = true;
+                    try { window.top.postMessage({ type: 'YTC_LIVE_CHAT_MSG', payload: data, isBacklog: true }, '*'); } catch (e) {}
                 }
             });
         }
@@ -805,7 +836,8 @@ export function initChatOverlay() {
     // 1. Lắng nghe tin nhắn từ iframe gửi sang qua postMessage
     window.addEventListener('message', (e) => {
         if (e.data && e.data.type === 'YTC_LIVE_CHAT_MSG' && e.data.payload) {
-            displayChatMessage(e.data.payload);
+            const isBacklog = !!e.data.isBacklog || !!e.data.payload.isBacklog;
+            displayChatMessage(e.data.payload, isBacklog);
         }
     });
 

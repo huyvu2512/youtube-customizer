@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.1.1-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.1.2-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,19 +25,17 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.1.1** nâng cấp:
-- **Chạy ngầm Live Chat độc lập bằng Video ID (Tắt gốc vẫn chạy):**
-  - Khi người dùng đóng hoặc ẩn khung chat gốc YouTube, extension tự động khởi tạo luồng ngầm độc lập dựa trên ID video để thu thập tin nhắn trực tiếp mà không cần can thiệp hay ép mở thanh chat mặc định của YouTube.
-  - Người dùng có thể thoải mái đóng/mở thanh chat YouTube tùy ý mà Danmaku và Khung nổi vẫn hoạt động liên tục.
-- **Sửa toàn diện Khung nổi Streamer (Streamer Box):**
-  - Tự động đặt ở chính giữa khung video khi kích hoạt để người dùng nhận biết ngay lập tức.
-  - Hiển thị thông báo trạng thái kết nối tức thì khi vừa bật, loại bỏ hiện tượng khung chat rỗng không hiển thị gì.
-  - Giao diện kính mờ HUD hiện đại với viền sáng rõ nét, tự động căn chỉnh tọa độ chống tràn màn hình khi thay đổi kích thước cửa sổ hoặc xem toàn màn hình (Fullscreen).
-- **Thêm chế độ hiển thị "Cả hai":**
-  - Cho phép bật đồng thời cả chữ chạy ngang Danmaku lẫn Khung nổi Streamer trên màn hình video.
-- **Kế thừa các tối ưu của v3.1.0 & v3.0.3:**
-  - Tính năng Tự động trực tiếp (Auto Live) giữ mốc thời gian thực khi luồng phát bị chậm hoặc chuyển tab.
-  - Tối ưu triệt để RAM & CPU với observer đơn điểm trên `#items`.
+Phiên bản **v3.1.2** nâng cấp:
+- **Tối ưu triệt để khoảng cách Danmaku (Bắt buộc thưa thớt, không bị dồn cục):**
+  - Loại bỏ hoàn toàn việc nạp danh sách tin nhắn cũ (backlog) vào Danmaku lúc mới bật hoặc khi kết nối luồng chat ngầm. Chữ chạy ngang bắt đầu sạch sẽ từ các bình luận mới theo thời gian thực.
+  - Thiết lập khoảng cách thời gian tối thiểu giữa 2 bình luận bất kỳ (Global Cooldown 420ms) để các dòng chữ không bao giờ xuất hiện đồng loạt tạo thành bức tường chữ.
+  - Phân bổ 10 làn chạy dãn cách rộng rãi (8.2% chiều cao màn hình mỗi làn), đảm bảo chữ không bao giờ dính sát nhau theo chiều dọc.
+  - Tự động lọc bớt bình luận cũ khi luồng livestream có lượng chat quá dồn dập (trên 100 cmt/phút) để giữ bình luận luôn cập nhật mới nhất mà màn hình vẫn thoáng đãng, dễ đọc.
+- **Kế thừa các tính năng nổi bật từ v3.1.1 & v3.1.0:**
+  - Chạy ngầm Live Chat độc lập bằng Video ID (tắt khung chat gốc YouTube vẫn chạy bình thường).
+  - Khung nổi Streamer tự căn giữa, có giao diện kính mờ và kéo thả vị trí.
+  - Hỗ trợ chế độ hiển thị Cả hai (vừa Danmaku vừa Khung nổi).
+  - Tính năng Tự động trực tiếp (Auto Live) chống trễ luồng phát.
 - **Kế thừa các tối ưu của v2.9.9.1 & v2.9.8:**
   - Tách riêng module chat.js chuyên biệt, nạp tin nhắn song song qua postMessage và DOM hook.
   - Kích hoạt hiệu ứng tua mặc định của YouTube cho Numpad 4/6 và A/D.
