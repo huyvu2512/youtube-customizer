@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.1.7
-// @description  YouTube Customizer v3.1.7 — Tự động tắt Live Chat khi về trang chủ/chuyển video, chống tự đóng menu dropdown trong chat.
+// @version      3.1.8
+// @description  YouTube Customizer v3.1.8 — Hướng dẫn cài đặt lần đầu (onboarding tooltip), mặc định tắt hết tính năng và lưu cache bền bỉ.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

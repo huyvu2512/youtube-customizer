@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.1.7-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.1.8-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,19 +25,21 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.1.7** nâng cấp:
-- **Tự động tắt Live Chat triệt để khi rời video hoặc về trang chủ:**
-  - Bổ sung hàm đồng bộ trạng thái giao diện syncPanelState() được kích hoạt ngay khi mở menu cài đặt, khi chuyển video (yt-navigate-start/yt-navigate-finish) và khi quay về trang chủ (popstate, yt-page-data-updated).
-  - Đảm bảo khi người dùng tắt video, quay về trang chủ hoặc tải lại trang, nút Live Chat trên menu luôn hiển thị đúng trạng thái "Tắt", không bao giờ bị lưu sai trạng thái "Nổi" từ video trước.
-- **Chống tự động đóng/tắt menu dropdown trong Live Chat:**
-  - Tự động nhận diện khi người dùng đang mở dropdown lựa chọn (như menu "Tin nhắn hàng đầu / Trò chuyện trực tiếp" hoặc menu 3 chấm tùy chọn).
-  - Tạm dừng hoàn toàn việc click nút unpause hay thay đổi cuộn chuột trong lúc menu đang mở, chấm dứt hiện tượng mở menu lên 1 giây lại tự động bị tắt/đóng mất.
-  - Thêm điều kiện kiểm tra độ hiển thị thực tế của nút unpause (width > 0 && height > 0) và chỉ cuộn khi thanh cuộn bị trễ trên 50px mà không bị hover chuột.
-- **Kế thừa các tính năng nổi bật từ v3.1.6:**
-  - Khung nổi Streamer 10px siêu gọn, đều tăm tắp, không còn lỗi dòng cao dòng thấp do icon emoji.
+Phiên bản **v3.1.8** nâng cấp:
+- **Hướng dẫn cài đặt lần đầu (First-time Onboarding Tooltip):**
+  - Tự động hiển thị khung hướng dẫn kèm hiệu ứng đèn phát sáng (beacon pulse) tại biểu tượng bánh răng cài đặt ở góc trên cùng bên phải khi người dùng cài đặt extension lần đầu.
+  - Giúp người dùng mới dễ dàng nhận biết vị trí menu cài đặt của YouTube Customizer để chủ động kích hoạt các tính năng mong muốn. Khung hướng dẫn sẽ tự động biến mất vĩnh viễn khi người dùng bấm mở menu hoặc bấm "Đã hiểu".
+- **Mặc định tắt toàn bộ tính năng & Lưu cache cài đặt bền bỉ:**
+  - Thiết lập giá trị mặc định cho toàn bộ các tính năng là TẮT (false) khi cài mới.
+  - Người dùng bật bất kỳ tính năng nào sẽ được lưu an toàn vào bộ nhớ cục bộ (localStorage ytc_config_v3), đảm bảo không bao giờ bị mất cài đặt khi cập nhật lên các phiên bản mới trong tương lai.
+  - Riêng tính năng Live Chat vẫn tuân thủ nguyên tắc phiên tạm thời (luôn tự động tắt sau mỗi video hoặc khi F5).
+- **Kế thừa các tính năng nổi bật từ v3.1.7 & v3.1.6:**
+  - Tự động tắt Live Chat triệt để khi rời video hoặc về trang chủ.
+  - Chống tự động đóng/tắt menu dropdown trong Live Chat.
+  - Khung nổi Streamer 10px siêu gọn, đều tăm tắp, không lỗi icon emoji.
   - Tự động cân đối tỷ lệ kích thước chữ khi phóng to toàn màn hình (Responsive Zoom / Fullscreen).
   - Khung chat gốc chạy ngầm off-screen 100% cho cả Live và Replay, khóa vĩnh viễn popup khi Fullscreen.
-  - Tối ưu Auto Live chống dừng/tắt video khi xem lại live cũ và tôn trọng thao tác tua lại của người dùng.
+  - Tối ưu Auto Live chống dừng/tắt video khi xem lại live cũ.
 - **Kế thừa các tính năng nổi bật từ v3.1.5 & v3.1.4:**
   - Khung nổi Streamer bám góc tuyệt đối (CSS Corner Anchor) khi phóng to / thu nhỏ.
   - Danmaku dãn cách thưa thớt (10 làn chạy, cooldown 420ms chống đè chữ, loại bỏ dồn cục lúc đầu bật).

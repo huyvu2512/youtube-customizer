@@ -30,35 +30,39 @@ if (window.self === window.top) {
 // --------------------------------------------------------------------------
 // 1. CẤU HÌNH & LƯU TRỮ (LOCALSTORAGE)
 // --------------------------------------------------------------------------
-export const CONFIG_KEY = 'ytc_config_v2';
+export const CONFIG_KEY = 'ytc_config_v3';
 
 export const DEFAULT_CONFIG = {
     columns: 4,             // 3, 4 hoặc 5 cột (mặc định 4)
-    hideShorts: true,       // Ẩn Shorts hoàn toàn
-    hidePlayables: true,    // Ẩn Chơi game (Playables)
-    hideMembersOnly: true,  // Ẩn mục video Hội viên
-    hideExploreTopics: true,// Ẩn Khám phá các chủ đề khác
-    hideCommunity: true,    // Ẩn bài đăng cộng đồng
-    hideEndscreen: true,    // Ẩn thẻ kết thúc & chú thích
-    hideWatermark: true,    // Ẩn logo hình mờ kênh ở góc video
-    unlockLiveDvr: true,    // Mở khóa tua lại Live Stream
-    chatOverlay: 'off',     // 'off', 'danmaku', 'streamer'
-    chatOverlayHideOnRewind: true, // Tự động ẩn khi tua về quá khứ
-    autoDismissPromos: true,// Tự động đóng banner khuyến mại & thông báo gián đoạn
-    autoLiveSync: true,     // Tự động giữ mốc trực tiếp khi xem Live Stream
-    premiumLogo: true,      // Logo YouTube Premium
-    cleanSearch: true,      // Ẩn video tài trợ / quảng cáo tìm kiếm
-    disableAmbient: true,   // Tắt Ambient Mode (Cinematics)
-    keyboardControls: true, // Phím tắt A-S-D & Numpad
+    hideShorts: false,      // Ẩn Shorts hoàn toàn (mặc định tắt)
+    hidePlayables: false,   // Ẩn Chơi game (Playables) (mặc định tắt)
+    hideMembersOnly: false, // Ẩn mục video Hội viên (mặc định tắt)
+    hideExploreTopics: false,// Ẩn Khám phá các chủ đề khác (mặc định tắt)
+    hideCommunity: false,   // Ẩn bài đăng cộng đồng (mặc định tắt)
+    hideEndscreen: false,   // Ẩn thẻ kết thúc & chú thích (mặc định tắt)
+    hideWatermark: false,   // Ẩn logo hình mờ kênh ở góc video (mặc định tắt)
+    unlockLiveDvr: false,   // Mở khóa tua lại Live Stream (mặc định tắt)
+    chatOverlay: 'off',     // 'off', 'danmaku', 'streamer' (luôn mặc định tắt)
+    chatOverlayHideOnRewind: false, // Tự động ẩn khi tua về quá khứ (mặc định tắt)
+    autoDismissPromos: false,// Tự động đóng banner khuyến mại & thông báo gián đoạn (mặc định tắt)
+    autoLiveSync: false,    // Tự động giữ mốc trực tiếp khi xem Live Stream (mặc định tắt)
+    premiumLogo: false,     // Logo YouTube Premium (mặc định tắt)
+    cleanSearch: false,     // Ẩn video tài trợ / quảng cáo tìm kiếm (mặc định tắt)
+    disableAmbient: false,  // Tắt Ambient Mode (Cinematics) (mặc định tắt)
+    keyboardControls: false,// Phím tắt A-S-D & Numpad (mặc định tắt)
 };
 
 export function loadConfig() {
     try {
         const stored = localStorage.getItem(CONFIG_KEY);
-        const cfg = stored ? Object.assign({}, DEFAULT_CONFIG, JSON.parse(stored)) : Object.assign({}, DEFAULT_CONFIG);
-        // BẮT BUỘC: Live Chat luôn luôn mặc định TẮT khi mở trang / F5!
-        cfg.chatOverlay = 'off';
-        return cfg;
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            const cfg = Object.assign({}, DEFAULT_CONFIG, parsed);
+            // BẮT BUỘC: Live Chat luôn luôn mặc định TẮT sau mỗi video / F5!
+            cfg.chatOverlay = 'off';
+            return cfg;
+        }
+        return Object.assign({}, DEFAULT_CONFIG);
     } catch (e) {
         return Object.assign({}, DEFAULT_CONFIG);
     }
@@ -66,7 +70,8 @@ export function loadConfig() {
 
 export function saveConfig(cfg) {
     try {
-        // Không bao giờ lưu trạng thái bật chat vào localStorage (chỉ bật tạm thời cho video hiện tại)
+        // Lưu cấu hình người dùng bật vào localStorage, không bao giờ mất sau khi update bản mới
+        // (riêng chatOverlay luôn giữ là 'off' trong bộ nhớ dài hạn vì bắt buộc tắt sau mỗi video)
         const toSave = { ...cfg, chatOverlay: 'off' };
         localStorage.setItem(CONFIG_KEY, JSON.stringify(toSave));
     } catch (e) {}

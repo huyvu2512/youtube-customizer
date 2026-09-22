@@ -73,7 +73,7 @@ function createSettingsPanel() {
         panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v3.1.7</span>
+                <span class="ytc-header-badge">v3.1.8</span>
             </div>
 
             <div class="ytc-tabs">
@@ -395,6 +395,71 @@ export function syncPanelState(targetPanel) {
     });
 }
 
+const ONBOARDING_KEY = 'ytc_onboarding_shown';
+
+function setupFirstTimeOnboarding(btn) {
+    if (!btn) return;
+    try {
+        if (localStorage.getItem(ONBOARDING_KEY)) return;
+    } catch (e) { return; }
+
+    if (document.getElementById('ytc-onboarding-tip')) return;
+
+    btn.classList.add('ytc-btn-pulse');
+
+    const tip = document.createElement('div');
+    tip.id = 'ytc-onboarding-tip';
+    tip.innerHTML = safeHTML(`
+        <div class="ytc-onboarding-arrow"></div>
+        <div class="ytc-onboarding-header">
+            <span class="ytc-onboarding-badge">HƯỚNG DẪN</span>
+            <button class="ytc-onboarding-close" title="Đóng">✕</button>
+        </div>
+        <div class="ytc-onboarding-content">
+            <div class="ytc-onboarding-title">
+                <span class="ytc-onboarding-arrows">👉</span> Cài đặt YouTube Customizer ở đây! <span class="ytc-onboarding-arrows">👈</span>
+            </div>
+            <div class="ytc-onboarding-desc">
+                Nhấp vào biểu tượng bánh răng này để bật/tắt các tính năng tùy biến theo nhu cầu của bạn.
+            </div>
+        </div>
+        <div class="ytc-onboarding-footer">
+            <button class="ytc-onboarding-btn">Đã hiểu 👍</button>
+        </div>
+    `);
+
+    document.body.appendChild(tip);
+
+    const updateTipPos = () => {
+        if (!btn.isConnected || !tip.isConnected) return;
+        const rect = btn.getBoundingClientRect();
+        tip.style.top = `${rect.bottom + 12}px`;
+        tip.style.right = `${Math.max(10, window.innerWidth - rect.right - 10)}px`;
+    };
+
+    updateTipPos();
+    window.addEventListener('resize', updateTipPos);
+
+    const dismissOnboarding = () => {
+        try {
+            localStorage.setItem(ONBOARDING_KEY, 'true');
+        } catch (e) {}
+        btn.classList.remove('ytc-btn-pulse');
+        window.removeEventListener('resize', updateTipPos);
+        tip.style.opacity = '0';
+        tip.style.transform = 'translateY(8px)';
+        setTimeout(() => tip.remove(), 250);
+    };
+
+    const okBtn = tip.querySelector('.ytc-onboarding-btn');
+    if (okBtn) okBtn.addEventListener('click', dismissOnboarding);
+
+    const closeBtn = tip.querySelector('.ytc-onboarding-close');
+    if (closeBtn) closeBtn.addEventListener('click', dismissOnboarding);
+
+    btn.addEventListener('click', dismissOnboarding, { once: true });
+}
+
 // --------------------------------------------------------------------------
 // 3. NÚT CÀI ĐẶT BÁNH RĂNG TRÊN MASTHEAD & OBSERVER
 // --------------------------------------------------------------------------
@@ -417,6 +482,7 @@ export function ensureSettingsElements() {
     const panel = createSettingsPanel();
     syncPanelState(panel);
     bindGlobalMenuDismiss();
+    setupFirstTimeOnboarding(btn);
 
     // Gắn sự kiện click và hover cho nút bánh răng DUY NHẤT 1 LẦN
     if (!btn._ytcBound) {
