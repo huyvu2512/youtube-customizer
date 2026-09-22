@@ -126,7 +126,20 @@ export function displayChatMessage(data, isBacklog = false) {
 
     // 1. Danmaku chạy ngang (Đưa vào hàng đợi điều phối thông minh)
     const dContainer = danmakuContainer || document.getElementById('ytc-danmaku-container');
-    if (showDanmaku && (!msgIsBacklog || danmakuQueue.length < 3) && dContainer) {
+    if (showDanmaku && dContainer) {
+        // Nếu là backlog / quét tin cũ lúc mới mở: tối đa 4 tin để chống đè và dính chùm
+        if (msgIsBacklog && danmakuQueue.length >= 4) return;
+
+        // Giới hạn hàng đợi Danmaku không bao giờ vượt quá 6 tin
+        if (danmakuQueue.length >= 6) {
+            const idx = danmakuQueue.findIndex(d => !d.authorClass && !d.messageHtml.includes('purchase-amount'));
+            if (idx !== -1) {
+                danmakuQueue.splice(idx, 1);
+            } else {
+                danmakuQueue.shift();
+            }
+        }
+
         danmakuQueue.push(data);
         startDanmakuScheduler();
     }

@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.15
-// @description  YouTube Customizer v3.2.15 — Tự động ẩn khung trò chuyện trực tiếp và bộ lọc emoji/biểu tượng trong Live Chat.
+// @version      3.2.16
+// @description  YouTube Customizer v3.2.16 — Tối ưu Live Chat Danmaku ngang: chống đè, chống dính chùm khi mới mở chat.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -28,7 +28,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.2.15";
+      APP_VERSION = "3.2.16";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 15s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`;
@@ -805,8 +805,8 @@
       lastSpawnedLane = lane;
       spawnDanmakuItem(nextData, lane);
     }
-    if (danmakuQueue.length > 12) {
-      while (danmakuQueue.length > 8) {
+    if (danmakuQueue.length > 6) {
+      while (danmakuQueue.length > 5) {
         const idx = danmakuQueue.findIndex((d) => !d.authorClass && !d.messageHtml.includes("purchase-amount"));
         if (idx !== -1) {
           danmakuQueue.splice(idx, 1);
@@ -842,7 +842,7 @@
       danmakuSchedulerTimer = null;
       lastDanmakuSpawnTime = 0;
       lastSpawnedLane = -1;
-      MIN_GLOBAL_INTERVAL = 420;
+      MIN_GLOBAL_INTERVAL = 480;
     }
   });
 
@@ -936,7 +936,16 @@
     const showDanmaku = currentConfig.chatOverlay === "danmaku";
     const showStreamer = currentConfig.chatOverlay === "streamer";
     const dContainer = danmakuContainer || document.getElementById("ytc-danmaku-container");
-    if (showDanmaku && (!msgIsBacklog || danmakuQueue.length < 3) && dContainer) {
+    if (showDanmaku && dContainer) {
+      if (msgIsBacklog && danmakuQueue.length >= 4) return;
+      if (danmakuQueue.length >= 6) {
+        const idx = danmakuQueue.findIndex((d) => !d.authorClass && !d.messageHtml.includes("purchase-amount"));
+        if (idx !== -1) {
+          danmakuQueue.splice(idx, 1);
+        } else {
+          danmakuQueue.shift();
+        }
+      }
       danmakuQueue.push(data);
       startDanmakuScheduler();
     }
@@ -1172,21 +1181,22 @@
       const allExisting = queryAllLiveChatMessages();
       if (allExisting && allExisting.length > 0) {
         if (currentConfig.chatOverlay === "streamer") {
-          const recent = allExisting.slice(-8);
+          const recent = allExisting.slice(-6);
           recent.forEach((node, i) => {
             const data = extractMessageData(node);
             if (data) {
               data.isBacklog = true;
-              setTimeout(() => displayChatMessage(data, true), i * 100);
+              setTimeout(() => displayChatMessage(data, true), i * 80);
             }
           });
           return true;
         } else if (currentConfig.chatOverlay === "danmaku") {
-          const recent = allExisting.slice(-3);
+          const recent = allExisting.slice(-4);
           recent.forEach((node, i) => {
             const data = extractMessageData(node);
             if (data) {
-              setTimeout(() => displayChatMessage(data, false), i * 350);
+              data.isBacklog = true;
+              setTimeout(() => displayChatMessage(data, true), i * 500);
             }
           });
           return true;
@@ -1337,7 +1347,7 @@
     function sendExisting(items) {
       const existing = getAllChatElements(items);
       if (existing && existing.length) {
-        const recent = Array.from(existing).slice(-8);
+        const recent = Array.from(existing).slice(-4);
         recent.forEach((node) => {
           const data = extractMessageData(node);
           if (data) {
@@ -1355,11 +1365,30 @@
       items._ytcBoundIframe = true;
       sendExisting(items);
       const obs = new MutationObserver((mutations) => {
+        const selector = "yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, yt-live-chat-paid-sticker-renderer";
+        const newNodes = [];
         for (const m of mutations) {
           for (const node of m.addedNodes) {
-            handleNode(node);
+            if (!node || node.nodeType !== 1) continue;
+            if (node.matches && node.matches(selector)) {
+              newNodes.push(node);
+            } else if (node.querySelectorAll) {
+              const targets = node.querySelectorAll(selector);
+              targets.forEach((t) => newNodes.push(t));
+            }
           }
         }
+        if (newNodes.length === 0) return;
+        const nodesToProcess = newNodes.length > 5 ? newNodes.slice(-4) : newNodes;
+        nodesToProcess.forEach((node) => {
+          const data = extractMessageData(node);
+          if (data) {
+            try {
+              window.top.postMessage({ type: "YTC_LIVE_CHAT_MSG", payload: data }, "*");
+            } catch (e) {
+            }
+          }
+        });
       });
       obs.observe(items, { childList: true });
     }
@@ -1422,32 +1451,36 @@
     }
     return false;
   }
-  function processChatNode(node) {
-    if (!node || node.nodeType !== 1) return;
-    const selector = "yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, yt-live-chat-paid-sticker-renderer";
-    if (node.matches && node.matches(selector)) {
-      const data = extractMessageData(node);
-      if (data) displayChatMessage(data);
-      return;
-    }
-    if (node.querySelectorAll) {
-      const targets = node.querySelectorAll(selector);
-      targets.forEach((t) => {
-        const data = extractMessageData(t);
-        if (data) displayChatMessage(data);
-      });
-    }
-  }
   function observeItemsElement(items) {
     if (!items || items._ytcBoundTop) return;
     items._ytcBoundTop = true;
     const obs = new MutationObserver((mutations) => {
       if (!currentConfig.chatOverlay || currentConfig.chatOverlay === "off") return;
+      const selector = "yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, yt-live-chat-paid-sticker-renderer";
+      const newNodes = [];
       for (const m of mutations) {
         for (const node of m.addedNodes) {
-          processChatNode(node);
+          if (!node || node.nodeType !== 1) continue;
+          if (node.matches && node.matches(selector)) {
+            newNodes.push(node);
+          } else if (node.querySelectorAll) {
+            const targets = node.querySelectorAll(selector);
+            targets.forEach((t) => newNodes.push(t));
+          }
         }
       }
+      if (newNodes.length === 0) return;
+      const nodesToProcess = newNodes.length > 5 ? newNodes.slice(-4) : newNodes;
+      if (newNodes.length > 5) {
+        const discarded = newNodes.slice(0, -4);
+        discarded.forEach((n) => {
+          if (n.id) seenMessageIds.add(n.id);
+        });
+      }
+      nodesToProcess.forEach((node) => {
+        const data = extractMessageData(node);
+        if (data) displayChatMessage(data);
+      });
     });
     obs.observe(items, { childList: true });
   }

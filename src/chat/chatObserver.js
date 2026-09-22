@@ -281,23 +281,24 @@ export function requestExistingMessages() {
         const allExisting = queryAllLiveChatMessages();
         if (allExisting && allExisting.length > 0) {
             if (currentConfig.chatOverlay === 'streamer') {
-                // Nạp tối đa 8 tin gần nhất cho khung nổi
-                const recent = allExisting.slice(-8);
+                // Nạp tối đa 6 tin gần nhất cho khung nổi
+                const recent = allExisting.slice(-6);
                 recent.forEach((node, i) => {
                     const data = extractMessageData(node);
                     if (data) {
                         data.isBacklog = true;
-                        setTimeout(() => displayChatMessage(data, true), i * 100);
+                        setTimeout(() => displayChatMessage(data, true), i * 80);
                     }
                 });
                 return true;
             } else if (currentConfig.chatOverlay === 'danmaku') {
-                // Nạp ngay 3 tin gần nhất cho Danmaku chạy lướt mượt mà, không để màn hình bị trống
-                const recent = allExisting.slice(-3);
+                // Danmaku ngang: chỉ lấy 4 tin mới nhất, giãn cách thời gian để trôi êm ái chống dính chùm
+                const recent = allExisting.slice(-4);
                 recent.forEach((node, i) => {
                     const data = extractMessageData(node);
                     if (data) {
-                        setTimeout(() => displayChatMessage(data, false), i * 350);
+                        data.isBacklog = true;
+                        setTimeout(() => displayChatMessage(data, true), i * 500);
                     }
                 });
                 return true;
@@ -470,7 +471,8 @@ export function initIframeChatSender() {
     function sendExisting(items) {
         const existing = getAllChatElements(items);
         if (existing && existing.length) {
-            const recent = Array.from(existing).slice(-8);
+            // Khi quét tin có sẵn lúc đầu: chỉ lấy 4 tin mới nhất để chống đè và dính chùm
+            const recent = Array.from(existing).slice(-4);
             recent.forEach((node) => {
                 const data = extractMessageData(node);
                 if (data) {
@@ -488,11 +490,32 @@ export function initIframeChatSender() {
         sendExisting(items);
 
         const obs = new MutationObserver((mutations) => {
+            const selector = 'yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, yt-live-chat-paid-sticker-renderer';
+            const newNodes = [];
+
             for (const m of mutations) {
                 for (const node of m.addedNodes) {
-                    handleNode(node);
+                    if (!node || node.nodeType !== 1) continue;
+                    if (node.matches && node.matches(selector)) {
+                        newNodes.push(node);
+                    } else if (node.querySelectorAll) {
+                        const targets = node.querySelectorAll(selector);
+                        targets.forEach(t => newNodes.push(t));
+                    }
                 }
             }
+
+            if (newNodes.length === 0) return;
+
+            // Nếu phát hiện đợt nạp hàng loạt (10-20 tin dính chùm lúc khởi tạo): chỉ lấy 4 tin mới nhất!
+            const nodesToProcess = (newNodes.length > 5) ? newNodes.slice(-4) : newNodes;
+
+            nodesToProcess.forEach(node => {
+                const data = extractMessageData(node);
+                if (data) {
+                    try { window.top.postMessage({ type: 'YTC_LIVE_CHAT_MSG', payload: data }, '*'); } catch (e) {}
+                }
+            });
         });
         obs.observe(items, { childList: true });
     }
@@ -588,11 +611,37 @@ function observeItemsElement(items) {
 
     const obs = new MutationObserver((mutations) => {
         if (!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') return;
+        const selector = 'yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, yt-live-chat-paid-sticker-renderer';
+        const newNodes = [];
+
         for (const m of mutations) {
             for (const node of m.addedNodes) {
-                processChatNode(node);
+                if (!node || node.nodeType !== 1) continue;
+                if (node.matches && node.matches(selector)) {
+                    newNodes.push(node);
+                } else if (node.querySelectorAll) {
+                    const targets = node.querySelectorAll(selector);
+                    targets.forEach(t => newNodes.push(t));
+                }
             }
         }
+
+        if (newNodes.length === 0) return;
+
+        // Nếu phát hiện nạp hàng loạt (10-20 tin dính chùm): chỉ lấy 4 tin mới nhất để chống đè
+        const nodesToProcess = (newNodes.length > 5) ? newNodes.slice(-4) : newNodes;
+
+        if (newNodes.length > 5) {
+            const discarded = newNodes.slice(0, -4);
+            discarded.forEach(n => {
+                if (n.id) seenMessageIds.add(n.id);
+            });
+        }
+
+        nodesToProcess.forEach(node => {
+            const data = extractMessageData(node);
+            if (data) displayChatMessage(data);
+        });
     });
     obs.observe(items, { childList: true });
 }

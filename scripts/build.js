@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.15
-// @description  YouTube Customizer v3.2.15 — Tự động ẩn khung trò chuyện trực tiếp và bộ lọc emoji/biểu tượng trong Live Chat.
+// @version      3.2.16
+// @description  YouTube Customizer v3.2.16 — Tối ưu Live Chat Danmaku ngang: chống đè, chống dính chùm khi mới mở chat.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

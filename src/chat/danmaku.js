@@ -13,7 +13,7 @@ export function setLastDanmakuSpawnTime(t) { lastDanmakuSpawnTime = t; }
 export let lastSpawnedLane = -1;
 export function setLastSpawnedLane(l) { lastSpawnedLane = l; }
 
-const MIN_GLOBAL_INTERVAL = 420; // Khoảng cách tối thiểu giữa 2 tin bất kỳ (ms) để luôn THƯA THỚT
+const MIN_GLOBAL_INTERVAL = 480; // Khoảng cách tối thiểu giữa 2 tin bất kỳ (ms) để luôn THƯA THỚT, chống dính chùm
 
 function getAvailableLane(now) {
     const freeLanes = [];
@@ -86,8 +86,8 @@ function processDanmakuQueue() {
         spawnDanmakuItem(nextData, lane);
     }
 
-    if (danmakuQueue.length > 12) {
-        while (danmakuQueue.length > 8) {
+    if (danmakuQueue.length > 6) {
+        while (danmakuQueue.length > 5) {
             const idx = danmakuQueue.findIndex(d => !d.authorClass && !d.messageHtml.includes('purchase-amount'));
             if (idx !== -1) {
                 danmakuQueue.splice(idx, 1);
