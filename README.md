@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.1.8-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.1.9-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,14 +25,15 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.1.8** nâng cấp:
-- **Hướng dẫn cài đặt lần đầu (First-time Onboarding Tooltip):**
-  - Tự động hiển thị khung hướng dẫn kèm hiệu ứng đèn phát sáng (beacon pulse) tại biểu tượng bánh răng cài đặt ở góc trên cùng bên phải khi người dùng cài đặt extension lần đầu.
-  - Giúp người dùng mới dễ dàng nhận biết vị trí menu cài đặt của YouTube Customizer để chủ động kích hoạt các tính năng mong muốn. Khung hướng dẫn sẽ tự động biến mất vĩnh viễn khi người dùng bấm mở menu hoặc bấm "Đã hiểu".
-- **Mặc định tắt toàn bộ tính năng & Lưu cache cài đặt bền bỉ:**
-  - Thiết lập giá trị mặc định cho toàn bộ các tính năng là TẮT (false) khi cài mới.
-  - Người dùng bật bất kỳ tính năng nào sẽ được lưu an toàn vào bộ nhớ cục bộ (localStorage ytc_config_v3), đảm bảo không bao giờ bị mất cài đặt khi cập nhật lên các phiên bản mới trong tương lai.
-  - Riêng tính năng Live Chat vẫn tuân thủ nguyên tắc phiên tạm thời (luôn tự động tắt sau mỗi video hoặc khi F5).
+Phiên bản **v3.1.9** nâng cấp:
+- **Tối ưu triệt để độ mượt & Loại bỏ giật lag (Zero-Lag Performance):**
+  - Loại bỏ hoàn toàn các hiệu ứng chuyển động lặp vô tận (continuous float animation) và bộ lọc mờ nền (backdrop blur) tại khung tooltip hướng dẫn để loại bỏ triệt để hiện tượng giật lag khung hình khi xem video và livestream.
+  - Sử dụng khung card phẳng với nền tối sắc nét, hiệu ứng xuất hiện nhanh gọn (0.12s) và đóng tức thì.
+- **Loại bỏ toàn bộ biểu tượng emoji:**
+  - Loại bỏ hoàn toàn các ký hiệu biểu cảm (emoji) trong khung hướng dẫn cài đặt lần đầu, mang lại phong cách trực quan tinh giản, thanh lịch và chuyên nghiệp.
+- **Kế thừa các tính năng từ v3.1.8:**
+  - Hướng dẫn cài đặt lần đầu (First-time Onboarding) cho người mới cài extension.
+  - Mặc định tắt toàn bộ tính năng và lưu trữ cấu hình bền bỉ qua localStorage (ytc_config_v3).
 - **Kế thừa các tính năng nổi bật từ v3.1.7 & v3.1.6:**
   - Tự động tắt Live Chat triệt để khi rời video hoặc về trang chủ.
   - Chống tự động đóng/tắt menu dropdown trong Live Chat.

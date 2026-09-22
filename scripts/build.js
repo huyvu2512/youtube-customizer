@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.1.8
-// @description  YouTube Customizer v3.1.8 — Hướng dẫn cài đặt lần đầu (onboarding tooltip), mặc định tắt hết tính năng và lưu cache bền bỉ.
+// @version      3.1.9
+// @description  YouTube Customizer v3.1.9 — Tối ưu triệt để độ mượt (loại bỏ hiệu ứng giật lag), bỏ emoji icon tại tooltip hướng dẫn.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

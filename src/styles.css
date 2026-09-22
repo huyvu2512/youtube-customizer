@@ -1039,20 +1039,17 @@ ytd-watch-flexy[fullscreen] ytd-live-chat-frame {
 #ytc-onboarding-tip {
     position: fixed;
     z-index: 100000;
-    width: 290px;
-    background: rgba(18, 18, 22, 0.96);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 0, 51, 0.5);
-    border-radius: 12px;
-    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 0, 51, 0.25);
+    width: 280px;
+    background: #18181b;
+    border: 1px solid rgba(255, 0, 51, 0.6);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
     color: #fff;
     padding: 12px 14px;
     font-family: Roboto, Arial, sans-serif;
-    animation: ytc-tip-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1), ytc-tip-float 2.5s ease-in-out infinite alternate;
-    transition: opacity 0.25s ease, transform 0.25s ease;
     user-select: none;
     box-sizing: border-box;
+    animation: ytc-fade-in 0.12s ease-out;
 }
 
 .ytc-onboarding-arrow {
@@ -1061,9 +1058,9 @@ ytd-watch-flexy[fullscreen] ytd-live-chat-frame {
     right: 18px;
     width: 10px;
     height: 10px;
-    background: rgba(18, 18, 22, 0.98);
-    border-left: 1px solid rgba(255, 0, 51, 0.5);
-    border-top: 1px solid rgba(255, 0, 51, 0.5);
+    background: #18181b;
+    border-left: 1px solid rgba(255, 0, 51, 0.6);
+    border-top: 1px solid rgba(255, 0, 51, 0.6);
     transform: rotate(45deg);
 }
 
@@ -1088,12 +1085,12 @@ ytd-watch-flexy[fullscreen] ytd-live-chat-frame {
     background: transparent;
     border: none;
     color: #aaa;
-    font-size: 12px;
+    font-size: 13px;
     cursor: pointer;
     padding: 2px 4px;
     line-height: 1;
     border-radius: 4px;
-    transition: color 0.15s;
+    transition: color 0.1s;
 }
 .ytc-onboarding-close:hover {
     color: #fff;
@@ -1105,18 +1102,11 @@ ytd-watch-flexy[fullscreen] ytd-live-chat-frame {
     color: #fff;
     line-height: 1.35;
     margin-bottom: 4px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.ytc-onboarding-arrows {
-    font-size: 14px;
 }
 
 .ytc-onboarding-desc {
-    font-size: 11px;
-    color: #bbb;
+    font-size: 11.5px;
+    color: #ccc;
     line-height: 1.4;
     margin-bottom: 10px;
 }
@@ -1130,55 +1120,15 @@ ytd-watch-flexy[fullscreen] ytd-live-chat-frame {
     background: #ff0033;
     color: #fff;
     border: none;
-    padding: 5px 12px;
-    font-size: 11px;
+    padding: 5px 14px;
+    font-size: 11.5px;
     font-weight: 600;
     border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.15s, transform 0.1s;
+    transition: background-color 0.15s;
 }
 .ytc-onboarding-btn:hover {
     background: #cc0029;
-    transform: scale(1.03);
-}
-
-/* Nút bánh răng nhấp nháy phát sáng khi chưa mở lần đầu */
-#ytc-settings-btn.ytc-btn-pulse {
-    animation: ytc-beacon-pulse 1.8s infinite;
-    position: relative;
-    border-radius: 50%;
-}
-
-@keyframes ytc-beacon-pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(255, 0, 51, 0.8);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(255, 0, 51, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 0, 51, 0);
-    }
-}
-
-@keyframes ytc-tip-enter {
-    from {
-        opacity: 0;
-        transform: translateY(-8px) scale(0.96);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes ytc-tip-float {
-    0% {
-        transform: translateY(0);
-    }
-    100% {
-        transform: translateY(4px);
-    }
 }
 
 
