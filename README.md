@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.2.5-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.2.6-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,13 +25,15 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.2.5** nâng cấp:
-- **Sửa triệt để lỗi Live Chat không chạy trên luồng trực tiếp:**
-  - Loại bỏ hoàn toàn điều kiện kiểm tra sai lệch trên nút `.ytp-live-badge` (nút này không mang thuộc tính disabled trên YouTube hiện đại khiến 100% tin nhắn live trước đó bị chặn đứng).
-  - Chuẩn hóa cơ chế nhận diện Live Head qua `player.isAtLiveHead()` và `video.seekable`: chỉ chặn tin nhắn khi người dùng thực sự tua lùi về quá khứ (>35s) hoặc video đang tạm dừng.
-  - Khi bật Danmaku hoặc Khung nổi Streamer, script tự động nạp ngay các tin nhắn gần nhất để hiển thị tức thì, không bị trống màn hình lúc mới bật.
-  - Tăng cường khả năng nhận diện tin nhắn iframe và DOM lồng nhau (nested renderers).
-- **Kế thừa các tính năng từ v3.2.4:**
+Phiên bản **v3.2.6** hoàn thiện:
+- **Khắc phục 100% tính năng Live Chat (Danmaku & Khung nổi Streamer):**
+  - Tối ưu bộ lọc: Không dựa vào các thuộc tính/hàm dễ sai lệch như `isAtLiveHead()` hay `disabled`. Chỉ tạm ngưng khi video thực sự bị Pause hoặc người dùng chủ động tua lùi quá 45 giây.
+  - Danmaku nạp ngay 3 tin nhắn backlog gần nhất khi vừa bật chế độ "Ngang", hiển thị tức thì chuyển động mượt mà mà không cần chờ tin mới.
+  - Chuẩn hóa hoạt ảnh Danmaku bằng `translate3d(100vw, 0, 0)` -> `translate3d(-100%, 0, 0)`, tương thích hoàn hảo trên mọi kích thước màn hình và chế độ phóng to/toàn màn hình.
+  - Cơ chế bắt tin kép độc lập (Top Window MutationObserver + Iframe Sender) không bị chồng chéo cờ `_ytcBound`.
+  - Tự động tránh nạp trùng 2 iframe chat ngầm nếu trang đã có sẵn khung chat gốc.
+  - Bảo vệ hàm `safeHTML` tránh lỗi crash Trusted Types.
+- **Kế thừa các tính năng từ v3.2.4 & v3.2.5:**
   - Khắc phục triệt để xung đột uBlock Origin (xóa sổ quảng cáo 6s).
   - Tích hợp lá chắn Ad Shield dự phòng.
   - Tái cấu trúc toàn bộ codebase thành các module sạch (`core/`, `features/`, `player/`, `chat/`, `ui/`).

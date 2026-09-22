@@ -739,21 +739,10 @@ html:not([dark]) .ytc-mode-btn.active {
 
 @keyframes ytc-danmaku-slide {
     from {
-        transform: translateX(0);
+        transform: translate3d(0, 0, 0);
     }
     to {
-        transform: translateX(calc(-100% - 100cqi));
-    }
-}
-
-@supports not (container-type: inline-size) {
-    @keyframes ytc-danmaku-slide {
-        from {
-            transform: translateX(0);
-        }
-        to {
-            transform: translateX(calc(-100% - 100vw));
-        }
+        transform: translate3d(calc(-100% - 100vw), 0, 0);
     }
 }
 

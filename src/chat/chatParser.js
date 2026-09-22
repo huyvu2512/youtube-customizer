@@ -95,22 +95,13 @@ export function shouldSuppressLiveChatMessage(isBacklog) {
     if (!isOngoingLive) return false;
 
     // 2. Đối với luồng ĐANG PHÁT TRỰC TIẾP:
-    // Kiểm tra xem người xem có đang ở mốc Live hay đang tua lùi về quá khứ
-    try {
-        if (typeof player.isAtLiveHead === 'function') {
-            const atHead = player.isAtLiveHead();
-            if (atHead === true) return false;
-            if (atHead === false) return true;
-        }
-    } catch (e) {}
-
+    // Chỉ ngưng hiển thị khi người dùng chủ động tua lùi sâu về quá khứ (> 45 giây)
     try {
         if (video.seekable && video.seekable.length > 0) {
             const liveEdge = video.seekable.end(video.seekable.length - 1);
             if (isFinite(liveEdge) && isFinite(video.currentTime)) {
                 const delay = liveEdge - video.currentTime;
-                // Nếu bị trễ hơn 35 giây so với mốc trực tiếp -> đang tua lùi xem quá khứ
-                if (delay > 35) return true;
+                if (delay > 45) return true;
             }
         }
     } catch (e) {}
@@ -132,9 +123,11 @@ export function displayChatMessage(data, isBacklog = false) {
     const showStreamer = currentConfig.chatOverlay === 'streamer';
 
     // 1. Danmaku chạy ngang
-    if (showDanmaku && !msgIsBacklog && (danmakuContainer || document.getElementById('ytc-danmaku-container'))) {
-        danmakuQueue.push(data);
-        startDanmakuScheduler();
+    if (showDanmaku && (danmakuContainer || document.getElementById('ytc-danmaku-container'))) {
+        if (!msgIsBacklog || danmakuQueue.length < 3) {
+            danmakuQueue.push(data);
+            startDanmakuScheduler();
+        }
     }
 
     // 2. Khung nổi Streamer

@@ -2,12 +2,23 @@
 // CORE UTILITIES (DOM, TRUSTED TYPES, TIMING)
 // ==========================================================================
 
-const ytcPolicy = window.trustedTypes?.createPolicy?.('youtubeCustomizerPolicy', {
-    createHTML: (html) => html,
-}) || window.trustedTypes?.defaultPolicy;
+let ytcPolicy = null;
+try {
+    ytcPolicy = window.trustedTypes?.createPolicy?.('youtubeCustomizerPolicy', {
+        createHTML: (html) => html,
+    }) || window.trustedTypes?.defaultPolicy;
+} catch (e) {
+    try {
+        ytcPolicy = window.trustedTypes?.defaultPolicy;
+    } catch (err) {}
+}
 
 export function safeHTML(html) {
-    return ytcPolicy ? ytcPolicy.createHTML(html) : html;
+    try {
+        return ytcPolicy ? ytcPolicy.createHTML(html) : html;
+    } catch (e) {
+        return html;
+    }
 }
 
 export function rafThrottle(fn) {

@@ -193,6 +193,17 @@ export function ensureBackgroundLiveChat() {
     const videoId = getCurrentLiveVideoId();
     if (!videoId) return;
 
+    // Nếu trang đã có iframe chat gốc của YouTube -> không cần tạo iframe ngầm thứ hai
+    const nativeFrame = document.querySelector('iframe#chatframe, ytd-live-chat-frame iframe');
+    if (nativeFrame) {
+        if (bgChatIframe) {
+            bgChatIframe.remove();
+            bgChatIframe = null;
+            currentBgVideoId = null;
+        }
+        return;
+    }
+
     if (bgChatIframe && currentBgVideoId === videoId && document.body.contains(bgChatIframe)) {
         return;
     }
@@ -228,7 +239,7 @@ export function updateChatOverlayVisibility() {
         danmaku.innerHTML = '';
         danmakuQueue.length = 0;
         laneNextAvailableTime.fill(0);
-        setLastDanmakuSpawnTime(Date.now() + 400);
+        setLastDanmakuSpawnTime(0);
         setLastSpawnedLane(-1);
         if (showDanmaku) {
             stopDanmakuScheduler();
@@ -313,8 +324,8 @@ export function initIframeChatSender() {
     }
 
     function attach(items) {
-        if (!items || items._ytcBound) return;
-        items._ytcBound = true;
+        if (!items || items._ytcBoundIframe) return;
+        items._ytcBoundIframe = true;
 
         sendExisting(items);
 
@@ -329,7 +340,7 @@ export function initIframeChatSender() {
     }
 
     function tryFindItems() {
-        const items = document.querySelector('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #chat #items, div#items, #items');
+        const items = document.querySelector('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #chat #items, #items');
         if (items) {
             attach(items);
             return true;
@@ -347,7 +358,7 @@ export function initIframeChatSender() {
 
     window.addEventListener('message', (e) => {
         if (e.data && e.data.type === 'YTC_REQUEST_EXISTING_MSGS') {
-            const items = document.querySelector('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #chat #items, div#items') || document;
+            const items = document.querySelector('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #chat #items, #items') || document;
             if (items) sendExisting(items);
         }
     });
@@ -406,8 +417,8 @@ function processChatNode(node) {
 }
 
 function observeItemsElement(items) {
-    if (!items || items._ytcBound) return;
-    items._ytcBound = true;
+    if (!items || items._ytcBoundTop) return;
+    items._ytcBoundTop = true;
 
     const obs = new MutationObserver((mutations) => {
         if (!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') return;
@@ -421,7 +432,7 @@ function observeItemsElement(items) {
 }
 
 function findAndObserveItems() {
-    const mainItems = document.querySelectorAll('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #items, div#items');
+    const mainItems = document.querySelectorAll('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items');
     mainItems.forEach(items => observeItemsElement(items));
 
     const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]');
@@ -436,7 +447,7 @@ function findAndObserveItems() {
         try {
             const doc = frame.contentDocument || frame.contentWindow?.document;
             if (doc) {
-                const iframeItems = doc.querySelectorAll('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #items, div#items');
+                const iframeItems = doc.querySelectorAll('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #items');
                 iframeItems.forEach(items => observeItemsElement(items));
             }
         } catch (e) {}
