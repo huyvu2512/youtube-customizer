@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.2.3-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.2.4-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,12 +25,17 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.2.3** nâng cấp:
-- **Giữ nguyên Chat gốc khi mở tự nhiên:**
-  - Nếu khung trò chuyện trực tiếp đang được mở tự nhiên từ YouTube (hoặc người dùng bấm "Hiện cuộc trò chuyện" / "Mở bảng điều khiển"), script không can thiệp ẩn đi mà để hiển thị hoàn toàn bình thường ở cả giao diện thường lẫn toàn màn hình (Fullscreen), giúp người dùng thoải mái gõ và tương tác với kênh.
-- **Tự động phóng to 100% Video Fullscreen khi Chat bị ẩn (Xóa sổ vệt đen):**
-  - Khi khung Chat gốc bị ẩn (mặc định tắt hoặc người dùng bấm "Ẩn cuộc trò chuyện"), script vẫn mở ngầm để nạp dữ liệu cho Danmaku / Khung nổi Streamer nhưng giấu triệt để khỏi giao diện.
-  - Đặc biệt khi phóng to toàn màn hình (Fullscreen), toàn bộ container video và player được ép mở rộng 100vw x 100vh, xóa bỏ hoàn toàn khoảng trống màu đen ở cạnh phải màn hình.
+Phiên bản **v3.2.4** nâng cấp:
+- **Khắc phục triệt để xung đột với uBlock Origin (Xóa sổ quảng cáo 6s):**
+  - Gỡ bỏ việc can thiệp vô điều kiện vào `ytInitialPlayerResponse` và `JSON.parse` khi tính năng "Mở khóa tua Live Stream" đang tắt, bảo toàn 100% các scriptlet lọc quảng cáo của uBlock Origin.
+  - Khi tính năng Live DVR được bật, sử dụng cơ chế chained getter/setter bảo toàn tính năng chặn quảng cáo của trình chặn.
+- **Tích hợp lá chắn Ad Shield dự phòng:**
+  - Tự động nhận diện container quảng cáo video (`.ad-showing`), tua nhanh đến hết thời lượng và kích hoạt sự kiện bấm nút bỏ qua (Skip Ad) ngay trong 0.05s.
+- **Tái cấu trúc mã nguồn theo kiến trúc module chuyên sâu:**
+  - Phân tách toàn bộ các file monolithic cũ (>1.000 dòng) thành các module đơn trách nhiệm dưới `src/` (`core/`, `features/`, `player/`, `chat/`, `ui/`), giúp dự án hoạt động ổn định và dễ bảo trì.
+- **Kế thừa các tính năng từ v3.2.3:**
+  - Giữ nguyên Chat gốc khi mở tự nhiên (cả thường lẫn toàn màn hình).
+  - Tự động phóng to 100% Video Fullscreen khi Chat bị ẩn, xóa sổ khoảng trống màu đen.
 - **Kế thừa các tính năng từ v3.2.2:**
 - **Đưa "Tự động trực tiếp (Auto Live)" lên Tab Giao diện:**
   - Chuyển mục Auto Live từ tab Trình phát sang tab Bố cục & Giao diện, đặt liền kề mục Mở khóa tua Live Stream giúp quản lý các thiết lập luồng phát trực quan, thuận tiện hơn.
@@ -178,8 +183,31 @@ youtube-customizer/
 ├── src/
 │   ├── index.js            # Khởi tạo và điều phối vòng đời
 │   ├── styles.css          # Định kiểu CSS toàn bộ giao diện
-│   ├── features.js         # Tập hợp toàn bộ tính năng
-│   └── ui.js               # Biểu tượng và menu 4 tab
+│   ├── core/               # Cấu hình, bộ lưu trữ, tiện ích & icon
+│   │   ├── config.js
+│   │   ├── constants.js
+│   │   └── utils.js
+│   ├── features/           # Bố cục cột, logo, đóng banner & lọc feed
+│   │   ├── grid.js
+│   │   ├── logo.js
+│   │   ├── promos.js
+│   │   └── feedFilter.js
+│   ├── player/             # Trình phát, phím tắt, Auto Live & Ad Shield
+│   │   ├── shortcuts.js
+│   │   ├── fullscreenLock.js
+│   │   ├── autoLive.js
+│   │   ├── liveDvr.js
+│   │   └── adShield.js
+│   ├── chat/               # Live Chat Danmaku & Khung nổi Streamer
+│   │   ├── chatState.js
+│   │   ├── streamerBox.js
+│   │   ├── danmaku.js
+│   │   ├── chatParser.js
+│   │   └── chatObserver.js
+│   └── ui/                 # Menu 4 tab, đồng bộ state & thông báo update
+│       ├── panel.js
+│       ├── sync.js
+│       └── notifier.js
 ├── LICENSE                 # Giấy phép nguồn mở MIT
 ├── README.md               # Tài liệu hướng dẫn sử dụng
 ├── tampermonkey.user.js    # Header nạp Tampermonkey

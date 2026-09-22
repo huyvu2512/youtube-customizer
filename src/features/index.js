@@ -1,4 +1,7 @@
 // ==========================================================================
-// UI SETTINGS PANEL BRIDGE (BACKWARD COMPATIBILITY RE-EXPORTS)
+// FEATURES SUBSYSTEM ENTRY POINT
 // ==========================================================================
-export * from './ui/index.js';
+export * from './grid.js';
+export * from './logo.js';
+export * from './promos.js';
+export * from './feedFilter.js';

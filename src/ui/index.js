@@ -1,4 +1,6 @@
 // ==========================================================================
-// UI SETTINGS PANEL BRIDGE (BACKWARD COMPATIBILITY RE-EXPORTS)
+// UI SUBSYSTEM ENTRY POINT
 // ==========================================================================
-export * from './ui/index.js';
+export * from './sync.js';
+export * from './notifier.js';
+export * from './panel.js';

@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.3
-// @description  YouTube Customizer v3.2.3 — Giữ Chat gốc khi mở, tự động phóng to 100% video Fullscreen khi ẩn Chat, chống vệt đen màn hình.
+// @version      3.2.4
+// @description  YouTube Customizer v3.2.4 — Khắc phục xung đột uBlock Origin, thêm Ad Shield, tái cấu trúc codebase dạng module.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
