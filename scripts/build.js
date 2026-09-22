@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.10
-// @description  YouTube Customizer v3.2.10 — Bỏ icon mod ở khung nổi, sửa lỗi mở Live Chat khi phóng to Fullscreen/Zoom.
+// @version      3.2.11
+// @description  YouTube Customizer v3.2.11 — Hỗ trợ mở/đóng Live Chat toàn màn hình từ thanh nút tác vụ (action bar / engagement panel).
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

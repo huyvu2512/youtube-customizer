@@ -833,13 +833,13 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
    TUYỆT ĐỐI KHÔNG đẩy frame chat gốc ra -9999px để người dùng có thể nhấp mở/đóng bình thường. */
 
 /* 2. Trạng thái ẩn Chat gốc trong giao diện toàn màn hình (FULLSCREEN / PHÓNG TO) khi CHƯA MỞ CHAT */
-/* Triệt tiêu độ rộng side panel bên phải để video tràn 100vw, nhưng TUYỆT ĐỐI KHÔNG set display:none lên frame chat */
-html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #panels-full-bleed-container,
-html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #chat-container,
-html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #panels,
-html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #secondary,
-html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) .ytp-fullscreen:not(.ytp-chat-open) #chat-container,
-html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) .ytp-fullscreen:not(.ytp-chat-open) .ytp-live-chat-panel {
+/* Triệt tiêu độ rộng side panel bên phải để video tràn 100vw khi CHƯA CÓ BẤT KỲ PANEL NÀO ĐƯỢC MỞ */
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #panels-full-bleed-container:not(:has([visibility*="EXPANDED"])),
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #chat-container,
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #panels,
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #secondary,
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) .ytp-fullscreen:not(.ytp-chat-open) #chat-container,
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) .ytp-fullscreen:not(.ytp-chat-open) .ytp-live-chat-panel {
     width: 0 !important;
     min-width: 0 !important;
     max-width: 0 !important;
@@ -850,14 +850,14 @@ html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) .ytp-fullscreen:not(
 }
 
 /* Phóng to toàn bộ các tầng container và movie_player ra 100vw x 100vh để xóa sổ vệt đen khi chat đang đóng */
-html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #player-full-bleed-container,
-html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #full-bleed-container,
-html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #player-container-outer,
-html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #player-container-inner,
-html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #player-container,
-html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #movie_player:not(.ytp-chat-open),
-html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] .html5-video-player:not(.ytp-chat-open),
-html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) .ytp-fullscreen.html5-video-player:not(.ytp-chat-open) {
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-full-bleed-container,
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #full-bleed-container,
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container-outer,
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container-inner,
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container,
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #movie_player:not(.ytp-chat-open),
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) .html5-video-player:not(.ytp-chat-open),
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) .ytp-fullscreen.html5-video-player:not(.ytp-chat-open) {
     width: 100vw !important;
     min-width: 100vw !important;
     max-width: 100vw !important;
@@ -873,9 +873,12 @@ html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) .ytp-fullscreen.html
     transform: none !important;
 }
 
-/* Luôn đảm bảo nút Live Chat trên thanh điều khiển YouTube player hiển thị và bấm được */
+/* Luôn đảm bảo nút Live Chat trên thanh điều khiển YouTube player và action bar hiển thị và bấm được */
 .ytp-live-chat-button,
-.ytp-chat-button {
+.ytp-chat-button,
+[aria-label*="trò chuyện" i],
+[aria-label*="chat" i],
+[target-id*="chat" i] {
     pointer-events: auto !important;
     cursor: pointer !important;
 }
