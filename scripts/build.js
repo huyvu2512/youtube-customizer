@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.1
-// @description  YouTube Customizer v3.2.1 — Mặc định 3 cột chuẩn YouTube, kế thừa cấu hình cũ chống mất setting, sửa lỗi đè cmt nhiều dòng và style chữ đậm/thường.
+// @version      3.2.2
+// @description  YouTube Customizer v3.2.2 — Đưa Auto Live lên tab Giao diện, thông báo cập nhật bản mới từ xa, đa tầng bộ nhớ chống mất cài đặt khi update.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.2.1-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.2.2-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,7 +25,16 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.2.1** nâng cấp:
+Phiên bản **v3.2.2** nâng cấp:
+- **Đưa "Tự động trực tiếp (Auto Live)" lên Tab Giao diện:**
+  - Chuyển mục Auto Live từ tab Trình phát sang tab Bố cục & Giao diện, đặt liền kề mục Mở khóa tua Live Stream giúp quản lý các thiết lập luồng phát trực quan, thuận tiện hơn.
+- **Khung thông báo khi có phiên bản mới từ GitHub:**
+  - Tích hợp cơ chế kiểm tra phiên bản từ xa tự động. Khi phát hiện bản phát hành mới trên GitHub, giao diện sẽ hiển thị thẻ thông báo nổi chuyên dụng với huy hiệu "BẢN MỚI" cùng nút "Cập nhật ngay" để nâng cấp script tức thì mà không gây gián đoạn trải nghiệm xem video.
+- **Bảo vệ cài đặt đa tầng chống mất cấu hình khi update:**
+  - Nâng cấp hệ thống lưu trữ đồng bộ đa nguồn (ytc_config, ytc_config_v3, ytc_config_persistent, sessionStorage) đi kèm dấu thời gian thực (_lastUpdated). Tự động kế thừa và bảo toàn 100% các cài đặt người dùng đã tùy chỉnh qua các phiên bản cập nhật.
+- **Đồng bộ bảng cài đặt chính xác:**
+  - Sửa lỗi định danh phần tử trong hàm syncPanelState, giúp trạng thái các nút gạt và chế độ luôn được đồng bộ chuẩn xác ngay khi mở bảng menu.
+- **Kế thừa các tính năng từ v3.2.1:**
 - **Mặc định 3 cột trang chủ chuẩn YouTube:**
   - Thiết lập giá trị mặc định cho lưới video trang chủ và kênh là 3 cột theo chuẩn nguyên bản của YouTube.
 - **Kế thừa cấu hình đa phiên bản chống mất cài đặt:**

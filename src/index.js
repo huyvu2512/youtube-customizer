@@ -54,24 +54,59 @@ export const DEFAULT_CONFIG = {
 
 export function loadConfig() {
     try {
-        // Tự động kế thừa cấu hình từ mọi phiên bản cũ (ytc_config, ytc_config_v3, ytc_config_v2)
-        // Đảm bảo người dùng update version mới KHÔNG BAO GIỜ bị mất cài đặt cũ!
-        let stored = localStorage.getItem('ytc_config');
-        if (!stored) stored = localStorage.getItem('ytc_config_v3');
-        if (!stored) stored = localStorage.getItem('ytc_config_v2');
+        const safeParse = (str) => {
+            if (!str) return null;
+            try { return JSON.parse(str); } catch (e) { return null; }
+        };
 
-        if (stored) {
-            const parsed = JSON.parse(stored);
-            const cfg = Object.assign({}, DEFAULT_CONFIG, parsed);
-            // BẮT BUỘC: Live Chat luôn luôn mặc định TẮT sau mỗi video / F5!
-            cfg.chatOverlay = 'off';
-            // Lưu sang ytc_config bền vững
-            try {
-                localStorage.setItem('ytc_config', JSON.stringify({ ...cfg, chatOverlay: 'off' }));
-            } catch (e) {}
-            return cfg;
+        const rawMain = localStorage.getItem('ytc_config');
+        const raw3 = localStorage.getItem('ytc_config_v3');
+        const rawPersistent = localStorage.getItem('ytc_config_persistent');
+        const rawBackup = sessionStorage.getItem('ytc_config_backup');
+        const raw2 = localStorage.getItem('ytc_config_v2');
+
+        const candidates = [
+            safeParse(rawMain),
+            safeParse(raw3),
+            safeParse(rawPersistent),
+            safeParse(rawBackup),
+            safeParse(raw2)
+        ].filter(Boolean);
+
+        let merged = Object.assign({}, DEFAULT_CONFIG);
+
+        // Kiểm tra xem có bản ghi nào có timestamp _lastUpdated hay không
+        const timedCandidates = candidates.filter(c => typeof c._lastUpdated === 'number');
+        if (timedCandidates.length > 0) {
+            // Bản lưu mới nhất theo thời gian thực thi của người dùng
+            timedCandidates.sort((a, b) => b._lastUpdated - a._lastUpdated);
+            merged = Object.assign({}, DEFAULT_CONFIG, timedCandidates[0]);
+        } else if (candidates.length > 0) {
+            // Trường hợp cập nhật từ các bản cũ (chưa có timestamp):
+            // Bảo toàn tuyệt đối mọi cài đặt người dùng đã từng bật ở bất kỳ bản nào
+            candidates.forEach(cand => {
+                Object.keys(DEFAULT_CONFIG).forEach(k => {
+                    if (typeof DEFAULT_CONFIG[k] === 'boolean' && cand[k] === true) {
+                        merged[k] = true;
+                    } else if (k === 'columns' && (cand[k] === 4 || cand[k] === 5)) {
+                        merged[k] = cand[k];
+                    }
+                });
+            });
         }
-        return Object.assign({}, DEFAULT_CONFIG);
+
+        // BẮT BUỘC: Live Chat luôn luôn mặc định TẮT sau mỗi video / F5!
+        merged.chatOverlay = 'off';
+
+        const json = JSON.stringify({ ...merged, _lastUpdated: Date.now() });
+        try {
+            localStorage.setItem('ytc_config', json);
+            localStorage.setItem('ytc_config_v3', json);
+            localStorage.setItem('ytc_config_persistent', json);
+            sessionStorage.setItem('ytc_config_backup', json);
+        } catch (e) {}
+
+        return merged;
     } catch (e) {
         return Object.assign({}, DEFAULT_CONFIG);
     }
@@ -79,9 +114,12 @@ export function loadConfig() {
 
 export function saveConfig(cfg) {
     try {
-        const toSave = { ...cfg, chatOverlay: 'off' };
-        localStorage.setItem('ytc_config', JSON.stringify(toSave));
-        localStorage.setItem('ytc_config_v3', JSON.stringify(toSave));
+        const toSave = { ...cfg, chatOverlay: 'off', _lastUpdated: Date.now() };
+        const json = JSON.stringify(toSave);
+        localStorage.setItem('ytc_config', json);
+        localStorage.setItem('ytc_config_v3', json);
+        localStorage.setItem('ytc_config_persistent', json);
+        sessionStorage.setItem('ytc_config_backup', json);
     } catch (e) {}
 }
 

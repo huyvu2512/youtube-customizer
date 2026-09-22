@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.1
-// @description  YouTube Customizer v3.2.1 — Mặc định 3 cột chuẩn YouTube, kế thừa cấu hình cũ chống mất setting, sửa lỗi đè cmt nhiều dòng và style chữ đậm/thường.
+// @version      3.2.2
+// @description  YouTube Customizer v3.2.2 — Đưa Auto Live lên tab Giao diện, thông báo cập nhật bản mới từ xa, đa tầng bộ nhớ chống mất cài đặt khi update.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -1517,7 +1517,7 @@
       panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v3.2.1</span>
+                <span class="ytc-header-badge">v3.2.2</span>
             </div>
 
             <div class="ytc-tabs">
@@ -1571,6 +1571,17 @@
                     </div>
                     <label class="ytc-switch">
                         <input type="checkbox" id="ytc-chk-livedvr" ${currentConfig.unlockLiveDvr ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="autoLiveSync" title="Tự động giữ mốc trực tiếp khi xem Live Stream, chống trễ hình khi mạng lag hoặc chuyển tab">
+                    <div class="ytc-item-left">
+                        ${RADIO_SVG}
+                        <span>Tự động trực tiếp (Auto Live)</span>
+                    </div>
+                    <label class="ytc-switch">
+                        <input type="checkbox" id="ytc-chk-autolive" ${currentConfig.autoLiveSync ? "checked" : ""}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -1703,17 +1714,6 @@
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
-
-                <div class="ytc-item" data-toggle="autoLiveSync" title="Tự động giữ mốc trực tiếp khi xem Live Stream, chống trễ hình khi mạng lag hoặc chuyển tab">
-                    <div class="ytc-item-left">
-                        ${RADIO_SVG}
-                        <span>Tự động trực tiếp (Auto Live)</span>
-                    </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-autolive" ${currentConfig.autoLiveSync ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
             </div>
 
             <!-- TAB 4: PHÍM TẮT & TIỆN ÍCH -->
@@ -1795,7 +1795,7 @@
     return panel;
   }
   function syncPanelState(targetPanel) {
-    const panel = targetPanel || document.getElementById("yt-customizer-panel");
+    const panel = targetPanel || document.getElementById("ytc-settings-panel");
     if (!panel) return;
     const currentMode = currentConfig.chatOverlay || "off";
     panel.querySelectorAll(".ytc-mode-btn").forEach((btn) => {
@@ -1813,42 +1813,37 @@
       colBtn.classList.toggle("active", cols === currentConfig.columns);
     });
   }
-  var CURRENT_VERSION = "3.2.1";
+  var CURRENT_VERSION = "3.2.2";
   var ONBOARDING_KEY = `ytc_onboarding_v${CURRENT_VERSION.replace(/\./g, "_")}`;
-  function setupFirstTimeOnboarding(btn) {
-    if (!btn) return;
-    try {
-      if (localStorage.getItem(ONBOARDING_KEY) === "true") return;
-    } catch (e) {
-      return;
+  var updateCheckInitiated = false;
+  function isNewerVersion(remote, current) {
+    if (!remote || !current) return false;
+    const r = remote.split(".").map((x) => parseInt(x, 10) || 0);
+    const c = current.split(".").map((x) => parseInt(x, 10) || 0);
+    for (let i = 0; i < Math.max(r.length, c.length); i++) {
+      const rPart = r[i] || 0;
+      const cPart = c[i] || 0;
+      if (rPart > cPart) return true;
+      if (rPart < cPart) return false;
     }
-    if (document.getElementById("ytc-onboarding-tip")) {
-      const existingTip = document.getElementById("ytc-onboarding-tip");
-      if (existingTip && btn.isConnected) {
-        const rect = btn.getBoundingClientRect();
-        if (rect.width > 0 && rect.bottom > 0) {
-          existingTip.style.top = `${rect.bottom + 12}px`;
-          existingTip.style.right = `${Math.max(10, window.innerWidth - rect.right - 10)}px`;
-        }
-      }
-      return;
-    }
+    return false;
+  }
+  function showTipCard(btn, { badge, badgeBg, title, desc, btnText, onAction, onClose, tipId = "ytc-onboarding-tip" }) {
+    if (!btn || document.getElementById(tipId)) return;
     const tip = document.createElement("div");
-    tip.id = "ytc-onboarding-tip";
+    tip.id = tipId;
     tip.innerHTML = safeHTML(`
         <div class="ytc-onboarding-arrow"></div>
         <div class="ytc-onboarding-header">
-            <span class="ytc-onboarding-badge">HƯỚNG DẪN</span>
+            <span class="ytc-onboarding-badge"${badgeBg ? ` style="background:${badgeBg};"` : ""}>${badge}</span>
             <button class="ytc-onboarding-close" title="Đóng">✕</button>
         </div>
         <div class="ytc-onboarding-content">
-            <div class="ytc-onboarding-title">Cài đặt YouTube Customizer ở đây</div>
-            <div class="ytc-onboarding-desc">
-                Nhấp vào biểu tượng bánh răng này để bật/tắt các tính năng tùy biến theo nhu cầu của bạn.
-            </div>
+            <div class="ytc-onboarding-title">${title}</div>
+            <div class="ytc-onboarding-desc">${desc}</div>
         </div>
         <div class="ytc-onboarding-footer">
-            <button class="ytc-onboarding-btn">Đã hiểu</button>
+            <button class="ytc-onboarding-btn">${btnText}</button>
         </div>
     `);
     document.body.appendChild(tip);
@@ -1864,19 +1859,123 @@
     setTimeout(updateTipPos, 200);
     setTimeout(updateTipPos, 600);
     setTimeout(updateTipPos, 1500);
-    const dismissOnboarding = () => {
-      try {
-        localStorage.setItem(ONBOARDING_KEY, "true");
-      } catch (e) {
-      }
+    const dismissTip = () => {
       window.removeEventListener("resize", updateTipPos);
       tip.remove();
     };
-    const okBtn = tip.querySelector(".ytc-onboarding-btn");
-    if (okBtn) okBtn.addEventListener("click", dismissOnboarding);
+    const actionBtn = tip.querySelector(".ytc-onboarding-btn");
+    if (actionBtn) {
+      actionBtn.addEventListener("click", () => {
+        if (onAction) onAction();
+        dismissTip();
+      });
+    }
     const closeBtn = tip.querySelector(".ytc-onboarding-close");
-    if (closeBtn) closeBtn.addEventListener("click", dismissOnboarding);
-    btn.addEventListener("click", dismissOnboarding, { once: true });
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => {
+        if (onClose) onClose();
+        dismissTip();
+      });
+    }
+    btn.addEventListener("click", dismissTip, { once: true });
+  }
+  function checkForUpdates(btn) {
+    if (!btn || updateCheckInitiated) return;
+    updateCheckInitiated = true;
+    const CHECK_URL = "https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json";
+    const CACHE_KEY = "ytc_remote_ver_cache";
+    const now = Date.now();
+    const renderUpdateNotification = (remoteVer) => {
+      if (!remoteVer || !isNewerVersion(remoteVer, CURRENT_VERSION)) return false;
+      const dismissedKey = `ytc_dismiss_ver_${remoteVer.replace(/\./g, "_")}`;
+      try {
+        if (localStorage.getItem(dismissedKey) === "true") return false;
+      } catch (e) {
+      }
+      const oldTip = document.getElementById("ytc-onboarding-tip");
+      if (oldTip) oldTip.remove();
+      showTipCard(btn, {
+        badge: "BẢN MỚI",
+        title: `Đã có bản cập nhật mới v${remoteVer}`,
+        desc: `YouTube Customizer v${remoteVer} đã sẵn sàng trên GitHub với các tính năng mới và bản sửa lỗi tối ưu.`,
+        btnText: "Cập nhật ngay",
+        onAction: () => {
+          window.open("https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js", "_blank");
+          try {
+            localStorage.setItem(dismissedKey, "true");
+          } catch (e) {
+          }
+        },
+        onClose: () => {
+          try {
+            localStorage.setItem(dismissedKey, "true");
+          } catch (e) {
+          }
+        }
+      });
+      return true;
+    };
+    try {
+      const cachedRaw = localStorage.getItem(CACHE_KEY);
+      if (cachedRaw) {
+        const cached = JSON.parse(cachedRaw);
+        if (cached && cached.version && now - cached.time < 15 * 60 * 1e3) {
+          if (renderUpdateNotification(cached.version)) return;
+        }
+      }
+    } catch (e) {
+    }
+    fetch(`${CHECK_URL}?t=${now}`).then((res) => res.json()).then((data) => {
+      if (data && data.version) {
+        try {
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ version: data.version, time: Date.now() }));
+        } catch (e) {
+        }
+        renderUpdateNotification(data.version);
+      }
+    }).catch(() => {
+    });
+  }
+  function setupOnboardingAndUpdates(btn) {
+    if (!btn) return;
+    if (document.getElementById("ytc-onboarding-tip")) {
+      const existingTip = document.getElementById("ytc-onboarding-tip");
+      if (existingTip && btn.isConnected) {
+        const rect = btn.getBoundingClientRect();
+        if (rect.width > 0 && rect.bottom > 0) {
+          existingTip.style.top = `${rect.bottom + 12}px`;
+          existingTip.style.right = `${Math.max(10, window.innerWidth - rect.right - 10)}px`;
+        }
+      }
+      return;
+    }
+    checkForUpdates(btn);
+    setTimeout(() => {
+      if (document.getElementById("ytc-onboarding-tip")) return;
+      try {
+        if (localStorage.getItem(ONBOARDING_KEY) === "true") return;
+      } catch (e) {
+        return;
+      }
+      showTipCard(btn, {
+        badge: `PHIÊN BẢN v${CURRENT_VERSION}`,
+        title: "Cài đặt YouTube Customizer ở đây",
+        desc: "Nhấp vào biểu tượng bánh răng này để bật/tắt các tính năng tùy biến theo nhu cầu của bạn.",
+        btnText: "Đã hiểu",
+        onAction: () => {
+          try {
+            localStorage.setItem(ONBOARDING_KEY, "true");
+          } catch (e) {
+          }
+        },
+        onClose: () => {
+          try {
+            localStorage.setItem(ONBOARDING_KEY, "true");
+          } catch (e) {
+          }
+        }
+      });
+    }, 600);
   }
   function ensureSettingsElements() {
     const endContainer = document.querySelector("ytd-masthead #end, #masthead #end, #end.ytd-masthead");
@@ -1894,7 +1993,7 @@
     const panel = createSettingsPanel();
     syncPanelState(panel);
     bindGlobalMenuDismiss();
-    setupFirstTimeOnboarding(btn);
+    setupOnboardingAndUpdates(btn);
     if (!btn._ytcBound) {
       btn._ytcBound = true;
       const updatePosition = () => {
@@ -1974,29 +2073,64 @@
   };
   function loadConfig() {
     try {
-      let stored = localStorage.getItem("ytc_config");
-      if (!stored) stored = localStorage.getItem("ytc_config_v3");
-      if (!stored) stored = localStorage.getItem("ytc_config_v2");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        const cfg = Object.assign({}, DEFAULT_CONFIG, parsed);
-        cfg.chatOverlay = "off";
+      const safeParse = (str) => {
+        if (!str) return null;
         try {
-          localStorage.setItem("ytc_config", JSON.stringify({ ...cfg, chatOverlay: "off" }));
+          return JSON.parse(str);
         } catch (e) {
+          return null;
         }
-        return cfg;
+      };
+      const rawMain = localStorage.getItem("ytc_config");
+      const raw3 = localStorage.getItem("ytc_config_v3");
+      const rawPersistent = localStorage.getItem("ytc_config_persistent");
+      const rawBackup = sessionStorage.getItem("ytc_config_backup");
+      const raw2 = localStorage.getItem("ytc_config_v2");
+      const candidates = [
+        safeParse(rawMain),
+        safeParse(raw3),
+        safeParse(rawPersistent),
+        safeParse(rawBackup),
+        safeParse(raw2)
+      ].filter(Boolean);
+      let merged = Object.assign({}, DEFAULT_CONFIG);
+      const timedCandidates = candidates.filter((c) => typeof c._lastUpdated === "number");
+      if (timedCandidates.length > 0) {
+        timedCandidates.sort((a, b) => b._lastUpdated - a._lastUpdated);
+        merged = Object.assign({}, DEFAULT_CONFIG, timedCandidates[0]);
+      } else if (candidates.length > 0) {
+        candidates.forEach((cand) => {
+          Object.keys(DEFAULT_CONFIG).forEach((k) => {
+            if (typeof DEFAULT_CONFIG[k] === "boolean" && cand[k] === true) {
+              merged[k] = true;
+            } else if (k === "columns" && (cand[k] === 4 || cand[k] === 5)) {
+              merged[k] = cand[k];
+            }
+          });
+        });
       }
-      return Object.assign({}, DEFAULT_CONFIG);
+      merged.chatOverlay = "off";
+      const json = JSON.stringify({ ...merged, _lastUpdated: Date.now() });
+      try {
+        localStorage.setItem("ytc_config", json);
+        localStorage.setItem("ytc_config_v3", json);
+        localStorage.setItem("ytc_config_persistent", json);
+        sessionStorage.setItem("ytc_config_backup", json);
+      } catch (e) {
+      }
+      return merged;
     } catch (e) {
       return Object.assign({}, DEFAULT_CONFIG);
     }
   }
   function saveConfig(cfg) {
     try {
-      const toSave = { ...cfg, chatOverlay: "off" };
-      localStorage.setItem("ytc_config", JSON.stringify(toSave));
-      localStorage.setItem("ytc_config_v3", JSON.stringify(toSave));
+      const toSave = { ...cfg, chatOverlay: "off", _lastUpdated: Date.now() };
+      const json = JSON.stringify(toSave);
+      localStorage.setItem("ytc_config", json);
+      localStorage.setItem("ytc_config_v3", json);
+      localStorage.setItem("ytc_config_persistent", json);
+      sessionStorage.setItem("ytc_config_backup", json);
     } catch (e) {
     }
   }
