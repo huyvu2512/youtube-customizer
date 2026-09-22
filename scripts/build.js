@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.6
-// @description  YouTube Customizer v3.2.6 — Sửa triệt để luồng Live Chat (Danmaku & Khung nổi), khắc phục hoàn toàn lỗi nạp tin và bộ lọc tua lùi.
+// @version      3.2.7
+// @description  YouTube Customizer v3.2.7 — Khôi phục 100% luồng Live Chat (Danmaku & Khung nổi) chuẩn commit a65e44a, khắc phục lỗi mất tin và đồng bộ video.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

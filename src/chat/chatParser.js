@@ -71,50 +71,16 @@ export function extractMessageData(node) {
     };
 }
 
-export function shouldSuppressLiveChatMessage(isBacklog) {
-    if (isBacklog) return false;
-
-    const player = document.querySelector('#movie_player, .html5-video-player');
-    if (!player) return false;
-
-    const video = player.querySelector('video.html5-main-video') || player.querySelector('video');
-    if (!video) return false;
-
-    // 1. Khi video đang tạm dừng -> tạm ngưng nạp tin nhắn mới
-    if (video.paused) return true;
-
-    let isOngoingLive = false;
-    try {
-        if (typeof player.getVideoData === 'function') {
-            const vd = player.getVideoData();
-            if (vd && vd.isLive === true) isOngoingLive = true;
-        }
-    } catch (e) {}
-
-    // Nếu không phải luồng đang live (video thường hoặc Replay live đã kết thúc) -> cho phép hiển thị
-    if (!isOngoingLive) return false;
-
-    // 2. Đối với luồng ĐANG PHÁT TRỰC TIẾP:
-    // Chỉ ngưng hiển thị khi người dùng chủ động tua lùi sâu về quá khứ (> 45 giây)
-    try {
-        if (video.seekable && video.seekable.length > 0) {
-            const liveEdge = video.seekable.end(video.seekable.length - 1);
-            if (isFinite(liveEdge) && isFinite(video.currentTime)) {
-                const delay = liveEdge - video.currentTime;
-                if (delay > 45) return true;
-            }
-        }
-    } catch (e) {}
-
-    return false;
-}
-
 export function displayChatMessage(data, isBacklog = false) {
     if (!data || !currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') return;
 
+    // Khi video đang tạm dừng: không nạp tin nhắn mới
+    const player = document.querySelector('#movie_player, .html5-video-player');
+    const video = player ? player.querySelector('video') : null;
+    if (video && video.paused) return;
+
     const msgIsBacklog = isBacklog || data.isBacklog || false;
 
-    if (shouldSuppressLiveChatMessage(msgIsBacklog)) return;
     if (isDuplicateMessage(data.id, data.author, data.messageHtml)) return;
 
     ensureChatOverlayContainers();
@@ -122,12 +88,11 @@ export function displayChatMessage(data, isBacklog = false) {
     const showDanmaku = currentConfig.chatOverlay === 'danmaku';
     const showStreamer = currentConfig.chatOverlay === 'streamer';
 
-    // 1. Danmaku chạy ngang
-    if (showDanmaku && (danmakuContainer || document.getElementById('ytc-danmaku-container'))) {
-        if (!msgIsBacklog || danmakuQueue.length < 3) {
-            danmakuQueue.push(data);
-            startDanmakuScheduler();
-        }
+    // 1. Danmaku chạy ngang (Đưa vào hàng đợi điều phối thông minh)
+    const dContainer = danmakuContainer || document.getElementById('ytc-danmaku-container');
+    if (showDanmaku && !msgIsBacklog && dContainer) {
+        danmakuQueue.push(data);
+        startDanmakuScheduler();
     }
 
     // 2. Khung nổi Streamer
@@ -135,8 +100,10 @@ export function displayChatMessage(data, isBacklog = false) {
         const msgContainer = streamerMessages || document.querySelector('#ytc-streamer-box .ytc-box-messages');
         if (!msgContainer) return;
 
+        // Nếu là backlog mà trong khung đã có >= 8 tin thì không nhồi thêm
         if (msgIsBacklog && msgContainer.children.length >= 8) return;
 
+        // Xóa thông báo loading nếu có
         const loading = msgContainer.querySelector('.ytc-box-loading');
         if (loading) loading.remove();
 

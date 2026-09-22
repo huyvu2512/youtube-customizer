@@ -110,37 +110,35 @@ function queryAllLiveChatMessages() {
 }
 
 export function requestExistingMessages() {
+    // Nếu chỉ bật Danmaku thì KHÔNG nạp tin nhắn cũ để tránh dồn cục lúc đầu bật!
+    if (currentConfig.chatOverlay !== 'streamer') {
+        return;
+    }
+
     function doFetch() {
         const allExisting = queryAllLiveChatMessages();
         if (allExisting && allExisting.length > 0) {
-            if (currentConfig.chatOverlay === 'streamer') {
-                const recent = allExisting.slice(-8);
-                recent.forEach((node, i) => {
-                    const data = extractMessageData(node);
-                    if (data) {
-                        data.isBacklog = true;
-                        setTimeout(() => displayChatMessage(data, true), i * 100);
-                    }
-                });
-                return true;
-            } else if (currentConfig.chatOverlay === 'danmaku') {
-                const recent = allExisting.slice(-3);
-                recent.forEach((node, i) => {
-                    const data = extractMessageData(node);
-                    if (data) {
-                        setTimeout(() => displayChatMessage(data, false), i * 350);
-                    }
-                });
-                return true;
-            }
+            // Nạp 8 tin gần nhất cho khung nổi để khung không bị trống
+            const recent = allExisting.slice(-8);
+            recent.forEach((node, i) => {
+                const data = extractMessageData(node);
+                if (data) {
+                    data.isBacklog = true;
+                    setTimeout(() => displayChatMessage(data, true), i * 100);
+                }
+            });
+            return true;
         }
         return false;
     }
 
+    // Quét ngay lập tức
     const found = doFetch();
+
+    // Nếu chưa có (chat đang tải hoặc bung ra), thử lại nhiều mốc thời gian
     if (!found) {
-        setTimeout(doFetch, 500);
-        setTimeout(doFetch, 1500);
+        setTimeout(doFetch, 800);
+        setTimeout(doFetch, 2000);
     }
 
     const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]');
@@ -193,17 +191,6 @@ export function ensureBackgroundLiveChat() {
     const videoId = getCurrentLiveVideoId();
     if (!videoId) return;
 
-    // Nếu trang đã có iframe chat gốc của YouTube -> không cần tạo iframe ngầm thứ hai
-    const nativeFrame = document.querySelector('iframe#chatframe, ytd-live-chat-frame iframe');
-    if (nativeFrame) {
-        if (bgChatIframe) {
-            bgChatIframe.remove();
-            bgChatIframe = null;
-            currentBgVideoId = null;
-        }
-        return;
-    }
-
     if (bgChatIframe && currentBgVideoId === videoId && document.body.contains(bgChatIframe)) {
         return;
     }
@@ -239,7 +226,7 @@ export function updateChatOverlayVisibility() {
         danmaku.innerHTML = '';
         danmakuQueue.length = 0;
         laneNextAvailableTime.fill(0);
-        setLastDanmakuSpawnTime(0);
+        setLastDanmakuSpawnTime(Date.now() + 400);
         setLastSpawnedLane(-1);
         if (showDanmaku) {
             stopDanmakuScheduler();
@@ -352,8 +339,16 @@ export function initIframeChatSender() {
         const obs = new MutationObserver(() => {
             if (tryFindItems()) obs.disconnect();
         });
-        obs.observe(document.body || document.documentElement, { childList: true });
+        obs.observe(document.documentElement || document.body, { childList: true, subtree: true });
         setTimeout(() => obs.disconnect(), 20000);
+
+        const pollTimer = setInterval(() => {
+            if (tryFindItems()) {
+                clearInterval(pollTimer);
+                obs.disconnect();
+            }
+        }, 500);
+        setTimeout(() => clearInterval(pollTimer), 20000);
     }
 
     window.addEventListener('message', (e) => {

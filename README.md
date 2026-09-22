@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.2.6-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.2.7-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,14 +25,13 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.2.6** hoàn thiện:
-- **Khắc phục 100% tính năng Live Chat (Danmaku & Khung nổi Streamer):**
-  - Tối ưu bộ lọc: Không dựa vào các thuộc tính/hàm dễ sai lệch như `isAtLiveHead()` hay `disabled`. Chỉ tạm ngưng khi video thực sự bị Pause hoặc người dùng chủ động tua lùi quá 45 giây.
-  - Danmaku nạp ngay 3 tin nhắn backlog gần nhất khi vừa bật chế độ "Ngang", hiển thị tức thì chuyển động mượt mà mà không cần chờ tin mới.
-  - Chuẩn hóa hoạt ảnh Danmaku bằng `translate3d(100vw, 0, 0)` -> `translate3d(-100%, 0, 0)`, tương thích hoàn hảo trên mọi kích thước màn hình và chế độ phóng to/toàn màn hình.
-  - Cơ chế bắt tin kép độc lập (Top Window MutationObserver + Iframe Sender) không bị chồng chéo cờ `_ytcBound`.
-  - Tự động tránh nạp trùng 2 iframe chat ngầm nếu trang đã có sẵn khung chat gốc.
-  - Bảo vệ hàm `safeHTML` tránh lỗi crash Trusted Types.
+Phiên bản **v3.2.7** hoàn thiện:
+- **Khôi phục 100% luồng Live Chat (Danmaku & Khung nổi Streamer) chuẩn commit `a65e44a`:**
+  - Khôi phục iframe ngầm chuyên biệt `bgChatIframe` (`live_chat?v=...`) luôn hoạt động song song khi bật Overlay, đảm bảo Tampermonkey hook và postMessage tin nhắn 100% thời gian thực.
+  - Xóa bỏ hoàn toàn các bộ lọc sai lệch (seekable/delay) từng chặn oan tin nhắn trực tiếp.
+  - Đảm bảo dừng nạp tin khi video tạm dừng (`video.paused`), không làm trôi dạt nội dung.
+  - Khôi phục hoạt ảnh Danmaku chuẩn container (`calc(-100% - 100cqi)` và fallback `calc(-100% - 100vw)`), tốc độ lướt chữ chuẩn xác trên mọi tỉ lệ khung hình và chế độ toàn màn hình.
+  - Nâng cấp bộ lắng nghe MutationObserver bên trong iframe với `{ childList: true, subtree: true }` cùng polling dự phòng, bắt dính tin nhắn ngay lập tức.
 - **Kế thừa các tính năng từ v3.2.4 & v3.2.5:**
   - Khắc phục triệt để xung đột uBlock Origin (xóa sổ quảng cáo 6s).
   - Tích hợp lá chắn Ad Shield dự phòng.
