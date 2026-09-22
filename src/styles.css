@@ -883,6 +883,51 @@ html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [
     cursor: pointer !important;
 }
 
+/* ==========================================================================
+   TÍNH NĂNG ẨN KHUNG LIVE CHAT GỐC CỦA YOUTUBE (hideNativeLiveChat)
+   - Đẩy khung chat gốc ra ngoài màn hình off-screen thay vì display:none để iframe vẫn chạy ngầm
+   - Ẩn triệt để tất cả các nút bật/tắt chat, teaser mở bảng điều khiển, nút trên thanh player
+   ========================================================================== */
+html.ytc-hide-native-chat ytd-live-chat-frame#chat,
+body.ytc-hide-native-chat ytd-live-chat-frame#chat,
+html.ytc-hide-native-chat #chat.ytd-watch-flexy,
+body.ytc-hide-native-chat #chat.ytd-watch-flexy {
+    position: fixed !important;
+    top: -9999px !important;
+    left: -9999px !important;
+    width: 0 !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+
+html.ytc-hide-native-chat #chat-container,
+body.ytc-hide-native-chat #chat-container {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    overflow: hidden !important;
+}
+
+html.ytc-hide-native-chat .ytp-live-chat-button,
+body.ytc-hide-native-chat .ytp-live-chat-button,
+html.ytc-hide-native-chat .ytp-chat-button,
+body.ytc-hide-native-chat .ytp-chat-button,
+html.ytc-hide-native-chat #show-hide-button,
+body.ytc-hide-native-chat #show-hide-button,
+html.ytc-hide-native-chat #chat-teaser,
+body.ytc-hide-native-chat #chat-teaser,
+html.ytc-hide-native-chat ytd-live-chat-frame #teaser,
+body.ytc-hide-native-chat ytd-live-chat-frame #teaser,
+html.ytc-hide-native-chat ytd-engagement-panel-section-list-renderer[target-id*="chat" i],
+body.ytc-hide-native-chat ytd-engagement-panel-section-list-renderer[target-id*="chat" i],
+html.ytc-hide-native-chat [target-id="engagement-panel-live-chat"],
+body.ytc-hide-native-chat [target-id="engagement-panel-live-chat"] {
+    display: none !important;
+}
+
+
 
 /* KHUNG LIVE CHAT BOX (NỀN TRONG SUỐT HUD OVERLAY CHO STREAMER) */
 #ytc-streamer-box {

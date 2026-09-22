@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.14
-// @description  YouTube Customizer v3.2.14 — Nhận diện chính xác Live DVR và đảm bảo mở phiên live luôn bắt đúng mốc trực tiếp mới nhất.
+// @version      3.2.15
+// @description  YouTube Customizer v3.2.15 — Tự động ẩn khung trò chuyện trực tiếp và bộ lọc emoji/biểu tượng trong Live Chat.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

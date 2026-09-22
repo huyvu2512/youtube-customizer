@@ -22,6 +22,8 @@ export const DEFAULT_CONFIG = {
     cleanSearch: false,     // Ẩn video tài trợ / quảng cáo tìm kiếm (mặc định tắt)
     disableAmbient: false,  // Tắt Ambient Mode (Cinematics) (mặc định tắt)
     keyboardControls: false,// Phím tắt A-S-D & Numpad (mặc định tắt)
+    hideNativeLiveChat: false, // Tự động ẩn khung trò chuyện trực tiếp mặc định (mặc định tắt)
+    hideChatEmojis: false,     // Ẩn biểu tượng cảm xúc (Emoji/Sticker) trong Live Chat (mặc định tắt)
 };
 
 export function loadConfig() {
@@ -73,6 +75,7 @@ export function applyConfigToRoot() {
     root.classList.toggle('ytc-premium-logo', !!currentConfig.premiumLogo);
     root.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
     root.classList.toggle('ytc-disable-ambient', !!currentConfig.disableAmbient);
+    root.classList.toggle('ytc-hide-native-chat', !!currentConfig.hideNativeLiveChat);
     root.setAttribute('data-ytc-cols', String(currentConfig.columns || 3));
     root.setAttribute('data-ytc-chat', currentConfig.chatOverlay || 'off');
 
@@ -88,6 +91,7 @@ export function applyConfigToRoot() {
         document.body.classList.toggle('ytc-premium-logo', !!currentConfig.premiumLogo);
         document.body.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
         document.body.classList.toggle('ytc-disable-ambient', !!currentConfig.disableAmbient);
+        document.body.classList.toggle('ytc-hide-native-chat', !!currentConfig.hideNativeLiveChat);
         document.body.setAttribute('data-ytc-cols', String(currentConfig.columns || 3));
         document.body.setAttribute('data-ytc-chat', currentConfig.chatOverlay || 'off');
     }

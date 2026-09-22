@@ -34,8 +34,9 @@ export function resetChatCollapseState() {
 }
 
 export function autoCollapseNativeChatIfOpen() {
-    if (!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') return;
-    if (userManuallyOpenedChat) return;
+    const shouldCollapse = (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') || !!currentConfig.hideNativeLiveChat;
+    if (!shouldCollapse) return;
+    if (userManuallyOpenedChat && !currentConfig.hideNativeLiveChat) return;
     if (hasAutoCollapsedChatForCurrentVideo) return;
 
     const chatFrame = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy');
@@ -45,7 +46,6 @@ export function autoCollapseNativeChatIfOpen() {
     const isCollapsed = chatFrame.hasAttribute('collapsed') || (watchFlexy && watchFlexy.hasAttribute('chat-collapsed'));
     if (!isCollapsed) {
         // Chat đang mở trên giao diện thường -> nhấp nút đóng chính thức của YouTube để chuyển sang dạng thu gọn
-        // Giúp giao diện gọn gàng "giả vờ như tắt" (hiện thẻ teaser "Mở bảng điều khiển"), Danmaku vẫn bay và người dùng bấm vẫn vào được
         const hideBtn = chatFrame.querySelector(
             '#show-hide-button button, ' +
             '#close-button button, ' +
@@ -216,7 +216,11 @@ export function setupChatToggleListeners() {
 }
 
 export function syncNativeChatState() {
-    if (!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') {
+    if (currentConfig.hideNativeLiveChat) {
+        autoCollapseNativeChatIfOpen();
+    }
+
+    if ((!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') && !currentConfig.hideNativeLiveChat) {
         setNativeChatHiddenState(false);
         return;
     }
@@ -224,7 +228,7 @@ export function syncNativeChatState() {
     const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen, .html5-video-player.ytp-fullscreen'));
 
     if (isFs) {
-        if (!userManuallyOpenedChat) {
+        if (!userManuallyOpenedChat || currentConfig.hideNativeLiveChat) {
             setNativeChatHiddenState(true);
         } else {
             setNativeChatHiddenState(false);
@@ -633,10 +637,10 @@ export function initChatOverlay() {
 
         if (!isFs) {
             setNativeChatHiddenState(false);
-        } else if (isOpen || userManuallyOpenedChat) {
+        } else if ((isOpen || userManuallyOpenedChat) && !currentConfig.hideNativeLiveChat) {
             userManuallyOpenedChat = true;
             setNativeChatHiddenState(false);
-        } else if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
+        } else if ((currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') || currentConfig.hideNativeLiveChat) {
             setNativeChatHiddenState(true);
         }
         syncPlayerFullscreenSize();
@@ -680,6 +684,9 @@ export function initChatOverlay() {
     findAndObserveItems();
 
     setInterval(() => {
+        if (currentConfig.hideNativeLiveChat) {
+            autoCollapseNativeChatIfOpen();
+        }
         if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
             findAndObserveItems();
             ensureNativeLiveChatRunning();

@@ -6,8 +6,37 @@ import { safeHTML, setElementHTML } from '../core/utils.js';
 import { isDuplicateMessage, ensureChatOverlayContainers, danmakuContainer, streamerMessages } from './chatState.js';
 import { danmakuQueue, startDanmakuScheduler } from './danmaku.js';
 
+const UNICODE_EMOJI_REGEX = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{200D}\u{FE0F}]/gu;
+
+export function filterEmojisFromMessage(messageEl) {
+    if (!messageEl) return { html: '', text: '', isEmpty: true };
+
+    const clone = messageEl.cloneNode(true);
+    const images = clone.querySelectorAll('img');
+    images.forEach(img => img.remove());
+
+    let cleanedHtml = clone.innerHTML;
+    let textOnly = clone.textContent || '';
+
+    cleanedHtml = cleanedHtml.replace(UNICODE_EMOJI_REGEX, '').trim();
+    textOnly = textOnly.replace(UNICODE_EMOJI_REGEX, '').trim();
+
+    cleanedHtml = cleanedHtml.replace(/\s{2,}/g, ' ');
+    textOnly = textOnly.replace(/\s{2,}/g, ' ');
+
+    return {
+        html: cleanedHtml,
+        text: textOnly,
+        isEmpty: textOnly.length === 0
+    };
+}
+
 export function extractMessageData(node) {
     if (!node || node.nodeType !== 1) return null;
+
+    if (currentConfig.hideChatEmojis && node.tagName && node.tagName.toLowerCase().includes('sticker')) {
+        return null; // Ẩn hoàn toàn nhãn dán sticker chỉ có hình ảnh
+    }
 
     const authorEl = node.querySelector('#author-name');
     const rawAuthor = authorEl ? authorEl.textContent.trim() : '';
@@ -24,7 +53,6 @@ export function extractMessageData(node) {
     const avatarSrc = avatarEl ? (avatarEl.src || avatarEl.getAttribute('src') || '') : '';
 
     let streamerBadges = [];
-
 
     const badgeEls = Array.from(node.querySelectorAll('#chat-badges yt-live-chat-author-badge-renderer'));
     for (const b of badgeEls) {
@@ -44,12 +72,22 @@ export function extractMessageData(node) {
     let messageHtml = messageEl ? messageEl.innerHTML : '';
 
     const purchaseEl = node.querySelector('#purchase-amount');
+    const headerSubtext = node.querySelector('#header-subtext');
+    const isPaid = !!((purchaseEl && purchaseEl.textContent.trim()) || (headerSubtext && headerSubtext.textContent.trim()));
+
+    if (currentConfig.hideChatEmojis && messageEl) {
+        const filtered = filterEmojisFromMessage(messageEl);
+        if (filtered.isEmpty && !isPaid) {
+            // Bình luận thường độc icon -> ẩn hẳn không hiện!
+            return null;
+        }
+        messageHtml = filtered.html;
+    }
     if (purchaseEl && purchaseEl.textContent.trim()) {
         const amount = purchaseEl.textContent.trim();
         messageHtml = `<strong>[${amount}]</strong> ${messageHtml}`;
     }
 
-    const headerSubtext = node.querySelector('#header-subtext');
     if (headerSubtext && headerSubtext.textContent.trim()) {
         messageHtml = `<em>${headerSubtext.textContent.trim()}</em> ${messageHtml}`;
     }
