@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.1.9-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.2.0-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,15 +25,18 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.1.9** nâng cấp:
-- **Tối ưu triệt để độ mượt & Loại bỏ giật lag (Zero-Lag Performance):**
-  - Loại bỏ hoàn toàn các hiệu ứng chuyển động lặp vô tận (continuous float animation) và bộ lọc mờ nền (backdrop blur) tại khung tooltip hướng dẫn để loại bỏ triệt để hiện tượng giật lag khung hình khi xem video và livestream.
-  - Sử dụng khung card phẳng với nền tối sắc nét, hiệu ứng xuất hiện nhanh gọn (0.12s) và đóng tức thì.
-- **Loại bỏ toàn bộ biểu tượng emoji:**
-  - Loại bỏ hoàn toàn các ký hiệu biểu cảm (emoji) trong khung hướng dẫn cài đặt lần đầu, mang lại phong cách trực quan tinh giản, thanh lịch và chuyên nghiệp.
-- **Kế thừa các tính năng từ v3.1.8:**
-  - Hướng dẫn cài đặt lần đầu (First-time Onboarding) cho người mới cài extension.
-  - Mặc định tắt toàn bộ tính năng và lưu trữ cấu hình bền bỉ qua localStorage (ytc_config_v3).
+Phiên bản **v3.2.0** nâng cấp:
+- **Bổ sung icon Moderator chuẩn & Sửa lỗi lệch hàng tại khung nổi Streamer:**
+  - Tích hợp biểu tượng cờ lê (Moderator Wrench SVG) màu xanh đồng bộ với tên tài khoản kiểm duyệt viên.
+  - Sửa lỗi khoảng trắng vô hình và dấu hai chấm bị thụt lề, định dạng chuẩn xác `@Tên:` kèm huy hiệu và nội dung trò chuyện.
+  - Tự động thu nhỏ icon mod và huy hiệu hội viên bằng kích thước chữ (10px ở chế độ thường, 13.5px ở chế độ toàn màn hình) giúp dòng chat luôn thẳng hàng tăm tắp.
+- **Phục hồi kích thước biểu tượng cảm xúc (Emotes) cho Danmaku chạy ngang:**
+  - Giữ nguyên kích thước gốc đầy đủ (22px - 28px) cho các icon / emote của chế độ chat chạy ngang (Danmaku), không bị thu nhỏ như bên khung nổi.
+- **Tự động hiển thị khung hướng dẫn khi cập nhật:**
+  - Nâng cấp cơ chế nhận diện phiên bản cho tooltip hướng dẫn cài đặt. Khi người dùng cập nhật phiên bản mới, khung hướng dẫn sẽ tự động hiển thị để người dùng dễ dàng định vị menu cài đặt trên thanh điều hướng.
+- **Kế thừa các tính năng từ v3.1.9:**
+  - Tối ưu triệt để độ mượt, loại bỏ các hiệu ứng lơ lửng và bộ lọc mờ nặng gây giật lag.
+  - Loại bỏ toàn bộ biểu tượng emoji trong tooltip hướng dẫn cài đặt.
 - **Kế thừa các tính năng nổi bật từ v3.1.7 & v3.1.6:**
   - Tự động tắt Live Chat triệt để khi rời video hoặc về trang chủ.
   - Chống tự động đóng/tắt menu dropdown trong Live Chat.

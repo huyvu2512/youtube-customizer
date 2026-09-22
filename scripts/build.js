@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.1.9
-// @description  YouTube Customizer v3.1.9 — Tối ưu triệt để độ mượt (loại bỏ hiệu ứng giật lag), bỏ emoji icon tại tooltip hướng dẫn.
+// @version      3.2.0
+// @description  YouTube Customizer v3.2.0 — Bổ sung icon mod chuẩn cho khung nổi, sửa lỗi lệch vị trí, phục hồi kích thước icon Danmaku và hiển thị hướng dẫn khi cập nhật.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

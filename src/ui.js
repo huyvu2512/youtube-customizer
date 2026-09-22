@@ -73,7 +73,7 @@ function createSettingsPanel() {
         panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v3.1.9</span>
+                <span class="ytc-header-badge">v3.2.0</span>
             </div>
 
             <div class="ytc-tabs">
@@ -395,15 +395,26 @@ export function syncPanelState(targetPanel) {
     });
 }
 
-const ONBOARDING_KEY = 'ytc_onboarding_shown';
+const CURRENT_VERSION = '3.2.0';
+const ONBOARDING_KEY = `ytc_onboarding_v${CURRENT_VERSION.replace(/\./g, '_')}`;
 
 function setupFirstTimeOnboarding(btn) {
     if (!btn) return;
     try {
-        if (localStorage.getItem(ONBOARDING_KEY)) return;
+        if (localStorage.getItem(ONBOARDING_KEY) === 'true') return;
     } catch (e) { return; }
 
-    if (document.getElementById('ytc-onboarding-tip')) return;
+    if (document.getElementById('ytc-onboarding-tip')) {
+        const existingTip = document.getElementById('ytc-onboarding-tip');
+        if (existingTip && btn.isConnected) {
+            const rect = btn.getBoundingClientRect();
+            if (rect.width > 0 && rect.bottom > 0) {
+                existingTip.style.top = `${rect.bottom + 12}px`;
+                existingTip.style.right = `${Math.max(10, window.innerWidth - rect.right - 10)}px`;
+            }
+        }
+        return;
+    }
 
     const tip = document.createElement('div');
     tip.id = 'ytc-onboarding-tip';
@@ -429,12 +440,16 @@ function setupFirstTimeOnboarding(btn) {
     const updateTipPos = () => {
         if (!btn.isConnected || !tip.isConnected) return;
         const rect = btn.getBoundingClientRect();
+        if (rect.width === 0 || rect.bottom === 0) return;
         tip.style.top = `${rect.bottom + 12}px`;
         tip.style.right = `${Math.max(10, window.innerWidth - rect.right - 10)}px`;
     };
 
     updateTipPos();
     window.addEventListener('resize', updateTipPos);
+    setTimeout(updateTipPos, 200);
+    setTimeout(updateTipPos, 600);
+    setTimeout(updateTipPos, 1500);
 
     const dismissOnboarding = () => {
         try {

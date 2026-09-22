@@ -462,15 +462,32 @@ export function extractMessageData(node) {
         author = author.substring(1);
     }
 
-    const isMod = !!node.querySelector('yt-live-chat-author-badge-renderer[aria-label*="Kiểm duyệt"], [type="moderator"], .moderator') || node.classList.contains('author-type-moderator');
-    const isMember = !!node.querySelector('yt-live-chat-author-badge-renderer[aria-label*="Hội viên"], [type="member"], .member') || node.classList.contains('author-type-member');
-    const isOwner = !!node.querySelector('yt-live-chat-author-badge-renderer[aria-label*="Chủ sở hữu"], [type="owner"], .owner') || node.classList.contains('author-type-owner');
+    const isMod = !!node.querySelector('yt-live-chat-author-badge-renderer[type="moderator"], yt-live-chat-author-badge-renderer[aria-label*="điều hành" i], yt-live-chat-author-badge-renderer[aria-label*="kiểm duyệt" i], yt-live-chat-author-badge-renderer[aria-label*="moderator" i], [type="moderator"], .moderator') || node.classList.contains('author-type-moderator');
+    const isMember = !!node.querySelector('yt-live-chat-author-badge-renderer[type="member"], yt-live-chat-author-badge-renderer[aria-label*="hội viên" i], yt-live-chat-author-badge-renderer[aria-label*="member" i], [type="member"], .member') || node.classList.contains('author-type-member');
+    const isOwner = !!node.querySelector('yt-live-chat-author-badge-renderer[type="owner"], yt-live-chat-author-badge-renderer[aria-label*="chủ sở hữu" i], yt-live-chat-author-badge-renderer[aria-label*="owner" i], [type="owner"], .owner') || node.classList.contains('author-type-owner');
 
     const avatarEl = node.querySelector('#author-photo img, yt-img-shadow#author-photo img');
     const avatarSrc = avatarEl ? (avatarEl.src || avatarEl.getAttribute('src') || '') : '';
 
+    // Trích xuất huy hiệu chuyên biệt cho khung nổi Streamer (chỉ thêm bên nổi, không thêm bên ngang)
+    let streamerBadges = [];
+    if (isMod) {
+        streamerBadges.push(`<span class="ytc-box-badge ytc-badge-mod" title="Người điều hành"><svg viewBox="0 0 16 16" class="ytc-mod-icon"><path d="M12.44 3.56a4.5 4.5 0 0 0-6.17.22l2.39 2.39-.71.71-2.39-2.39a4.5 4.5 0 0 0-.22 6.17L1.1 14.9a.5.5 0 0 0 0 .71.5.5 0 0 0 .71 0l4.24-4.24a4.5 4.5 0 0 0 6.17-.22 4.5 4.5 0 0 0 .22-6.17z"/></svg></span>`);
+    }
+
     const badgeEls = Array.from(node.querySelectorAll('#chat-badges yt-live-chat-author-badge-renderer'));
-    const badgesHtml = badgeEls.map(b => b.innerHTML).join('');
+    for (const b of badgeEls) {
+        const type = (b.getAttribute('type') || '').toLowerCase();
+        const aria = (b.getAttribute('aria-label') || '').toLowerCase();
+        if (type === 'moderator' || aria.includes('moderator') || aria.includes('điều hành') || aria.includes('kiểm duyệt')) {
+            continue; // Đã thêm mod icon chuẩn bằng SVG ở trên
+        }
+        const img = b.querySelector('img');
+        if (img && img.src) {
+            streamerBadges.push(`<span class="ytc-box-badge ytc-badge-member" title="${aria || 'Hội viên'}"><img src="${img.src}" alt=""></span>`);
+        }
+    }
+    const streamerBadgeHtml = streamerBadges.join('');
 
     const messageEl = node.querySelector('#message');
     let messageHtml = messageEl ? messageEl.innerHTML : '';
@@ -498,7 +515,7 @@ export function extractMessageData(node) {
         author: author || 'Ẩn danh',
         authorClass,
         avatarSrc,
-        badgesHtml,
+        streamerBadgeHtml,
         messageHtml: messageHtml || '...'
     };
 }
@@ -539,13 +556,12 @@ export function displayChatMessage(data, isBacklog = false) {
         item.className = 'ytc-box-item';
 
         const avatarMarkup = data.avatarSrc ? `<img class="ytc-box-avatar" src="${data.avatarSrc}" alt="">` : '';
-        const badgeMarkup = data.badgesHtml ? `<span class="ytc-box-badge">${data.badgesHtml}</span>` : '';
+        const badgeMarkup = data.streamerBadgeHtml ? `${data.streamerBadgeHtml} ` : '';
 
         item.innerHTML = safeHTML(`
             ${avatarMarkup}
             <div class="ytc-box-content">
-                <span class="ytc-chat-author ${data.authorClass || ''}">@${data.author}</span>${badgeMarkup}: 
-                <span class="ytc-chat-text">${data.messageHtml}</span>
+                <span class="ytc-chat-author ${data.authorClass || ''}">@${data.author}:</span> ${badgeMarkup}<span class="ytc-chat-text">${data.messageHtml}</span>
             </div>
         `);
 
