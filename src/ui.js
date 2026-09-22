@@ -435,8 +435,9 @@ function showTipCard(btn, { badge, badgeBg, title, desc, btnText, onAction, onCl
     document.body.appendChild(tip);
 
     const updateTipPos = () => {
-        if (!btn.isConnected || !tip.isConnected) return;
-        const rect = btn.getBoundingClientRect();
+        const targetBtn = document.getElementById('ytc-settings-btn') || btn;
+        if (!targetBtn || !targetBtn.isConnected || !tip.isConnected) return;
+        const rect = targetBtn.getBoundingClientRect();
         if (rect.width === 0 || rect.bottom === 0) return;
         tip.style.top = `${rect.bottom + 12}px`;
         tip.style.right = `${Math.max(10, window.innerWidth - rect.right - 10)}px`;
@@ -473,7 +474,9 @@ function showTipCard(btn, { badge, badgeBg, title, desc, btnText, onAction, onCl
 }
 
 function checkForUpdates(btn) {
-    if (!btn || updateCheckInitiated) return;
+    if (updateCheckInitiated) return;
+    const targetBtn = document.getElementById('ytc-settings-btn') || btn;
+    if (!targetBtn) return;
     updateCheckInitiated = true;
 
     const CHECK_URL = 'https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json';
@@ -492,7 +495,8 @@ function checkForUpdates(btn) {
         const oldTip = document.getElementById('ytc-onboarding-tip');
         if (oldTip) oldTip.remove();
 
-        showTipCard(btn, {
+        const currentBtn = document.getElementById('ytc-settings-btn') || btn;
+        showTipCard(currentBtn, {
             badge: 'BẢN MỚI',
             title: `Đã có bản cập nhật mới v${remoteVer}`,
             desc: `YouTube Customizer v${remoteVer} đã sẵn sàng trên GitHub với các tính năng mới và bản sửa lỗi tối ưu.`,
@@ -508,19 +512,25 @@ function checkForUpdates(btn) {
         return true;
     };
 
-    // Kiểm tra cache local 15 phút trước
+    // Kiểm tra cache local (chỉ dùng cache nếu bản đã lưu là bản mới)
     try {
         const cachedRaw = localStorage.getItem(CACHE_KEY);
         if (cachedRaw) {
             const cached = JSON.parse(cachedRaw);
-            if (cached && cached.version && (now - cached.time < 15 * 60 * 1000)) {
-                if (renderUpdateNotification(cached.version)) return;
+            if (cached && cached.version && isNewerVersion(cached.version, CURRENT_VERSION)) {
+                if (now - cached.time < 15 * 60 * 1000) {
+                    renderUpdateNotification(cached.version);
+                    return;
+                }
             }
         }
     } catch (e) {}
 
-    // Gọi API GitHub raw lấy package.json
-    fetch(`${CHECK_URL}?t=${now}`)
+    // Gọi API GitHub raw lấy package.json (bỏ qua triệt để HTTP cache trình duyệt)
+    fetch(`${CHECK_URL}?_t=${now}_${Math.random().toString(36).slice(2)}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+    })
         .then(res => res.json())
         .then(data => {
             if (data && data.version) {
@@ -531,7 +541,8 @@ function checkForUpdates(btn) {
             }
         })
         .catch(() => {
-            // Không ngắt mạch ứng dụng nếu không có kết nối mạng
+            // Cho phép thử lại ở lượt chuyển trang tiếp theo nếu mạng trục trặc
+            updateCheckInitiated = false;
         });
 }
 
