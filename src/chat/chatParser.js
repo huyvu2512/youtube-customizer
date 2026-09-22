@@ -24,9 +24,7 @@ export function extractMessageData(node) {
     const avatarSrc = avatarEl ? (avatarEl.src || avatarEl.getAttribute('src') || '') : '';
 
     let streamerBadges = [];
-    if (isMod) {
-        streamerBadges.push(`<span class="ytc-box-badge ytc-badge-mod" title="Người điều hành"><svg viewBox="0 0 16 16" class="ytc-mod-icon"><path d="M12.44 3.56a4.5 4.5 0 0 0-6.17.22l2.39 2.39-.71.71-2.39-2.39a4.5 4.5 0 0 0-.22 6.17L1.1 14.9a.5.5 0 0 0 0 .71.5.5 0 0 0 .71 0l4.24-4.24a4.5 4.5 0 0 0 6.17-.22 4.5 4.5 0 0 0 .22-6.17z"/></svg></span>`);
-    }
+
 
     const badgeEls = Array.from(node.querySelectorAll('#chat-badges yt-live-chat-author-badge-renderer'));
     for (const b of badgeEls) {

@@ -832,15 +832,14 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
    Để YouTube xử lý thu gọn tự nhiên (hiện thẻ teaser "Mở bảng điều khiển" gọn gàng),
    TUYỆT ĐỐI KHÔNG đẩy frame chat gốc ra -9999px để người dùng có thể nhấp mở/đóng bình thường. */
 
-/* 2. Trạng thái ẩn Chat gốc trong giao diện toàn màn hình (FULLSCREEN / PHÓNG TO) */
+/* 2. Trạng thái ẩn Chat gốc trong giao diện toàn màn hình (FULLSCREEN / PHÓNG TO) khi CHƯA MỞ CHAT */
 /* Triệt tiêu độ rộng side panel bên phải để video tràn 100vw, nhưng TUYỆT ĐỐI KHÔNG set display:none lên frame chat */
-html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] #panels-full-bleed-container,
-html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] #chat-container,
-html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] #panels,
-html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] #secondary,
-html[data-ytc-chat-hidden="true"] .ytp-fullscreen #chat-container,
-html[data-ytc-chat-hidden="true"] .ytp-fullscreen .ytp-live-chat-panel,
-html[data-ytc-chat-hidden="true"] .ytp-fullscreen .ytp-live-chat-button {
+html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #panels-full-bleed-container,
+html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #chat-container,
+html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #panels,
+html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #secondary,
+html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) .ytp-fullscreen:not(.ytp-chat-open) #chat-container,
+html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) .ytp-fullscreen:not(.ytp-chat-open) .ytp-live-chat-panel {
     width: 0 !important;
     min-width: 0 !important;
     max-width: 0 !important;
@@ -850,15 +849,15 @@ html[data-ytc-chat-hidden="true"] .ytp-fullscreen .ytp-live-chat-button {
     pointer-events: none !important;
 }
 
-/* Phóng to toàn bộ các tầng container và movie_player ra 100vw x 100vh để xóa sổ vệt đen */
-html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] #player-full-bleed-container,
-html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] #full-bleed-container,
-html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] #player-container-outer,
-html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] #player-container-inner,
-html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] #player-container,
-html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] #movie_player,
-html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] .html5-video-player,
-html[data-ytc-chat-hidden="true"] .ytp-fullscreen.html5-video-player {
+/* Phóng to toàn bộ các tầng container và movie_player ra 100vw x 100vh để xóa sổ vệt đen khi chat đang đóng */
+html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #player-full-bleed-container,
+html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #full-bleed-container,
+html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #player-container-outer,
+html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #player-container-inner,
+html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #player-container,
+html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] #movie_player:not(.ytp-chat-open),
+html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) ytd-watch-flexy[fullscreen] .html5-video-player:not(.ytp-chat-open),
+html[data-ytc-chat-hidden="true"]:not(:has(.ytp-chat-open)) .ytp-fullscreen.html5-video-player:not(.ytp-chat-open) {
     width: 100vw !important;
     min-width: 100vw !important;
     max-width: 100vw !important;
@@ -874,13 +873,11 @@ html[data-ytc-chat-hidden="true"] .ytp-fullscreen.html5-video-player {
     transform: none !important;
 }
 
-/* Khi YouTube player có class ytp-chat-open trong fullscreen, ép giữ nguyên 100vw */
-html[data-ytc-chat-hidden="true"] .html5-video-player.ytp-fullscreen.ytp-chat-open,
-body[data-ytc-chat-hidden="true"] .html5-video-player.ytp-fullscreen.ytp-chat-open {
-    width: 100vw !important;
-    max-width: 100vw !important;
-    min-width: 100vw !important;
-    left: 0 !important;
+/* Luôn đảm bảo nút Live Chat trên thanh điều khiển YouTube player hiển thị và bấm được */
+.ytp-live-chat-button,
+.ytp-chat-button {
+    pointer-events: auto !important;
+    cursor: pointer !important;
 }
 
 
@@ -1092,14 +1089,10 @@ body[data-ytc-chat-hidden="true"] .html5-video-player.ytp-fullscreen.ytp-chat-op
     vertical-align: -1px;
     margin: 0 2px;
 }
-.ytc-box-badge svg.ytc-mod-icon {
-    width: 10px !important;
-    height: 10px !important;
-    max-width: 10px !important;
-    max-height: 10px !important;
-    fill: #3ea6ff !important;
-    display: inline-block !important;
-    vertical-align: -1px !important;
+.ytc-box-badge svg.ytc-mod-icon,
+.ytc-badge-mod,
+.ytc-mod-icon {
+    display: none !important;
 }
 .ytc-box-badge img {
     width: 10px !important;

@@ -137,6 +137,34 @@ export function syncPlayerFullscreenSize() {
                 video.style.top = `${targetTop}px`;
             }
         }
+    } else {
+        if (video.dataset.ytcOverridden) {
+            delete video.dataset.ytcOverridden;
+        }
+        const pW = player.clientWidth || player.offsetWidth;
+        const pH = player.clientHeight || player.offsetHeight;
+        const vW = video.videoWidth;
+        const vH = video.videoHeight;
+        if (pW > 0 && pH > 0 && vW > 0 && vH > 0) {
+            const videoRatio = vW / vH;
+            const playerRatio = pW / pH;
+            let targetW, targetH, targetLeft, targetTop;
+            if (playerRatio > videoRatio) {
+                targetH = pH;
+                targetW = Math.round(targetH * videoRatio);
+                targetLeft = Math.round((pW - targetW) / 2);
+                targetTop = 0;
+            } else {
+                targetW = pW;
+                targetH = Math.round(targetW / videoRatio);
+                targetLeft = 0;
+                targetTop = Math.round((pH - targetH) / 2);
+            }
+            video.style.width = `${targetW}px`;
+            video.style.height = `${targetH}px`;
+            video.style.left = `${targetLeft}px`;
+            video.style.top = `${targetTop}px`;
+        }
     }
 }
 

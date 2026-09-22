@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.9
-// @description  YouTube Customizer v3.2.9 — Cho phép mở/đóng Live Chat tự nhiên, giao diện gọn gàng với teaser "Mở bảng điều khiển", giữ luồng Danmaku ngầm liên tục.
+// @version      3.2.10
+// @description  YouTube Customizer v3.2.10 — Bỏ icon mod ở khung nổi, sửa lỗi mở Live Chat khi phóng to Fullscreen/Zoom.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
