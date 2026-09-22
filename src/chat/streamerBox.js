@@ -130,6 +130,7 @@ export function setupChatBoxInteractions(box, player) {
 
         header.addEventListener('mousedown', (e) => {
             if (e.button !== 0) return;
+            if (e.target.closest('.ytc-box-close')) return;
             e.preventDefault();
             e.stopPropagation();
 
@@ -139,12 +140,22 @@ export function setupChatBoxInteractions(box, player) {
             const shiftX = e.clientX - bRect.left;
             const shiftY = e.clientY - bRect.top;
 
-            function onMouseMove(moveEvent) {
-                let newLeft = moveEvent.clientX - pRect.left - shiftX;
-                let newTop = moveEvent.clientY - pRect.top - shiftY;
+            // Cache kích thước cố định tại thời điểm mousedown, TUYỆT ĐỐI không đọc lại offsetWidth/offsetHeight trong onMouseMove
+            const boxW = box.offsetWidth || bRect.width;
+            const boxH = box.offsetHeight || bRect.height;
+            const maxLeft = Math.max(0, pRect.width - boxW);
+            const maxTop = Math.max(0, pRect.height - boxH);
 
-                newLeft = Math.max(0, Math.min(newLeft, pRect.width - box.offsetWidth));
-                newTop = Math.max(0, Math.min(newTop, pRect.height - box.offsetHeight));
+            box.classList.add('ytc-dragging');
+
+            let rafId = null;
+            let currentClientX = e.clientX;
+            let currentClientY = e.clientY;
+
+            function updatePosition() {
+                rafId = null;
+                let newLeft = Math.max(0, Math.min(currentClientX - pRect.left - shiftX, maxLeft));
+                let newTop = Math.max(0, Math.min(currentClientY - pRect.top - shiftY, maxTop));
 
                 box.style.left = `${newLeft}px`;
                 box.style.top = `${newTop}px`;
@@ -153,7 +164,20 @@ export function setupChatBoxInteractions(box, player) {
                 box.style.transform = 'none';
             }
 
+            function onMouseMove(moveEvent) {
+                currentClientX = moveEvent.clientX;
+                currentClientY = moveEvent.clientY;
+                if (!rafId) {
+                    rafId = requestAnimationFrame(updatePosition);
+                }
+            }
+
             function onMouseUp() {
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                    rafId = null;
+                }
+                box.classList.remove('ytc-dragging');
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
 
@@ -213,16 +237,38 @@ export function setupChatBoxInteractions(box, player) {
             const startY = e.clientY;
             const startW = box.offsetWidth;
             const startH = box.offsetHeight;
+            const maxW = (player.offsetWidth || window.innerWidth) * 0.8;
+            const maxH = (player.offsetHeight || window.innerHeight) * 0.8;
 
-            function onMouseMove(moveEvent) {
-                const newW = Math.max(200, Math.min(startW + (moveEvent.clientX - startX), player.offsetWidth * 0.8));
-                const newH = Math.max(100, Math.min(startH + (moveEvent.clientY - startY), player.offsetHeight * 0.8));
+            box.classList.add('ytc-dragging');
+
+            let rafId = null;
+            let currentClientX = e.clientX;
+            let currentClientY = e.clientY;
+
+            function updateResize() {
+                rafId = null;
+                const newW = Math.max(200, Math.min(startW + (currentClientX - startX), maxW));
+                const newH = Math.max(100, Math.min(startH + (currentClientY - startY), maxH));
 
                 box.style.width = `${newW}px`;
                 box.style.height = `${newH}px`;
             }
 
+            function onMouseMove(moveEvent) {
+                currentClientX = moveEvent.clientX;
+                currentClientY = moveEvent.clientY;
+                if (!rafId) {
+                    rafId = requestAnimationFrame(updateResize);
+                }
+            }
+
             function onMouseUp() {
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                    rafId = null;
+                }
+                box.classList.remove('ytc-dragging');
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
 

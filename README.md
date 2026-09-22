@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.2.8-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.2.9-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,14 +25,15 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.2.8** hoàn thiện:
-- **Khắc phục 100% rào cản CSP Trusted Types:**
-  - Tự động khai báo policy `'default'` và `'youtubeCustomizer'`, đồng thời tích hợp cơ chế phân tách nút DOM an toàn qua `DOMParser` (`setElementHTML`), loại bỏ hoàn toàn cảnh báo `Trusted Type expected, but got String` ngăn cản nạp Danmaku và khung chat nổi.
-  - Sửa lỗi truy cập Form/Label trong DevTools: Bổ sung đầy đủ thuộc tính `for`, `name`, `aria-label` cho tất cả các nút gạt chuyển mạch trong bảng cài đặt.
-- **Hỗ trợ toàn diện cả Luồng Đang Trực Tiếp & Xem Lại Cuộc Trò Chuyện (Live Replay):**
-  - Tự động nạp ngay 3 tin nhắn gần nhất khi bật chế độ "Ngang" (Danmaku), giúp chữ lướt tức thì trên video mà không bao giờ bị dồn ứ hay đứng màn hình.
-  - Bắt trọn vẹn tin nhắn từ cả khung chat gốc (`iframe#chatframe`), `bgChatIframe` và DOM chính.
-- **Kế thừa các tính năng từ v3.2.7:**
+Phiên bản **v3.2.9** hoàn thiện:
+- **Tối ưu trải nghiệm đóng/mở Live Chat nguyên bản theo tương tác người dùng:**
+  - Loại bỏ hoàn toàn cơ chế đẩy khung chat ra ngoài màn hình (`-9999px`) ở giao diện thường, giúp nút **"Mở bảng điều khiển"** và biểu tượng bong bóng chat trên player hoạt động trơn tru 100%.
+  - Tự động chuyển giao diện Live Chat sang dạng thu gọn (hiện thẻ teaser "Mở bảng điều khiển") một lần duy nhất khi vừa vào video giúp màn hình gọn gàng ("giả vờ như tắt"), trong khi luồng tin nhắn Danmaku vẫn bay mượt mà ở chế độ nền.
+  - Khi người dùng chủ động nhấp **"Mở bảng điều khiển"** hoặc bong bóng chat, bảng trò chuyện sẽ mở ra tự nhiên để tương tác, bình luận và xem siêu trò chuyện bình thường.
+- **Kế thừa các tính năng từ v3.2.8:**
+  - Khắc phục 100% rào cản CSP Trusted Types qua `setElementHTML` và phân tách DOM an toàn.
+  - Bổ sung nhãn `for`, `name`, `aria-label` cho toàn bộ công tắc cài đặt loại bỏ cảnh báo DevTools.
+  - Hỗ trợ toàn diện cả Luồng Đang Trực Tiếp & Xem Lại Cuộc Trò Chuyện (Live Replay).
   - Khôi phục iframe ngầm chuyên biệt `bgChatIframe` hoạt động song song khi bật Overlay.
   - Chuẩn hóa hoạt ảnh Danmaku `translateX` theo container `cqi` mượt mà trên mọi chế độ hiển thị.
   - Khắc phục triệt để xung đột uBlock Origin (xóa sổ quảng cáo 6s).

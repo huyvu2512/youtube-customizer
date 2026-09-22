@@ -828,28 +828,9 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
      + Phóng to Fullscreen: Ẩn triệt để panel bên phải & PHÓNG TO KHUNG VIDEO 100% FULL MÀN HÌNH.
    ========================================================================== */
 
-/* 1. Trạng thái ẩn Chat gốc trong giao diện thường (chưa phóng to) */
-/* Đẩy khung chat gốc ra khỏi màn hình (vẫn giữ kích thước 350x600 để iframe render mượt mà không bị suspend) */
-html[data-ytc-chat-hidden="true"] ytd-live-chat-frame#chat,
-html[data-ytc-chat-hidden="true"] #chat.ytd-watch-flexy,
-body[data-ytc-chat-hidden="true"] ytd-live-chat-frame#chat,
-body[data-ytc-chat-hidden="true"] #chat.ytd-watch-flexy {
-    position: fixed !important;
-    left: -9999px !important;
-    top: -9999px !important;
-    width: 350px !important;
-    height: 600px !important;
-    opacity: 0.001 !important;
-    pointer-events: none !important;
-    z-index: -9999 !important;
-    display: block !important;
-    visibility: visible !important;
-}
-
-html[data-ytc-chat-hidden="true"] ytd-watch-flexy,
-body[data-ytc-chat-hidden="true"] ytd-watch-flexy {
-    --ytd-watch-flexy-chat-width: 0px !important;
-}
+/* 1. Giao diện thường (chưa phóng to):
+   Để YouTube xử lý thu gọn tự nhiên (hiện thẻ teaser "Mở bảng điều khiển" gọn gàng),
+   TUYỆT ĐỐI KHÔNG đẩy frame chat gốc ra -9999px để người dùng có thể nhấp mở/đóng bình thường. */
 
 /* 2. Trạng thái ẩn Chat gốc trong giao diện toàn màn hình (FULLSCREEN / PHÓNG TO) */
 /* Triệt tiêu độ rộng side panel bên phải để video tràn 100vw, nhưng TUYỆT ĐỐI KHÔNG set display:none lên frame chat */
@@ -924,8 +905,15 @@ body[data-ytc-chat-hidden="true"] .html5-video-player.ytp-fullscreen.ytp-chat-op
     user-select: none;
 }
 
+#ytc-streamer-box.ytc-dragging {
+    transition: none !important;
+    will-change: left, top;
+    user-select: none !important;
+}
+
 #ytc-streamer-box:hover,
-#ytc-streamer-box.ytc-box-initial {
+#ytc-streamer-box.ytc-box-initial,
+#ytc-streamer-box.ytc-dragging {
     background: rgba(0, 0, 0, 0.45) !important;
     backdrop-filter: blur(4px) !important;
     border: 1px dashed rgba(255, 255, 255, 0.35) !important;
@@ -933,14 +921,14 @@ body[data-ytc-chat-hidden="true"] .html5-video-player.ytp-fullscreen.ytp-chat-op
 }
 
 .ytc-box-header {
-    height: 20px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1px 6px;
+    padding: 2px 6px;
     background: rgba(0, 0, 0, 0.75);
     color: #eee;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     cursor: move;
     opacity: 0;
@@ -951,14 +939,59 @@ body[data-ytc-chat-hidden="true"] .html5-video-player.ytp-fullscreen.ytp-chat-op
     border-top-right-radius: 6px;
 }
 
+.ytc-box-title {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    user-select: none;
+    letter-spacing: 0.2px;
+}
+
+.ytc-box-title svg {
+    flex-shrink: 0;
+    opacity: 0.9;
+}
+
+.ytc-box-close {
+    background: transparent !important;
+    border: none !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    cursor: pointer !important;
+    width: 20px !important;
+    height: 20px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background 0.15s ease, color 0.15s ease !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.ytc-box-close:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+}
+
+.ytc-box-close svg {
+    display: block;
+}
+
 #ytc-streamer-box:hover .ytc-box-header,
-#ytc-streamer-box.ytc-box-initial .ytc-box-header {
+#ytc-streamer-box.ytc-box-initial .ytc-box-header,
+#ytc-streamer-box.ytc-dragging .ytc-box-header {
     opacity: 1 !important;
     pointer-events: auto !important;
 }
 
 #ytc-streamer-box:hover .ytc-box-resize,
-#ytc-streamer-box.ytc-box-initial .ytc-box-resize {
+#ytc-streamer-box.ytc-box-initial .ytc-box-resize,
+#ytc-streamer-box.ytc-dragging .ytc-box-resize {
     opacity: 1 !important;
     pointer-events: auto !important;
 }

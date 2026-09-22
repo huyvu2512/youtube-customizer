@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.8
-// @description  YouTube Customizer v3.2.8 — Khắc phục 100% Trusted Types CSP, hỗ trợ đầy đủ Live Stream Replay & Live trực tiếp, sửa lỗi nhãn form DevTools.
+// @version      3.2.9
+// @description  YouTube Customizer v3.2.9 — Cho phép mở/đóng Live Chat tự nhiên, giao diện gọn gàng với teaser "Mở bảng điều khiển", giữ luồng Danmaku ngầm liên tục.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

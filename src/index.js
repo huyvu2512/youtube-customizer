@@ -32,7 +32,8 @@ import {
 import {
     initChatOverlay,
     updateChatOverlayVisibility,
-    initIframeChatSender
+    initIframeChatSender,
+    resetChatCollapseState
 } from './chat/index.js';
 import {
     ensureSettingsElements,
@@ -96,6 +97,7 @@ if (window.self !== window.top) {
     function onNavigate() {
         // Chuyển video khác hoặc về trang chủ: BẮT BUỘC TẮT LUÔN Live Chat
         currentConfig.chatOverlay = 'off';
+        resetChatCollapseState();
         updateChatOverlayVisibility();
         syncPanelState();
 
@@ -125,6 +127,7 @@ if (window.self !== window.top) {
 
     document.addEventListener('yt-navigate-start', () => {
         currentConfig.chatOverlay = 'off';
+        resetChatCollapseState();
         updateChatOverlayVisibility();
         syncPanelState();
         if (location.pathname.startsWith('/watch')) {

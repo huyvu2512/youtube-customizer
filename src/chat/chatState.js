@@ -55,13 +55,20 @@ export function syncPlayerFullscreenSize() {
 
     if (!isFs) {
         const video = player.querySelector('video.html5-main-video');
-        if (video && video.dataset.ytcOverridden) {
-            delete video.dataset.ytcOverridden;
-            video.style.width = '';
-            video.style.height = '';
-            video.style.left = '';
-            video.style.top = '';
+        if (video) {
+            if (video.dataset.ytcOverridden) {
+                delete video.dataset.ytcOverridden;
+                video.style.width = '';
+                video.style.height = '';
+                video.style.left = '';
+                video.style.top = '';
+            }
         }
+        // Kích hoạt YouTube tính toán lại kích thước video khi thoát fullscreen để chống đen màn hình
+        if (typeof player.setInternalSize === 'function') {
+            try { player.setInternalSize(); } catch(e) {}
+        }
+        window.dispatchEvent(new Event('resize'));
         return;
     }
 
@@ -123,8 +130,13 @@ export function ensureChatOverlayContainers() {
         sBox.id = 'ytc-streamer-box';
         setElementHTML(sBox, `
             <div class="ytc-box-header">
-                <span class="ytc-box-title">Trực tiếp</span>
-                <button class="ytc-box-close" title="Ẩn chat">✕</button>
+                <span class="ytc-box-title">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" style="flex-shrink:0;"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+                    Live Chat
+                </span>
+                <button class="ytc-box-close" title="Ẩn khung chat" aria-label="Ẩn khung chat">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
             </div>
             <div class="ytc-box-messages"></div>
             <div class="ytc-box-resize" title="Kéo để thay đổi kích thước"></div>
@@ -136,6 +148,7 @@ export function ensureChatOverlayContainers() {
             closeBtn.onclick = (e) => {
                 e.stopPropagation();
                 sBox.style.display = 'none';
+                window.dispatchEvent(new CustomEvent('ytc-close-streamer-box'));
             };
         }
     } else if (sBox.parentElement !== player) {
