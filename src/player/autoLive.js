@@ -24,7 +24,7 @@ export function snapToLive(player) {
     if (!player) return;
 
     // 1. Ưu tiên click nút "Trực tiếp" / "LIVE" chính thức của YouTube player
-    // YouTube sẽ tự đồng bộ buffer và audio mà không bị đè tiếng
+    // YouTube sẽ tự đồng bộ buffer và audio mượt mà theo đúng chuẩn native
     const liveBadge = player.querySelector('.ytp-live-badge');
     if (liveBadge) {
         try {
@@ -33,7 +33,7 @@ export function snapToLive(player) {
         } catch (e) {}
     }
 
-    // 2. Dự phòng: chỉ gọi seekTo nếu không có liveBadge để tránh xung đột 2 lệnh seek gây đè tiếng
+    // 2. Dự phòng: chỉ gọi seekTo nếu không tìm thấy liveBadge
     try {
         if (typeof player.seekToStreamTime === 'function') {
             player.seekToStreamTime(Infinity);
@@ -44,25 +44,41 @@ export function snapToLive(player) {
 }
 
 export function isCurrentlyActiveLive(player) {
+    if (!player) player = document.querySelector('#movie_player, .html5-video-player');
     if (!player) return false;
+
+    // 1. Kiểm tra class trên player hoặc sự hiện diện của badge Trực tiếp
+    if (player.classList.contains('ytp-live') || !!player.querySelector('.ytp-live-badge')) {
+        return true;
+    }
+
+    // 2. Kiểm tra URL /live/
+    if (location.pathname.startsWith('/live/')) {
+        return true;
+    }
+
+    // 3. Kiểm tra API player
     if (typeof player.getVideoData === 'function') {
         const vd = player.getVideoData();
         if (vd) {
-            if (vd.isLive === true) return true;
-            if (vd.isLive === false) return false;
+            // Nếu đã kết thúc live (PostLiveDvr) thì không phải đang phát trực tiếp
+            if (vd.isPostLiveDvr) return false;
+            // Hỗ trợ cả live thông thường và Live DVR (tua lại)
+            if (vd.isLive || vd.isLiveDvr) return true;
         }
     }
+
     if (typeof player.isLive === 'function') {
         try {
             if (player.isLive() === true) return true;
         } catch (e) {}
     }
-    if (player.classList.contains('ytp-live') || !!player.querySelector('.ytp-live-badge')) {
+
+    // 4. Kiểm tra cấu trúc DOM trang YouTube (ytd-watch-flexy có attribute is-live hoặc live chat frame)
+    if (document.querySelector('ytd-watch-flexy[is-live], ytd-live-chat-frame#chat:not([hidden])')) {
         return true;
     }
-    if (location.pathname.startsWith('/live/')) {
-        return true;
-    }
+
     return false;
 }
 
@@ -113,10 +129,10 @@ function checkLiveSync() {
 
     const now = Date.now();
 
-    // 1. Chậm rất nặng (> 20s, ví dụ bị tụt về 0:00 ban đầu hoặc lag mạng lâu):
-    // Snap về trực tiếp một lần, cooldown ít nhất 15s để buffer ổn định không snap liên tục
-    if (delay > 20.0) {
-        if (now - lastSnapTime > 15000) {
+    // 1. Chậm nghiêm trọng (> 12s, ví dụ bị tụt về 0:00 ban đầu hoặc lag mạng lâu):
+    // Snap về trực tiếp, cooldown ít nhất 10s để buffer ổn định
+    if (delay > 12.0) {
+        if (now - lastSnapTime > 10000) {
             lastSnapTime = now;
             snapToLive(player);
             if (video.playbackRate !== 1.0) {
@@ -126,15 +142,15 @@ function checkLiveSync() {
         return;
     }
 
-    // 2. Chậm vừa phải (8s - 20s): Tăng nhẹ tốc độ 1.06x để bắt kịp êm ái, KHÔNG snap gây giật lặp âm thanh
-    if (delay > 8.0) {
+    // 2. Chậm vừa phải (7s - 12s): Tăng nhẹ tốc độ 1.06x để bắt kịp êm ái, KHÔNG snap gây giật lặp âm thanh
+    if (delay > 7.0) {
         if (video.playbackRate !== 1.06) {
             video.playbackRate = 1.06;
         }
         return;
     }
 
-    // 3. Trong ngưỡng độ trễ tự nhiên bình thường của YouTube (<= 8s):
+    // 3. Trong ngưỡng độ trễ tự nhiên bình thường của YouTube (<= 7s):
     // Giữ nguyên tốc độ chuẩn 1.0x, tuyệt đối không can thiệp hay seek
     if (video.playbackRate !== 1.0) {
         video.playbackRate = 1.0;
@@ -154,24 +170,28 @@ export function checkInitialLiveSnap() {
         if (player && isCurrentlyActiveLive(player)) {
             const video = player.querySelector('video');
             if (video && !video.paused) {
-                clearInterval(initialSnapTimer);
-                initialSnapTimer = null;
-                if (!userIsRewound && currentConfig.autoLiveSync) {
-                    const delay = getLiveDelay(player, video);
-                    // Chỉ snap nếu ban đầu video bị tụt sâu về 0:00 (> 25s)
-                    if (delay > 25.0) {
-                        lastSnapTime = Date.now();
-                        snapToLive(player);
-                    }
+                const delay = getLiveDelay(player, video);
+                // Nếu khi vừa vào video bị kẹt ở mốc cũ (> 10s hoặc ở 0:00) -> đưa về trực tiếp ngay!
+                if (!userIsRewound && delay > 10.0) {
+                    clearInterval(initialSnapTimer);
+                    initialSnapTimer = null;
+                    lastSnapTime = Date.now();
+                    snapToLive(player);
+                    return;
                 }
-                return;
+                // Nếu video đã ở mốc trực tiếp bình thường (delay <= 10s) -> dừng check
+                if (delay <= 10.0) {
+                    clearInterval(initialSnapTimer);
+                    initialSnapTimer = null;
+                    return;
+                }
             }
         }
-        if (attempts >= 15) {
+        if (attempts >= 25) {
             clearInterval(initialSnapTimer);
             initialSnapTimer = null;
         }
-    }, 500);
+    }, 300);
 }
 
 export function initAutoLiveSync() {

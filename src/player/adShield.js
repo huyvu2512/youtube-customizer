@@ -43,14 +43,7 @@ export function initAdShield() {
             const isLive = isLiveStream(player);
 
             if (video) {
-                // 1. Chỉ tua video.duration với video thường (VOD).
-                // TUYỆT ĐỐI KHÔNG tua currentTime trên livestream vì sẽ làm lỗi buffer MSE và đẩy video về 0:00!
-                if (!isLive && isFinite(video.duration) && video.duration > 0) {
-                    try {
-                        video.currentTime = video.duration;
-                    } catch (e) {}
-                }
-                // Tăng tốc độ phát quảng cáo lên 16x để kết thúc tức thì
+                // Tăng tốc độ phát quảng cáo lên 16x để kết thúc tức thì mà không can thiệp currentTime
                 try {
                     video.playbackRate = 16.0;
                 } catch (e) {}

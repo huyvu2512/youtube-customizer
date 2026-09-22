@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.13
-// @description  YouTube Customizer v3.2.13 — Khắc phục triệt để lỗi đè tiếng, lặp video và tối ưu hóa mượt mà tính năng Auto Live Sync.
+// @version      3.2.14
+// @description  YouTube Customizer v3.2.14 — Nhận diện chính xác Live DVR và đảm bảo mở phiên live luôn bắt đúng mốc trực tiếp mới nhất.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -28,7 +28,7 @@
   var APP_VERSION, CONFIG_KEY, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.2.13";
+      APP_VERSION = "3.2.14";
       CONFIG_KEY = "ytc_config";
       GEAR_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>`;
       GRID_SVG = `<svg viewBox="0 0 24 24"><path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h7v7h-7v-7z"/></svg>`;
@@ -1930,12 +1930,19 @@
     }
   }
   function isCurrentlyActiveLive(player) {
+    if (!player) player = document.querySelector("#movie_player, .html5-video-player");
     if (!player) return false;
+    if (player.classList.contains("ytp-live") || !!player.querySelector(".ytp-live-badge")) {
+      return true;
+    }
+    if (location.pathname.startsWith("/live/")) {
+      return true;
+    }
     if (typeof player.getVideoData === "function") {
       const vd = player.getVideoData();
       if (vd) {
-        if (vd.isLive === true) return true;
-        if (vd.isLive === false) return false;
+        if (vd.isPostLiveDvr) return false;
+        if (vd.isLive || vd.isLiveDvr) return true;
       }
     }
     if (typeof player.isLive === "function") {
@@ -1944,10 +1951,7 @@
       } catch (e) {
       }
     }
-    if (player.classList.contains("ytp-live") || !!player.querySelector(".ytp-live-badge")) {
-      return true;
-    }
-    if (location.pathname.startsWith("/live/")) {
+    if (document.querySelector("ytd-watch-flexy[is-live], ytd-live-chat-frame#chat:not([hidden])")) {
       return true;
     }
     return false;
@@ -1987,8 +1991,8 @@
     }
     if (Date.now() - lastUserSeekTime < 8e3) return;
     const now = Date.now();
-    if (delay > 20) {
-      if (now - lastSnapTime > 15e3) {
+    if (delay > 12) {
+      if (now - lastSnapTime > 1e4) {
         lastSnapTime = now;
         snapToLive(player);
         if (video.playbackRate !== 1) {
@@ -1997,7 +2001,7 @@
       }
       return;
     }
-    if (delay > 8) {
+    if (delay > 7) {
       if (video.playbackRate !== 1.06) {
         video.playbackRate = 1.06;
       }
@@ -2020,23 +2024,26 @@
       if (player && isCurrentlyActiveLive(player)) {
         const video = player.querySelector("video");
         if (video && !video.paused) {
-          clearInterval(initialSnapTimer);
-          initialSnapTimer = null;
-          if (!userIsRewound && currentConfig.autoLiveSync) {
-            const delay = getLiveDelay(player, video);
-            if (delay > 25) {
-              lastSnapTime = Date.now();
-              snapToLive(player);
-            }
+          const delay = getLiveDelay(player, video);
+          if (!userIsRewound && delay > 10) {
+            clearInterval(initialSnapTimer);
+            initialSnapTimer = null;
+            lastSnapTime = Date.now();
+            snapToLive(player);
+            return;
           }
-          return;
+          if (delay <= 10) {
+            clearInterval(initialSnapTimer);
+            initialSnapTimer = null;
+            return;
+          }
         }
       }
-      if (attempts >= 15) {
+      if (attempts >= 25) {
         clearInterval(initialSnapTimer);
         initialSnapTimer = null;
       }
-    }, 500);
+    }, 300);
   }
   function initAutoLiveSync() {
     if (autoLiveSyncTimer) return;
@@ -2344,12 +2351,6 @@
         wasAdShowing = true;
         const isLive = isLiveStream(player);
         if (video) {
-          if (!isLive && isFinite(video.duration) && video.duration > 0) {
-            try {
-              video.currentTime = video.duration;
-            } catch (e) {
-            }
-          }
           try {
             video.playbackRate = 16;
           } catch (e) {
