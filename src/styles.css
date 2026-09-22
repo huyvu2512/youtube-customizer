@@ -13,8 +13,8 @@
     #page-manager ytd-browse ytd-rich-grid-renderer,
     ytd-rich-grid-renderer.ytc-grid,
     ytd-rich-grid-renderer {
-        --ytd-rich-grid-items-per-row: 4 !important;
-        --ytd-rich-grid-posts-per-row: 4 !important;
+        --ytd-rich-grid-items-per-row: 3 !important;
+        --ytd-rich-grid-posts-per-row: 3 !important;
         --ytd-rich-grid-item-max-width: none !important;
     }
 
@@ -59,8 +59,8 @@
 
     #contents.ytd-rich-grid-row ytd-rich-item-renderer,
     ytd-rich-grid-renderer ytd-rich-item-renderer {
-        width: calc(100% / var(--ytd-rich-grid-items-per-row, 4) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
-        max-width: calc(100% / var(--ytd-rich-grid-items-per-row, 4) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
+        width: calc(100% / var(--ytd-rich-grid-items-per-row, 3) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
+        max-width: calc(100% / var(--ytd-rich-grid-items-per-row, 3) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
     }
 
     [data-ytc-cols="3"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,
@@ -913,7 +913,7 @@ ytd-watch-flexy[fullscreen] ytd-live-chat-frame {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    gap: 2px;
+    gap: 3px;
     padding: 2px 4px;
     pointer-events: none;
 }
@@ -921,10 +921,15 @@ ytd-watch-flexy[fullscreen] ytd-live-chat-frame {
 .ytc-box-item {
     display: flex;
     align-items: flex-start;
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    width: 100%;
+    box-sizing: border-box;
+    height: auto !important;
+    min-height: min-content !important;
     gap: 3px;
     font-size: 10px;
-    line-height: 1.25;
-    min-height: 14px;
+    line-height: 1.35;
     color: #fff;
     text-shadow: 
         1px 1px 2px #000, 
@@ -934,6 +939,7 @@ ytd-watch-flexy[fullscreen] ytd-live-chat-frame {
         0 0 3px #000;
     animation: ytc-fade-in 0.12s ease-out;
     word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .ytc-box-avatar {
@@ -941,11 +947,38 @@ ytd-watch-flexy[fullscreen] ytd-live-chat-frame {
     height: 10px;
     border-radius: 50%;
     flex-shrink: 0;
-    margin-top: 1px;
+    margin-top: 2px;
 }
 
 .ytc-box-content {
     flex: 1;
+    min-width: 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.35;
+}
+
+#ytc-streamer-box .ytc-chat-author {
+    color: #b5b5b5 !important;
+    font-weight: 400 !important;
+    flex-shrink: 0;
+}
+#ytc-streamer-box .ytc-chat-author.mod {
+    color: #3ea6ff !important;
+    font-weight: 500 !important;
+}
+#ytc-streamer-box .ytc-chat-author.member {
+    color: #2ba640 !important;
+    font-weight: 500 !important;
+}
+#ytc-streamer-box .ytc-chat-author.owner {
+    color: #ffd600 !important;
+    font-weight: 600 !important;
+}
+
+#ytc-streamer-box .ytc-chat-text {
+    color: #ffffff !important;
+    font-weight: 700 !important;
 }
 
 /* THU NHỎ ICON EMOJI VÀ BADGE BẰNG CỠ CHỮ CHỈ ÁP DỤNG CHO KHUNG NỔI STREAMER */
@@ -1027,39 +1060,6 @@ ytd-watch-flexy[fullscreen] ytd-live-chat-frame {
     max-height: 28px !important;
     max-width: 36px !important;
     vertical-align: -4px !important;
-}
-
-.ytp-fullscreen .ytc-box-item {
-    font-size: 13.5px !important;
-    line-height: 1.25 !important;
-    min-height: 18px !important;
-    gap: 4px !important;
-}
-.ytp-fullscreen .ytc-box-avatar {
-    width: 13.5px !important;
-    height: 13.5px !important;
-    margin-top: 1.5px !important;
-}
-.ytp-fullscreen .ytc-box-badge svg.ytc-mod-icon,
-.ytp-fullscreen .ytc-box-badge img {
-    width: 13.5px !important;
-    height: 13.5px !important;
-    max-width: 13.5px !important;
-    max-height: 13.5px !important;
-    vertical-align: -1.5px !important;
-}
-.ytp-fullscreen #ytc-streamer-box .ytc-box-content img,
-.ytp-fullscreen #ytc-streamer-box .ytc-box-item img,
-.ytp-fullscreen #ytc-streamer-box img.emoji,
-.ytp-fullscreen #ytc-streamer-box img.yt-emoji,
-.ytp-fullscreen #ytc-streamer-box .emoji {
-    max-height: 13.5px !important;
-    max-width: 16px !important;
-    vertical-align: -1.5px !important;
-}
-.ytp-fullscreen .ytc-box-header {
-    height: 24px !important;
-    font-size: 11.5px !important;
 }
 
 /* ==========================================================================

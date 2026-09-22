@@ -57,7 +57,7 @@ export function isHomeFeedPath() {
 // --------------------------------------------------------------------------
 export function applyHomeGridColumns() {
     if (!isHomeFeedPath()) return;
-    const cols = currentConfig.columns || 4;
+    const cols = currentConfig.columns || 3;
     const grids = document.querySelectorAll('ytd-rich-grid-renderer');
     grids.forEach((grid) => {
         if (!grid.classList.contains('ytc-grid')) {

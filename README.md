@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.2.0-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.2.1-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,18 +25,21 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.2.0** nâng cấp:
-- **Bổ sung icon Moderator chuẩn & Sửa lỗi lệch hàng tại khung nổi Streamer:**
-  - Tích hợp biểu tượng cờ lê (Moderator Wrench SVG) màu xanh đồng bộ với tên tài khoản kiểm duyệt viên.
-  - Sửa lỗi khoảng trắng vô hình và dấu hai chấm bị thụt lề, định dạng chuẩn xác `@Tên:` kèm huy hiệu và nội dung trò chuyện.
-  - Tự động thu nhỏ icon mod và huy hiệu hội viên bằng kích thước chữ (10px ở chế độ thường, 13.5px ở chế độ toàn màn hình) giúp dòng chat luôn thẳng hàng tăm tắp.
-- **Phục hồi kích thước biểu tượng cảm xúc (Emotes) cho Danmaku chạy ngang:**
-  - Giữ nguyên kích thước gốc đầy đủ (22px - 28px) cho các icon / emote của chế độ chat chạy ngang (Danmaku), không bị thu nhỏ như bên khung nổi.
-- **Tự động hiển thị khung hướng dẫn khi cập nhật:**
-  - Nâng cấp cơ chế nhận diện phiên bản cho tooltip hướng dẫn cài đặt. Khi người dùng cập nhật phiên bản mới, khung hướng dẫn sẽ tự động hiển thị để người dùng dễ dàng định vị menu cài đặt trên thanh điều hướng.
-- **Kế thừa các tính năng từ v3.1.9:**
-  - Tối ưu triệt để độ mượt, loại bỏ các hiệu ứng lơ lửng và bộ lọc mờ nặng gây giật lag.
-  - Loại bỏ toàn bộ biểu tượng emoji trong tooltip hướng dẫn cài đặt.
+Phiên bản **v3.2.1** nâng cấp:
+- **Mặc định 3 cột trang chủ chuẩn YouTube:**
+  - Thiết lập giá trị mặc định cho lưới video trang chủ và kênh là 3 cột theo chuẩn nguyên bản của YouTube.
+- **Kế thừa cấu hình đa phiên bản chống mất cài đặt:**
+  - Nâng cấp cơ chế loadConfig tự động phát hiện và chuyển tiếp cấu hình từ các bản trước (ytc_config_v3, ytc_config_v2) sang bộ nhớ vĩnh viễn ytc_config. Người dùng nâng cấp lên phiên bản mới không còn bị reset cài đặt về trạng thái tắt.
+- **Sửa lỗi đè dòng tin nhắn nhiều dòng tại khung nổi Streamer:**
+  - Khóa cứng cơ chế co giãn Flexbox (flex-shrink: 0), giúp các bình luận dài xuống 2-3 dòng luôn giữ nguyên chiều cao tự nhiên, không bao giờ bị đè hoặc chen lấn lên các bình luận tiếp theo.
+- **Cố định kích thước chữ 10px đồng nhất:**
+  - Giữ nguyên kích thước 10px siêu gọn cho khung nổi Streamer ở cả chế độ thường lẫn toàn màn hình (Fullscreen), tránh phóng to gây chiếm diện tích.
+- **Tùy biến màu sắc và độ đậm nhạt tên tác giả:**
+  - Chuyển tên tác giả (@tên) sang màu xám nhạt trung tính (#b5b5b5) với nét chữ thường (font-weight: 400), trong khi nội dung tin nhắn được in đậm nổi bật (font-weight: 700) với màu trắng tinh tế.
+- **Kế thừa các tính năng từ v3.2.0 & v3.1.9:**
+  - Bổ sung icon cờ lê Moderator SVG màu xanh chuẩn xác, không bị khoảng trắng thừa.
+  - Phục hồi kích thước icon đầy đủ cho Danmaku chạy ngang.
+  - Tối ưu triệt để độ mượt, loại bỏ các hiệu ứng lơ lửng và làm mờ nền gây giật lag.
 - **Kế thừa các tính năng nổi bật từ v3.1.7 & v3.1.6:**
   - Tự động tắt Live Chat triệt để khi rời video hoặc về trang chủ.
   - Chống tự động đóng/tắt menu dropdown trong Live Chat.

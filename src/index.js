@@ -30,10 +30,10 @@ if (window.self === window.top) {
 // --------------------------------------------------------------------------
 // 1. CẤU HÌNH & LƯU TRỮ (LOCALSTORAGE)
 // --------------------------------------------------------------------------
-export const CONFIG_KEY = 'ytc_config_v3';
+export const CONFIG_KEY = 'ytc_config';
 
 export const DEFAULT_CONFIG = {
-    columns: 4,             // 3, 4 hoặc 5 cột (mặc định 4)
+    columns: 3,             // 3, 4 hoặc 5 cột (mặc định 3 theo chuẩn YouTube)
     hideShorts: false,      // Ẩn Shorts hoàn toàn (mặc định tắt)
     hidePlayables: false,   // Ẩn Chơi game (Playables) (mặc định tắt)
     hideMembersOnly: false, // Ẩn mục video Hội viên (mặc định tắt)
@@ -54,12 +54,21 @@ export const DEFAULT_CONFIG = {
 
 export function loadConfig() {
     try {
-        const stored = localStorage.getItem(CONFIG_KEY);
+        // Tự động kế thừa cấu hình từ mọi phiên bản cũ (ytc_config, ytc_config_v3, ytc_config_v2)
+        // Đảm bảo người dùng update version mới KHÔNG BAO GIỜ bị mất cài đặt cũ!
+        let stored = localStorage.getItem('ytc_config');
+        if (!stored) stored = localStorage.getItem('ytc_config_v3');
+        if (!stored) stored = localStorage.getItem('ytc_config_v2');
+
         if (stored) {
             const parsed = JSON.parse(stored);
             const cfg = Object.assign({}, DEFAULT_CONFIG, parsed);
             // BẮT BUỘC: Live Chat luôn luôn mặc định TẮT sau mỗi video / F5!
             cfg.chatOverlay = 'off';
+            // Lưu sang ytc_config bền vững
+            try {
+                localStorage.setItem('ytc_config', JSON.stringify({ ...cfg, chatOverlay: 'off' }));
+            } catch (e) {}
             return cfg;
         }
         return Object.assign({}, DEFAULT_CONFIG);
@@ -70,10 +79,9 @@ export function loadConfig() {
 
 export function saveConfig(cfg) {
     try {
-        // Lưu cấu hình người dùng bật vào localStorage, không bao giờ mất sau khi update bản mới
-        // (riêng chatOverlay luôn giữ là 'off' trong bộ nhớ dài hạn vì bắt buộc tắt sau mỗi video)
         const toSave = { ...cfg, chatOverlay: 'off' };
-        localStorage.setItem(CONFIG_KEY, JSON.stringify(toSave));
+        localStorage.setItem('ytc_config', JSON.stringify(toSave));
+        localStorage.setItem('ytc_config_v3', JSON.stringify(toSave));
     } catch (e) {}
 }
 
@@ -94,7 +102,7 @@ export function applyConfigToRoot() {
     root.classList.toggle('ytc-premium-logo', !!currentConfig.premiumLogo);
     root.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
     root.classList.toggle('ytc-disable-ambient', !!currentConfig.disableAmbient);
-    root.setAttribute('data-ytc-cols', String(currentConfig.columns || 4));
+    root.setAttribute('data-ytc-cols', String(currentConfig.columns || 3));
     root.setAttribute('data-ytc-chat', currentConfig.chatOverlay || 'off');
 
     if (document.body) {
@@ -109,7 +117,7 @@ export function applyConfigToRoot() {
         document.body.classList.toggle('ytc-premium-logo', !!currentConfig.premiumLogo);
         document.body.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
         document.body.classList.toggle('ytc-disable-ambient', !!currentConfig.disableAmbient);
-        document.body.setAttribute('data-ytc-cols', String(currentConfig.columns || 4));
+        document.body.setAttribute('data-ytc-cols', String(currentConfig.columns || 3));
         document.body.setAttribute('data-ytc-chat', currentConfig.chatOverlay || 'off');
     }
 
