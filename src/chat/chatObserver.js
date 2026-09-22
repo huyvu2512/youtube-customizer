@@ -110,30 +110,37 @@ function queryAllLiveChatMessages() {
 }
 
 export function requestExistingMessages() {
-    if (currentConfig.chatOverlay !== 'streamer') {
-        return;
-    }
-
     function doFetch() {
         const allExisting = queryAllLiveChatMessages();
         if (allExisting && allExisting.length > 0) {
-            const recent = allExisting.slice(-8);
-            recent.forEach((node, i) => {
-                const data = extractMessageData(node);
-                if (data) {
-                    data.isBacklog = true;
-                    setTimeout(() => displayChatMessage(data, true), i * 100);
-                }
-            });
-            return true;
+            if (currentConfig.chatOverlay === 'streamer') {
+                const recent = allExisting.slice(-8);
+                recent.forEach((node, i) => {
+                    const data = extractMessageData(node);
+                    if (data) {
+                        data.isBacklog = true;
+                        setTimeout(() => displayChatMessage(data, true), i * 100);
+                    }
+                });
+                return true;
+            } else if (currentConfig.chatOverlay === 'danmaku') {
+                const recent = allExisting.slice(-3);
+                recent.forEach((node, i) => {
+                    const data = extractMessageData(node);
+                    if (data) {
+                        setTimeout(() => displayChatMessage(data, false), i * 350);
+                    }
+                });
+                return true;
+            }
         }
         return false;
     }
 
     const found = doFetch();
     if (!found) {
-        setTimeout(doFetch, 800);
-        setTimeout(doFetch, 2000);
+        setTimeout(doFetch, 500);
+        setTimeout(doFetch, 1500);
     }
 
     const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]');
@@ -271,13 +278,23 @@ export function updateChatOverlayVisibility() {
 // --------------------------------------------------------------------------
 export function initIframeChatSender() {
     function handleNode(node) {
-        if (node && node.nodeType === 1) {
-            if (node.matches && node.matches('yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, yt-live-chat-paid-sticker-renderer')) {
-                const data = extractMessageData(node);
+        if (!node || node.nodeType !== 1) return;
+        const selector = 'yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, yt-live-chat-paid-sticker-renderer';
+        if (node.matches && node.matches(selector)) {
+            const data = extractMessageData(node);
+            if (data) {
+                try { window.top.postMessage({ type: 'YTC_LIVE_CHAT_MSG', payload: data }, '*'); } catch (e) {}
+            }
+            return;
+        }
+        if (node.querySelectorAll) {
+            const targets = node.querySelectorAll(selector);
+            targets.forEach(t => {
+                const data = extractMessageData(t);
                 if (data) {
                     try { window.top.postMessage({ type: 'YTC_LIVE_CHAT_MSG', payload: data }, '*'); } catch (e) {}
                 }
-            }
+            });
         }
     }
 
@@ -312,7 +329,7 @@ export function initIframeChatSender() {
     }
 
     function tryFindItems() {
-        const items = document.querySelector('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #chat #items, div#items');
+        const items = document.querySelector('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #chat #items, div#items, #items');
         if (items) {
             attach(items);
             return true;
@@ -371,10 +388,20 @@ function isUserInteractingWithChatMenu(doc) {
 
 function processChatNode(node) {
     if (!node || node.nodeType !== 1) return;
+    const selector = 'yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, yt-live-chat-paid-sticker-renderer';
 
-    if (node.matches && node.matches('yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, yt-live-chat-paid-sticker-renderer')) {
+    if (node.matches && node.matches(selector)) {
         const data = extractMessageData(node);
         if (data) displayChatMessage(data);
+        return;
+    }
+
+    if (node.querySelectorAll) {
+        const targets = node.querySelectorAll(selector);
+        targets.forEach(t => {
+            const data = extractMessageData(t);
+            if (data) displayChatMessage(data);
+        });
     }
 }
 
@@ -394,15 +421,22 @@ function observeItemsElement(items) {
 }
 
 function findAndObserveItems() {
-    const mainItems = document.querySelectorAll('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items');
+    const mainItems = document.querySelectorAll('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #items, div#items');
     mainItems.forEach(items => observeItemsElement(items));
 
     const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]');
     frames.forEach(frame => {
+        if (!frame._ytcLoadBound) {
+            frame._ytcLoadBound = true;
+            frame.addEventListener('load', () => {
+                setTimeout(findAndObserveItems, 300);
+                setTimeout(findAndObserveItems, 1000);
+            });
+        }
         try {
             const doc = frame.contentDocument || frame.contentWindow?.document;
             if (doc) {
-                const iframeItems = doc.querySelectorAll('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items');
+                const iframeItems = doc.querySelectorAll('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #items, div#items');
                 iframeItems.forEach(items => observeItemsElement(items));
             }
         } catch (e) {}

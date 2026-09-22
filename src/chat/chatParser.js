@@ -77,6 +77,12 @@ export function shouldSuppressLiveChatMessage(isBacklog) {
     const player = document.querySelector('#movie_player, .html5-video-player');
     if (!player) return false;
 
+    const video = player.querySelector('video.html5-main-video') || player.querySelector('video');
+    if (!video) return false;
+
+    // 1. Khi video đang tạm dừng -> tạm ngưng nạp tin nhắn mới
+    if (video.paused) return true;
+
     let isOngoingLive = false;
     try {
         if (typeof player.getVideoData === 'function') {
@@ -85,28 +91,16 @@ export function shouldSuppressLiveChatMessage(isBacklog) {
         }
     } catch (e) {}
 
+    // Nếu không phải luồng đang live (video thường hoặc Replay live đã kết thúc) -> cho phép hiển thị
     if (!isOngoingLive) return false;
 
-    const video = player.querySelector('video');
-    if (!video) return false;
-
-    // 1. Khi video đang tạm dừng -> không nhận chat mới
-    if (video.paused) return true;
-
-    // 2. Kiểm tra xem người dùng có đang xem trực tiếp hay tua lùi về quá khứ
+    // 2. Đối với luồng ĐANG PHÁT TRỰC TIẾP:
+    // Kiểm tra xem người xem có đang ở mốc Live hay đang tua lùi về quá khứ
     try {
         if (typeof player.isAtLiveHead === 'function') {
-            if (!player.isAtLiveHead()) return true;
-        }
-    } catch (e) {}
-
-    try {
-        const liveBadge = player.querySelector('.ytp-live-badge');
-        if (liveBadge) {
-            const isDisabled = liveBadge.hasAttribute('disabled') || liveBadge.disabled;
-            if (!isDisabled) {
-                return true;
-            }
+            const atHead = player.isAtLiveHead();
+            if (atHead === true) return false;
+            if (atHead === false) return true;
         }
     } catch (e) {}
 
@@ -115,7 +109,8 @@ export function shouldSuppressLiveChatMessage(isBacklog) {
             const liveEdge = video.seekable.end(video.seekable.length - 1);
             if (isFinite(liveEdge) && isFinite(video.currentTime)) {
                 const delay = liveEdge - video.currentTime;
-                if (delay > 40) return true;
+                // Nếu bị trễ hơn 35 giây so với mốc trực tiếp -> đang tua lùi xem quá khứ
+                if (delay > 35) return true;
             }
         }
     } catch (e) {}

@@ -106,30 +106,40 @@ export function ensureChatOverlayContainers() {
     const player = document.querySelector('#movie_player, .html5-video-player');
     if (!player) return;
 
-    if (!danmakuContainer || !player.contains(danmakuContainer)) {
-        danmakuContainer = document.getElementById('ytc-danmaku-container');
-        if (!danmakuContainer) {
-            danmakuContainer = document.createElement('div');
-            danmakuContainer.id = 'ytc-danmaku-container';
-            player.appendChild(danmakuContainer);
-        }
+    let dContainer = document.getElementById('ytc-danmaku-container');
+    if (!dContainer) {
+        dContainer = document.createElement('div');
+        dContainer.id = 'ytc-danmaku-container';
+        player.appendChild(dContainer);
+    } else if (dContainer.parentElement !== player) {
+        player.appendChild(dContainer);
     }
+    danmakuContainer = dContainer;
 
-    if (!streamerBox || !player.contains(streamerBox)) {
-        streamerBox = document.getElementById('ytc-streamer-box');
-        if (!streamerBox) {
-            streamerBox = document.createElement('div');
-            streamerBox.id = 'ytc-streamer-box';
-            streamerBox.innerHTML = `
-                <div class="ytc-box-header">
-                    <span class="ytc-box-title">Trực tiếp</span>
-                    <button class="ytc-box-close" title="Ẩn chat">✕</button>
-                </div>
-                <div class="ytc-box-messages"></div>
-                <div class="ytc-box-resize" title="Kéo để thay đổi kích thước"></div>
-            `;
-            player.appendChild(streamerBox);
+    let sBox = document.getElementById('ytc-streamer-box');
+    if (!sBox) {
+        sBox = document.createElement('div');
+        sBox.id = 'ytc-streamer-box';
+        sBox.innerHTML = `
+            <div class="ytc-box-header">
+                <span class="ytc-box-title">Trực tiếp</span>
+                <button class="ytc-box-close" title="Ẩn chat">✕</button>
+            </div>
+            <div class="ytc-box-messages"></div>
+            <div class="ytc-box-resize" title="Kéo để thay đổi kích thước"></div>
+        `;
+        player.appendChild(sBox);
+
+        const closeBtn = sBox.querySelector('.ytc-box-close');
+        if (closeBtn) {
+            closeBtn.onclick = (e) => {
+                e.stopPropagation();
+                sBox.style.display = 'none';
+            };
         }
-        streamerMessages = streamerBox.querySelector('.ytc-box-messages');
+    } else if (sBox.parentElement !== player) {
+        player.appendChild(sBox);
     }
+    streamerBox = sBox;
+    streamerMessages = sBox.querySelector('.ytc-box-messages');
 }

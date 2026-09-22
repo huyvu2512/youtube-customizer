@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.2.4-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.2.5-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,10 +25,16 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.2.4** nâng cấp:
-- **Khắc phục triệt để xung đột với uBlock Origin (Xóa sổ quảng cáo 6s):**
-  - Gỡ bỏ việc can thiệp vô điều kiện vào `ytInitialPlayerResponse` và `JSON.parse` khi tính năng "Mở khóa tua Live Stream" đang tắt, bảo toàn 100% các scriptlet lọc quảng cáo của uBlock Origin.
-  - Khi tính năng Live DVR được bật, sử dụng cơ chế chained getter/setter bảo toàn tính năng chặn quảng cáo của trình chặn.
+Phiên bản **v3.2.5** nâng cấp:
+- **Sửa triệt để lỗi Live Chat không chạy trên luồng trực tiếp:**
+  - Loại bỏ hoàn toàn điều kiện kiểm tra sai lệch trên nút `.ytp-live-badge` (nút này không mang thuộc tính disabled trên YouTube hiện đại khiến 100% tin nhắn live trước đó bị chặn đứng).
+  - Chuẩn hóa cơ chế nhận diện Live Head qua `player.isAtLiveHead()` và `video.seekable`: chỉ chặn tin nhắn khi người dùng thực sự tua lùi về quá khứ (>35s) hoặc video đang tạm dừng.
+  - Khi bật Danmaku hoặc Khung nổi Streamer, script tự động nạp ngay các tin nhắn gần nhất để hiển thị tức thì, không bị trống màn hình lúc mới bật.
+  - Tăng cường khả năng nhận diện tin nhắn iframe và DOM lồng nhau (nested renderers).
+- **Kế thừa các tính năng từ v3.2.4:**
+  - Khắc phục triệt để xung đột uBlock Origin (xóa sổ quảng cáo 6s).
+  - Tích hợp lá chắn Ad Shield dự phòng.
+  - Tái cấu trúc toàn bộ codebase thành các module sạch (`core/`, `features/`, `player/`, `chat/`, `ui/`).
 - **Tích hợp lá chắn Ad Shield dự phòng:**
   - Tự động nhận diện container quảng cáo video (`.ad-showing`), tua nhanh đến hết thời lượng và kích hoạt sự kiện bấm nút bỏ qua (Skip Ad) ngay trong 0.05s.
 - **Tái cấu trúc mã nguồn theo kiến trúc module chuyên sâu:**

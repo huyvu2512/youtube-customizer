@@ -704,6 +704,8 @@ html:not([dark]) .ytc-mode-btn.active {
 #ytc-danmaku-container {
     position: absolute;
     inset: 0;
+    width: 100% !important;
+    height: 100% !important;
     pointer-events: none;
     overflow: hidden;
     z-index: 35 !important;

@@ -33,8 +33,18 @@ function getAvailableLane(now) {
 }
 
 function spawnDanmakuItem(data, laneIndex) {
-    const container = danmakuContainer || document.getElementById('ytc-danmaku-container');
+    let container = danmakuContainer || document.getElementById('ytc-danmaku-container');
+    if (!container) {
+        const player = document.querySelector('#movie_player, .html5-video-player');
+        if (player) {
+            container = document.createElement('div');
+            container.id = 'ytc-danmaku-container';
+            container.style.display = 'block';
+            player.appendChild(container);
+        }
+    }
     if (!container || !data || !data.messageHtml) return;
+    if (container.style.display === 'none') container.style.display = 'block';
 
     const item = document.createElement('div');
     item.className = 'ytc-danmaku-item';

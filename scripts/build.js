@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.4
-// @description  YouTube Customizer v3.2.4 — Khắc phục xung đột uBlock Origin, thêm Ad Shield, tái cấu trúc codebase dạng module.
+// @version      3.2.5
+// @description  YouTube Customizer v3.2.5 — Sửa triệt để luồng Live Chat (Danmaku & Khung nổi), nạp ngay tin nhắn và sửa bộ lọc Live edge.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
