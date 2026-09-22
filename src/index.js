@@ -53,72 +53,67 @@ export const DEFAULT_CONFIG = {
 };
 
 export function loadConfig() {
+    const safeParse = (key, isSession) => {
+        try {
+            const raw = isSession ? sessionStorage.getItem(key) : localStorage.getItem(key);
+            if (raw) return JSON.parse(raw);
+        } catch (e) {}
+        return null;
+    };
+
     try {
-        const safeParse = (str) => {
-            if (!str) return null;
-            try { return JSON.parse(str); } catch (e) { return null; }
-        };
+        // 1. Đọc từ khóa chính (ytc_config) — nguồn duy nhất cho mọi F5 / reload thông thường
+        let saved = safeParse('ytc_config');
 
-        const rawMain = localStorage.getItem('ytc_config');
-        const raw3 = localStorage.getItem('ytc_config_v3');
-        const rawPersistent = localStorage.getItem('ytc_config_persistent');
-        const rawBackup = sessionStorage.getItem('ytc_config_backup');
-        const raw2 = localStorage.getItem('ytc_config_v2');
+        // 2. Nếu khóa chính trống (ví dụ: sau khi update version mới lần đầu, hoặc bị xóa bộ nhớ),
+        //    dò lần lượt các khóa dự phòng từ các phiên bản cũ
+        if (!saved) saved = safeParse('ytc_config_persistent');
+        if (!saved) saved = safeParse('ytc_config_v3');
+        if (!saved) saved = safeParse('ytc_config_backup', true);
+        if (!saved) saved = safeParse('ytc_config_v2');
 
-        const candidates = [
-            safeParse(rawMain),
-            safeParse(raw3),
-            safeParse(rawPersistent),
-            safeParse(rawBackup),
-            safeParse(raw2)
-        ].filter(Boolean);
+        // 3. Gộp: DEFAULT_CONFIG (nền) + dữ liệu đã lưu (đè lên mặc định)
+        const merged = { ...DEFAULT_CONFIG, ...(saved || {}) };
 
-        let merged = Object.assign({}, DEFAULT_CONFIG);
-
-        // Kiểm tra xem có bản ghi nào có timestamp _lastUpdated hay không
-        const timedCandidates = candidates.filter(c => typeof c._lastUpdated === 'number');
-        if (timedCandidates.length > 0) {
-            // Bản lưu mới nhất theo thời gian thực thi của người dùng
-            timedCandidates.sort((a, b) => b._lastUpdated - a._lastUpdated);
-            merged = Object.assign({}, DEFAULT_CONFIG, timedCandidates[0]);
-        } else if (candidates.length > 0) {
-            // Trường hợp cập nhật từ các bản cũ (chưa có timestamp):
-            // Bảo toàn tuyệt đối mọi cài đặt người dùng đã từng bật ở bất kỳ bản nào
-            candidates.forEach(cand => {
-                Object.keys(DEFAULT_CONFIG).forEach(k => {
-                    if (typeof DEFAULT_CONFIG[k] === 'boolean' && cand[k] === true) {
-                        merged[k] = true;
-                    } else if (k === 'columns' && (cand[k] === 4 || cand[k] === 5)) {
-                        merged[k] = cand[k];
-                    }
-                });
-            });
-        }
-
-        // BẮT BUỘC: Live Chat luôn luôn mặc định TẮT sau mỗi video / F5!
+        // 4. BẮT BUỘC: Live Chat luôn luôn mặc định TẮT sau mỗi video / F5!
         merged.chatOverlay = 'off';
 
-        const json = JSON.stringify({ ...merged, _lastUpdated: Date.now() });
+        // 5. Loại bỏ các khóa rác không thuộc DEFAULT_CONFIG (vd: _lastUpdated cũ)
+        const clean = {};
+        for (const k of Object.keys(DEFAULT_CONFIG)) {
+            clean[k] = merged[k];
+        }
+        clean.chatOverlay = 'off';
+
+        // 6. Ghi ngược lại vào khóa chính + dự phòng để đồng bộ xuyên phiên bản
+        const json = JSON.stringify(clean);
         try {
             localStorage.setItem('ytc_config', json);
-            localStorage.setItem('ytc_config_v3', json);
             localStorage.setItem('ytc_config_persistent', json);
+            localStorage.setItem('ytc_config_v3', json);
             sessionStorage.setItem('ytc_config_backup', json);
         } catch (e) {}
 
-        return merged;
+        return clean;
     } catch (e) {
-        return Object.assign({}, DEFAULT_CONFIG);
+        return { ...DEFAULT_CONFIG };
     }
 }
 
 export function saveConfig(cfg) {
     try {
-        const toSave = { ...cfg, chatOverlay: 'off', _lastUpdated: Date.now() };
-        const json = JSON.stringify(toSave);
+        // Chỉ giữ các khóa thuộc DEFAULT_CONFIG, loại bỏ rác
+        const clean = {};
+        for (const k of Object.keys(DEFAULT_CONFIG)) {
+            clean[k] = (k in cfg) ? cfg[k] : DEFAULT_CONFIG[k];
+        }
+        // BẮT BUỘC: chatOverlay luôn ghi 'off' vào bộ nhớ lâu dài
+        clean.chatOverlay = 'off';
+
+        const json = JSON.stringify(clean);
         localStorage.setItem('ytc_config', json);
-        localStorage.setItem('ytc_config_v3', json);
         localStorage.setItem('ytc_config_persistent', json);
+        localStorage.setItem('ytc_config_v3', json);
         sessionStorage.setItem('ytc_config_backup', json);
     } catch (e) {}
 }

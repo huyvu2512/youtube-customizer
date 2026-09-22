@@ -2072,64 +2072,51 @@
     // Phím tắt A-S-D & Numpad (mặc định tắt)
   };
   function loadConfig() {
-    try {
-      const safeParse = (str) => {
-        if (!str) return null;
-        try {
-          return JSON.parse(str);
-        } catch (e) {
-          return null;
-        }
-      };
-      const rawMain = localStorage.getItem("ytc_config");
-      const raw3 = localStorage.getItem("ytc_config_v3");
-      const rawPersistent = localStorage.getItem("ytc_config_persistent");
-      const rawBackup = sessionStorage.getItem("ytc_config_backup");
-      const raw2 = localStorage.getItem("ytc_config_v2");
-      const candidates = [
-        safeParse(rawMain),
-        safeParse(raw3),
-        safeParse(rawPersistent),
-        safeParse(rawBackup),
-        safeParse(raw2)
-      ].filter(Boolean);
-      let merged = Object.assign({}, DEFAULT_CONFIG);
-      const timedCandidates = candidates.filter((c) => typeof c._lastUpdated === "number");
-      if (timedCandidates.length > 0) {
-        timedCandidates.sort((a, b) => b._lastUpdated - a._lastUpdated);
-        merged = Object.assign({}, DEFAULT_CONFIG, timedCandidates[0]);
-      } else if (candidates.length > 0) {
-        candidates.forEach((cand) => {
-          Object.keys(DEFAULT_CONFIG).forEach((k) => {
-            if (typeof DEFAULT_CONFIG[k] === "boolean" && cand[k] === true) {
-              merged[k] = true;
-            } else if (k === "columns" && (cand[k] === 4 || cand[k] === 5)) {
-              merged[k] = cand[k];
-            }
-          });
-        });
+    const safeParse = (key, isSession) => {
+      try {
+        const raw = isSession ? sessionStorage.getItem(key) : localStorage.getItem(key);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {
       }
+      return null;
+    };
+    try {
+      let saved = safeParse("ytc_config");
+      if (!saved) saved = safeParse("ytc_config_persistent");
+      if (!saved) saved = safeParse("ytc_config_v3");
+      if (!saved) saved = safeParse("ytc_config_backup", true);
+      if (!saved) saved = safeParse("ytc_config_v2");
+      const merged = { ...DEFAULT_CONFIG, ...saved || {} };
       merged.chatOverlay = "off";
-      const json = JSON.stringify({ ...merged, _lastUpdated: Date.now() });
+      const clean = {};
+      for (const k of Object.keys(DEFAULT_CONFIG)) {
+        clean[k] = merged[k];
+      }
+      clean.chatOverlay = "off";
+      const json = JSON.stringify(clean);
       try {
         localStorage.setItem("ytc_config", json);
-        localStorage.setItem("ytc_config_v3", json);
         localStorage.setItem("ytc_config_persistent", json);
+        localStorage.setItem("ytc_config_v3", json);
         sessionStorage.setItem("ytc_config_backup", json);
       } catch (e) {
       }
-      return merged;
+      return clean;
     } catch (e) {
-      return Object.assign({}, DEFAULT_CONFIG);
+      return { ...DEFAULT_CONFIG };
     }
   }
   function saveConfig(cfg) {
     try {
-      const toSave = { ...cfg, chatOverlay: "off", _lastUpdated: Date.now() };
-      const json = JSON.stringify(toSave);
+      const clean = {};
+      for (const k of Object.keys(DEFAULT_CONFIG)) {
+        clean[k] = k in cfg ? cfg[k] : DEFAULT_CONFIG[k];
+      }
+      clean.chatOverlay = "off";
+      const json = JSON.stringify(clean);
       localStorage.setItem("ytc_config", json);
-      localStorage.setItem("ytc_config_v3", json);
       localStorage.setItem("ytc_config_persistent", json);
+      localStorage.setItem("ytc_config_v3", json);
       sessionStorage.setItem("ytc_config_backup", json);
     } catch (e) {
     }
