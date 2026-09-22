@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.12
-// @description  YouTube Customizer v3.2.12 — Khắc phục lỗi live stream nhảy về 0:00 & triệt tiêu hoàn toàn lỗi đơ/treo tab khi bật Live Chat.
+// @version      3.2.13
+// @description  YouTube Customizer v3.2.13 — Khắc phục triệt để lỗi đè tiếng, lặp video và tối ưu hóa mượt mà tính năng Auto Live Sync.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -28,7 +28,7 @@
   var APP_VERSION, CONFIG_KEY, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.2.12";
+      APP_VERSION = "3.2.13";
       CONFIG_KEY = "ytc_config";
       GEAR_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>`;
       GRID_SVG = `<svg viewBox="0 0 24 24"><path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h7v7h-7v-7z"/></svg>`;
@@ -1916,6 +1916,7 @@
     if (liveBadge) {
       try {
         liveBadge.click();
+        return;
       } catch (e) {
       }
     }
@@ -1973,57 +1974,58 @@
     }
     const video = player.querySelector("video");
     if (!video || video.paused || video.ended) return;
-    const liveBadge = player.querySelector(".ytp-live-badge");
-    if (!liveBadge) return;
     const delay = getLiveDelay(player, video);
     if (userIsRewound) {
-      if (delay <= 3) {
+      if (delay <= 5) {
         userIsRewound = false;
       } else {
-        if (video.playbackRate === 1.08) {
+        if (video.playbackRate !== 1) {
           video.playbackRate = 1;
         }
         return;
       }
     }
     if (Date.now() - lastUserSeekTime < 8e3) return;
-    const isBadgeBehind = !liveBadge.hasAttribute("disabled");
-    const isBehind = isBadgeBehind || delay > 2.5;
-    if (!isBehind) {
-      if (video.playbackRate === 1.08) {
-        video.playbackRate = 1;
-      }
-      return;
-    }
     const now = Date.now();
-    if (delay > 5 || isBadgeBehind && delay > 3) {
-      if (now - lastSnapTime > 4e3) {
+    if (delay > 20) {
+      if (now - lastSnapTime > 15e3) {
         lastSnapTime = now;
         snapToLive(player);
-        if (video.playbackRate === 1.08) {
+        if (video.playbackRate !== 1) {
           video.playbackRate = 1;
         }
       }
-    } else if (delay > 2) {
-      if (video.playbackRate === 1) {
-        video.playbackRate = 1.08;
+      return;
+    }
+    if (delay > 8) {
+      if (video.playbackRate !== 1.06) {
+        video.playbackRate = 1.06;
       }
+      return;
+    }
+    if (video.playbackRate !== 1) {
+      video.playbackRate = 1;
     }
   }
+  var initialSnapTimer = null;
   function checkInitialLiveSnap() {
+    if (initialSnapTimer) {
+      clearInterval(initialSnapTimer);
+      initialSnapTimer = null;
+    }
     let attempts = 0;
-    const interval = setInterval(() => {
+    initialSnapTimer = setInterval(() => {
       attempts++;
       const player = document.querySelector("#movie_player, .html5-video-player");
       if (player && isCurrentlyActiveLive(player)) {
         const video = player.querySelector("video");
         if (video && !video.paused) {
-          clearInterval(interval);
+          clearInterval(initialSnapTimer);
+          initialSnapTimer = null;
           if (!userIsRewound && currentConfig.autoLiveSync) {
             const delay = getLiveDelay(player, video);
-            const liveBadge = player.querySelector(".ytp-live-badge");
-            const isBadgeBehind = liveBadge && !liveBadge.hasAttribute("disabled");
-            if (delay > 3.5 || isBadgeBehind) {
+            if (delay > 25) {
+              lastSnapTime = Date.now();
               snapToLive(player);
             }
           }
@@ -2031,16 +2033,17 @@
         }
       }
       if (attempts >= 15) {
-        clearInterval(interval);
+        clearInterval(initialSnapTimer);
+        initialSnapTimer = null;
       }
-    }, 400);
+    }, 500);
   }
   function initAutoLiveSync() {
     if (autoLiveSyncTimer) return;
-    autoLiveSyncTimer = setInterval(checkLiveSync, 1500);
+    autoLiveSyncTimer = setInterval(checkLiveSync, 2e3);
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden && currentConfig.autoLiveSync) {
-        setTimeout(checkLiveSync, 300);
+        setTimeout(checkLiveSync, 500);
       }
     });
     document.addEventListener("click", (e) => {
@@ -2058,14 +2061,12 @@
           if (!player) return;
           const video = player.querySelector("video");
           const delay = getLiveDelay(player, video);
-          const liveBadge = player.querySelector(".ytp-live-badge");
-          const isBadgeBehind = liveBadge && !liveBadge.hasAttribute("disabled");
-          if (delay > 5 || isBadgeBehind) {
+          if (delay > 15) {
             userIsRewound = true;
           } else {
             userIsRewound = false;
           }
-        }, 250);
+        }, 300);
       }
     }, true);
     document.addEventListener("yt-navigate-start", resetAutoLiveState);

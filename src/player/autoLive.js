@@ -23,13 +23,17 @@ export function snapToLive(player) {
     if (!player) player = document.querySelector('#movie_player, .html5-video-player');
     if (!player) return;
 
-    // 1. Nhấp trực tiếp vào badge "Trực tiếp" / "LIVE" của YouTube player
+    // 1. Ưu tiên click nút "Trực tiếp" / "LIVE" chính thức của YouTube player
+    // YouTube sẽ tự đồng bộ buffer và audio mà không bị đè tiếng
     const liveBadge = player.querySelector('.ytp-live-badge');
     if (liveBadge) {
-        try { liveBadge.click(); } catch (e) {}
+        try {
+            liveBadge.click();
+            return;
+        } catch (e) {}
     }
 
-    // 2. Gọi API chính thức của YouTube player để nhảy tới điểm trực tiếp mới nhất
+    // 2. Dự phòng: chỉ gọi seekTo nếu không có liveBadge để tránh xung đột 2 lệnh seek gây đè tiếng
     try {
         if (typeof player.seekToStreamTime === 'function') {
             player.seekToStreamTime(Infinity);
@@ -89,18 +93,15 @@ function checkLiveSync() {
     const video = player.querySelector('video');
     if (!video || video.paused || video.ended) return;
 
-    const liveBadge = player.querySelector('.ytp-live-badge');
-    if (!liveBadge) return;
-
     const delay = getLiveDelay(player, video);
 
     // Nếu người dùng đang CHỦ ĐỘNG tua xem lại quá khứ:
     // Tuyệt đối không tự ép kéo về mốc live! Để người dùng tự do xem lại.
     if (userIsRewound) {
-        if (delay <= 3.0) {
+        if (delay <= 5.0) {
             userIsRewound = false; // Đã xem lại tới sát mốc trực tiếp
         } else {
-            if (video.playbackRate === 1.08) {
+            if (video.playbackRate !== 1.0) {
                 video.playbackRate = 1.0;
             }
             return;
@@ -110,50 +111,56 @@ function checkLiveSync() {
     // Vừa tương tác tua thủ công gần đây (< 8s) -> tạm hoãn để người dùng xem mượt
     if (Date.now() - lastUserSeekTime < 8000) return;
 
-    const isBadgeBehind = !liveBadge.hasAttribute('disabled');
-    const isBehind = isBadgeBehind || delay > 2.5;
+    const now = Date.now();
 
-    if (!isBehind) {
-        if (video.playbackRate === 1.08) {
-            video.playbackRate = 1.0;
+    // 1. Chậm rất nặng (> 20s, ví dụ bị tụt về 0:00 ban đầu hoặc lag mạng lâu):
+    // Snap về trực tiếp một lần, cooldown ít nhất 15s để buffer ổn định không snap liên tục
+    if (delay > 20.0) {
+        if (now - lastSnapTime > 15000) {
+            lastSnapTime = now;
+            snapToLive(player);
+            if (video.playbackRate !== 1.0) {
+                video.playbackRate = 1.0;
+            }
         }
         return;
     }
 
-    const now = Date.now();
-
-    // Chậm đáng kể (> 5.0s hoặc bị đẩy về 0:00 ban đầu): Lập tức snap về trực tiếp
-    if (delay > 5.0 || (isBadgeBehind && delay > 3.0)) {
-        if (now - lastSnapTime > 4000) {
-            lastSnapTime = now;
-            snapToLive(player);
-            if (video.playbackRate === 1.08) {
-                video.playbackRate = 1.0;
-            }
+    // 2. Chậm vừa phải (8s - 20s): Tăng nhẹ tốc độ 1.06x để bắt kịp êm ái, KHÔNG snap gây giật lặp âm thanh
+    if (delay > 8.0) {
+        if (video.playbackRate !== 1.06) {
+            video.playbackRate = 1.06;
         }
+        return;
     }
-    // Chậm nhẹ (2.0s - 5.0s): Tăng tốc độ phát 1.08x để bắt kịp êm ái
-    else if (delay > 2.0) {
-        if (video.playbackRate === 1.0) {
-            video.playbackRate = 1.08;
-        }
+
+    // 3. Trong ngưỡng độ trễ tự nhiên bình thường của YouTube (<= 8s):
+    // Giữ nguyên tốc độ chuẩn 1.0x, tuyệt đối không can thiệp hay seek
+    if (video.playbackRate !== 1.0) {
+        video.playbackRate = 1.0;
     }
 }
 
+let initialSnapTimer = null;
 export function checkInitialLiveSnap() {
+    if (initialSnapTimer) {
+        clearInterval(initialSnapTimer);
+        initialSnapTimer = null;
+    }
     let attempts = 0;
-    const interval = setInterval(() => {
+    initialSnapTimer = setInterval(() => {
         attempts++;
         const player = document.querySelector('#movie_player, .html5-video-player');
         if (player && isCurrentlyActiveLive(player)) {
             const video = player.querySelector('video');
             if (video && !video.paused) {
-                clearInterval(interval);
+                clearInterval(initialSnapTimer);
+                initialSnapTimer = null;
                 if (!userIsRewound && currentConfig.autoLiveSync) {
                     const delay = getLiveDelay(player, video);
-                    const liveBadge = player.querySelector('.ytp-live-badge');
-                    const isBadgeBehind = liveBadge && !liveBadge.hasAttribute('disabled');
-                    if (delay > 3.5 || isBadgeBehind) {
+                    // Chỉ snap nếu ban đầu video bị tụt sâu về 0:00 (> 25s)
+                    if (delay > 25.0) {
+                        lastSnapTime = Date.now();
                         snapToLive(player);
                     }
                 }
@@ -161,19 +168,20 @@ export function checkInitialLiveSnap() {
             }
         }
         if (attempts >= 15) {
-            clearInterval(interval);
+            clearInterval(initialSnapTimer);
+            initialSnapTimer = null;
         }
-    }, 400);
+    }, 500);
 }
 
 export function initAutoLiveSync() {
     if (autoLiveSyncTimer) return;
 
-    autoLiveSyncTimer = setInterval(checkLiveSync, 1500);
+    autoLiveSyncTimer = setInterval(checkLiveSync, 2000);
 
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden && currentConfig.autoLiveSync) {
-            setTimeout(checkLiveSync, 300);
+            setTimeout(checkLiveSync, 500);
         }
     });
 
@@ -195,14 +203,12 @@ export function initAutoLiveSync() {
                 if (!player) return;
                 const video = player.querySelector('video');
                 const delay = getLiveDelay(player, video);
-                const liveBadge = player.querySelector('.ytp-live-badge');
-                const isBadgeBehind = liveBadge && !liveBadge.hasAttribute('disabled');
-                if (delay > 5.0 || isBadgeBehind) {
+                if (delay > 15.0) {
                     userIsRewound = true;
                 } else {
                     userIsRewound = false;
                 }
-            }, 250);
+            }, 300);
         }
     }, true);
 

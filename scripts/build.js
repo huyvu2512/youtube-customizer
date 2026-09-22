@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.12
-// @description  YouTube Customizer v3.2.12 — Khắc phục lỗi live stream nhảy về 0:00 & triệt tiêu hoàn toàn lỗi đơ/treo tab khi bật Live Chat.
+// @version      3.2.13
+// @description  YouTube Customizer v3.2.13 — Khắc phục triệt để lỗi đè tiếng, lặp video và tối ưu hóa mượt mà tính năng Auto Live Sync.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
