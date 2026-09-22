@@ -860,21 +860,45 @@ export function initIframeChatSender() {
         }
     });
 
+function isUserInteractingWithChatMenu(doc) {
+    const root = doc || document;
+    // Kiểm tra xem có popup/dropdown nào đang mở không (như menu chọn Tin nhắn hàng đầu / Trực tiếp [Ảnh 2] hoặc menu 3 chấm [Ảnh 3])
+    const popups = root.querySelectorAll('tp-yt-iron-dropdown, iron-dropdown, ytd-menu-popup-renderer, tp-yt-paper-listbox');
+    for (const popup of popups) {
+        if (popup.offsetParent !== null && !popup.hasAttribute('aria-hidden') && popup.style.display !== 'none') {
+            return true;
+        }
+    }
+    return false;
+}
+
     // Chống đứng chat YouTube (Auto unpause & Auto scroll bottom)
     setInterval(() => {
         try {
-            // 1. Nhấn nút "Tin nhắn mới" / "Cuộc trò chuyện bị tạm dừng" nếu bị YouTube dừng
-            const showMoreBtn = document.querySelector('#show-more button, yt-live-chat-item-list-renderer #show-more, [aria-label*="Cuộc trò chuyện bị tạm dừng"], [aria-label*="Chat paused"], [aria-label*="Tin nhắn mới"], [aria-label*="New messages"]');
-            if (showMoreBtn) {
-                showMoreBtn.click();
+            // NẾU NGƯỜI DÙNG ĐANG MỞ MENU/TAB DROPDOWN (Ảnh 2 & 3): TUYỆT ĐỐI KHÔNG CLICK HOẶC SCROLL!
+            // Tránh hoàn toàn việc vừa mở menu lên 1s lại bị tự động đóng mất menu!
+            if (isUserInteractingWithChatMenu(document)) {
+                return;
             }
-            // 2. Luôn ghim cuộn xuống cuối cùng để YouTube không tự pause
+
+            // 1. Chỉ click nút "Tin nhắn mới" / "Cuộc trò chuyện bị tạm dừng" KHI NÓ ĐANG THỰC SỰ HIỆN DIỆN (visible)
+            const showMoreBtn = document.querySelector('#show-more:not([hidden]) button, #show-more button');
+            if (showMoreBtn && showMoreBtn.offsetParent !== null) {
+                const rect = showMoreBtn.getBoundingClientRect();
+                if (rect.width > 0 && rect.height > 0) {
+                    showMoreBtn.click();
+                }
+            }
+            // 2. Chỉ cuộn xuống nếu đang bị chậm và người dùng không di chuột trong vùng chat
             const scroller = document.querySelector('#item-scroller, yt-live-chat-item-list-renderer #item-scroller');
-            if (scroller) {
-                scroller.scrollTop = scroller.scrollHeight;
+            if (scroller && !scroller.matches(':hover')) {
+                const distFromBottom = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight;
+                if (distFromBottom > 50) {
+                    scroller.scrollTop = scroller.scrollHeight;
+                }
             }
         } catch (e) {}
-    }, 1500);
+    }, 2000);
 }
 
 function processChatNode(node) {
@@ -944,10 +968,20 @@ export function initChatOverlay() {
             ensureBackgroundLiveChat();
             // Chống đứng chat YouTube trong Main DOM nếu có
             try {
-                const showMore = document.querySelector('#show-more button, yt-live-chat-item-list-renderer #show-more, [aria-label*="Cuộc trò chuyện bị tạm dừng"], [aria-label*="Chat paused"], [aria-label*="Tin nhắn mới"], [aria-label*="New messages"]');
-                if (showMore) showMore.click();
-                const scroller = document.querySelector('#item-scroller, yt-live-chat-item-list-renderer #item-scroller');
-                if (scroller) scroller.scrollTop = scroller.scrollHeight;
+                if (!isUserInteractingWithChatMenu(document)) {
+                    const showMore = document.querySelector('#show-more:not([hidden]) button, #show-more button');
+                    if (showMore && showMore.offsetParent !== null) {
+                        const rect = showMore.getBoundingClientRect();
+                        if (rect.width > 0 && rect.height > 0) {
+                            showMore.click();
+                        }
+                    }
+                    const scroller = document.querySelector('#item-scroller, yt-live-chat-item-list-renderer #item-scroller');
+                    if (scroller && !scroller.matches(':hover')) {
+                        const dist = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight;
+                        if (dist > 50) scroller.scrollTop = scroller.scrollHeight;
+                    }
+                }
             } catch (e) {}
         }
     }, 2000);

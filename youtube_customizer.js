@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.1.6
-// @description  YouTube Customizer v3.1.6 — Hoàn thiện Khung nổi Streamer 10px đều dòng, responsive zoom/fullscreen, chạy ngầm live chat và tối ưu Auto Live.
+// @version      3.1.7
+// @description  YouTube Customizer v3.1.7 — Tự động tắt Live Chat khi về trang chủ/chuyển video, chống tự đóng menu dropdown trong chat.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -684,19 +684,38 @@
         if (items) sendExisting(items);
       }
     });
+    function isUserInteractingWithChatMenu2(doc) {
+      const root = doc || document;
+      const popups = root.querySelectorAll("tp-yt-iron-dropdown, iron-dropdown, ytd-menu-popup-renderer, tp-yt-paper-listbox");
+      for (const popup of popups) {
+        if (popup.offsetParent !== null && !popup.hasAttribute("aria-hidden") && popup.style.display !== "none") {
+          return true;
+        }
+      }
+      return false;
+    }
     setInterval(() => {
       try {
-        const showMoreBtn = document.querySelector('#show-more button, yt-live-chat-item-list-renderer #show-more, [aria-label*="Cuộc trò chuyện bị tạm dừng"], [aria-label*="Chat paused"], [aria-label*="Tin nhắn mới"], [aria-label*="New messages"]');
-        if (showMoreBtn) {
-          showMoreBtn.click();
+        if (isUserInteractingWithChatMenu2(document)) {
+          return;
+        }
+        const showMoreBtn = document.querySelector("#show-more:not([hidden]) button, #show-more button");
+        if (showMoreBtn && showMoreBtn.offsetParent !== null) {
+          const rect = showMoreBtn.getBoundingClientRect();
+          if (rect.width > 0 && rect.height > 0) {
+            showMoreBtn.click();
+          }
         }
         const scroller = document.querySelector("#item-scroller, yt-live-chat-item-list-renderer #item-scroller");
-        if (scroller) {
-          scroller.scrollTop = scroller.scrollHeight;
+        if (scroller && !scroller.matches(":hover")) {
+          const distFromBottom = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight;
+          if (distFromBottom > 50) {
+            scroller.scrollTop = scroller.scrollHeight;
+          }
         }
       } catch (e) {
       }
-    }, 1500);
+    }, 2e3);
   }
   function processChatNode(node) {
     if (!node || node.nodeType !== 1) return;
@@ -749,10 +768,20 @@
         ensureNativeLiveChatRunning();
         ensureBackgroundLiveChat();
         try {
-          const showMore = document.querySelector('#show-more button, yt-live-chat-item-list-renderer #show-more, [aria-label*="Cuộc trò chuyện bị tạm dừng"], [aria-label*="Chat paused"], [aria-label*="Tin nhắn mới"], [aria-label*="New messages"]');
-          if (showMore) showMore.click();
-          const scroller = document.querySelector("#item-scroller, yt-live-chat-item-list-renderer #item-scroller");
-          if (scroller) scroller.scrollTop = scroller.scrollHeight;
+          if (!isUserInteractingWithChatMenu(document)) {
+            const showMore = document.querySelector("#show-more:not([hidden]) button, #show-more button");
+            if (showMore && showMore.offsetParent !== null) {
+              const rect = showMore.getBoundingClientRect();
+              if (rect.width > 0 && rect.height > 0) {
+                showMore.click();
+              }
+            }
+            const scroller = document.querySelector("#item-scroller, yt-live-chat-item-list-renderer #item-scroller");
+            if (scroller && !scroller.matches(":hover")) {
+              const dist = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight;
+              if (dist > 50) scroller.scrollTop = scroller.scrollHeight;
+            }
+          }
         } catch (e) {
         }
       }
@@ -1474,7 +1503,7 @@
       panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v3.1.6</span>
+                <span class="ytc-header-badge">v3.1.7</span>
             </div>
 
             <div class="ytc-tabs">
@@ -1751,6 +1780,25 @@
     }
     return panel;
   }
+  function syncPanelState(targetPanel) {
+    const panel = targetPanel || document.getElementById("yt-customizer-panel");
+    if (!panel) return;
+    const currentMode = currentConfig.chatOverlay || "off";
+    panel.querySelectorAll(".ytc-mode-btn").forEach((btn) => {
+      btn.classList.toggle("active", btn.getAttribute("data-overlay") === currentMode);
+    });
+    panel.querySelectorAll(".ytc-item[data-toggle]").forEach((item) => {
+      const key = item.getAttribute("data-toggle");
+      const checkbox = item.querySelector('input[type="checkbox"]');
+      if (checkbox && key in currentConfig) {
+        checkbox.checked = !!currentConfig[key];
+      }
+    });
+    panel.querySelectorAll(".ytc-col-btn").forEach((colBtn) => {
+      const cols = parseInt(colBtn.getAttribute("data-cols"), 10);
+      colBtn.classList.toggle("active", cols === currentConfig.columns);
+    });
+  }
   function ensureSettingsElements() {
     const endContainer = document.querySelector("ytd-masthead #end, #masthead #end, #end.ytd-masthead");
     if (!endContainer) return;
@@ -1765,6 +1813,7 @@
       endContainer.insertBefore(btn, endContainer.firstElementChild);
     }
     const panel = createSettingsPanel();
+    syncPanelState(panel);
     bindGlobalMenuDismiss();
     if (!btn._ytcBound) {
       btn._ytcBound = true;
@@ -1776,6 +1825,7 @@
       btn.addEventListener("mouseenter", updatePosition, { passive: true });
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
+        syncPanelState(panel);
         updatePosition();
         panel.classList.toggle("open");
       });
@@ -1921,15 +1971,12 @@
   } else {
     let onNavigate = function() {
       currentConfig.chatOverlay = "off";
-      const panel = document.getElementById("yt-customizer-panel");
-      if (panel) {
-        panel.querySelectorAll(".ytc-mode-btn").forEach((btn) => {
-          btn.classList.toggle("active", btn.getAttribute("data-overlay") === "off");
-        });
-      }
+      updateChatOverlayVisibility();
+      syncPanelState();
       applyConfigToRoot();
       scheduleLogoScan(document);
       ensureSettingsElements();
+      syncPanelState();
       bindGlobalKeys();
       setupFullscreenLock();
       dismissPromoBanners(document);
@@ -1953,8 +2000,23 @@
     document.addEventListener("yt-navigate-start", () => {
       currentConfig.chatOverlay = "off";
       updateChatOverlayVisibility();
+      syncPanelState();
       if (location.pathname.startsWith("/watch")) {
         setWatchLoading(true);
+      }
+    });
+    window.addEventListener("popstate", () => {
+      if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) {
+        currentConfig.chatOverlay = "off";
+        updateChatOverlayVisibility();
+        syncPanelState();
+      }
+    });
+    document.addEventListener("yt-page-data-updated", () => {
+      if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) {
+        currentConfig.chatOverlay = "off";
+        updateChatOverlayVisibility();
+        syncPanelState();
       }
     });
     document.addEventListener("yt-navigate-finish", onNavigate);

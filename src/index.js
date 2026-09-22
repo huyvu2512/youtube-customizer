@@ -20,7 +20,7 @@ import {
     initIframeChatSender,
     initAutoLiveSync
 } from './features.js';
-import { ensureSettingsElements, setupSettingsObserver } from './ui.js';
+import { ensureSettingsElements, setupSettingsObserver, syncPanelState } from './ui.js';
 
 // Khởi chạy hook can thiệp Live Stream DVR càng sớm càng tốt (chỉ trong top window)
 if (window.self === window.top) {
@@ -150,18 +150,15 @@ if (window.self !== window.top) {
     // 3. ĐIỀU PHỐI VÒNG ĐỜI SPA
     // --------------------------------------------------------------------------
     function onNavigate() {
-        // Chuyển video khác: BẮT BUỘC TẮT LUÔN Live Chat!
+        // Chuyển video khác hoặc về trang chủ: BẮT BUỘC TẮT LUÔN Live Chat!
         currentConfig.chatOverlay = 'off';
-        const panel = document.getElementById('yt-customizer-panel');
-        if (panel) {
-            panel.querySelectorAll('.ytc-mode-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-overlay') === 'off');
-            });
-        }
+        updateChatOverlayVisibility();
+        syncPanelState();
 
         applyConfigToRoot();
         scheduleLogoScan(document);
         ensureSettingsElements();
+        syncPanelState();
         bindGlobalKeys();
         setupFullscreenLock();
         dismissPromoBanners(document);
@@ -183,11 +180,28 @@ if (window.self !== window.top) {
     }
 
     document.addEventListener('yt-navigate-start', () => {
-        // Chuyển video khác: Tắt Live Chat ngay lập tức
+        // Chuyển video khác / rời video: Tắt Live Chat ngay lập tức
         currentConfig.chatOverlay = 'off';
         updateChatOverlayVisibility();
+        syncPanelState();
         if (location.pathname.startsWith('/watch')) {
             setWatchLoading(true);
+        }
+    });
+
+    window.addEventListener('popstate', () => {
+        if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) {
+            currentConfig.chatOverlay = 'off';
+            updateChatOverlayVisibility();
+            syncPanelState();
+        }
+    });
+
+    document.addEventListener('yt-page-data-updated', () => {
+        if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) {
+            currentConfig.chatOverlay = 'off';
+            updateChatOverlayVisibility();
+            syncPanelState();
         }
     });
 

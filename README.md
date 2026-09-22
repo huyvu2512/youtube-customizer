@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.1.6-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.1.7-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,21 +25,19 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.1.6** nâng cấp:
-- **Khung nổi Streamer 10px siêu gọn, đồng đều hàng lối:**
-  - Giảm kích thước chữ xuống 10px, avatar 10px, badge 9px.
-  - Tông màu @tên tác giả thường chuyển sang màu nhạt dịu mắt (#9ab4c7), làm nổi bật nội dung tin nhắn màu trắng tinh (#ffffff).
-  - Khống chế toàn bộ icon emoji và custom emote về kích thước siêu nhỏ 10px (bằng cỡ chữ), triệt tiêu hoàn toàn lỗi dòng cao dòng thấp lỏ, mọi dòng cmt cao đều tăm tắp.
-  - Loại bỏ hiệu ứng translateY gây giật lag khung hình khi có tin nhắn mới, chuyển sang fade-in opacity mượt mà.
-- **Tự động cân đối kích thước chữ khi phóng to (Responsive Zoom / Fullscreen):**
-  - Khi xem ở màn hình bình thường: Giữ chuẩn 10px siêu gọn để chứa tối đa số lượng bình luận.
-  - Khi phóng to toàn màn hình (Fullscreen): Tự động mở rộng tỷ lệ chữ Streamer lên 13.5px, icon 13.5px và Danmaku lên 25px, giúp hiển thị sắc nét, vừa vặn trên màn hình lớn.
-- **Tối ưu hóa chạy ngầm Live Chat & Chặn popup Fullscreen:**
-  - Giữ khung chat gốc của YouTube chạy ngầm ở trạng thái active (off-screen visual hidden) cho cả Live trực tiếp và Phát lại live stream cũ (Replay), giúp cmt luôn chạy mượt mà ngay cả khi người dùng từng bấm ẩn chat.
-  - Khóa vĩnh viễn khung chat gốc trong chế độ Fullscreen, đảm bảo khi zoom to không bao giờ bị hiện khung chat native làm phiền.
-- **Tối ưu hóa tính năng Tự động trực tiếp (Auto Live Sync):**
-  - Giới hạn nghiêm ngặt chỉ chạy khi luồng phát đang thực sự là LIVE trực tiếp thời gian thực; tuyệt đối không can thiệp hay gây lỗi tự động tắt/dừng video khi xem lại live stream cũ.
-  - Bổ sung nhận diện tua lại thông minh: Khi người dùng chủ động kéo thanh tua lại để xem tình huống trước đó (delay > 15s), tính năng sẽ giữ nguyên không tự ý kéo giật về mốc trực tiếp.
+Phiên bản **v3.1.7** nâng cấp:
+- **Tự động tắt Live Chat triệt để khi rời video hoặc về trang chủ:**
+  - Bổ sung hàm đồng bộ trạng thái giao diện syncPanelState() được kích hoạt ngay khi mở menu cài đặt, khi chuyển video (yt-navigate-start/yt-navigate-finish) và khi quay về trang chủ (popstate, yt-page-data-updated).
+  - Đảm bảo khi người dùng tắt video, quay về trang chủ hoặc tải lại trang, nút Live Chat trên menu luôn hiển thị đúng trạng thái "Tắt", không bao giờ bị lưu sai trạng thái "Nổi" từ video trước.
+- **Chống tự động đóng/tắt menu dropdown trong Live Chat:**
+  - Tự động nhận diện khi người dùng đang mở dropdown lựa chọn (như menu "Tin nhắn hàng đầu / Trò chuyện trực tiếp" hoặc menu 3 chấm tùy chọn).
+  - Tạm dừng hoàn toàn việc click nút unpause hay thay đổi cuộn chuột trong lúc menu đang mở, chấm dứt hiện tượng mở menu lên 1 giây lại tự động bị tắt/đóng mất.
+  - Thêm điều kiện kiểm tra độ hiển thị thực tế của nút unpause (width > 0 && height > 0) và chỉ cuộn khi thanh cuộn bị trễ trên 50px mà không bị hover chuột.
+- **Kế thừa các tính năng nổi bật từ v3.1.6:**
+  - Khung nổi Streamer 10px siêu gọn, đều tăm tắp, không còn lỗi dòng cao dòng thấp do icon emoji.
+  - Tự động cân đối tỷ lệ kích thước chữ khi phóng to toàn màn hình (Responsive Zoom / Fullscreen).
+  - Khung chat gốc chạy ngầm off-screen 100% cho cả Live và Replay, khóa vĩnh viễn popup khi Fullscreen.
+  - Tối ưu Auto Live chống dừng/tắt video khi xem lại live cũ và tôn trọng thao tác tua lại của người dùng.
 - **Kế thừa các tính năng nổi bật từ v3.1.5 & v3.1.4:**
   - Khung nổi Streamer bám góc tuyệt đối (CSS Corner Anchor) khi phóng to / thu nhỏ.
   - Danmaku dãn cách thưa thớt (10 làn chạy, cooldown 420ms chống đè chữ, loại bỏ dồn cục lúc đầu bật).
