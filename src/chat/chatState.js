@@ -53,18 +53,48 @@ export function syncPlayerFullscreenSize() {
     const player = document.querySelector('#movie_player, .html5-video-player');
     if (!player) return;
 
+    const video = player.querySelector('video.html5-main-video') || player.querySelector('video');
+    if (!video) return;
+
     if (!isFs) {
-        const video = player.querySelector('video.html5-main-video');
-        if (video) {
-            if (video.dataset.ytcOverridden) {
-                delete video.dataset.ytcOverridden;
-                video.style.width = '';
-                video.style.height = '';
-                video.style.left = '';
-                video.style.top = '';
+        delete video.dataset.ytcOverridden;
+
+        // Tính toán kích thước chuẩn để video vừa khít khung movie_player bình thường, TUYỆT ĐỐI KHÔNG set rỗng ('') làm đen màn hình!
+        const pW = player.clientWidth || player.offsetWidth;
+        const pH = player.clientHeight || player.offsetHeight;
+        const vW = video.videoWidth;
+        const vH = video.videoHeight;
+
+        if (pW > 0 && pH > 0) {
+            if (vW > 0 && vH > 0) {
+                const videoRatio = vW / vH;
+                const playerRatio = pW / pH;
+                let targetW, targetH, targetLeft, targetTop;
+
+                if (playerRatio > videoRatio) {
+                    targetH = pH;
+                    targetW = Math.round(targetH * videoRatio);
+                    targetLeft = Math.round((pW - targetW) / 2);
+                    targetTop = 0;
+                } else {
+                    targetW = pW;
+                    targetH = Math.round(targetW / videoRatio);
+                    targetLeft = 0;
+                    targetTop = Math.round((pH - targetH) / 2);
+                }
+
+                video.style.width = `${targetW}px`;
+                video.style.height = `${targetH}px`;
+                video.style.left = `${targetLeft}px`;
+                video.style.top = `${targetTop}px`;
+            } else {
+                video.style.width = '100%';
+                video.style.height = '100%';
+                video.style.left = '0px';
+                video.style.top = '0px';
             }
         }
-        // Kích hoạt YouTube tính toán lại kích thước video khi thoát fullscreen để chống đen màn hình
+
         if (typeof player.setInternalSize === 'function') {
             try { player.setInternalSize(); } catch(e) {}
         }

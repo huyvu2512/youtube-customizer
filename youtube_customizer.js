@@ -1003,15 +1003,39 @@
     const isFs = !!(document.fullscreenElement || document.querySelector("#movie_player.ytp-fullscreen, .html5-video-player.ytp-fullscreen"));
     const player = document.querySelector("#movie_player, .html5-video-player");
     if (!player) return;
+    const video = player.querySelector("video.html5-main-video") || player.querySelector("video");
+    if (!video) return;
     if (!isFs) {
-      const video = player.querySelector("video.html5-main-video");
-      if (video) {
-        if (video.dataset.ytcOverridden) {
-          delete video.dataset.ytcOverridden;
-          video.style.width = "";
-          video.style.height = "";
-          video.style.left = "";
-          video.style.top = "";
+      delete video.dataset.ytcOverridden;
+      const pW = player.clientWidth || player.offsetWidth;
+      const pH = player.clientHeight || player.offsetHeight;
+      const vW = video.videoWidth;
+      const vH = video.videoHeight;
+      if (pW > 0 && pH > 0) {
+        if (vW > 0 && vH > 0) {
+          const videoRatio = vW / vH;
+          const playerRatio = pW / pH;
+          let targetW, targetH, targetLeft, targetTop;
+          if (playerRatio > videoRatio) {
+            targetH = pH;
+            targetW = Math.round(targetH * videoRatio);
+            targetLeft = Math.round((pW - targetW) / 2);
+            targetTop = 0;
+          } else {
+            targetW = pW;
+            targetH = Math.round(targetW / videoRatio);
+            targetLeft = 0;
+            targetTop = Math.round((pH - targetH) / 2);
+          }
+          video.style.width = `${targetW}px`;
+          video.style.height = `${targetH}px`;
+          video.style.left = `${targetLeft}px`;
+          video.style.top = `${targetTop}px`;
+        } else {
+          video.style.width = "100%";
+          video.style.height = "100%";
+          video.style.left = "0px";
+          video.style.top = "0px";
         }
       }
       if (typeof player.setInternalSize === "function") {
@@ -1031,11 +1055,11 @@
       }
     }
     if (isNativeChatHiddenByScript) {
-      const video = player.querySelector("video.html5-main-video");
-      if (video && video.videoWidth && video.videoHeight) {
+      const video2 = player.querySelector("video.html5-main-video");
+      if (video2 && video2.videoWidth && video2.videoHeight) {
         const screenW = window.innerWidth || screen.width;
         const screenH = window.innerHeight || screen.height;
-        const videoRatio = video.videoWidth / video.videoHeight;
+        const videoRatio = video2.videoWidth / video2.videoHeight;
         const screenRatio = screenW / screenH;
         let targetW, targetH, targetLeft, targetTop;
         if (screenRatio > videoRatio) {
@@ -1049,13 +1073,13 @@
           targetLeft = 0;
           targetTop = Math.round((screenH - targetH) / 2);
         }
-        const currentW = parseInt(video.style.width) || 0;
+        const currentW = parseInt(video2.style.width) || 0;
         if (currentW < targetW - 20) {
-          video.dataset.ytcOverridden = "true";
-          video.style.width = `${targetW}px`;
-          video.style.height = `${targetH}px`;
-          video.style.left = `${targetLeft}px`;
-          video.style.top = `${targetTop}px`;
+          video2.dataset.ytcOverridden = "true";
+          video2.style.width = `${targetW}px`;
+          video2.style.height = `${targetH}px`;
+          video2.style.left = `${targetLeft}px`;
+          video2.style.top = `${targetTop}px`;
         }
       }
     }
