@@ -2,6 +2,7 @@
 // CHAT OVERLAY STATE & CONTAINER MANAGEMENT
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
+import { setElementHTML } from '../core/utils.js';
 
 export const CHATBOX_POS_KEY = 'ytc_chatbox_pos';
 
@@ -120,14 +121,14 @@ export function ensureChatOverlayContainers() {
     if (!sBox) {
         sBox = document.createElement('div');
         sBox.id = 'ytc-streamer-box';
-        sBox.innerHTML = `
+        setElementHTML(sBox, `
             <div class="ytc-box-header">
                 <span class="ytc-box-title">Trực tiếp</span>
                 <button class="ytc-box-close" title="Ẩn chat">✕</button>
             </div>
             <div class="ytc-box-messages"></div>
             <div class="ytc-box-resize" title="Kéo để thay đổi kích thước"></div>
-        `;
+        `);
         player.appendChild(sBox);
 
         const closeBtn = sBox.querySelector('.ytc-box-close');

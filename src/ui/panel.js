@@ -2,7 +2,7 @@
 // SETTINGS PANEL UI & MASTHEAD GEAR OBSERVER
 // ==========================================================================
 import { currentConfig, saveConfig, applyConfigToRoot } from '../core/config.js';
-import { safeHTML, whenElement, rafThrottle } from '../core/utils.js';
+import { safeHTML, setElementHTML, whenElement, rafThrottle } from '../core/utils.js';
 import {
     APP_VERSION,
     GEAR_SVG,
@@ -68,7 +68,7 @@ export function createSettingsPanel() {
     if (!panel) {
         panel = document.createElement('div');
         panel.id = 'ytc-settings-panel';
-        panel.innerHTML = safeHTML(`
+        setElementHTML(panel, `
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
                 <span class="ytc-header-badge">v${APP_VERSION}</span>
@@ -112,8 +112,8 @@ export function createSettingsPanel() {
                         ${YOUTUBE_SVG}
                         <span>Logo Premium</span>
                     </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-logo" ${currentConfig.premiumLogo ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-logo">
+                        <input type="checkbox" id="ytc-chk-logo" name="premiumLogo" aria-label="Logo Premium" ${currentConfig.premiumLogo ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -123,8 +123,8 @@ export function createSettingsPanel() {
                         ${REWIND_SVG}
                         <span>Mở khóa tua Live Stream</span>
                     </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-livedvr" ${currentConfig.unlockLiveDvr ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-livedvr">
+                        <input type="checkbox" id="ytc-chk-livedvr" name="unlockLiveDvr" aria-label="Mở khóa tua Live Stream" ${currentConfig.unlockLiveDvr ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -134,8 +134,8 @@ export function createSettingsPanel() {
                         ${RADIO_SVG}
                         <span>Tự động trực tiếp (Auto Live)</span>
                     </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-autolive" ${currentConfig.autoLiveSync ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-autolive">
+                        <input type="checkbox" id="ytc-chk-autolive" name="autoLiveSync" aria-label="Tự động trực tiếp (Auto Live)" ${currentConfig.autoLiveSync ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -160,8 +160,8 @@ export function createSettingsPanel() {
                         ${SHORTS_SVG}
                         <span>Ẩn mục Shorts</span>
                     </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-shorts" ${currentConfig.hideShorts ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-shorts">
+                        <input type="checkbox" id="ytc-chk-shorts" name="hideShorts" aria-label="Ẩn mục Shorts" ${currentConfig.hideShorts ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -171,8 +171,8 @@ export function createSettingsPanel() {
                         ${GAMEPAD_SVG}
                         <span>Ẩn mục Chơi game</span>
                     </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-playables" ${currentConfig.hidePlayables ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-playables">
+                        <input type="checkbox" id="ytc-chk-playables" name="hidePlayables" aria-label="Ẩn mục Chơi game" ${currentConfig.hidePlayables ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -182,8 +182,8 @@ export function createSettingsPanel() {
                         ${CROWN_SVG}
                         <span>Ẩn video Hội viên</span>
                     </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-members" ${currentConfig.hideMembersOnly ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-members">
+                        <input type="checkbox" id="ytc-chk-members" name="hideMembersOnly" aria-label="Ẩn video Hội viên" ${currentConfig.hideMembersOnly ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -193,8 +193,8 @@ export function createSettingsPanel() {
                         ${POST_SVG}
                         <span>Ẩn bài đăng cộng đồng</span>
                     </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-community" ${currentConfig.hideCommunity ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-community">
+                        <input type="checkbox" id="ytc-chk-community" name="hideCommunity" aria-label="Ẩn bài đăng cộng đồng" ${currentConfig.hideCommunity ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -204,8 +204,8 @@ export function createSettingsPanel() {
                         ${SEARCH_SVG}
                         <span>Lọc tìm kiếm sạch</span>
                     </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-search" ${currentConfig.cleanSearch ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-search">
+                        <input type="checkbox" id="ytc-chk-search" name="cleanSearch" aria-label="Lọc tìm kiếm sạch" ${currentConfig.cleanSearch ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -215,8 +215,8 @@ export function createSettingsPanel() {
                         ${COMPASS_SVG}
                         <span>Ẩn Khám phá chủ đề</span>
                     </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-explore" ${currentConfig.hideExploreTopics ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-explore">
+                        <input type="checkbox" id="ytc-chk-explore" name="hideExploreTopics" aria-label="Ẩn Khám phá chủ đề" ${currentConfig.hideExploreTopics ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -229,8 +229,8 @@ export function createSettingsPanel() {
                         ${SPARKLE_SVG}
                         <span>Tắt ánh sáng video</span>
                     </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-ambient" ${currentConfig.disableAmbient ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-ambient">
+                        <input type="checkbox" id="ytc-chk-ambient" name="disableAmbient" aria-label="Tắt ánh sáng video" ${currentConfig.disableAmbient ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -240,8 +240,8 @@ export function createSettingsPanel() {
                         ${ENDSCREEN_SVG}
                         <span>Ẩn thẻ kết thúc/chú thích</span>
                     </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-endscreen" ${currentConfig.hideEndscreen ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-endscreen">
+                        <input type="checkbox" id="ytc-chk-endscreen" name="hideEndscreen" aria-label="Ẩn thẻ kết thúc/chú thích" ${currentConfig.hideEndscreen ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -251,8 +251,8 @@ export function createSettingsPanel() {
                         ${WATERMARK_SVG}
                         <span>Ẩn logo góc video</span>
                     </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-watermark" ${currentConfig.hideWatermark ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-watermark">
+                        <input type="checkbox" id="ytc-chk-watermark" name="hideWatermark" aria-label="Ẩn logo góc video" ${currentConfig.hideWatermark ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -262,8 +262,8 @@ export function createSettingsPanel() {
                         ${BELL_OFF_SVG}
                         <span>Tự đóng banner & thông báo</span>
                     </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-promos" ${currentConfig.autoDismissPromos ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-promos">
+                        <input type="checkbox" id="ytc-chk-promos" name="autoDismissPromos" aria-label="Tự đóng banner & thông báo" ${currentConfig.autoDismissPromos ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -276,8 +276,8 @@ export function createSettingsPanel() {
                         ${KEYBOARD_SVG}
                         <span>Phím tắt (A-S-D, Numpad)</span>
                     </div>
-                    <label class="ytc-switch">
-                        <input type="checkbox" id="ytc-chk-keys" ${currentConfig.keyboardControls ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-keys">
+                        <input type="checkbox" id="ytc-chk-keys" name="keyboardControls" aria-label="Phím tắt điều khiển" ${currentConfig.keyboardControls ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -374,7 +374,7 @@ export function ensureSettingsElements() {
         btn = document.createElement('button');
         btn.id = 'ytc-settings-btn';
         btn.title = 'YouTube Customizer';
-        btn.innerHTML = safeHTML(GEAR_SVG);
+        setElementHTML(btn, GEAR_SVG);
     }
 
     if (btn.parentElement !== endContainer || btn !== endContainer.firstElementChild) {

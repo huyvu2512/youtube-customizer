@@ -1,7 +1,7 @@
 // ==========================================================================
 // DANMAKU (10 LÀN CHỮ CHẠY NGANG, ĐIỀU PHỐI THƯA THỚT, CHỐNG CHỒNG ĐÈ)
 // ==========================================================================
-import { safeHTML } from '../core/utils.js';
+import { safeHTML, setElementHTML } from '../core/utils.js';
 import { danmakuContainer } from './chatState.js';
 
 export const TOTAL_LANES = 10;
@@ -52,7 +52,7 @@ function spawnDanmakuItem(data, laneIndex) {
     const topPercent = 6 + laneIndex * 8.2;
     item.style.top = `${topPercent}%`;
 
-    item.innerHTML = safeHTML(`
+    setElementHTML(item, `
         <span class="ytc-chat-text ${data.authorClass || ''}">${data.messageHtml}</span>
     `);
 

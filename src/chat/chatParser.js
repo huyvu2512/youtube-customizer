@@ -2,7 +2,7 @@
 // BÓC TÁCH & ĐIỀU PHỐI TIN NHẮN LIVE CHAT (PARSER & FILTER)
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
-import { safeHTML } from '../core/utils.js';
+import { safeHTML, setElementHTML } from '../core/utils.js';
 import { isDuplicateMessage, ensureChatOverlayContainers, danmakuContainer, streamerMessages } from './chatState.js';
 import { danmakuQueue, startDanmakuScheduler } from './danmaku.js';
 
@@ -90,7 +90,7 @@ export function displayChatMessage(data, isBacklog = false) {
 
     // 1. Danmaku chạy ngang (Đưa vào hàng đợi điều phối thông minh)
     const dContainer = danmakuContainer || document.getElementById('ytc-danmaku-container');
-    if (showDanmaku && !msgIsBacklog && dContainer) {
+    if (showDanmaku && (!msgIsBacklog || danmakuQueue.length < 3) && dContainer) {
         danmakuQueue.push(data);
         startDanmakuScheduler();
     }
@@ -113,7 +113,7 @@ export function displayChatMessage(data, isBacklog = false) {
         const avatarMarkup = data.avatarSrc ? `<img class="ytc-box-avatar" src="${data.avatarSrc}" alt="">` : '';
         const badgeMarkup = data.streamerBadgeHtml ? `${data.streamerBadgeHtml} ` : '';
 
-        item.innerHTML = safeHTML(`
+        setElementHTML(item, `
             ${avatarMarkup}
             <div class="ytc-box-content">
                 <span class="ytc-chat-author ${data.authorClass || ''}">@${data.author}:</span> ${badgeMarkup}<span class="ytc-chat-text">${data.messageHtml}</span>

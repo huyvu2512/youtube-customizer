@@ -2,7 +2,7 @@
 // NOTIFICATIONS: ONBOARDING & REMOTE UPDATE CHECKER
 // ==========================================================================
 import { APP_VERSION } from '../core/constants.js';
-import { safeHTML } from '../core/utils.js';
+import { safeHTML, setElementHTML } from '../core/utils.js';
 
 const ONBOARDING_KEY = `ytc_onboarding_v${APP_VERSION.replace(/\./g, '_')}`;
 let updateCheckInitiated = false;
@@ -25,7 +25,7 @@ export function showTipCard(btn, { badge, badgeBg, title, desc, btnText, onActio
 
     const tip = document.createElement('div');
     tip.id = tipId;
-    tip.innerHTML = safeHTML(`
+    setElementHTML(tip, `
         <div class="ytc-onboarding-arrow"></div>
         <div class="ytc-onboarding-header">
             <span class="ytc-onboarding-badge"${badgeBg ? ` style="background:${badgeBg};"` : ''}>${badge}</span>

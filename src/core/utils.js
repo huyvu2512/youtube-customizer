@@ -3,22 +3,72 @@
 // ==========================================================================
 
 let ytcPolicy = null;
-try {
-    ytcPolicy = window.trustedTypes?.createPolicy?.('youtubeCustomizerPolicy', {
-        createHTML: (html) => html,
-    }) || window.trustedTypes?.defaultPolicy;
-} catch (e) {
-    try {
-        ytcPolicy = window.trustedTypes?.defaultPolicy;
-    } catch (err) {}
+if (typeof window !== 'undefined' && window.trustedTypes) {
+    if (!window.trustedTypes.defaultPolicy) {
+        try {
+            ytcPolicy = window.trustedTypes.createPolicy('default', {
+                createHTML: (html) => html,
+                createScript: (script) => script,
+                createScriptURL: (url) => url,
+            });
+        } catch (e) {}
+    }
+    if (!ytcPolicy) {
+        try {
+            ytcPolicy = window.trustedTypes.createPolicy('youtubeCustomizer', {
+                createHTML: (html) => html,
+            });
+        } catch (e) {
+            try {
+                ytcPolicy = window.trustedTypes.defaultPolicy;
+            } catch (err) {}
+        }
+    }
 }
 
 export function safeHTML(html) {
+    if (!html) return '';
     try {
-        return ytcPolicy ? ytcPolicy.createHTML(html) : html;
+        if (ytcPolicy) return ytcPolicy.createHTML(html);
+        if (window.trustedTypes?.defaultPolicy) return window.trustedTypes.defaultPolicy.createHTML(html);
+        return html;
     } catch (e) {
         return html;
     }
+}
+
+/**
+ * Gán nội dung HTML an toàn 100% không bao giờ bị chặn bởi Content Security Policy (Trusted Types).
+ * Sử dụng DOMParser + replaceChildren nếu Trusted Types không khả dụng (hoàn toàn miễn nhiễm CSP sink check).
+ */
+export function setElementHTML(element, htmlString) {
+    if (!element) return;
+    const str = htmlString != null ? String(htmlString) : '';
+
+    // Cách 1: Thử gán bằng TrustedHTML nếu có policy
+    try {
+        if (ytcPolicy) {
+            element.innerHTML = ytcPolicy.createHTML(str);
+            return;
+        }
+        if (window.trustedTypes?.defaultPolicy) {
+            element.innerHTML = window.trustedTypes.defaultPolicy.createHTML(str);
+            return;
+        }
+    } catch (e) {}
+
+    // Cách 2: Phân tích cú pháp qua DOMParser và gắn node (KHÔNG kích hoạt sink Trusted Types)
+    try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(str, 'text/html');
+        element.replaceChildren(...doc.body.childNodes);
+        return;
+    } catch (e) {}
+
+    // Cách 3: Fallback gán chuỗi trực tiếp
+    try {
+        element.innerHTML = str;
+    } catch (e) {}
 }
 
 export function rafThrottle(fn) {

@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.2.7-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.2.8-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,14 +25,16 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.2.7** hoàn thiện:
-- **Khôi phục 100% luồng Live Chat (Danmaku & Khung nổi Streamer) chuẩn commit `a65e44a`:**
-  - Khôi phục iframe ngầm chuyên biệt `bgChatIframe` (`live_chat?v=...`) luôn hoạt động song song khi bật Overlay, đảm bảo Tampermonkey hook và postMessage tin nhắn 100% thời gian thực.
-  - Xóa bỏ hoàn toàn các bộ lọc sai lệch (seekable/delay) từng chặn oan tin nhắn trực tiếp.
-  - Đảm bảo dừng nạp tin khi video tạm dừng (`video.paused`), không làm trôi dạt nội dung.
-  - Khôi phục hoạt ảnh Danmaku chuẩn container (`calc(-100% - 100cqi)` và fallback `calc(-100% - 100vw)`), tốc độ lướt chữ chuẩn xác trên mọi tỉ lệ khung hình và chế độ toàn màn hình.
-  - Nâng cấp bộ lắng nghe MutationObserver bên trong iframe với `{ childList: true, subtree: true }` cùng polling dự phòng, bắt dính tin nhắn ngay lập tức.
-- **Kế thừa các tính năng từ v3.2.4 & v3.2.5:**
+Phiên bản **v3.2.8** hoàn thiện:
+- **Khắc phục 100% rào cản CSP Trusted Types:**
+  - Tự động khai báo policy `'default'` và `'youtubeCustomizer'`, đồng thời tích hợp cơ chế phân tách nút DOM an toàn qua `DOMParser` (`setElementHTML`), loại bỏ hoàn toàn cảnh báo `Trusted Type expected, but got String` ngăn cản nạp Danmaku và khung chat nổi.
+  - Sửa lỗi truy cập Form/Label trong DevTools: Bổ sung đầy đủ thuộc tính `for`, `name`, `aria-label` cho tất cả các nút gạt chuyển mạch trong bảng cài đặt.
+- **Hỗ trợ toàn diện cả Luồng Đang Trực Tiếp & Xem Lại Cuộc Trò Chuyện (Live Replay):**
+  - Tự động nạp ngay 3 tin nhắn gần nhất khi bật chế độ "Ngang" (Danmaku), giúp chữ lướt tức thì trên video mà không bao giờ bị dồn ứ hay đứng màn hình.
+  - Bắt trọn vẹn tin nhắn từ cả khung chat gốc (`iframe#chatframe`), `bgChatIframe` và DOM chính.
+- **Kế thừa các tính năng từ v3.2.7:**
+  - Khôi phục iframe ngầm chuyên biệt `bgChatIframe` hoạt động song song khi bật Overlay.
+  - Chuẩn hóa hoạt ảnh Danmaku `translateX` theo container `cqi` mượt mà trên mọi chế độ hiển thị.
   - Khắc phục triệt để xung đột uBlock Origin (xóa sổ quảng cáo 6s).
   - Tích hợp lá chắn Ad Shield dự phòng.
   - Tái cấu trúc toàn bộ codebase thành các module sạch (`core/`, `features/`, `player/`, `chat/`, `ui/`).

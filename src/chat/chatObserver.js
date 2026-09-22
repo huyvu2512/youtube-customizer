@@ -110,35 +110,39 @@ function queryAllLiveChatMessages() {
 }
 
 export function requestExistingMessages() {
-    // Nếu chỉ bật Danmaku thì KHÔNG nạp tin nhắn cũ để tránh dồn cục lúc đầu bật!
-    if (currentConfig.chatOverlay !== 'streamer') {
-        return;
-    }
-
     function doFetch() {
         const allExisting = queryAllLiveChatMessages();
         if (allExisting && allExisting.length > 0) {
-            // Nạp 8 tin gần nhất cho khung nổi để khung không bị trống
-            const recent = allExisting.slice(-8);
-            recent.forEach((node, i) => {
-                const data = extractMessageData(node);
-                if (data) {
-                    data.isBacklog = true;
-                    setTimeout(() => displayChatMessage(data, true), i * 100);
-                }
-            });
-            return true;
+            if (currentConfig.chatOverlay === 'streamer') {
+                // Nạp tối đa 8 tin gần nhất cho khung nổi
+                const recent = allExisting.slice(-8);
+                recent.forEach((node, i) => {
+                    const data = extractMessageData(node);
+                    if (data) {
+                        data.isBacklog = true;
+                        setTimeout(() => displayChatMessage(data, true), i * 100);
+                    }
+                });
+                return true;
+            } else if (currentConfig.chatOverlay === 'danmaku') {
+                // Nạp ngay 3 tin gần nhất cho Danmaku chạy lướt mượt mà, không để màn hình bị trống
+                const recent = allExisting.slice(-3);
+                recent.forEach((node, i) => {
+                    const data = extractMessageData(node);
+                    if (data) {
+                        setTimeout(() => displayChatMessage(data, false), i * 350);
+                    }
+                });
+                return true;
+            }
         }
         return false;
     }
 
-    // Quét ngay lập tức
     const found = doFetch();
-
-    // Nếu chưa có (chat đang tải hoặc bung ra), thử lại nhiều mốc thời gian
     if (!found) {
-        setTimeout(doFetch, 800);
-        setTimeout(doFetch, 2000);
+        setTimeout(doFetch, 500);
+        setTimeout(doFetch, 1500);
     }
 
     const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]');
