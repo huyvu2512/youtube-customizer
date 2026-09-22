@@ -526,45 +526,75 @@ export function extractMessageData(node) {
     };
 }
 
+function shouldSuppressLiveChatMessage(isBacklog) {
+    if (isBacklog) return false;
+
+    const player = document.querySelector('#movie_player, .html5-video-player');
+    if (!player) return false;
+
+    let isOngoingLive = false;
+    try {
+        if (typeof player.getVideoData === 'function') {
+            const vd = player.getVideoData();
+            if (vd && vd.isLive === true) isOngoingLive = true;
+        }
+    } catch (e) {}
+
+    // Nếu không phải là phiên live đang diễn ra (vd: stream replay đã kết thúc hoặc video thường), không chặn
+    if (!isOngoingLive) return false;
+
+    const video = player.querySelector('video');
+    if (!video) return false;
+
+    // 1. Khi video đang tạm dừng (paused) -> không hiển thị chat mới
+    if (video.paused) return true;
+
+    // 2. Kiểm tra xem người dùng có đang xem trực tiếp hay tua lùi về quá khứ
+    // Phương pháp 1: YouTube Player API nội bộ isAtLiveHead()
+    try {
+        if (typeof player.isAtLiveHead === 'function') {
+            if (!player.isAtLiveHead()) return true; // Đang tua lùi lại quá khứ
+        }
+    } catch (e) {}
+
+    // Phương pháp 2: Nút đỏ Trực tiếp (.ytp-live-badge)
+    // Khi người xem ở mốc trực tiếp: badge có thuộc tính disabled (không bấm được)
+    // Khi người xem tua lùi lại quá khứ: YouTube gỡ disabled để người xem bấm nhảy về trực tiếp
+    try {
+        const liveBadge = player.querySelector('.ytp-live-badge');
+        if (liveBadge) {
+            const isDisabled = liveBadge.hasAttribute('disabled') || liveBadge.disabled;
+            if (!isDisabled) {
+                // Người dùng đã tua lùi lại quá khứ
+                return true;
+            }
+        }
+    } catch (e) {}
+
+    // Phương pháp 3: Kiểm tra độ trễ buffer seekable (chỉ chặn nếu tua lùi sâu > 40 giây)
+    // Lưu ý: YouTube live thông thường luôn có buffer trễ 6 - 15 giây, tuyệt đối không dùng delay > 5s!
+    try {
+        if (video.seekable && video.seekable.length > 0) {
+            const liveEdge = video.seekable.end(video.seekable.length - 1);
+            if (isFinite(liveEdge) && isFinite(video.currentTime)) {
+                const delay = liveEdge - video.currentTime;
+                if (delay > 40) return true;
+            }
+        }
+    } catch (e) {}
+
+    return false;
+}
+
 export function displayChatMessage(data, isBacklog = false) {
     if (!data || !currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') return;
 
     const msgIsBacklog = isBacklog || data.isBacklog || false;
 
-    // Chặn tin nhắn mới (thời gian thực) khi phiên live ĐANG diễn ra nhưng người dùng
-    // KHÔNG ở mốc trực tiếp (dừng video, tua lại xem đoạn cũ, hoặc lag quá xa)
-    // Phiên live ĐÃ kết thúc (replay) thì không ảnh hưởng — chat replay luôn chạy bình thường.
-    if (!msgIsBacklog) {
-        const player = document.querySelector('#movie_player, .html5-video-player');
-        if (player) {
-            let isOngoingLive = false;
-            try {
-                if (typeof player.getVideoData === 'function') {
-                    const vd = player.getVideoData();
-                    if (vd && vd.isLive === true) isOngoingLive = true;
-                }
-            } catch (e) {}
-
-            if (isOngoingLive) {
-                const video = player.querySelector('video');
-                if (video) {
-                    // Video đang paused → không hiển thị chat mới
-                    if (video.paused) return;
-
-                    // Người dùng đang tua lại quá khứ (cách live edge > 5s) → không hiển thị
-                    try {
-                        if (video.seekable && video.seekable.length > 0) {
-                            const liveEdge = video.seekable.end(video.seekable.length - 1);
-                            if (isFinite(liveEdge) && isFinite(video.currentTime)) {
-                                const delay = liveEdge - video.currentTime;
-                                if (delay > 5) return;
-                            }
-                        }
-                    } catch (e) {}
-                }
-            }
-        }
-    }
+    // Chặn tin nhắn thời gian thực khi phiên live ĐANG diễn ra nhưng người dùng
+    // tạm dừng video hoặc tua lại xem quá khứ (không ở mốc trực tiếp).
+    // Phiên live replay (đã kết thúc) thì luôn cho chạy bình thường theo video.
+    if (shouldSuppressLiveChatMessage(msgIsBacklog)) return;
 
     if (isDuplicateMessage(data.id, data.author, data.messageHtml)) return;
 
@@ -705,6 +735,8 @@ export function setupChatToggleListeners() {
     chatToggleListenersBound = true;
 
     document.addEventListener('click', (e) => {
+        if (!e.isTrusted) return; // Bỏ qua các click tự động/giả lập do script kích hoạt
+
         // 1. Người dùng bấm "Hiện cuộc trò chuyện" / "Mở bảng điều khiển" / "Show chat"
         const showBtn = e.target.closest('#show-hide-button button, [aria-label*="Hiện cuộc trò chuyện" i], [aria-label*="Show chat" i], button#show-button, #show-button');
         if (showBtn) {

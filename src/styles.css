@@ -827,45 +827,42 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
    ========================================================================== */
 
 /* 1. Trạng thái ẩn Chat gốc trong giao diện thường (chưa phóng to) */
+/* Đẩy khung chat gốc ra khỏi màn hình (vẫn giữ kích thước 350x600 để iframe render mượt mà không bị suspend) */
 html[data-ytc-chat-hidden="true"] ytd-live-chat-frame#chat,
 html[data-ytc-chat-hidden="true"] #chat.ytd-watch-flexy,
 body[data-ytc-chat-hidden="true"] ytd-live-chat-frame#chat,
 body[data-ytc-chat-hidden="true"] #chat.ytd-watch-flexy {
-    position: absolute !important;
+    position: fixed !important;
     left: -9999px !important;
     top: -9999px !important;
-    width: 1px !important;
-    height: 1px !important;
+    width: 350px !important;
+    height: 600px !important;
     opacity: 0.001 !important;
     pointer-events: none !important;
     z-index: -9999 !important;
+    display: block !important;
+    visibility: visible !important;
 }
 
 html[data-ytc-chat-hidden="true"] ytd-watch-flexy,
 body[data-ytc-chat-hidden="true"] ytd-watch-flexy {
-    --ytd-watch-flexy-sidebar-width: 0px !important;
     --ytd-watch-flexy-chat-width: 0px !important;
 }
 
 /* 2. Trạng thái ẩn Chat gốc trong giao diện toàn màn hình (FULLSCREEN / PHÓNG TO) */
-/* Ẩn triệt để toàn bộ side panel chiếm diện tích bên phải */
+/* Triệt tiêu độ rộng side panel bên phải để video tràn 100vw, nhưng TUYỆT ĐỐI KHÔNG set display:none lên frame chat */
 html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] #panels-full-bleed-container,
 html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] #chat-container,
 html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] #panels,
-html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] #chat,
-html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] ytd-live-chat-frame,
 html[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen] #secondary,
-html[data-ytc-chat-hidden="true"] .ytp-fullscreen #chat,
-html[data-ytc-chat-hidden="true"] .ytp-fullscreen ytd-live-chat-frame,
 html[data-ytc-chat-hidden="true"] .ytp-fullscreen #chat-container,
 html[data-ytc-chat-hidden="true"] .ytp-fullscreen .ytp-live-chat-panel,
 html[data-ytc-chat-hidden="true"] .ytp-fullscreen .ytp-live-chat-button {
-    display: none !important;
     width: 0 !important;
     min-width: 0 !important;
     max-width: 0 !important;
     flex-basis: 0 !important;
-    visibility: hidden !important;
+    overflow: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;
 }
