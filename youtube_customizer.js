@@ -2243,52 +2243,24 @@
     // Phím tắt A-S-D & Numpad (mặc định tắt)
   };
   function loadConfig() {
-    const safeParse = (key, isSession) => {
-      try {
-        const raw = isSession ? sessionStorage.getItem(key) : localStorage.getItem(key);
-        if (raw) return JSON.parse(raw);
-      } catch (e) {
-      }
-      return null;
-    };
     try {
-      let saved = safeParse("ytc_config");
-      if (!saved) saved = safeParse("ytc_config_persistent");
-      if (!saved) saved = safeParse("ytc_config_v3");
-      if (!saved) saved = safeParse("ytc_config_backup", true);
-      if (!saved) saved = safeParse("ytc_config_v2");
-      const merged = { ...DEFAULT_CONFIG, ...saved || {} };
-      merged.chatOverlay = "off";
-      const clean = {};
-      for (const k of Object.keys(DEFAULT_CONFIG)) {
-        clean[k] = merged[k];
+      const stored = localStorage.getItem(CONFIG_KEY) || localStorage.getItem("ytc_config_v2") || localStorage.getItem("ytc_config_persistent") || localStorage.getItem("ytc_config_v3");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const cfg = Object.assign({}, DEFAULT_CONFIG, parsed);
+        cfg.chatOverlay = "off";
+        return cfg;
       }
-      clean.chatOverlay = "off";
-      const json = JSON.stringify(clean);
-      try {
-        localStorage.setItem("ytc_config", json);
-        localStorage.setItem("ytc_config_persistent", json);
-        localStorage.setItem("ytc_config_v3", json);
-        sessionStorage.setItem("ytc_config_backup", json);
-      } catch (e) {
-      }
-      return clean;
     } catch (e) {
-      return { ...DEFAULT_CONFIG };
     }
+    return Object.assign({}, DEFAULT_CONFIG);
   }
   function saveConfig(cfg) {
     try {
-      const clean = {};
-      for (const k of Object.keys(DEFAULT_CONFIG)) {
-        clean[k] = k in cfg ? cfg[k] : DEFAULT_CONFIG[k];
-      }
-      clean.chatOverlay = "off";
-      const json = JSON.stringify(clean);
-      localStorage.setItem("ytc_config", json);
-      localStorage.setItem("ytc_config_persistent", json);
-      localStorage.setItem("ytc_config_v3", json);
-      sessionStorage.setItem("ytc_config_backup", json);
+      const toSave = Object.assign({}, cfg, { chatOverlay: "off" });
+      const json = JSON.stringify(toSave);
+      localStorage.setItem(CONFIG_KEY, json);
+      localStorage.setItem("ytc_config_v2", json);
     } catch (e) {
     }
   }
