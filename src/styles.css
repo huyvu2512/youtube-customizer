@@ -960,20 +960,20 @@ ytd-watch-flexy[fullscreen] ytd-live-chat-frame {
 
 #ytc-streamer-box .ytc-chat-author {
     color: #b5b5b5 !important;
-    font-weight: 400 !important;
+    font-weight: 700 !important;
     flex-shrink: 0;
 }
 #ytc-streamer-box .ytc-chat-author.mod {
     color: #3ea6ff !important;
-    font-weight: 500 !important;
+    font-weight: 700 !important;
 }
 #ytc-streamer-box .ytc-chat-author.member {
     color: #2ba640 !important;
-    font-weight: 500 !important;
+    font-weight: 700 !important;
 }
 #ytc-streamer-box .ytc-chat-author.owner {
     color: #ffd600 !important;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
 }
 
 #ytc-streamer-box .ytc-chat-text {
