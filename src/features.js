@@ -748,9 +748,32 @@ export {
 let autoLiveSyncTimer = null;
 let lastSnapTime = 0;
 let lastUserSeekTime = 0;
+let userIsRewound = false;
 
 export function recordUserSeek() {
     lastUserSeekTime = Date.now();
+    userIsRewound = true;
+}
+
+function isCurrentlyActiveLive(player) {
+    if (!player) return false;
+    // 1. Kiểm tra videoData của YouTube Player
+    if (typeof player.getVideoData === 'function') {
+        const vd = player.getVideoData();
+        if (vd) {
+            // isLive === true CHỈ KHI luồng đang phát trực tiếp theo thời gian thực (chưa kết thúc)
+            // Nếu stream đã kết thúc (xem lại live cũ / VOD replay), isLive sẽ là false
+            if (vd.isLive === true) return true;
+            if (vd.isLive === false) return false;
+        }
+    }
+    // 2. Kiểm tra player API isLive
+    if (typeof player.isLive === 'function') {
+        try {
+            if (player.isLive() === true) return true;
+        } catch (e) {}
+    }
+    return false;
 }
 
 export function initAutoLiveSync() {
@@ -762,14 +785,17 @@ export function initAutoLiveSync() {
         const player = document.querySelector('#movie_player, .html5-video-player');
         if (!player) return;
 
+        // 1. TUYỆT ĐỐI CHỈ CHẠY KHI ĐANG LÀ LUỒNG PHÁT TRỰC TIẾP THỜI GIAN THỰC (CHƯA KẾT THÚC)
+        // Tránh hoàn toàn việc can thiệp hoặc gây dừng/tắt video khi xem lại live stream cũ
+        if (!isCurrentlyActiveLive(player)) {
+            return;
+        }
+
         const video = player.querySelector('video');
         if (!video || video.paused || video.ended) return;
 
-        // Nếu người dùng vừa chủ động tua lại để xem, tạm hoãn auto sync 25 giây
-        if (Date.now() - lastUserSeekTime < 25000) return;
-
         const liveBadge = player.querySelector('.ytp-live-badge');
-        if (!liveBadge) return; // Không phải luồng phát trực tiếp (Live)
+        if (!liveBadge) return;
 
         // Tính toán độ lệch thời gian thực tế so với mốc Live Head qua seekable end
         let delay = 0;
@@ -781,6 +807,23 @@ export function initAutoLiveSync() {
                 }
             }
         } catch (e) {}
+
+        // 2. NẾU NGƯỜI DÙNG ĐANG CHỦ ĐỘNG XEM LẠI QUÁ KHỨ (delay > 15s hoặc có cờ tua lại):
+        // Tuyệt đối KHÔNG tự động kéo giật người dùng về mốc trực tiếp!
+        if (userIsRewound || delay > 15.0) {
+            // Nếu người dùng đã tự tua sát về mốc trực tiếp (delay <= 3s), tự động gỡ cờ tua
+            if (delay <= 3.0) {
+                userIsRewound = false;
+            } else {
+                if (video.playbackRate === 1.08) {
+                    video.playbackRate = 1.0;
+                }
+                return;
+            }
+        }
+
+        // Tạm hoãn nếu người dùng vừa mới thao tác tua trong vòng 10s
+        if (Date.now() - lastUserSeekTime < 10000) return;
 
         const isBadgeBehind = !liveBadge.hasAttribute('disabled');
         const isBehind = isBadgeBehind || delay > 2.5;
@@ -795,25 +838,20 @@ export function initAutoLiveSync() {
 
         const now = Date.now();
 
-        // Trường hợp 1: Chậm đáng kể (> 5.5s) hoặc nút trực tiếp bật sáng mà độ lệch > 3.5s
-        // -> Nhấp nút trực tiếp để lập tức chuyển video về mốc phát trực tiếp
+        // Chậm đáng kể (> 5.5s đến 15s): Nhấp nút trực tiếp để bắt kịp
+        // TUYỆT ĐỐI KHÔNG DÙNG player.seekTo(Infinity) để tránh lỗi kết thúc video!
         if (delay > 5.5 || (isBadgeBehind && delay > 3.5)) {
             if (now - lastSnapTime > 5000) {
                 lastSnapTime = now;
                 try {
                     liveBadge.click();
-                } catch (e) {
-                    if (typeof player.seekTo === 'function') {
-                        player.seekTo(Infinity, true);
-                    }
-                }
+                } catch (e) {}
                 if (video.playbackRate === 1.08) {
                     video.playbackRate = 1.0;
                 }
             }
         }
-        // Trường hợp 2: Chậm nhẹ (2.0s - 5.5s)
-        // -> Tăng tốc độ phát 1.08x để bắt kịp êm ái, hoàn toàn không giật hình hay ngắt tiếng
+        // Chậm nhẹ (2.0s - 5.5s): Tăng tốc độ phát 1.08x để bắt kịp êm ái, hoàn toàn không giật hình hay ngắt tiếng
         else if (delay > 2.0) {
             if (video.playbackRate === 1.0) {
                 video.playbackRate = 1.08;
@@ -833,6 +871,7 @@ export function initAutoLiveSync() {
     // Lắng nghe người dùng click trực tiếp vào nút Live Badge để xóa cờ hoãn tua
     document.addEventListener('click', (e) => {
         if (e.target.closest('.ytp-live-badge')) {
+            userIsRewound = false;
             lastUserSeekTime = 0;
             lastSnapTime = Date.now();
         }

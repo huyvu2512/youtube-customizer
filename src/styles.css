@@ -756,8 +756,8 @@ html:not([dark]) .ytc-mode-btn.active {
 }
 
 .ytc-chat-author {
-    color: #ffffff;
-    font-weight: 700;
+    color: #9ab4c7;
+    font-weight: 600;
     flex-shrink: 0;
 }
 .ytc-chat-author.mod,
@@ -774,13 +774,12 @@ html:not([dark]) .ytc-mode-btn.active {
 }
 
 .ytc-chat-text {
-    color: #ffffff;
-    font-weight: 600;
+    color: #ffffff !important;
+    font-weight: 500;
 }
 
-.ytc-chat-text img,
-.ytc-chat-text img.emoji,
-.ytc-chat-text img.small-emoji {
+.ytc-danmaku-item .ytc-chat-text img,
+.ytc-danmaku-item .ytc-chat-text img.emoji {
     max-height: 22px;
     max-width: 28px;
     vertical-align: -3px;
@@ -811,6 +810,35 @@ body[data-ytc-chat="off"] #ytc-streamer-box,
 html[data-ytc-chat="danmaku"] #ytc-streamer-box,
 body[data-ytc-chat="danmaku"] #ytc-streamer-box {
     display: none !important;
+}
+
+/* KHI OVERLAY BẬT: ẨN VISUAL KHUNG CHAT GỐC KHỎI MÀN HÌNH NHƯNG VẪN CHO NẠP DỮ LIỆU */
+html[data-ytc-chat="danmaku"] ytd-live-chat-frame#chat,
+html[data-ytc-chat="streamer"] ytd-live-chat-frame#chat,
+html[data-ytc-chat="danmaku"] #chat.ytd-watch-flexy,
+html[data-ytc-chat="streamer"] #chat.ytd-watch-flexy {
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0.001 !important;
+    pointer-events: none !important;
+    z-index: -9999 !important;
+}
+
+/* CHẶN TRIỆT ĐỂ KHUNG CHAT GỐC TỰ HIỆN KHI PHÓNG TO TOÀN MÀN HÌNH (FULLSCREEN / THEATER) */
+.ytp-fullscreen #chat,
+.ytp-fullscreen ytd-live-chat-frame,
+.ytp-fullscreen #chat-container,
+.ytp-fullscreen .ytp-live-chat-panel,
+.ytp-fullscreen .ytp-live-chat-button,
+ytd-watch-flexy[fullscreen] #chat,
+ytd-watch-flexy[fullscreen] ytd-live-chat-frame {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 /* KHUNG LIVE CHAT BOX (NỀN TRONG SUỐT HUD OVERLAY CHO STREAMER) */
@@ -879,7 +907,7 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    gap: 1.5px;
+    gap: 2px;
     padding: 2px 4px;
     pointer-events: none;
 }
@@ -888,8 +916,9 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
     display: flex;
     align-items: flex-start;
     gap: 3px;
-    font-size: 11px;
-    line-height: 1.18;
+    font-size: 10px;
+    line-height: 1.25;
+    min-height: 14px;
     color: #fff;
     text-shadow: 
         1px 1px 2px #000, 
@@ -897,20 +926,36 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
         1px -1px 2px #000, 
         -1px 1px 2px #000, 
         0 0 3px #000;
-    animation: ytc-fade-in 0.15s ease-out;
+    animation: ytc-fade-in 0.12s ease-out;
     word-break: break-word;
 }
 
 .ytc-box-avatar {
-    width: 11px;
-    height: 11px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     flex-shrink: 0;
-    margin-top: 1.5px;
+    margin-top: 1px;
 }
 
 .ytc-box-content {
     flex: 1;
+}
+
+/* THU NHỎ ICON EMOJI VÀ BADGE BẰNG CỠ CHỮ ĐỂ MỌI DÒNG CAO ĐỀU TĂM TẮP */
+.ytc-box-content img,
+.ytc-chat-text img,
+.ytc-box-item img.emoji,
+.ytc-box-item img.yt-emoji,
+.ytc-box-item .emoji {
+    max-height: 10px !important;
+    width: auto !important;
+    max-width: 12px !important;
+    height: auto !important;
+    vertical-align: -1px !important;
+    display: inline-block !important;
+    object-fit: contain !important;
+    margin: 0 1px !important;
 }
 
 .ytc-box-badge {
@@ -920,8 +965,8 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
 }
 .ytc-box-badge img,
 .ytc-box-badge svg {
-    width: 10px;
-    height: 10px;
+    width: 9px;
+    height: 9px;
 }
 
 .ytc-box-resize {
@@ -944,22 +989,48 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
     pointer-events: auto;
 }
 
+/* HIỆU ỨNG XUẤT HIỆN MƯỢT MÀ, KHÔNG DÙNG TRANSLATE-Y GÂY GIẬT LAG KHUNG HÌNH */
 @keyframes ytc-fade-in {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-/* BACKGROUND LIVE CHAT IFRAME CỦA EXTENSION */
-iframe#ytc-bg-live-chat {
-    position: fixed !important;
-    top: -9999px !important;
-    left: -9999px !important;
-    width: 350px !important;
-    height: 600px !important;
-    opacity: 0.01 !important;
-    pointer-events: none !important;
-    z-index: -9999 !important;
-    border: none !important;
+/* TỰ ĐỘNG CÂN ĐỐI TỶ LỆ KÍCH THƯỚC CHỮ KHI PHÓNG TO TOÀN MÀN HÌNH (FULLSCREEN / ZOOM) */
+.ytp-fullscreen .ytc-danmaku-item {
+    font-size: 25px !important;
+}
+.ytp-fullscreen .ytc-danmaku-item .ytc-chat-text img,
+.ytp-fullscreen .ytc-danmaku-item .ytc-chat-text img.emoji {
+    max-height: 28px !important;
+    max-width: 34px !important;
+}
+
+.ytp-fullscreen .ytc-box-item {
+    font-size: 13.5px !important;
+    line-height: 1.25 !important;
+    min-height: 18px !important;
+    gap: 4px !important;
+}
+.ytp-fullscreen .ytc-box-avatar {
+    width: 13.5px !important;
+    height: 13.5px !important;
+    margin-top: 1.5px !important;
+}
+.ytp-fullscreen .ytc-box-badge img,
+.ytp-fullscreen .ytc-box-badge svg {
+    width: 12px !important;
+    height: 12px !important;
+}
+.ytp-fullscreen .ytc-box-content img,
+.ytp-fullscreen .ytc-box-item img.emoji,
+.ytp-fullscreen .ytc-box-item img.yt-emoji,
+.ytp-fullscreen .ytc-box-item .emoji {
+    max-height: 13.5px !important;
+    max-width: 16px !important;
+}
+.ytp-fullscreen .ytc-box-header {
+    height: 24px !important;
+    font-size: 11.5px !important;
 }
 
 

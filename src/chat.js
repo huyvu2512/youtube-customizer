@@ -569,12 +569,15 @@ export function displayChatMessage(data, isBacklog = false) {
 // --------------------------------------------------------------------------
 // 4. QUAN SÁT VÀ NẠP TIN NHẮN TỪ TẤT CẢ CÁC NGUỒN (MAIN DOM & IFRAME)
 // --------------------------------------------------------------------------
-export function collapseNativeLiveChat() {
+export function ensureNativeLiveChatRunning() {
     const chatFrame = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy');
-    if (chatFrame && !chatFrame.hasAttribute('collapsed')) {
-        const collapseBtn = document.querySelector('ytd-live-chat-frame #show-hide-button button, #chat-container #show-hide-button button, #show-hide-button button, ytd-live-chat-frame button#collapse-button, [aria-label*="Ẩn cuộc trò chuyện"], [aria-label*="Hide chat"]');
-        if (collapseBtn) {
-            try { collapseBtn.click(); } catch(e) {}
+    if (chatFrame && chatFrame.hasAttribute('collapsed')) {
+        // Nếu người dùng đã từng bấm "Ẩn cuộc trò chuyện", YouTube sẽ dừng nạp tin nhắn mới.
+        // Ta kích hoạt mở lại ngầm để YouTube tiếp tục stream chat (cả live trực tiếp lẫn xem lại live cũ - replay),
+        // đồng thời CSS off-screen sẽ giấu hoàn toàn khung này ra khỏi màn hình nên người dùng không bị vướng mắt.
+        const expandBtn = chatFrame.querySelector('#show-hide-button button, [aria-label*="Hiện cuộc trò chuyện"], [aria-label*="Show chat"], button#show-button');
+        if (expandBtn) {
+            try { expandBtn.click(); } catch(e) {}
         }
     }
 }
@@ -762,7 +765,7 @@ export function updateChatOverlayVisibility() {
     }
 
     if (mode !== 'off') {
-        collapseNativeLiveChat();
+        ensureNativeLiveChatRunning();
         seenMessageIds.clear();
         ensureBackgroundLiveChat();
         requestExistingMessages();
@@ -937,6 +940,7 @@ export function initChatOverlay() {
     setInterval(() => {
         if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
             findAndObserveItems();
+            ensureNativeLiveChatRunning();
             ensureBackgroundLiveChat();
             // Chống đứng chat YouTube trong Main DOM nếu có
             try {
@@ -953,7 +957,7 @@ export function initChatOverlay() {
             ensureChatOverlayContainers();
             ensureBackgroundLiveChat();
             if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
-                collapseNativeLiveChat();
+                ensureNativeLiveChatRunning();
             }
         });
     }

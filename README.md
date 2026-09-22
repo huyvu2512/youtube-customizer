@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.1.5-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.1.6-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,16 +25,26 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.1.5** nâng cấp:
-- **Khung nổi Streamer chữ nhỏ 11px siêu gọn (Chuẩn Stream Overlay):**
-  - Giảm kích thước chữ xuống 11px, avatar 11px, dãn dòng 1.18 và khoảng cách cực gọn 1.5px giúp hiển thị được lượng bình luận tối đa (chứa tới 60 bình luận trong 45 giây) trong cùng một khung hiển thị, bám sát phong cách livestream chuyên nghiệp.
-- **Cơ chế chống đứng/đóng băng Live Chat (Anti-freeze Auto-scroll):**
-  - Tự động nhận diện và nhấn mở khóa nút "Cuộc trò chuyện bị tạm dừng" / "Tin nhắn mới" đồng thời liên tục ghim cuộn xuống tin nhắn mới nhất trong cả tiến trình ngầm lẫn giao diện chính, chấm dứt hoàn toàn hiện tượng YouTube tự đóng băng luồng chat khiến người dùng phải bấm tay.
-- **Cơ chế Live Chat Session-Only (Luôn tắt mặc định):**
-  - Live chat chỉ kích hoạt tạm thời trong đúng video đang xem. Khi chuyển sang video khác hoặc tải lại trang (F5), tính năng Live Chat sẽ tự động tắt về trạng thái "Tắt" mà không lưu cưỡng bức vào bộ nhớ, đảm bảo không làm phiền khi duyệt video thông thường.
-- **Kế thừa các tính năng nổi bật từ v3.1.4:**
+Phiên bản **v3.1.6** nâng cấp:
+- **Khung nổi Streamer 10px siêu gọn, đồng đều hàng lối:**
+  - Giảm kích thước chữ xuống 10px, avatar 10px, badge 9px.
+  - Tông màu @tên tác giả thường chuyển sang màu nhạt dịu mắt (#9ab4c7), làm nổi bật nội dung tin nhắn màu trắng tinh (#ffffff).
+  - Khống chế toàn bộ icon emoji và custom emote về kích thước siêu nhỏ 10px (bằng cỡ chữ), triệt tiêu hoàn toàn lỗi dòng cao dòng thấp lỏ, mọi dòng cmt cao đều tăm tắp.
+  - Loại bỏ hiệu ứng translateY gây giật lag khung hình khi có tin nhắn mới, chuyển sang fade-in opacity mượt mà.
+- **Tự động cân đối kích thước chữ khi phóng to (Responsive Zoom / Fullscreen):**
+  - Khi xem ở màn hình bình thường: Giữ chuẩn 10px siêu gọn để chứa tối đa số lượng bình luận.
+  - Khi phóng to toàn màn hình (Fullscreen): Tự động mở rộng tỷ lệ chữ Streamer lên 13.5px, icon 13.5px và Danmaku lên 25px, giúp hiển thị sắc nét, vừa vặn trên màn hình lớn.
+- **Tối ưu hóa chạy ngầm Live Chat & Chặn popup Fullscreen:**
+  - Giữ khung chat gốc của YouTube chạy ngầm ở trạng thái active (off-screen visual hidden) cho cả Live trực tiếp và Phát lại live stream cũ (Replay), giúp cmt luôn chạy mượt mà ngay cả khi người dùng từng bấm ẩn chat.
+  - Khóa vĩnh viễn khung chat gốc trong chế độ Fullscreen, đảm bảo khi zoom to không bao giờ bị hiện khung chat native làm phiền.
+- **Tối ưu hóa tính năng Tự động trực tiếp (Auto Live Sync):**
+  - Giới hạn nghiêm ngặt chỉ chạy khi luồng phát đang thực sự là LIVE trực tiếp thời gian thực; tuyệt đối không can thiệp hay gây lỗi tự động tắt/dừng video khi xem lại live stream cũ.
+  - Bổ sung nhận diện tua lại thông minh: Khi người dùng chủ động kéo thanh tua lại để xem tình huống trước đó (delay > 15s), tính năng sẽ giữ nguyên không tự ý kéo giật về mốc trực tiếp.
+- **Kế thừa các tính năng nổi bật từ v3.1.5 & v3.1.4:**
   - Khung nổi Streamer bám góc tuyệt đối (CSS Corner Anchor) khi phóng to / thu nhỏ.
-  - Tự động thu gọn thanh chat gốc của YouTube khi bật overlay.
+  - Danmaku dãn cách thưa thớt (10 làn chạy, cooldown 420ms chống đè chữ, loại bỏ dồn cục lúc đầu bật).
+  - Chống đứng chat YouTube bằng cơ chế auto-unpause và auto-scroll.
+  - Live chat session-only luôn tắt mặc định khi F5 hoặc chuyển video.
   - Danmaku dãn cách thưa thớt (10 làn chạy, cooldown 420ms chống đè chữ, loại bỏ dồn cục lúc đầu bật).
   - Chạy ngầm Live Chat độc lập bằng Video ID (tắt khung chat gốc YouTube vẫn chạy bình thường).
   - Tính năng Tự động trực tiếp (Auto Live) chống trễ luồng phát.
