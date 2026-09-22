@@ -415,6 +415,35 @@
   function displayChatMessage(data, isBacklog = false) {
     if (!data || !currentConfig.chatOverlay || currentConfig.chatOverlay === "off") return;
     const msgIsBacklog = isBacklog || data.isBacklog || false;
+    if (!msgIsBacklog) {
+      const player = document.querySelector("#movie_player, .html5-video-player");
+      if (player) {
+        let isOngoingLive = false;
+        try {
+          if (typeof player.getVideoData === "function") {
+            const vd = player.getVideoData();
+            if (vd && vd.isLive === true) isOngoingLive = true;
+          }
+        } catch (e) {
+        }
+        if (isOngoingLive) {
+          const video = player.querySelector("video");
+          if (video) {
+            if (video.paused) return;
+            try {
+              if (video.seekable && video.seekable.length > 0) {
+                const liveEdge = video.seekable.end(video.seekable.length - 1);
+                if (isFinite(liveEdge) && isFinite(video.currentTime)) {
+                  const delay = liveEdge - video.currentTime;
+                  if (delay > 5) return;
+                }
+              }
+            } catch (e) {
+            }
+          }
+        }
+      }
+    }
     if (isDuplicateMessage(data.id, data.author, data.messageHtml)) return;
     ensureChatOverlayContainers();
     const showDanmaku = currentConfig.chatOverlay === "danmaku";

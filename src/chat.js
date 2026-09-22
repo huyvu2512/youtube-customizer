@@ -525,6 +525,41 @@ export function displayChatMessage(data, isBacklog = false) {
 
     const msgIsBacklog = isBacklog || data.isBacklog || false;
 
+    // Chặn tin nhắn mới (thời gian thực) khi phiên live ĐANG diễn ra nhưng người dùng
+    // KHÔNG ở mốc trực tiếp (dừng video, tua lại xem đoạn cũ, hoặc lag quá xa)
+    // Phiên live ĐÃ kết thúc (replay) thì không ảnh hưởng — chat replay luôn chạy bình thường.
+    if (!msgIsBacklog) {
+        const player = document.querySelector('#movie_player, .html5-video-player');
+        if (player) {
+            let isOngoingLive = false;
+            try {
+                if (typeof player.getVideoData === 'function') {
+                    const vd = player.getVideoData();
+                    if (vd && vd.isLive === true) isOngoingLive = true;
+                }
+            } catch (e) {}
+
+            if (isOngoingLive) {
+                const video = player.querySelector('video');
+                if (video) {
+                    // Video đang paused → không hiển thị chat mới
+                    if (video.paused) return;
+
+                    // Người dùng đang tua lại quá khứ (cách live edge > 5s) → không hiển thị
+                    try {
+                        if (video.seekable && video.seekable.length > 0) {
+                            const liveEdge = video.seekable.end(video.seekable.length - 1);
+                            if (isFinite(liveEdge) && isFinite(video.currentTime)) {
+                                const delay = liveEdge - video.currentTime;
+                                if (delay > 5) return;
+                            }
+                        }
+                    } catch (e) {}
+                }
+            }
+        }
+    }
+
     if (isDuplicateMessage(data.id, data.author, data.messageHtml)) return;
 
     ensureChatOverlayContainers();
