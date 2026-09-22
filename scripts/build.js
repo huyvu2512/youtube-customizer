@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.2
-// @description  YouTube Customizer v3.2.2 — Đưa Auto Live lên tab Giao diện, thông báo cập nhật bản mới từ xa, đa tầng bộ nhớ chống mất cài đặt khi update.
+// @version      3.2.3
+// @description  YouTube Customizer v3.2.3 — Giữ Chat gốc khi mở, tự động phóng to 100% video Fullscreen khi ẩn Chat, chống vệt đen màn hình.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

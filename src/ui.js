@@ -73,7 +73,7 @@ function createSettingsPanel() {
         panel.innerHTML = safeHTML(`
             <div class="ytc-header">
                 <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v3.2.2</span>
+                <span class="ytc-header-badge">v3.2.3</span>
             </div>
 
             <div class="ytc-tabs">
@@ -395,7 +395,7 @@ export function syncPanelState(targetPanel) {
     });
 }
 
-const CURRENT_VERSION = '3.2.2';
+const CURRENT_VERSION = '3.2.3';
 const ONBOARDING_KEY = `ytc_onboarding_v${CURRENT_VERSION.replace(/\./g, '_')}`;
 let updateCheckInitiated = false;
 

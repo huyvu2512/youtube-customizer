@@ -739,7 +739,10 @@ export {
     initIframeChatSender,
     updateChatOverlayVisibility,
     initChatOverlay,
-    requestExistingMessages
+    requestExistingMessages,
+    isNativeChatHiddenByScript,
+    setNativeChatHiddenState,
+    syncPlayerFullscreenSize
 } from './chat.js';
 
 // --------------------------------------------------------------------------

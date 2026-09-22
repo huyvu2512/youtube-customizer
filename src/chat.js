@@ -320,6 +320,7 @@ function setupChatBoxInteractions(box, player) {
     window.addEventListener('resize', () => {
         const p = document.querySelector('#movie_player, .html5-video-player');
         if (box && p) applyChatBoxPos(box, p);
+        syncPlayerFullscreenSize();
     });
     document.addEventListener('fullscreenchange', () => {
         const p = document.querySelector('#movie_player, .html5-video-player');
@@ -328,6 +329,11 @@ function setupChatBoxInteractions(box, player) {
             setTimeout(() => applyChatBoxPos(box, p), 100);
             setTimeout(() => applyChatBoxPos(box, p), 300);
         }
+        syncPlayerFullscreenSize();
+        setTimeout(syncPlayerFullscreenSize, 50);
+        setTimeout(syncPlayerFullscreenSize, 150);
+        setTimeout(syncPlayerFullscreenSize, 300);
+        setTimeout(syncPlayerFullscreenSize, 600);
     });
 
     if (window.ResizeObserver && player) {
@@ -620,15 +626,126 @@ export function displayChatMessage(data, isBacklog = false) {
 // --------------------------------------------------------------------------
 // 4. QUAN SÁT VÀ NẠP TIN NHẮN TỪ TẤT CẢ CÁC NGUỒN (MAIN DOM & IFRAME)
 // --------------------------------------------------------------------------
+export let isNativeChatHiddenByScript = false;
+
+export function setNativeChatHiddenState(hidden) {
+    isNativeChatHiddenByScript = !!hidden;
+    const root = document.documentElement;
+    const body = document.body;
+    if (hidden) {
+        root.setAttribute('data-ytc-chat-hidden', 'true');
+        if (body) body.setAttribute('data-ytc-chat-hidden', 'true');
+    } else {
+        root.removeAttribute('data-ytc-chat-hidden');
+        if (body) body.removeAttribute('data-ytc-chat-hidden');
+    }
+    syncPlayerFullscreenSize();
+}
+
+export function syncPlayerFullscreenSize() {
+    const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen, .html5-video-player.ytp-fullscreen'));
+    const player = document.querySelector('#movie_player, .html5-video-player');
+    if (!player) return;
+
+    if (!isFs) {
+        const video = player.querySelector('video.html5-main-video');
+        if (video && video.dataset.ytcOverridden) {
+            delete video.dataset.ytcOverridden;
+            video.style.width = '';
+            video.style.height = '';
+            video.style.left = '';
+            video.style.top = '';
+        }
+        return;
+    }
+
+    // Đang trong Fullscreen: Kích hoạt YouTube player tính toán lại kích thước chuẩn 100vw
+    window.dispatchEvent(new Event('resize'));
+    if (typeof player.setInternalSize === 'function') {
+        try { player.setInternalSize(); } catch(e) {}
+    }
+
+    if (isNativeChatHiddenByScript) {
+        const video = player.querySelector('video.html5-main-video');
+        if (video && video.videoWidth && video.videoHeight) {
+            const screenW = window.innerWidth || screen.width;
+            const screenH = window.innerHeight || screen.height;
+            const videoRatio = video.videoWidth / video.videoHeight;
+            const screenRatio = screenW / screenH;
+            let targetW, targetH, targetLeft, targetTop;
+
+            if (screenRatio > videoRatio) {
+                targetH = screenH;
+                targetW = Math.round(targetH * videoRatio);
+                targetLeft = Math.round((screenW - targetW) / 2);
+                targetTop = 0;
+            } else {
+                targetW = screenW;
+                targetH = Math.round(targetW / videoRatio);
+                targetLeft = 0;
+                targetTop = Math.round((screenH - targetH) / 2);
+            }
+
+            const currentW = parseInt(video.style.width) || 0;
+            // Nếu kích thước hiện tại của video YouTube đang bị co cụm (ví dụ nhỏ hơn targetW)
+            if (currentW < targetW - 20) {
+                video.dataset.ytcOverridden = 'true';
+                video.style.width = `${targetW}px`;
+                video.style.height = `${targetH}px`;
+                video.style.left = `${targetLeft}px`;
+                video.style.top = `${targetTop}px`;
+            }
+        }
+    }
+}
+
+let chatToggleListenersBound = false;
+export function setupChatToggleListeners() {
+    if (chatToggleListenersBound) return;
+    chatToggleListenersBound = true;
+
+    document.addEventListener('click', (e) => {
+        // 1. Người dùng bấm "Hiện cuộc trò chuyện" / "Mở bảng điều khiển" / "Show chat"
+        const showBtn = e.target.closest('#show-hide-button button, [aria-label*="Hiện cuộc trò chuyện" i], [aria-label*="Show chat" i], button#show-button, #show-button');
+        if (showBtn) {
+            setNativeChatHiddenState(false);
+            return;
+        }
+
+        // 2. Người dùng bấm "Ẩn cuộc trò chuyện" / "Hide chat"
+        const hideBtn = e.target.closest('ytd-live-chat-frame #show-hide-button button, ytd-live-chat-frame #close-button, [aria-label*="Ẩn cuộc trò chuyện" i], [aria-label*="Hide chat" i]');
+        if (hideBtn) {
+            if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
+                setNativeChatHiddenState(true);
+            }
+        }
+    }, true);
+}
+
 export function ensureNativeLiveChatRunning() {
+    if (!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') {
+        setNativeChatHiddenState(false);
+        return;
+    }
+
     const chatFrame = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy');
-    if (chatFrame && chatFrame.hasAttribute('collapsed')) {
-        // Nếu người dùng đã từng bấm "Ẩn cuộc trò chuyện", YouTube sẽ dừng nạp tin nhắn mới.
-        // Ta kích hoạt mở lại ngầm để YouTube tiếp tục stream chat (cả live trực tiếp lẫn xem lại live cũ - replay),
-        // đồng thời CSS off-screen sẽ giấu hoàn toàn khung này ra khỏi màn hình nên người dùng không bị vướng mắt.
-        const expandBtn = chatFrame.querySelector('#show-hide-button button, [aria-label*="Hiện cuộc trò chuyện"], [aria-label*="Show chat"], button#show-button');
+    const watchFlexy = document.querySelector('ytd-watch-flexy');
+
+    if (!chatFrame) return;
+
+    const isCollapsed = chatFrame.hasAttribute('collapsed') || (watchFlexy && watchFlexy.hasAttribute('chat-collapsed'));
+
+    if (isCollapsed) {
+        // Nếu ban đầu bị tắt (mặc định hoặc người dùng ẩn): đánh dấu ẩn bằng script và uncollapse ngầm để nạp data
+        setNativeChatHiddenState(true);
+        const expandBtn = chatFrame.querySelector('#show-hide-button button, [aria-label*="Hiện cuộc trò chuyện" i], [aria-label*="Show chat" i], button#show-button');
         if (expandBtn) {
             try { expandBtn.click(); } catch(e) {}
+        }
+    } else {
+        // Nếu YouTube đang mở sẵn (chưa bị ẩn): không ẩn, để người dùng chat và fullscreen tự nhiên
+        if (!isNativeChatHiddenByScript) {
+            setNativeChatHiddenState(false);
         }
     }
 }
@@ -821,6 +938,7 @@ export function updateChatOverlayVisibility() {
         ensureBackgroundLiveChat();
         requestExistingMessages();
     } else {
+        setNativeChatHiddenState(false);
         if (bgChatIframe) {
             bgChatIframe.remove();
             bgChatIframe = null;
@@ -1000,6 +1118,18 @@ function findAndObserveItems() {
 export function initChatOverlay() {
     if (chatOverlayInitialized) return;
     chatOverlayInitialized = true;
+
+    setupChatToggleListeners();
+    document.addEventListener('fullscreenchange', () => {
+        syncPlayerFullscreenSize();
+        setTimeout(syncPlayerFullscreenSize, 50);
+        setTimeout(syncPlayerFullscreenSize, 150);
+        setTimeout(syncPlayerFullscreenSize, 300);
+        setTimeout(syncPlayerFullscreenSize, 600);
+    });
+    window.addEventListener('resize', () => {
+        syncPlayerFullscreenSize();
+    });
 
     // 1. Lắng nghe tin nhắn từ iframe gửi sang qua postMessage
     window.addEventListener('message', (e) => {

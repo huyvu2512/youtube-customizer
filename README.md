@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.2.2-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.2.3-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,13 +25,19 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.2.2** nâng cấp:
+Phiên bản **v3.2.3** nâng cấp:
+- **Giữ nguyên Chat gốc khi mở tự nhiên:**
+  - Nếu khung trò chuyện trực tiếp đang được mở tự nhiên từ YouTube (hoặc người dùng bấm "Hiện cuộc trò chuyện" / "Mở bảng điều khiển"), script không can thiệp ẩn đi mà để hiển thị hoàn toàn bình thường ở cả giao diện thường lẫn toàn màn hình (Fullscreen), giúp người dùng thoải mái gõ và tương tác với kênh.
+- **Tự động phóng to 100% Video Fullscreen khi Chat bị ẩn (Xóa sổ vệt đen):**
+  - Khi khung Chat gốc bị ẩn (mặc định tắt hoặc người dùng bấm "Ẩn cuộc trò chuyện"), script vẫn mở ngầm để nạp dữ liệu cho Danmaku / Khung nổi Streamer nhưng giấu triệt để khỏi giao diện.
+  - Đặc biệt khi phóng to toàn màn hình (Fullscreen), toàn bộ container video và player được ép mở rộng 100vw x 100vh, xóa bỏ hoàn toàn khoảng trống màu đen ở cạnh phải màn hình.
+- **Kế thừa các tính năng từ v3.2.2:**
 - **Đưa "Tự động trực tiếp (Auto Live)" lên Tab Giao diện:**
   - Chuyển mục Auto Live từ tab Trình phát sang tab Bố cục & Giao diện, đặt liền kề mục Mở khóa tua Live Stream giúp quản lý các thiết lập luồng phát trực quan, thuận tiện hơn.
 - **Khung thông báo khi có phiên bản mới từ GitHub:**
-  - Tích hợp cơ chế kiểm tra phiên bản từ xa tự động. Khi phát hiện bản phát hành mới trên GitHub, giao diện sẽ hiển thị thẻ thông báo nổi chuyên dụng với huy hiệu "BẢN MỚI" cùng nút "Cập nhật ngay" để nâng cấp script tức thì mà không gây gián đoạn trải nghiệm xem video.
+  - Tích hợp cơ chế kiểm tra phiên bản từ xa tự động. Khi phát hiện bản phát hành mới trên GitHub, giao diện sẽ hiển thị thẻ thông báo nổi chuyên dụng với huy hiệu "BẢN MỚI" cùng nút "Cập nhật ngay".
 - **Bảo vệ cài đặt đa tầng chống mất cấu hình khi update:**
-  - Nâng cấp hệ thống lưu trữ đồng bộ đa nguồn (ytc_config, ytc_config_v3, ytc_config_persistent, sessionStorage) đi kèm dấu thời gian thực (_lastUpdated). Tự động kế thừa và bảo toàn 100% các cài đặt người dùng đã tùy chỉnh qua các phiên bản cập nhật.
+  - Nâng cấp hệ thống lưu trữ đồng bộ đa nguồn (ytc_config, ytc_config_v3, ytc_config_persistent, sessionStorage). Bảo toàn 100% các cài đặt người dùng đã tùy chỉnh qua các phiên bản cập nhật.
 - **Đồng bộ bảng cài đặt chính xác:**
   - Sửa lỗi định danh phần tử trong hàm syncPanelState, giúp trạng thái các nút gạt và chế độ luôn được đồng bộ chuẩn xác ngay khi mở bảng menu.
 - **Kế thừa các tính năng từ v3.2.1:**
