@@ -1,8 +1,28 @@
 // ==========================================================================
 // TỰ ĐỘNG BỎ QUA VÀ TUA NHANH QUẢNG CÁO VIDEO DỰ PHÒNG (AD SHIELD)
 // ==========================================================================
+import { whenElement } from '../core/utils.js';
 
 let adShieldInitialized = false;
+let wasAdShowing = false;
+
+function isLiveStream(player) {
+    if (!player) return false;
+    if (typeof player.getVideoData === 'function') {
+        const vd = player.getVideoData();
+        if (vd && vd.isLive) return true;
+    }
+    if (typeof player.isLive === 'function') {
+        try { if (player.isLive() === true) return true; } catch (e) {}
+    }
+    if (player.classList.contains('ytp-live') || !!player.querySelector('.ytp-live-badge')) {
+        return true;
+    }
+    if (location.pathname.startsWith('/live/')) {
+        return true;
+    }
+    return false;
+}
 
 export function initAdShield() {
     if (adShieldInitialized) return;
@@ -16,11 +36,16 @@ export function initAdShield() {
                             player.classList.contains('ad-interrupting') ||
                             !!player.querySelector('.ytp-ad-player-overlay, .ytp-ad-text, .video-ads .ad-showing');
 
+        const video = player.querySelector('video.html5-main-video') || player.querySelector('video');
+
         if (isAdShowing) {
-            const video = player.querySelector('video.html5-main-video') || player.querySelector('video');
+            wasAdShowing = true;
+            const isLive = isLiveStream(player);
+
             if (video) {
-                // 1. Nếu có thể tua nhanh video quảng cáo
-                if (isFinite(video.duration) && video.duration > 0) {
+                // 1. Chỉ tua video.duration với video thường (VOD).
+                // TUYỆT ĐỐI KHÔNG tua currentTime trên livestream vì sẽ làm lỗi buffer MSE và đẩy video về 0:00!
+                if (!isLive && isFinite(video.duration) && video.duration > 0) {
                     try {
                         video.currentTime = video.duration;
                     } catch (e) {}
@@ -43,19 +68,24 @@ export function initAdShield() {
             skipButtons.forEach((btn) => {
                 try { btn.click(); } catch (e) {}
             });
+        } else if (wasAdShowing) {
+            wasAdShowing = false;
+            // Khôi phục tốc độ phát chuẩn ngay khi kết thúc quảng cáo
+            if (video && video.playbackRate > 2.0) {
+                video.playbackRate = 1.0;
+            }
         }
     }
 
     // Quét định kỳ nhẹ nhàng
-    setInterval(handleVideoAds, 250);
+    setInterval(handleVideoAds, 300);
 
-    // Bắt nhịp qua MutationObserver khi container quảng cáo xuất hiện
-    const obs = new MutationObserver(() => {
-        handleVideoAds();
+    // Chỉ theo dõi sự thay đổi class trên #movie_player (khi có class ad-showing)
+    // TUYỆT ĐỐI KHÔNG gắn observer subtree lên document.body
+    whenElement('#movie_player, .html5-video-player', (player) => {
+        const obs = new MutationObserver(() => {
+            handleVideoAds();
+        });
+        obs.observe(player, { attributes: true, attributeFilter: ['class'] });
     });
-
-    const target = document.querySelector('#movie_player') || document.body;
-    if (target) {
-        obs.observe(target, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
-    }
 }

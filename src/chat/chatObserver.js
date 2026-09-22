@@ -119,38 +119,9 @@ export function syncNativeChatFullscreenState() {
     }
 }
 
-let playerClassObserver = null;
-export function observePlayerChatState() {
-    const player = document.querySelector('#movie_player, .html5-video-player');
-    if (!player) return;
-    if (playerClassObserver) {
-        playerClassObserver.disconnect();
-        playerClassObserver = null;
-    }
-
-    playerClassObserver = new MutationObserver(() => {
-        syncNativeChatFullscreenState();
-    });
-
-    playerClassObserver.observe(player, { attributes: true, attributeFilter: ['class'] });
-}
-
-let fullscreenPanelsObserver = null;
-export function observeFullscreenChatPanels() {
-    if (fullscreenPanelsObserver) return;
-
-    fullscreenPanelsObserver = new MutationObserver(() => {
-        syncNativeChatFullscreenState();
-    });
-
-    const target = document.querySelector('ytd-watch-flexy') || document.body || document.documentElement;
-    fullscreenPanelsObserver.observe(target, {
-        attributes: true,
-        attributeFilter: ['visibility', 'has-active-panel', 'panels-open', 'fullscreen', 'chat-collapsed', 'class'],
-        subtree: true,
-        childList: true
-    });
-}
+// Vô hiệu hóa các observer diện rộng để tránh vòng lặp đệ quy 100% CPU làm treo tab
+export function observePlayerChatState() {}
+export function observeFullscreenChatPanels() {}
 
 let chatToggleListenersBound = false;
 export function setupChatToggleListeners() {
@@ -674,8 +645,12 @@ export function initChatOverlay() {
         setTimeout(syncPlayerFullscreenSize, 300);
         setTimeout(syncPlayerFullscreenSize, 600);
     });
+    let windowResizeTimer = null;
     window.addEventListener('resize', () => {
-        syncPlayerFullscreenSize();
+        clearTimeout(windowResizeTimer);
+        windowResizeTimer = setTimeout(() => {
+            syncPlayerFullscreenSize();
+        }, 150);
     });
 
     window.addEventListener('ytc-close-streamer-box', () => {

@@ -334,6 +334,11 @@ export function createSettingsPanel() {
                 modeBtn.classList.add('active');
 
                 applyConfigToRoot();
+                import('../chat/index.js').then(m => {
+                    if (m && typeof m.updateChatOverlayVisibility === 'function') {
+                        m.updateChatOverlayVisibility();
+                    }
+                }).catch(() => {});
             });
         });
 

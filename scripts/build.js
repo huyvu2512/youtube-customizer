@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.11
-// @description  YouTube Customizer v3.2.11 — Hỗ trợ mở/đóng Live Chat toàn màn hình từ thanh nút tác vụ (action bar / engagement panel).
+// @version      3.2.12
+// @description  YouTube Customizer v3.2.12 — Khắc phục lỗi live stream nhảy về 0:00 & triệt tiêu hoàn toàn lỗi đơ/treo tab khi bật Live Chat.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

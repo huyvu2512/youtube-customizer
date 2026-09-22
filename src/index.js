@@ -26,6 +26,8 @@ import {
     setWatchLoading,
     setupFullscreenLock,
     initAutoLiveSync,
+    resetAutoLiveState,
+    checkInitialLiveSnap,
     initLiveDvrHook,
     initAdShield
 } from './player/index.js';
@@ -110,6 +112,8 @@ if (window.self !== window.top) {
         dismissPromoBanners(document);
         initChatOverlay();
         initAutoLiveSync();
+        resetAutoLiveState();
+        checkInitialLiveSnap();
 
         if (location.pathname.startsWith('/watch')) {
             setWatchLoading(true);

@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.11
-// @description  YouTube Customizer v3.2.11 — Hỗ trợ mở/đóng Live Chat toàn màn hình từ thanh nút tác vụ (action bar / engagement panel).
+// @version      3.2.12
+// @description  YouTube Customizer v3.2.12 — Khắc phục lỗi live stream nhảy về 0:00 & triệt tiêu hoàn toàn lỗi đơ/treo tab khi bật Live Chat.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -28,7 +28,7 @@
   var APP_VERSION, CONFIG_KEY, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.2.11";
+      APP_VERSION = "3.2.12";
       CONFIG_KEY = "ytc_config";
       GEAR_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>`;
       GRID_SVG = `<svg viewBox="0 0 24 24"><path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h7v7h-7v-7z"/></svg>`;
@@ -165,68 +165,7 @@
     }
   });
 
-  // src/ui/sync.js
-  var sync_exports = {};
-  __export(sync_exports, {
-    syncPanelState: () => syncPanelState
-  });
-  function syncPanelState(targetPanel) {
-    const panel = targetPanel || document.getElementById("ytc-settings-panel");
-    if (!panel) return;
-    const currentMode = currentConfig.chatOverlay || "off";
-    panel.querySelectorAll(".ytc-mode-btn").forEach((btn) => {
-      btn.classList.toggle("active", btn.getAttribute("data-overlay") === currentMode);
-    });
-    panel.querySelectorAll(".ytc-item[data-toggle]").forEach((item) => {
-      const key = item.getAttribute("data-toggle");
-      const checkbox = item.querySelector('input[type="checkbox"]');
-      if (checkbox && key in currentConfig) {
-        checkbox.checked = !!currentConfig[key];
-      }
-    });
-    panel.querySelectorAll(".ytc-col-btn").forEach((colBtn) => {
-      const cols = parseInt(colBtn.getAttribute("data-cols"), 10);
-      colBtn.classList.toggle("active", cols === currentConfig.columns);
-    });
-  }
-  var init_sync = __esm({
-    "src/ui/sync.js"() {
-      init_config();
-    }
-  });
-
-  // src/styles.css
-  var styles_default = '/* ==========================================================================\n   YOUTUBE CUSTOMIZER - TẬP HỢP TOÀN BỘ ĐỊNH KIỂU CSS\n   ========================================================================== */\n\n/* --------------------------------------------------------------------------\n   1. LƯỚI VIDEO TRANG CHỦ & FEED: ÉP 3/4/5 CỘT CHUẨN XÁC\n   (Độ ưu tiên cao nhất, cố định vĩnh viễn khi F5 tải lại trang)\n   -------------------------------------------------------------------------- */\n@media (min-width: 900px) {\n    ytd-browse[page-subtype="home"] ytd-rich-grid-renderer,\n    ytd-browse[page-subtype="subscriptions"] ytd-rich-grid-renderer,\n    ytd-browse[page-subtype="channels"] ytd-rich-grid-renderer,\n    #page-manager ytd-browse ytd-rich-grid-renderer,\n    ytd-rich-grid-renderer.ytc-grid,\n    ytd-rich-grid-renderer {\n        --ytd-rich-grid-items-per-row: 3 !important;\n        --ytd-rich-grid-posts-per-row: 3 !important;\n        --ytd-rich-grid-item-max-width: none !important;\n    }\n\n    html[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,\n    html[data-ytc-cols="3"] ytd-rich-grid-renderer,\n    body[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,\n    body[data-ytc-cols="3"] ytd-rich-grid-renderer,\n    [data-ytc-cols="3"] #page-manager ytd-browse ytd-rich-grid-renderer,\n    [data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,\n    [data-ytc-cols="3"] ytd-browse ytd-rich-grid-renderer,\n    [data-ytc-cols="3"] ytd-rich-grid-renderer {\n        --ytd-rich-grid-items-per-row: 3 !important;\n        --ytd-rich-grid-posts-per-row: 3 !important;\n        --ytd-rich-grid-item-max-width: none !important;\n    }\n\n    html[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,\n    html[data-ytc-cols="4"] ytd-rich-grid-renderer,\n    body[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,\n    body[data-ytc-cols="4"] ytd-rich-grid-renderer,\n    [data-ytc-cols="4"] #page-manager ytd-browse ytd-rich-grid-renderer,\n    [data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,\n    [data-ytc-cols="4"] ytd-browse ytd-rich-grid-renderer,\n    [data-ytc-cols="4"] ytd-rich-grid-renderer {\n        --ytd-rich-grid-items-per-row: 4 !important;\n        --ytd-rich-grid-posts-per-row: 4 !important;\n        --ytd-rich-grid-item-max-width: none !important;\n    }\n\n    html[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,\n    html[data-ytc-cols="5"] ytd-rich-grid-renderer,\n    body[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,\n    body[data-ytc-cols="5"] ytd-rich-grid-renderer,\n    [data-ytc-cols="5"] #page-manager ytd-browse ytd-rich-grid-renderer,\n    [data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,\n    [data-ytc-cols="5"] ytd-browse ytd-rich-grid-renderer,\n    [data-ytc-cols="5"] ytd-rich-grid-renderer {\n        --ytd-rich-grid-items-per-row: 5 !important;\n        --ytd-rich-grid-posts-per-row: 5 !important;\n        --ytd-rich-grid-item-max-width: none !important;\n    }\n\n    #contents.ytd-rich-grid-row ytd-rich-item-renderer,\n    ytd-rich-grid-renderer ytd-rich-item-renderer {\n        width: calc(100% / var(--ytd-rich-grid-items-per-row, 3) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n        max-width: calc(100% / var(--ytd-rich-grid-items-per-row, 3) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n    }\n\n    [data-ytc-cols="3"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,\n    [data-ytc-cols="3"] ytd-rich-grid-renderer ytd-rich-item-renderer {\n        width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n        max-width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n    }\n\n    [data-ytc-cols="4"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,\n    [data-ytc-cols="4"] ytd-rich-grid-renderer ytd-rich-item-renderer {\n        width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n        max-width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n    }\n\n    [data-ytc-cols="5"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,\n    [data-ytc-cols="5"] ytd-rich-grid-renderer ytd-rich-item-renderer {\n        width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n        max-width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n    }\n}\n\n/* --------------------------------------------------------------------------\n   2. TỐI ƯU HIỆU NĂNG, KHUNG HÌNH & LIVE CHAT (ZERO-LAG)\n   -------------------------------------------------------------------------- */\n#page-manager ytd-rich-item-renderer {\n    overflow: hidden !important;\n    border-radius: 12px;\n}\n#page-manager ytd-rich-item-renderer:hover {\n    z-index: 2;\n    position: relative;\n}\n\nytd-comment-thread-renderer {\n    content-visibility: auto;\n    contain-intrinsic-size: auto 200px;\n}\n\n@keyframes ytcConfirmInserted {\n    from { clip-path: inset(0); }\n    to { clip-path: inset(0); }\n}\nyt-confirm-dialog-renderer {\n    animation: ytcConfirmInserted 0.001s;\n}\n\n#movie_player.seeking-mode .ytp-chrome-bottom,\n#movie_player.seeking-mode .ytp-gradient-bottom,\n#movie_player.seeking-mode .ytp-chrome-top {\n    opacity: 0 !important;\n    transition: opacity 0.15s ease;\n}\n#movie_player.seeking-mode {\n    cursor: none !important;\n}\n\n.ytc-fs-locked .ytp-fullscreen-button {\n    opacity: 0.35 !important;\n    pointer-events: none !important;\n    cursor: not-allowed !important;\n    transition: opacity 0.2s ease !important;\n}\n\nytd-live-chat-frame#chat,\n#chat.ytd-watch-flexy,\niframe#chatframe {\n    contain: layout style paint !important;\n}\n\nyt-live-chat-text-message-renderer,\nyt-live-chat-paid-message-renderer,\nyt-live-chat-membership-item-renderer {\n    content-visibility: auto !important;\n    contain-intrinsic-size: auto 32px !important;\n}\n\n/* --------------------------------------------------------------------------\n   3. BỘ LỌC NỘI DUNG: SHORTS, CHƠI GAME, HỘI VIÊN, KHÁM PHÁ, CỘNG ĐỒNG, CLEAN SEARCH\n   -------------------------------------------------------------------------- */\n.ytc-hide-shorts ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),\n.ytc-hide-shorts ytd-rich-section-renderer:has(ytd-reel-shelf-renderer),\n.ytc-hide-shorts ytd-rich-shelf-renderer[is-shorts],\n.ytc-hide-shorts ytd-reel-shelf-renderer,\n.ytc-hide-shorts ytd-guide-entry-renderer:has(a[href^="/shorts"]),\n.ytc-hide-shorts ytd-mini-guide-entry-renderer:has(a[href^="/shorts"]),\n.ytc-hide-shorts ytd-guide-entry-renderer a[title="Shorts"],\n.ytc-hide-shorts ytd-mini-guide-entry-renderer[aria-label="Shorts"],\n.ytc-hide-shorts #endpoint[title="Shorts"],\n.ytc-hide-shorts ytd-mealbar-promo-renderer,\n.ytc-hide-shorts ytd-upsell-dialog-renderer {\n    display: none !important;\n}\n\n.ytc-hide-playables ytd-rich-section-renderer:has([is-mini-game-card-shelf]),\n.ytc-hide-playables ytd-rich-shelf-renderer[is-mini-game-card-shelf],\n.ytc-hide-playables ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-mini-game-card-shelf]),\n.ytc-hide-playables ytd-rich-section-renderer:has(a[href*="/playables"]),\n.ytc-hide-playables ytd-rich-section-renderer:has(a[href*="playables"]),\n.ytc-hide-playables ytd-guide-entry-renderer:has(a[href*="/playables"]),\n.ytc-hide-playables ytd-mini-guide-entry-renderer:has(a[href*="/playables"]),\n.ytc-hide-playables ytd-guide-entry-renderer a[title*="Chơi game"],\n.ytc-hide-playables ytd-guide-entry-renderer a[title*="Playables"],\n.ytc-hide-playables ytd-mini-guide-entry-renderer[aria-label*="Chơi game"],\n.ytc-hide-playables ytd-mini-guide-entry-renderer[aria-label*="Playables"],\n.ytc-hide-playables #endpoint[title*="Chơi game"],\n.ytc-hide-playables #endpoint[title*="Playables"] {\n    display: none !important;\n}\n\n.ytc-hide-members ytd-rich-section-renderer:has(.badge-style-type-members-only),\n.ytc-hide-members ytd-rich-section-renderer:has(.badge-style-type-members-first),\n.ytc-hide-members ytd-rich-section-renderer:has([badge-style="MEMBERS_FIRST"]),\n.ytc-hide-members ytd-rich-section-renderer:has([badge-style="MEMBERS_ONLY"]),\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="hội viên"]),\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Hội viên"]),\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Members only"]),\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="members only"]),\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Members first"]),\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="members first"]),\n.ytc-hide-members ytd-rich-section-renderer:has(a[href*="/membership"]),\n.ytc-hide-members ytd-rich-section-renderer:has(a[href*="/memberships"]),\n.ytc-hide-members ytd-rich-section-renderer.ytc-shelf-members,\n.ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-only),\n.ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-first),\n.ytc-hide-members ytd-rich-item-renderer:has([badge-style="MEMBERS_FIRST"]),\n.ytc-hide-members ytd-rich-item-renderer:has([badge-style="MEMBERS_ONLY"]),\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="hội viên"]),\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Hội viên"]),\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Members only"]),\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Members first"]),\n.ytc-hide-members ytd-rich-item-renderer.ytc-item-members,\n.ytc-hide-members ytd-video-renderer:has(.badge-style-type-members-only),\n.ytc-hide-members ytd-video-renderer:has(.badge-style-type-members-first),\n.ytc-hide-members ytd-video-renderer:has([badge-style="MEMBERS_FIRST"]),\n.ytc-hide-members ytd-video-renderer:has([badge-style="MEMBERS_ONLY"]),\n.ytc-hide-members ytd-video-renderer:has([aria-label*="hội viên"]),\n.ytc-hide-members ytd-video-renderer:has([aria-label*="Hội viên"]),\n.ytc-hide-members ytd-video-renderer.ytc-item-members,\n.ytc-hide-members ytd-compact-video-renderer:has(.badge-style-type-members-only),\n.ytc-hide-members ytd-compact-video-renderer:has(.badge-style-type-members-first),\n.ytc-hide-members ytd-compact-video-renderer:has([badge-style="MEMBERS_FIRST"]),\n.ytc-hide-members ytd-compact-video-renderer:has([badge-style="MEMBERS_ONLY"]),\n.ytc-hide-members ytd-compact-video-renderer.ytc-item-members {\n    display: none !important;\n}\n\n.ytc-hide-explore ytd-rich-section-renderer:has(yt-chip-cloud-chip-renderer),\n.ytc-hide-explore ytd-rich-section-renderer:has(yt-chip-cloud-renderer),\n.ytc-hide-explore ytd-rich-section-renderer:has(ytd-feed-filter-chip-bar-renderer),\n.ytc-hide-explore ytd-rich-section-renderer:has(#chips),\n.ytc-hide-explore ytd-rich-section-renderer.ytc-shelf-explore,\n.ytc-hide-explore ytd-rich-section-renderer:has([title*="Khám phá các chủ đề"]),\n.ytc-hide-explore ytd-rich-section-renderer:has([title*="Explore other topics"]),\n.ytc-hide-explore ytd-rich-section-renderer:has([title*="Explore topics"]) {\n    display: none !important;\n}\n\n.ytc-clean-search ytd-ad-slot-renderer,\n.ytc-clean-search ytd-rich-item-renderer:has(ytd-ad-slot-renderer),\n.ytc-clean-search ytd-rich-section-renderer:has(ytd-ad-slot-renderer),\n.ytc-clean-search ytd-video-renderer:has(.badge-style-type-ad) {\n    display: none !important;\n}\n\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-post-renderer),\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-backstage-post-renderer),\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-backstage-post-thread-renderer),\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-post-multi-image-renderer),\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-poll-renderer),\n.ytc-hide-community ytd-rich-section-renderer.ytc-shelf-community,\n.ytc-hide-community ytd-rich-item-renderer:has(ytd-post-renderer),\n.ytc-hide-community ytd-rich-item-renderer:has(ytd-backstage-post-renderer),\n.ytc-hide-community ytd-rich-item-renderer.ytc-item-community,\n.ytc-hide-community ytd-post-renderer,\n.ytc-hide-community ytd-backstage-post-renderer,\n.ytc-hide-community ytd-backstage-post-thread-renderer {\n    display: none !important;\n}\n\n/* --------------------------------------------------------------------------\n   4. TRÌNH PHÁT VIDEO: AMBIENT, THẺ KẾT THÚC, BANNER & LOGO PREMIUM\n   -------------------------------------------------------------------------- */\n.ytc-disable-ambient #cinematics,\n.ytc-disable-ambient ytd-cinematics-renderer,\n.ytc-disable-ambient .ytp-ambient-mode-rendering-container {\n    display: none !important;\n}\n\n.ytc-hide-endscreen .ytp-ce-element,\n.ytc-hide-endscreen .ytp-ce-covering-overlay,\n.ytc-hide-endscreen .ytp-ce-element-show,\n.ytc-hide-endscreen .ytp-ce-video,\n.ytc-hide-endscreen .ytp-ce-playlist,\n.ytc-hide-endscreen .ytp-ce-channel,\n.ytc-hide-endscreen .ytp-ce-subscribe,\n.ytc-hide-endscreen .ytp-cards-button,\n.ytc-hide-endscreen .ytp-cards-teaser,\n.ytc-hide-endscreen .ytp-cards-teaser-box,\n.ytc-hide-endscreen .ytp-card {\n    display: none !important;\n    opacity: 0 !important;\n    pointer-events: none !important;\n}\n\n/* Ẩn logo hình mờ kênh ở góc dưới bên phải video */\n.ytc-hide-watermark .annotation-type-custom.iv-branding,\n.ytc-hide-watermark .iv-branding,\n.ytc-hide-watermark .ytp-iv-video-content .iv-branding,\n.ytc-hide-watermark .ytp-branding-logo,\n.ytc-hide-watermark .ytp-featured-channel,\n.ytc-hide-watermark .ytp-branding-element {\n    display: none !important;\n    opacity: 0 !important;\n    pointer-events: none !important;\n    visibility: hidden !important;\n}\n\n.ytc-auto-dismiss ytd-mealbar-promo-renderer,\n.ytc-auto-dismiss yt-mealbar-promo-renderer,\n.ytc-auto-dismiss ytd-upsell-dialog-renderer,\n.ytc-auto-dismiss ytd-single-option-survey-renderer,\n.ytc-auto-dismiss ytd-in-feed-survey-renderer,\n.ytc-auto-dismiss yt-bubble-hint-renderer,\n.ytc-auto-dismiss .ytc-dismissed-toast {\n    display: none !important;\n    opacity: 0 !important;\n    pointer-events: none !important;\n}\n\n:root.ytc-premium-logo #start.ytd-masthead ytd-topbar-logo-renderer,\n:root.ytc-premium-logo ytd-topbar-logo-renderer#logo {\n    margin-left: 0 !important;\n    display: flex !important;\n    align-items: center !important;\n}\n:root.ytc-premium-logo ytd-topbar-logo-renderer #logo {\n    padding: 18px 4px 18px 16px !important;\n    display: inline-flex !important;\n    align-items: center !important;\n    box-sizing: content-box !important;\n}\nytd-topbar-logo-renderer ytd-yoodle-renderer,\nytd-yoodle-renderer ytd-logo,\nytd-topbar-logo-renderer ytd-yoodle-renderer * {\n    display: none !important;\n}\n:root.ytc-premium-logo ytd-topbar-logo-renderer #logo ytd-logo:not(.ytd-yoodle-renderer),\n:root.ytc-premium-logo ytd-topbar-logo-renderer #logo ytd-logo[hidden]:not(.ytd-yoodle-renderer),\n:root.ytc-premium-logo ytd-topbar-logo-renderer > #logo > div > ytd-logo {\n    width: 101px !important;\n    min-width: 101px !important;\n    max-width: 101px !important;\n    height: 20px !important;\n    display: flex !important;\n    align-items: center !important;\n    overflow: visible !important;\n    visibility: visible !important;\n    opacity: 1 !important;\n}\n:root.ytc-premium-logo ytd-logo:not(.ytd-yoodle-renderer) > *:not(.custom-premium-logo) {\n    display: none !important;\n}\nytd-logo, ytd-topbar-logo-renderer {\n    overflow: visible !important;\n}\n:root:not(.ytc-premium-logo) .custom-premium-logo {\n    display: none !important;\n}\n:root.ytc-premium-logo .custom-premium-logo {\n    display: flex !important;\n    align-items: center !important;\n    width: 101px !important;\n    height: 20px !important;\n    color: var(--yt-spec-wordmark-text, var(--yt-spec-text-primary, #0f0f0f)) !important;\n    pointer-events: none;\n    visibility: visible !important;\n    opacity: 1 !important;\n}\nhtml:not([dark]).ytc-premium-logo .custom-premium-logo,\nhtml:not([dark]) .custom-premium-logo,\n:root:not([dark]).ytc-premium-logo .custom-premium-logo {\n    color: var(--yt-spec-wordmark-text, #0f0f0f) !important;\n}\nhtml[dark].ytc-premium-logo .custom-premium-logo,\nhtml[dark] .custom-premium-logo,\n:root[dark].ytc-premium-logo .custom-premium-logo {\n    color: var(--yt-spec-wordmark-text, #f1f1f1) !important;\n}\n.custom-premium-logo svg {\n    width: 101px !important;\n    height: 20px !important;\n    fill: currentColor !important;\n}\n.custom-premium-logo svg #youtube-paths_yt19,\n.custom-premium-logo svg #youtube-paths_yt19 path {\n    fill: currentColor !important;\n}\n\n:root.ytc-premium-logo ytd-topbar-logo-renderer #country-code {\n    display: inline-block !important;\n    font-size: 10px !important;\n    font-weight: 400 !important;\n    font-family: "Roboto", "Arial", sans-serif !important;\n    line-height: 10px !important;\n    color: var(--yt-spec-text-secondary, #909090) !important;\n    margin-top: 14px !important;\n    margin-left: 4px !important;\n    margin-right: 0 !important;\n    margin-bottom: 0 !important;\n    align-self: flex-start !important;\n    vertical-align: top !important;\n    position: relative !important;\n    top: 0 !important;\n    left: 0 !important;\n}\nhtml:not([dark]).ytc-premium-logo ytd-topbar-logo-renderer #country-code,\nhtml:not([dark]) ytd-topbar-logo-renderer #country-code {\n    color: var(--yt-spec-text-secondary, #606060) !important;\n}\nhtml[dark].ytc-premium-logo ytd-topbar-logo-renderer #country-code,\nhtml[dark] ytd-topbar-logo-renderer #country-code {\n    color: var(--yt-spec-text-secondary, #909090) !important;\n}\n:root.ytc-premium-logo ytd-topbar-logo-renderer #country-code:empty {\n    display: none !important;\n}\n\n/* --------------------------------------------------------------------------\n   5. GIAO DIỆN CÀI ĐẶT: NÚT BÁNH RĂNG & MENU 4 TAB\n   -------------------------------------------------------------------------- */\n#ytc-settings-btn {\n    order: -1 !important;\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    width: 40px;\n    height: 40px;\n    border-radius: 50%;\n    border: none;\n    background: transparent;\n    color: var(--yt-spec-text-primary, #f1f1f1);\n    cursor: pointer;\n    margin-right: 8px;\n    flex-shrink: 0;\n    transition: background-color 0.15s;\n    position: relative;\n}\n#ytc-settings-btn:hover {\n    background-color: rgba(255, 255, 255, 0.1);\n}\nhtml:not([dark]) #ytc-settings-btn:hover {\n    background-color: rgba(0, 0, 0, 0.08);\n}\n#ytc-settings-btn svg {\n    width: 24px;\n    height: 24px;\n}\n\n#ytc-settings-panel {\n    position: fixed;\n    width: 350px;\n    max-height: calc(100vh - 80px);\n    overflow-y: auto;\n    background: var(--yt-spec-brand-background-primary, #282828);\n    color: var(--yt-spec-text-primary, #f1f1f1);\n    border-radius: 12px;\n    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.4);\n    padding: 12px;\n    z-index: 9999;\n    font-family: "Roboto", "Arial", sans-serif;\n    font-size: 14px;\n    display: none;\n    flex-direction: column;\n    gap: 6px;\n    user-select: none;\n    border: 1px solid rgba(255, 255, 255, 0.1);\n}\n#ytc-settings-panel::-webkit-scrollbar {\n    width: 4px;\n}\n#ytc-settings-panel::-webkit-scrollbar-thumb {\n    background: rgba(255, 255, 255, 0.2);\n    border-radius: 2px;\n}\n#ytc-settings-panel.open {\n    display: flex;\n}\n\n.ytc-header {\n    font-weight: 600;\n    font-size: 15px;\n    padding: 4px 6px 8px 6px;\n    border-bottom: 1px solid rgba(255, 255, 255, 0.1);\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n}\n.ytc-header-badge {\n    font-size: 11px;\n    background: #ff0033;\n    color: white;\n    padding: 2px 6px;\n    border-radius: 4px;\n    font-weight: bold;\n}\n\n.ytc-tabs {\n    display: flex;\n    align-items: center;\n    gap: 5px;\n    background: rgba(255, 255, 255, 0.06);\n    border-radius: 8px;\n    padding: 4px;\n    margin: 4px 0 6px 0;\n}\n.ytc-tab-btn {\n    flex: 1;\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    gap: 5px;\n    padding: 6px 6px;\n    border: none;\n    background: transparent;\n    color: #aaa;\n    font-size: 12px;\n    font-weight: 500;\n    border-radius: 6px;\n    cursor: pointer;\n    transition: all 0.15s ease;\n    white-space: nowrap;\n}\n.ytc-tab-btn:hover {\n    background: rgba(255, 255, 255, 0.08);\n    color: #fff;\n}\n.ytc-tab-btn.active {\n    background: #f1f1f1;\n    color: #0f0f0f;\n    font-weight: 600;\n}\n.ytc-tab-btn svg {\n    width: 14px;\n    height: 14px;\n    fill: currentColor;\n    flex-shrink: 0;\n}\n.ytc-tab-pane {\n    display: none;\n    flex-direction: column;\n    gap: 4px;\n}\n.ytc-tab-pane.active {\n    display: flex;\n}\n\n.ytc-item {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    padding: 8px 8px;\n    border-radius: 8px;\n    cursor: pointer;\n    transition: background 0.15s;\n}\n.ytc-item:hover {\n    background: rgba(255, 255, 255, 0.08);\n}\n\n.ytc-item-left {\n    display: flex;\n    align-items: center;\n    gap: 12px;\n}\n.ytc-item-left svg {\n    width: 20px;\n    height: 20px;\n    fill: currentColor;\n    opacity: 0.9;\n    flex-shrink: 0;\n}\n\n.ytc-switch {\n    position: relative;\n    display: inline-block;\n    width: 36px;\n    height: 20px;\n}\n.ytc-switch input {\n    opacity: 0;\n    width: 0;\n    height: 0;\n}\n.ytc-slider {\n    position: absolute;\n    cursor: pointer;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background-color: #606060;\n    border-radius: 20px;\n    transition: background-color 0.2s;\n}\n.ytc-slider:before {\n    position: absolute;\n    content: "";\n    height: 14px;\n    width: 14px;\n    left: 3px;\n    bottom: 3px;\n    background-color: white;\n    border-radius: 50%;\n    transition: transform 0.2s;\n}\n.ytc-switch input:checked + .ytc-slider {\n    background-color: #3ea6ff;\n}\n.ytc-switch input:checked + .ytc-slider:before {\n    transform: translateX(16px);\n}\n\n.ytc-cols-group {\n    display: flex;\n    align-items: center;\n    gap: 4px;\n    background: rgba(255, 255, 255, 0.08);\n    padding: 2px;\n    border-radius: 6px;\n}\n.ytc-col-btn {\n    border: none;\n    background: transparent;\n    color: #aaa;\n    font-size: 13px;\n    font-weight: 500;\n    padding: 4px 8px;\n    border-radius: 4px;\n    cursor: pointer;\n    transition: all 0.15s;\n}\n.ytc-col-btn.active {\n    background: #f1f1f1;\n    color: #0f0f0f;\n}\n\n.ytc-shortcut-hint {\n    font-size: 12px;\n    color: var(--yt-spec-text-secondary, #aaa);\n    background: rgba(255, 255, 255, 0.04);\n    padding: 8px 10px;\n    border-radius: 6px;\n    line-height: 1.6;\n    margin-top: 4px;\n    border: 1px solid rgba(255, 255, 255, 0.06);\n}\n.ytc-shortcut-hint kbd {\n    background: rgba(255, 255, 255, 0.15);\n    color: var(--yt-spec-text-primary, #fff);\n    padding: 2px 5px;\n    border-radius: 3px;\n    font-family: monospace;\n    font-size: 11px;\n    font-weight: bold;\n}\n\nhtml:not([dark]) #ytc-settings-panel {\n    background: #ffffff;\n    color: #0f0f0f;\n    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.15);\n    border: 1px solid rgba(0, 0, 0, 0.1);\n}\nhtml:not([dark]) .ytc-header {\n    border-bottom: 1px solid rgba(0, 0, 0, 0.08);\n}\nhtml:not([dark]) .ytc-tabs {\n    background: rgba(0, 0, 0, 0.05);\n}\nhtml:not([dark]) .ytc-tab-btn {\n    color: #606060;\n}\nhtml:not([dark]) .ytc-tab-btn:hover {\n    background: rgba(0, 0, 0, 0.06);\n    color: #0f0f0f;\n}\nhtml:not([dark]) .ytc-tab-btn.active {\n    background: #0f0f0f;\n    color: #ffffff;\n}\nhtml:not([dark]) .ytc-shortcut-hint {\n    background: rgba(0, 0, 0, 0.04);\n    color: #606060;\n    border-color: rgba(0, 0, 0, 0.08);\n}\nhtml:not([dark]) .ytc-shortcut-hint kbd {\n    background: rgba(0, 0, 0, 0.1);\n    color: #0f0f0f;\n}\n\n.ytc-divider {\n    height: 1px;\n    background: rgba(255, 255, 255, 0.1);\n    margin: 4px 0;\n}\n\n.ytc-mode-group {\n    display: flex;\n    align-items: center;\n    gap: 4px;\n    background: rgba(255, 255, 255, 0.08);\n    padding: 2px;\n    border-radius: 6px;\n}\n.ytc-mode-btn {\n    border: none;\n    background: transparent;\n    color: #aaa;\n    font-size: 12px;\n    font-weight: 500;\n    padding: 4px 8px;\n    border-radius: 4px;\n    cursor: pointer;\n    transition: all 0.15s;\n    white-space: nowrap;\n}\n.ytc-mode-btn.active {\n    background: #f1f1f1;\n    color: #0f0f0f;\n}\nhtml:not([dark]) .ytc-mode-group {\n    background: rgba(0, 0, 0, 0.05);\n}\nhtml:not([dark]) .ytc-mode-btn.active {\n    background: #0f0f0f;\n    color: #ffffff;\n}\n\n/* --------------------------------------------------------------------------\n   CHAT OVERLAY TRÊN VIDEO (DANMAKU & STREAMER BOX)\n   -------------------------------------------------------------------------- */\n#ytc-danmaku-container {\n    position: absolute;\n    inset: 0;\n    width: 100% !important;\n    height: 100% !important;\n    pointer-events: none;\n    overflow: hidden;\n    z-index: 35 !important;\n    container-type: inline-size;\n    transition: opacity 0.3s ease;\n    display: none;\n}\n\n.ytc-danmaku-item {\n    position: absolute;\n    left: 100%;\n    white-space: nowrap;\n    font-family: "YouTube Noto", Roboto, Arial, sans-serif !important;\n    font-weight: 700;\n    font-size: 18px;\n    line-height: 1.3;\n    color: #ffffff;\n    text-shadow: \n        1px 1px 2px #000, \n        -1px -1px 2px #000, \n        1px -1px 2px #000, \n        -1px 1px 2px #000,\n        0 0 4px #000;\n    will-change: transform;\n    animation: ytc-danmaku-slide 8.5s linear forwards;\n    display: flex;\n    align-items: center;\n    gap: 6px;\n    pointer-events: none;\n}\n\n@keyframes ytc-danmaku-slide {\n    from {\n        transform: translateX(0);\n    }\n    to {\n        transform: translateX(calc(-100% - 100cqi));\n    }\n}\n\n@supports not (container-type: inline-size) {\n    @keyframes ytc-danmaku-slide {\n        from {\n            transform: translateX(0);\n        }\n        to {\n            transform: translateX(calc(-100% - 100vw));\n        }\n    }\n}\n\n.ytc-chat-author {\n    color: #9ab4c7;\n    font-weight: 600;\n    flex-shrink: 0;\n}\n.ytc-chat-author.mod,\n.ytc-chat-text.mod {\n    color: #3ea6ff !important;\n}\n.ytc-chat-author.member,\n.ytc-chat-text.member {\n    color: #2ba640 !important;\n}\n.ytc-chat-author.owner,\n.ytc-chat-text.owner {\n    color: #ffd600 !important;\n}\n\n.ytc-chat-text {\n    color: #ffffff !important;\n    font-weight: 500;\n}\n\n.ytc-danmaku-item img,\n.ytc-danmaku-item .ytc-chat-text img,\n.ytc-danmaku-item img.emoji,\n.ytc-danmaku-item img.yt-emoji,\n.ytc-danmaku-item .emoji {\n    max-height: 22px !important;\n    max-width: 28px !important;\n    width: auto !important;\n    height: auto !important;\n    vertical-align: -3px !important;\n    margin: 0 2px !important;\n    display: inline-block !important;\n    object-fit: contain !important;\n}\n\n/* ĐIỀU KHIỂN HIỂN THỊ THEO TRẠNG THÁI CONFIG */\nhtml[data-ytc-chat="danmaku"] #ytc-danmaku-container,\nbody[data-ytc-chat="danmaku"] #ytc-danmaku-container {\n    display: block !important;\n}\n\nhtml[data-ytc-chat="streamer"] #ytc-streamer-box,\nbody[data-ytc-chat="streamer"] #ytc-streamer-box {\n    display: flex !important;\n}\n\nhtml[data-ytc-chat="off"] #ytc-danmaku-container,\nbody[data-ytc-chat="off"] #ytc-danmaku-container,\nhtml[data-ytc-chat="streamer"] #ytc-danmaku-container,\nbody[data-ytc-chat="streamer"] #ytc-danmaku-container {\n    display: none !important;\n}\n\nhtml[data-ytc-chat="off"] #ytc-streamer-box,\nbody[data-ytc-chat="off"] #ytc-streamer-box,\nhtml[data-ytc-chat="danmaku"] #ytc-streamer-box,\nbody[data-ytc-chat="danmaku"] #ytc-streamer-box {\n    display: none !important;\n}\n\n/* ==========================================================================\n   QUẢN LÝ KHUNG LIVE CHAT GỐC KHI BẬT OVERLAY\n   - Nếu Chat gốc BẬT: Giữ nguyên cho người dùng chat và hiển thị tự nhiên.\n   - Nếu Chat gốc TẮT (mặc định tắt hoặc người dùng ẩn):\n     + Chưa phóng to: Ẩn gọn off-screen để script lấy data ngầm.\n     + Phóng to Fullscreen: Ẩn triệt để panel bên phải & PHÓNG TO KHUNG VIDEO 100% FULL MÀN HÌNH.\n   ========================================================================== */\n\n/* 1. Giao diện thường (chưa phóng to):\n   Để YouTube xử lý thu gọn tự nhiên (hiện thẻ teaser "Mở bảng điều khiển" gọn gàng),\n   TUYỆT ĐỐI KHÔNG đẩy frame chat gốc ra -9999px để người dùng có thể nhấp mở/đóng bình thường. */\n\n/* 2. Trạng thái ẩn Chat gốc trong giao diện toàn màn hình (FULLSCREEN / PHÓNG TO) khi CHƯA MỞ CHAT */\n/* Triệt tiêu độ rộng side panel bên phải để video tràn 100vw khi CHƯA CÓ BẤT KỲ PANEL NÀO ĐƯỢC MỞ */\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #panels-full-bleed-container:not(:has([visibility*="EXPANDED"])),\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #chat-container,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #panels,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #secondary,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) .ytp-fullscreen:not(.ytp-chat-open) #chat-container,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) .ytp-fullscreen:not(.ytp-chat-open) .ytp-live-chat-panel {\n    width: 0 !important;\n    min-width: 0 !important;\n    max-width: 0 !important;\n    flex-basis: 0 !important;\n    overflow: hidden !important;\n    opacity: 0 !important;\n    pointer-events: none !important;\n}\n\n/* Phóng to toàn bộ các tầng container và movie_player ra 100vw x 100vh để xóa sổ vệt đen khi chat đang đóng */\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-full-bleed-container,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #full-bleed-container,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container-outer,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container-inner,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #movie_player:not(.ytp-chat-open),\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) .html5-video-player:not(.ytp-chat-open),\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) .ytp-fullscreen.html5-video-player:not(.ytp-chat-open) {\n    width: 100vw !important;\n    min-width: 100vw !important;\n    max-width: 100vw !important;\n    height: 100vh !important;\n    min-height: 100vh !important;\n    max-height: 100vh !important;\n    margin-right: 0 !important;\n    padding-right: 0 !important;\n    left: 0 !important;\n    right: 0 !important;\n    top: 0 !important;\n    bottom: 0 !important;\n    transform: none !important;\n}\n\n/* Luôn đảm bảo nút Live Chat trên thanh điều khiển YouTube player và action bar hiển thị và bấm được */\n.ytp-live-chat-button,\n.ytp-chat-button,\n[aria-label*="trò chuyện" i],\n[aria-label*="chat" i],\n[target-id*="chat" i] {\n    pointer-events: auto !important;\n    cursor: pointer !important;\n}\n\n\n/* KHUNG LIVE CHAT BOX (NỀN TRONG SUỐT HUD OVERLAY CHO STREAMER) */\n#ytc-streamer-box {\n    position: absolute;\n    width: 320px;\n    min-height: 120px;\n    max-height: 80%;\n    background: transparent !important;\n    backdrop-filter: none !important;\n    border: none !important;\n    box-shadow: none !important;\n    border-radius: 6px;\n    z-index: 38 !important;\n    overflow: hidden;\n    display: flex;\n    flex-direction: column;\n    pointer-events: auto;\n    box-sizing: border-box;\n    transition: background-color 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;\n    user-select: none;\n}\n\n#ytc-streamer-box.ytc-dragging {\n    transition: none !important;\n    will-change: left, top;\n    user-select: none !important;\n}\n\n#ytc-streamer-box:hover,\n#ytc-streamer-box.ytc-box-initial,\n#ytc-streamer-box.ytc-dragging {\n    background: rgba(0, 0, 0, 0.45) !important;\n    backdrop-filter: blur(4px) !important;\n    border: 1px dashed rgba(255, 255, 255, 0.35) !important;\n    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6) !important;\n}\n\n.ytc-box-header {\n    height: 24px;\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    padding: 2px 6px;\n    background: rgba(0, 0, 0, 0.75);\n    color: #eee;\n    font-size: 11px;\n    font-weight: 600;\n    cursor: move;\n    opacity: 0;\n    pointer-events: none;\n    transition: opacity 0.2s ease;\n    flex-shrink: 0;\n    border-top-left-radius: 6px;\n    border-top-right-radius: 6px;\n}\n\n.ytc-box-title {\n    display: flex;\n    align-items: center;\n    gap: 5px;\n    font-size: 11px;\n    font-weight: 600;\n    color: #fff;\n    user-select: none;\n    letter-spacing: 0.2px;\n}\n\n.ytc-box-title svg {\n    flex-shrink: 0;\n    opacity: 0.9;\n}\n\n.ytc-box-close {\n    background: transparent !important;\n    border: none !important;\n    color: rgba(255, 255, 255, 0.7) !important;\n    cursor: pointer !important;\n    width: 20px !important;\n    height: 20px !important;\n    padding: 0 !important;\n    margin: 0 !important;\n    border-radius: 4px !important;\n    display: flex !important;\n    align-items: center !important;\n    justify-content: center !important;\n    transition: background 0.15s ease, color 0.15s ease !important;\n    outline: none !important;\n    box-shadow: none !important;\n}\n\n.ytc-box-close:hover {\n    background: rgba(255, 255, 255, 0.2) !important;\n    color: #fff !important;\n}\n\n.ytc-box-close svg {\n    display: block;\n}\n\n#ytc-streamer-box:hover .ytc-box-header,\n#ytc-streamer-box.ytc-box-initial .ytc-box-header,\n#ytc-streamer-box.ytc-dragging .ytc-box-header {\n    opacity: 1 !important;\n    pointer-events: auto !important;\n}\n\n#ytc-streamer-box:hover .ytc-box-resize,\n#ytc-streamer-box.ytc-box-initial .ytc-box-resize,\n#ytc-streamer-box.ytc-dragging .ytc-box-resize {\n    opacity: 1 !important;\n    pointer-events: auto !important;\n}\n\n.ytc-box-messages {\n    flex: 1;\n    overflow-y: hidden;\n    display: flex;\n    flex-direction: column;\n    justify-content: flex-end;\n    gap: 3px;\n    padding: 2px 4px;\n    pointer-events: none;\n}\n\n.ytc-box-item {\n    display: flex;\n    align-items: flex-start;\n    flex-shrink: 0 !important;\n    flex-grow: 0 !important;\n    width: 100%;\n    box-sizing: border-box;\n    height: auto !important;\n    min-height: min-content !important;\n    gap: 3px;\n    font-size: 10px;\n    line-height: 1.35;\n    color: #fff;\n    text-shadow: \n        1px 1px 2px #000, \n        -1px -1px 2px #000, \n        1px -1px 2px #000, \n        -1px 1px 2px #000, \n        0 0 3px #000;\n    animation: ytc-fade-in 0.12s ease-out;\n    word-break: break-word;\n    overflow-wrap: break-word;\n}\n\n.ytc-box-avatar {\n    width: 10px;\n    height: 10px;\n    border-radius: 50%;\n    flex-shrink: 0;\n    margin-top: 2px;\n}\n\n.ytc-box-content {\n    flex: 1;\n    min-width: 0;\n    word-break: break-word;\n    overflow-wrap: break-word;\n    line-height: 1.35;\n}\n\n#ytc-streamer-box .ytc-chat-author {\n    color: #b5b5b5 !important;\n    font-weight: 700 !important;\n    flex-shrink: 0;\n}\n#ytc-streamer-box .ytc-chat-author.mod {\n    color: #3ea6ff !important;\n    font-weight: 700 !important;\n}\n#ytc-streamer-box .ytc-chat-author.member {\n    color: #2ba640 !important;\n    font-weight: 700 !important;\n}\n#ytc-streamer-box .ytc-chat-author.owner {\n    color: #ffd600 !important;\n    font-weight: 700 !important;\n}\n\n#ytc-streamer-box .ytc-chat-text {\n    color: #ffffff !important;\n    font-weight: 700 !important;\n}\n\n/* THU NHỎ ICON EMOJI VÀ BADGE BẰNG CỠ CHỮ CHỈ ÁP DỤNG CHO KHUNG NỔI STREAMER */\n#ytc-streamer-box .ytc-box-content img,\n#ytc-streamer-box .ytc-box-item img,\n#ytc-streamer-box img.emoji,\n#ytc-streamer-box img.yt-emoji,\n#ytc-streamer-box .emoji {\n    max-height: 10px !important;\n    width: auto !important;\n    max-width: 12px !important;\n    height: auto !important;\n    vertical-align: -1px !important;\n    display: inline-block !important;\n    object-fit: contain !important;\n    margin: 0 1px !important;\n}\n\n.ytc-box-badge {\n    display: inline-flex;\n    align-items: center;\n    vertical-align: -1px;\n    margin: 0 2px;\n}\n.ytc-box-badge svg.ytc-mod-icon,\n.ytc-badge-mod,\n.ytc-mod-icon {\n    display: none !important;\n}\n.ytc-box-badge img {\n    width: 10px !important;\n    height: 10px !important;\n    max-width: 10px !important;\n    max-height: 10px !important;\n    display: inline-block !important;\n    vertical-align: -1px !important;\n    object-fit: contain !important;\n}\n\n.ytc-box-resize {\n    position: absolute;\n    right: 2px;\n    bottom: 2px;\n    width: 10px;\n    height: 10px;\n    cursor: nwse-resize;\n    opacity: 0;\n    pointer-events: none;\n    transition: opacity 0.2s ease;\n    border-right: 2px solid rgba(255, 255, 255, 0.6);\n    border-bottom: 2px solid rgba(255, 255, 255, 0.6);\n}\n\n#ytc-streamer-box:hover .ytc-box-resize,\n#ytc-streamer-box.ytc-box-initial .ytc-box-resize {\n    opacity: 1;\n    pointer-events: auto;\n}\n\n/* HIỆU ỨNG XUẤT HIỆN MƯỢT MÀ, KHÔNG DÙNG TRANSLATE-Y GÂY GIẬT LAG KHUNG HÌNH */\n@keyframes ytc-fade-in {\n    from { opacity: 0; }\n    to { opacity: 1; }\n}\n\n/* TỰ ĐỘNG CÂN ĐỐI TỶ LỆ KÍCH THƯỚC CHỮ KHI PHÓNG TO TOÀN MÀN HÌNH (FULLSCREEN / ZOOM) */\n.ytp-fullscreen .ytc-danmaku-item {\n    font-size: 25px !important;\n}\n.ytp-fullscreen .ytc-danmaku-item img,\n.ytp-fullscreen .ytc-danmaku-item .ytc-chat-text img,\n.ytp-fullscreen .ytc-danmaku-item img.emoji,\n.ytp-fullscreen .ytc-danmaku-item img.yt-emoji,\n.ytp-fullscreen .ytc-danmaku-item .emoji {\n    max-height: 28px !important;\n    max-width: 36px !important;\n    vertical-align: -4px !important;\n}\n\n/* ==========================================================================\n   ONBOARDING TOOLTIP KHI CÀI ĐẶT LẦN ĐẦU (FIRST-TIME USER EXPERIENCE)\n   ========================================================================== */\n#ytc-onboarding-tip {\n    position: fixed;\n    z-index: 100000;\n    width: 280px;\n    background: #18181b;\n    border: 1px solid rgba(255, 0, 51, 0.6);\n    border-radius: 10px;\n    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);\n    color: #fff;\n    padding: 12px 14px;\n    font-family: Roboto, Arial, sans-serif;\n    user-select: none;\n    box-sizing: border-box;\n    animation: ytc-fade-in 0.12s ease-out;\n}\n\n.ytc-onboarding-arrow {\n    position: absolute;\n    top: -6px;\n    right: 18px;\n    width: 10px;\n    height: 10px;\n    background: #18181b;\n    border-left: 1px solid rgba(255, 0, 51, 0.6);\n    border-top: 1px solid rgba(255, 0, 51, 0.6);\n    transform: rotate(45deg);\n}\n\n.ytc-onboarding-header {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    margin-bottom: 6px;\n}\n\n.ytc-onboarding-badge {\n    font-size: 10px;\n    font-weight: 700;\n    background: #ff0033;\n    color: #fff;\n    padding: 2px 6px;\n    border-radius: 4px;\n    letter-spacing: 0.5px;\n}\n\n.ytc-onboarding-close {\n    background: transparent;\n    border: none;\n    color: #aaa;\n    font-size: 13px;\n    cursor: pointer;\n    padding: 2px 4px;\n    line-height: 1;\n    border-radius: 4px;\n    transition: color 0.1s;\n}\n.ytc-onboarding-close:hover {\n    color: #fff;\n}\n\n.ytc-onboarding-title {\n    font-size: 13px;\n    font-weight: 700;\n    color: #fff;\n    line-height: 1.35;\n    margin-bottom: 4px;\n}\n\n.ytc-onboarding-desc {\n    font-size: 11.5px;\n    color: #ccc;\n    line-height: 1.4;\n    margin-bottom: 10px;\n}\n\n.ytc-onboarding-footer {\n    display: flex;\n    justify-content: flex-end;\n}\n\n.ytc-onboarding-btn {\n    background: #ff0033;\n    color: #fff;\n    border: none;\n    padding: 5px 14px;\n    font-size: 11.5px;\n    font-weight: 600;\n    border-radius: 6px;\n    cursor: pointer;\n    transition: background-color 0.15s;\n}\n.ytc-onboarding-btn:hover {\n    background: #cc0029;\n}\n\n\n\n';
-
-  // src/index.js
-  init_config();
-
   // src/core/utils.js
-  var ytcPolicy = null;
-  if (typeof window !== "undefined" && window.trustedTypes) {
-    if (!window.trustedTypes.defaultPolicy) {
-      try {
-        ytcPolicy = window.trustedTypes.createPolicy("default", {
-          createHTML: (html) => html,
-          createScript: (script) => script,
-          createScriptURL: (url) => url
-        });
-      } catch (e) {
-      }
-    }
-    if (!ytcPolicy) {
-      try {
-        ytcPolicy = window.trustedTypes.createPolicy("youtubeCustomizer", {
-          createHTML: (html) => html
-        });
-      } catch (e) {
-        try {
-          ytcPolicy = window.trustedTypes.defaultPolicy;
-        } catch (err) {
-        }
-      }
-    }
-  }
   function setElementHTML(element, htmlString) {
     if (!element) return;
     const str = htmlString != null ? String(htmlString) : "";
@@ -284,691 +223,41 @@
       timer = setTimeout(() => observer.disconnect(), timeout);
     }
   }
-
-  // src/features/grid.js
-  init_config();
-  function isHomeFeedPath() {
-    const p = location.pathname;
-    return p === "/" || p.startsWith("/feed") || p.startsWith("/@") || p.startsWith("/channel");
-  }
-  function applyHomeGridColumns() {
-    if (!isHomeFeedPath()) return;
-    const cols = currentConfig.columns || 3;
-    const grids = document.querySelectorAll("ytd-rich-grid-renderer");
-    grids.forEach((grid) => {
-      if (!grid.classList.contains("ytc-grid")) {
-        grid.classList.add("ytc-grid");
-      }
-      grid.style.setProperty("--ytd-rich-grid-items-per-row", String(cols), "important");
-      grid.style.setProperty("--ytd-rich-grid-posts-per-row", String(cols), "important");
-      grid.style.setProperty("--ytd-rich-grid-item-max-width", "none", "important");
-    });
-  }
-
-  // src/features/logo.js
-  var LOGO_MARK = "M32.1819";
-  var logoSVG = '<g><path d="M14.4848 20C14.4848 20 23.5695 20 25.8229 19.4C27.0917 19.06 28.0459 18.08 28.3808 16.87C29 14.65 29 9.98 29 9.98C29 9.98 29 5.34 28.3808 3.14C28.0459 1.9 27.0917 0.94 25.8229 0.61C23.5695 0 14.4848 0 14.4848 0C14.4848 0 5.42037 0 3.17711 0.61C1.9286 0.94 0.954148 1.9 0.59888 3.14C0 5.34 0 9.98 0 9.98C0 9.98 0 14.65 0.59888 16.87C0.954148 18.08 1.9286 19.06 3.17711 19.4C5.42037 20 14.4848 20 14.4848 20Z" fill="#FF0033"/><path d="M19 10L11.5 5.75V14.25L19 10Z" fill="white"/></g><g id="youtube-paths_yt19"><path d="M32.1819 2.10016V18.9002H34.7619V12.9102H35.4519C38.8019 12.9102 40.5619 11.1102 40.5619 7.57016V6.88016C40.5619 3.31016 39.0019 2.10016 35.7219 2.10016H32.1819ZM37.8619 7.63016C37.8619 10.0002 37.1419 11.0802 35.4019 11.0802H34.7619V3.95016H35.4519C37.4219 3.95016 37.8619 4.76016 37.8619 7.13016V7.63016Z"/><path d="M41.982 18.9002H44.532V10.0902C44.952 9.37016 45.992 9.05016 47.302 9.32016L47.462 6.33016C47.292 6.31016 47.142 6.29016 47.002 6.29016C45.802 6.29016 44.832 7.20016 44.342 8.86016H44.162L43.952 6.54016H41.982V18.9002H41.982V18.9002Z"/><path d="M55.7461 11.5002C55.7461 8.52016 55.4461 6.31016 52.0161 6.31016C48.7861 6.31016 48.0661 8.46016 48.0661 11.6202V13.7902C48.0661 16.8702 48.7261 19.1102 51.9361 19.1102C54.4761 19.1102 55.7861 17.8402 55.6361 15.3802L53.3861 15.2602C53.3561 16.7802 53.0061 17.4002 51.9961 17.4002C50.7261 17.4002 50.6661 16.1902 50.6661 14.3902V13.5502H55.7461V11.5002ZM51.9561 7.97016C53.1761 7.97016 53.2661 9.12016 53.2661 11.0702V12.0802H50.6661V11.0702C50.6661 9.14016 50.7461 7.97016 51.9561 7.97016Z"/><path d="M60.1945 18.9002V8.92016C60.5745 8.39016 61.1945 8.07016 61.7945 8.07016C62.5645 8.07016 62.8445 8.61016 62.8445 9.69016V18.9002H65.5045L65.4845 8.93016C65.8545 8.37016 66.4845 8.04016 67.1045 8.04016C67.7745 8.04016 68.1445 8.61016 68.1445 9.69016V18.9002H70.8045V9.49016C70.8045 7.28016 70.0145 6.27016 68.3445 6.27016C67.1845 6.27016 66.1945 6.69016 65.2845 7.67016C64.9045 6.76016 64.1545 6.27016 63.0845 6.27016C61.8745 6.27016 60.7345 6.79016 59.9345 7.76016H59.7845L59.5945 6.54016H57.5445V18.9002H60.1945Z"/><path d="M74.0858 4.97016C74.9858 4.97016 75.4058 4.67016 75.4058 3.43016C75.4058 2.27016 74.9558 1.91016 74.0858 1.91016C73.2058 1.91016 72.7758 2.23016 72.7758 3.43016C72.7758 4.67016 73.1858 4.97016 74.0858 4.97016ZM72.8658 18.9002H75.3958V6.54016H72.8658V18.9002Z"/><path d="M79.9516 19.0902C81.4116 19.0902 82.3216 18.4802 83.0716 17.3802H83.1816L83.2916 18.9002H85.2816V6.54016H82.6416V16.4702C82.3616 16.9602 81.7116 17.3202 81.1016 17.3202C80.3316 17.3202 80.0916 16.7102 80.0916 15.6902V6.54016H77.4616V15.8102C77.4616 17.8202 78.0416 19.0902 79.9516 19.0902Z"/><path d="M90.0031 18.9002V8.92016C90.3831 8.39016 91.0031 8.07016 91.6031 8.07016C92.3731 8.07016 92.6531 8.61016 92.6531 9.69016V18.9002H95.3131L95.2931 8.93016C95.6631 8.37016 96.2931 8.04016 96.9131 8.04016C97.5831 8.04016 97.9531 8.61016 97.9531 9.69016V18.9002H100.613V9.49016C100.613 7.28016 99.8231 6.27016 98.1531 6.27016C96.9931 6.27016 96.0031 6.69016 95.0931 7.67016C94.7131 6.76016 93.9631 6.27016 92.8931 6.27016C91.6831 6.27016 90.5431 6.79016 89.7431 7.76016H89.5931L89.4031 6.54016H87.3531V18.9002H90.0031Z"/></g>';
-  function buildLogoHtml() {
-    return `<svg viewBox="0 0 101 20" width="101" height="20" preserveAspectRatio="xMinYMid meet">${logoSVG}</svg>`;
-  }
-  function ensurePremiumLogo(logo) {
-    if (!logo) return;
-    if (logo.closest("ytd-yoodle-renderer") || logo.classList.contains("ytd-yoodle-renderer")) {
-      const span = logo.querySelector(".custom-premium-logo");
-      if (span) span.remove();
-      return;
-    }
-    if (!logo.closest("ytd-topbar-logo-renderer")) return;
-    if (logo.hasAttribute("hidden")) logo.removeAttribute("hidden");
-    logo.style.overflow = "visible";
-    let parent = logo.parentElement;
-    while (parent && parent.tagName.toLowerCase() !== "ytd-topbar-logo-renderer") {
-      parent.style.overflow = "visible";
-      parent = parent.parentElement;
-    }
-    let customSpan = logo.querySelector(".custom-premium-logo");
-    const logoHtml = buildLogoHtml();
-    if (!customSpan) {
-      customSpan = document.createElement("span");
-      customSpan.className = "custom-premium-logo";
-      setElementHTML(customSpan, logoHtml);
-      logo.appendChild(customSpan);
-      logo.setAttribute("is-red-logo", "");
-    } else if (!customSpan.innerHTML.includes(LOGO_MARK)) {
-      setElementHTML(customSpan, logoHtml);
-    }
-  }
-  var scheduleLogoScan = rafThrottle((root) => {
-    const doc = root && root.ownerDocument || document;
-    const renderers = doc.querySelectorAll("ytd-topbar-logo-renderer");
-    renderers.forEach((renderer) => {
-      const logos = Array.from(renderer.querySelectorAll("ytd-logo")).filter(
-        (l) => !l.closest("ytd-yoodle-renderer") && !l.classList.contains("ytd-yoodle-renderer")
-      );
-      if (logos.length > 0) {
-        ensurePremiumLogo(logos[0]);
-        for (let i = 1; i < logos.length; i++) {
-          const extraSpan = logos[i].querySelector(".custom-premium-logo");
-          if (extraSpan) extraSpan.remove();
-        }
-      }
-    });
-  });
-  function setupLogoObserver() {
-    scheduleLogoScan(document);
-    const attach = (masthead2) => {
-      scheduleLogoScan(masthead2);
-      new MutationObserver((mutations) => {
-        let shouldScan = false;
-        for (const mutation of mutations) {
-          if (mutation.type === "childList") {
-            mutation.addedNodes.forEach((node) => {
-              if (node.nodeType === 1 && (node.matches?.("ytd-logo, ytd-topbar-logo-renderer") || node.querySelector?.("ytd-logo"))) {
-                shouldScan = true;
-              }
+  var ytcPolicy;
+  var init_utils = __esm({
+    "src/core/utils.js"() {
+      ytcPolicy = null;
+      if (typeof window !== "undefined" && window.trustedTypes) {
+        if (!window.trustedTypes.defaultPolicy) {
+          try {
+            ytcPolicy = window.trustedTypes.createPolicy("default", {
+              createHTML: (html) => html,
+              createScript: (script) => script,
+              createScriptURL: (url) => url
             });
-          } else if (mutation.type === "attributes") {
-            if (mutation.target.matches?.("ytd-logo, ytd-topbar-logo-renderer, #logo")) {
-              shouldScan = true;
-            }
-          }
-          if (shouldScan) break;
-        }
-        if (shouldScan) scheduleLogoScan(masthead2);
-      }).observe(masthead2, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "hidden"] });
-    };
-    const masthead = document.querySelector("ytd-masthead");
-    if (masthead) attach(masthead);
-    else whenElement("ytd-masthead", attach);
-    let retryCount = 0;
-    const retryInterval = setInterval(() => {
-      retryCount++;
-      scheduleLogoScan(document);
-      if (retryCount >= 10 && document.querySelector("ytd-topbar-logo-renderer .custom-premium-logo")) {
-        clearInterval(retryInterval);
-      }
-    }, 300);
-  }
-  document.addEventListener("click", (e) => {
-    if (!e.target.closest("ytd-topbar-logo-renderer")) return;
-    if (isHomeFeedPath()) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }, true);
-
-  // src/features/promos.js
-  init_config();
-  function dismissPromoBanners(scope) {
-    if (!currentConfig.autoDismissPromos) return;
-    const root = scope && scope.querySelectorAll ? scope : document;
-    const promos = root.querySelectorAll("ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer, ytd-upsell-dialog-renderer, ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer");
-    promos.forEach((promo) => {
-      const dismissBtn = promo.querySelector('#dismiss-button button, yt-button-renderer#dismiss-button button, yt-button-renderer#dismiss-button, #dismiss-button, button[aria-label*="Không"], button[aria-label*="Dismiss"], button[aria-label*="No thanks"]');
-      if (dismissBtn) {
-        try {
-          dismissBtn.click();
-        } catch (e) {
-        }
-      }
-    });
-    const toasts = root.querySelectorAll("tp-yt-paper-toast, #toast, yt-notification-action-renderer, yt-bubble-hint-renderer");
-    toasts.forEach((toast) => {
-      const text = (toast.textContent || "").toLowerCase();
-      if (text.includes("gián đoạn") || text.includes("interruption") || text.includes("sự cố") || text.includes("troubleshoot") || text.includes("tìm hiểu lý do") || text.includes("find out why")) {
-        try {
-          if (typeof toast.close === "function") toast.close();
-          if (typeof toast.hide === "function") toast.hide();
-        } catch (e) {
-        }
-        const closeBtn = toast.querySelector('button, #close-button, [aria-label*="Đóng"], [aria-label*="Close"], [aria-label*="Dismiss"]');
-        if (closeBtn) {
-          try {
-            closeBtn.click();
           } catch (e) {
           }
         }
-        toast.style.setProperty("display", "none", "important");
-        toast.style.setProperty("opacity", "0", "important");
-        toast.style.setProperty("pointer-events", "none", "important");
-        toast.classList.add("ytc-dismissed-toast");
-      }
-    });
-    const playerPopups = root.querySelectorAll("#movie_player .ytp-popup, #movie_player .ytp-suggested-action-badge, #movie_player .ytp-paid-content-overlay");
-    playerPopups.forEach((popup) => {
-      const text = (popup.textContent || "").toLowerCase();
-      if (text.includes("gián đoạn") || text.includes("interruption") || text.includes("sự cố")) {
-        popup.style.setProperty("display", "none", "important");
-        popup.style.setProperty("opacity", "0", "important");
-        popup.style.setProperty("pointer-events", "none", "important");
-      }
-    });
-  }
-
-  // src/features/feedFilter.js
-  function scanAndTagFeedContent(scope) {
-    const root = scope && scope.querySelectorAll ? scope : document;
-    const sections = root.querySelectorAll("ytd-rich-section-renderer");
-    sections.forEach((sec) => {
-      if (!sec.classList.contains("ytc-shelf-members")) {
-        const text = sec.textContent || "";
-        if (text.includes("lợi ích từ hội viên") || text.includes("Ưu tiên hội viên") || text.includes("ưu tiên hội viên") || text.includes("hội viên") && text.includes("YouTube chọn lọc") || text.includes("Get more from memberships") || text.includes("Members only") || text.includes("Members first") || sec.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], a[href*="/membership"], a[href*="/memberships"]')) {
-          sec.classList.add("ytc-shelf-members");
-        }
-      }
-      if (!sec.classList.contains("ytc-shelf-explore")) {
-        const text = sec.textContent || "";
-        if (text.includes("Khám phá các chủ đề") || text.includes("Explore other topics") || text.includes("Explore topics") || sec.querySelector("yt-chip-cloud-chip-renderer, yt-chip-cloud-renderer, ytd-feed-filter-chip-bar-renderer")) {
-          sec.classList.add("ytc-shelf-explore");
-        }
-      }
-      if (!sec.classList.contains("ytc-shelf-community")) {
-        if (sec.querySelector("ytd-post-renderer, ytd-backstage-post-renderer, ytd-backstage-post-thread-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer")) {
-          sec.classList.add("ytc-shelf-community");
-        }
-      }
-    });
-    const videoCards = root.querySelectorAll("ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer");
-    videoCards.forEach((card) => {
-      if (!card.classList.contains("ytc-item-members")) {
-        const text = card.textContent || "";
-        if (text.includes("Ưu tiên hội viên") || text.includes("ưu tiên hội viên") || text.includes("Chỉ dành cho hội viên") || text.includes("chỉ dành cho hội viên") || text.includes("Members first") || text.includes("Members only") || text.includes("Members-only") || text.includes("Early access") || card.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], [aria-label*="hội viên"], [aria-label*="Hội viên"], [aria-label*="Members"]')) {
-          card.classList.add("ytc-item-members");
-        }
-      }
-      if (!card.classList.contains("ytc-item-community")) {
-        if (card.querySelector("ytd-post-renderer, ytd-backstage-post-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer")) {
-          card.classList.add("ytc-item-community");
-        }
-      }
-    });
-  }
-  var scheduleFeedScan = rafThrottle((root) => {
-    scanAndTagFeedContent(root);
-    applyHomeGridColumns();
-    dismissPromoBanners(root);
-  });
-  function setupFeedShelvesObserver() {
-    scheduleFeedScan(document);
-    applyHomeGridColumns();
-    dismissPromoBanners(document);
-    const attach = (container) => {
-      scheduleFeedScan(container);
-      applyHomeGridColumns();
-      dismissPromoBanners(container);
-      new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-          if (mutation.addedNodes.length) {
-            scheduleFeedScan(container);
-            applyHomeGridColumns();
-            dismissPromoBanners(container);
-            break;
-          }
-        }
-      }).observe(container, { childList: true, subtree: true });
-    };
-    const target = document.getElementById("page-manager") || document.querySelector("ytd-page-manager") || document.body;
-    if (target) attach(target);
-    else whenElement("#page-manager", attach);
-    const attachPopup = (popupContainer2) => {
-      dismissPromoBanners(popupContainer2);
-      new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-          if (mutation.addedNodes.length) {
-            dismissPromoBanners(popupContainer2);
-            break;
-          }
-        }
-      }).observe(popupContainer2, { childList: true, subtree: true });
-    };
-    const popupContainer = document.querySelector("ytd-popup-container");
-    if (popupContainer) attachPopup(popupContainer);
-    else whenElement("ytd-popup-container", attachPopup);
-  }
-
-  // src/player/fullscreenLock.js
-  var isWatchLoading = false;
-  var watchLoadTimeout = null;
-  function setWatchLoading(loading, duration = 1500) {
-    if (!location.pathname.startsWith("/watch")) {
-      isWatchLoading = false;
-      document.documentElement.classList.remove("ytc-fs-locked");
-      clearTimeout(watchLoadTimeout);
-      return;
-    }
-    isWatchLoading = loading;
-    document.documentElement.classList.toggle("ytc-fs-locked", loading);
-    clearTimeout(watchLoadTimeout);
-    if (loading) {
-      watchLoadTimeout = setTimeout(() => {
-        isWatchLoading = false;
-        document.documentElement.classList.remove("ytc-fs-locked");
-      }, duration);
-    }
-  }
-  var fsLockBound = false;
-  function setupFullscreenLock() {
-    if (fsLockBound) return;
-    fsLockBound = true;
-    document.addEventListener("click", (e) => {
-      if (isWatchLoading && e.target.closest(".ytp-fullscreen-button")) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-      }
-    }, true);
-    document.addEventListener("dblclick", (e) => {
-      if (isWatchLoading && e.target.closest("#movie_player")) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-      }
-    }, true);
-    document.addEventListener("fullscreenchange", () => {
-      if (isWatchLoading && document.fullscreenElement) {
-        if (document.exitFullscreen) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-      }
-    });
-  }
-
-  // src/player/shortcuts.js
-  init_config();
-
-  // src/player/autoLive.js
-  init_config();
-  var autoLiveSyncTimer = null;
-  var lastSnapTime = 0;
-  var lastUserSeekTime = 0;
-  var userIsRewound = false;
-  function recordUserSeek() {
-    lastUserSeekTime = Date.now();
-    userIsRewound = true;
-  }
-  function isCurrentlyActiveLive(player) {
-    if (!player) return false;
-    if (typeof player.getVideoData === "function") {
-      const vd = player.getVideoData();
-      if (vd) {
-        if (vd.isLive === true) return true;
-        if (vd.isLive === false) return false;
-      }
-    }
-    if (typeof player.isLive === "function") {
-      try {
-        if (player.isLive() === true) return true;
-      } catch (e) {
-      }
-    }
-    return false;
-  }
-  function initAutoLiveSync() {
-    if (autoLiveSyncTimer) return;
-    function checkLiveSync() {
-      if (!currentConfig.autoLiveSync) return;
-      const player = document.querySelector("#movie_player, .html5-video-player");
-      if (!player) return;
-      if (!isCurrentlyActiveLive(player)) {
-        return;
-      }
-      const video = player.querySelector("video");
-      if (!video || video.paused || video.ended) return;
-      const liveBadge = player.querySelector(".ytp-live-badge");
-      if (!liveBadge) return;
-      let delay = 0;
-      try {
-        if (video.seekable && video.seekable.length > 0) {
-          const liveEdge = video.seekable.end(video.seekable.length - 1);
-          if (isFinite(liveEdge) && isFinite(video.currentTime)) {
-            delay = Math.max(0, liveEdge - video.currentTime);
-          }
-        }
-      } catch (e) {
-      }
-      if (userIsRewound || delay > 15) {
-        if (delay <= 3) {
-          userIsRewound = false;
-        } else {
-          if (video.playbackRate === 1.08) {
-            video.playbackRate = 1;
-          }
-          return;
-        }
-      }
-      if (Date.now() - lastUserSeekTime < 1e4) return;
-      const isBadgeBehind = !liveBadge.hasAttribute("disabled");
-      const isBehind = isBadgeBehind || delay > 2.5;
-      if (!isBehind) {
-        if (video.playbackRate === 1.08) {
-          video.playbackRate = 1;
-        }
-        return;
-      }
-      const now = Date.now();
-      if (delay > 5.5 || isBadgeBehind && delay > 3.5) {
-        if (now - lastSnapTime > 5e3) {
-          lastSnapTime = now;
+        if (!ytcPolicy) {
           try {
-            liveBadge.click();
+            ytcPolicy = window.trustedTypes.createPolicy("youtubeCustomizer", {
+              createHTML: (html) => html
+            });
           } catch (e) {
-          }
-          if (video.playbackRate === 1.08) {
-            video.playbackRate = 1;
-          }
-        }
-      } else if (delay > 2) {
-        if (video.playbackRate === 1) {
-          video.playbackRate = 1.08;
-        }
-      }
-    }
-    autoLiveSyncTimer = setInterval(checkLiveSync, 1500);
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden && currentConfig.autoLiveSync) {
-        setTimeout(checkLiveSync, 300);
-      }
-    });
-    document.addEventListener("click", (e) => {
-      if (e.target.closest(".ytp-live-badge")) {
-        userIsRewound = false;
-        lastUserSeekTime = 0;
-        lastSnapTime = Date.now();
-      }
-      if (e.target.closest(".ytp-progress-bar")) {
-        recordUserSeek();
-      }
-    }, true);
-  }
-
-  // src/player/shortcuts.js
-  var seekModeTimer = null;
-  function triggerCleanSeek(player) {
-    if (!player) return;
-    player.classList.add("seeking-mode");
-    clearTimeout(seekModeTimer);
-    seekModeTimer = setTimeout(() => {
-      player.classList.remove("seeking-mode");
-    }, 600);
-  }
-  function getPlayerVideo(player) {
-    return player.querySelector("video.html5-main-video") || player.querySelector("video");
-  }
-  function changeVolume(player, delta) {
-    if (!player) return;
-    try {
-      if (delta > 0 && typeof player.volumeUp === "function") {
-        player.volumeUp();
-        if (typeof player.unMute === "function" && player.isMuted?.()) player.unMute();
-        return;
-      } else if (delta < 0 && typeof player.volumeDown === "function") {
-        player.volumeDown();
-        return;
-      }
-    } catch (e) {
-    }
-    try {
-      if (typeof player.getVolume === "function" && typeof player.setVolume === "function") {
-        const cur = player.getVolume();
-        const next = Math.max(0, Math.min(100, cur + delta));
-        player.setVolume(next);
-        if (delta > 0 && typeof player.unMute === "function" && player.isMuted?.()) player.unMute();
-        return;
-      }
-    } catch (e) {
-    }
-    const video = getPlayerVideo(player);
-    if (video) {
-      video.volume = Math.max(0, Math.min(1, video.volume + delta / 100));
-    }
-  }
-  function isPlayerFullscreen(player) {
-    if (!player) return false;
-    const fs = document.fullscreenElement || document.webkitFullscreenElement;
-    if (!fs) return false;
-    return player.classList.contains("ytp-fullscreen") || typeof player.isFullscreen === "function" && player.isFullscreen();
-  }
-  function canUseAsdKeys(player) {
-    if (!player) return false;
-    return isPlayerFullscreen(player) || player.matches(":hover");
-  }
-  function dispatchYtSeek(key, delta) {
-    const keyCode = key === "j" ? 74 : key === "l" ? 76 : key === "k" ? 75 : 0;
-    const code = key === "j" ? "KeyJ" : key === "l" ? "KeyL" : key === "k" ? "KeyK" : "";
-    const evDown = new KeyboardEvent("keydown", {
-      key,
-      code,
-      keyCode,
-      which: keyCode,
-      charCode: keyCode,
-      bubbles: true,
-      cancelable: true,
-      composed: true
-    });
-    evDown._ytcDispatched = true;
-    const evUp = new KeyboardEvent("keyup", {
-      key,
-      code,
-      keyCode,
-      which: keyCode,
-      charCode: keyCode,
-      bubbles: true,
-      cancelable: true,
-      composed: true
-    });
-    evUp._ytcDispatched = true;
-    const player = document.querySelector("#movie_player") || document.querySelector(".html5-video-player");
-    const target = player || document.body || document;
-    target.dispatchEvent(evDown);
-    window.dispatchEvent(evDown);
-    target.dispatchEvent(evUp);
-    window.dispatchEvent(evUp);
-    if (player && delta) {
-      const tBefore = player.getCurrentTime ? player.getCurrentTime() : 0;
-      setTimeout(() => {
-        const tAfter = player.getCurrentTime ? player.getCurrentTime() : 0;
-        if (Math.abs(tAfter - tBefore) < 1) {
-          if (typeof player.seekBy === "function") {
-            player.seekBy(delta);
-          } else {
-            const video = getPlayerVideo(player);
-            if (video) video.currentTime += delta;
-          }
-        }
-      }, 60);
-    }
-  }
-  var keysBound = false;
-  function bindGlobalKeys() {
-    if (keysBound) return;
-    keysBound = true;
-    const handleKeyDown = (e) => {
-      if (e._ytcDispatched) return;
-      if (!currentConfig.keyboardControls) return;
-      if (e.isComposing || e.keyCode === 229) return;
-      const target = e.target;
-      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) {
-        return;
-      }
-      const code = e.code || "";
-      const isNumpad = e.location === 3 || code.startsWith("Numpad") || e.keyCode >= 96 && e.keyCode <= 111 || e.keyCode === 12;
-      const player = document.querySelector("#movie_player");
-      const asdAllowed = canUseAsdKeys(player);
-      let captured = false;
-      let isSeekAction = false;
-      if (isNumpad) {
-        captured = true;
-        if (code === "Numpad8" || e.key === "8" || e.key === "ArrowUp" || e.keyCode === 104 || e.keyCode === 38) {
-          if (player) changeVolume(player, 5);
-        } else if (code === "Numpad2" || e.key === "2" || e.key === "ArrowDown" || e.keyCode === 98 || e.keyCode === 40) {
-          if (player) changeVolume(player, -5);
-        } else if (code === "Numpad4" || e.key === "4" || e.key === "ArrowLeft" || e.keyCode === 100 || e.keyCode === 37) {
-          dispatchYtSeek("j", -10);
-          isSeekAction = true;
-        } else if (code === "Numpad6" || e.key === "6" || e.key === "ArrowRight" || e.keyCode === 102 || e.keyCode === 39) {
-          dispatchYtSeek("l", 10);
-          isSeekAction = true;
-        } else if (code === "Numpad5" || e.key === "5" || e.key === "Clear" || e.keyCode === 101 || e.keyCode === 12) {
-          dispatchYtSeek("k");
-        }
-      } else if (asdAllowed && code === "KeyA") {
-        captured = true;
-        dispatchYtSeek("j", -10);
-        isSeekAction = true;
-      } else if (asdAllowed && code === "KeyS") {
-        captured = true;
-        dispatchYtSeek("k");
-      } else if (asdAllowed && code === "KeyD") {
-        captured = true;
-        dispatchYtSeek("l", 10);
-        isSeekAction = true;
-      } else if (!e.ctrlKey && !e.altKey && !e.metaKey && (code === "KeyF" || e.key === "f" || e.key === "F")) {
-        if (isWatchLoading) {
-          captured = true;
-        }
-      }
-      if (captured) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-      } else if (["ArrowLeft", "ArrowRight", "j", "l", "J", "L"].includes(e.key)) {
-        isSeekAction = true;
-      }
-      if (isSeekAction && player) {
-        recordUserSeek();
-        triggerCleanSeek(player);
-      }
-    };
-    const handleKeyUp = (e) => {
-      if (e._ytcDispatched) return;
-      if (!currentConfig.keyboardControls) return;
-      const target = e.target;
-      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) {
-        return;
-      }
-      const code = e.code || "";
-      const isNumpad = e.location === 3 || code.startsWith("Numpad") || e.keyCode >= 96 && e.keyCode <= 111 || e.keyCode === 12;
-      if (isNumpad) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown, true);
-    document.addEventListener("keydown", handleKeyDown, true);
-    window.addEventListener("keyup", handleKeyUp, true);
-    document.addEventListener("keyup", handleKeyUp, true);
-  }
-
-  // src/player/liveDvr.js
-  init_config();
-  var liveDvrHooked = false;
-  function patchData(data) {
-    if (!currentConfig.unlockLiveDvr) return;
-    if (!data || typeof data !== "object") return;
-    if (data.videoDetails && data.videoDetails.isLive) {
-      if (data.videoDetails.isLiveDvrEnabled === false) {
-        data.videoDetails.isLiveDvrEnabled = true;
-      }
-    }
-  }
-  function initLiveDvrHook() {
-    if (!currentConfig.unlockLiveDvr) return;
-    if (liveDvrHooked) return;
-    liveDvrHooked = true;
-    try {
-      const existingDesc = Object.getOwnPropertyDescriptor(window, "ytInitialPlayerResponse");
-      let _val = window.ytInitialPlayerResponse;
-      if (_val) patchData(_val);
-      if (existingDesc && existingDesc.configurable === false) {
-        if (window.ytInitialPlayerResponse) patchData(window.ytInitialPlayerResponse);
-      } else {
-        Object.defineProperty(window, "ytInitialPlayerResponse", {
-          get() {
-            return existingDesc && existingDesc.get ? existingDesc.get.call(this) : _val;
-          },
-          set(newVal) {
-            if (existingDesc && existingDesc.set) {
-              existingDesc.set.call(this, newVal);
-            }
-            _val = newVal;
-            patchData(_val);
-          },
-          configurable: true,
-          enumerable: true
-        });
-      }
-    } catch (e) {
-    }
-    try {
-      const origParse = JSON.parse;
-      JSON.parse = function(text, reviver) {
-        const res = origParse.apply(this, arguments);
-        if (currentConfig.unlockLiveDvr && typeof text === "string" && text.includes("isLiveDvrEnabled") && res && typeof res === "object" && res.videoDetails && res.videoDetails.isLive && res.videoDetails.isLiveDvrEnabled === false) {
-          res.videoDetails.isLiveDvrEnabled = true;
-        }
-        return res;
-      };
-    } catch (e) {
-    }
-  }
-
-  // src/player/adShield.js
-  var adShieldInitialized = false;
-  function initAdShield() {
-    if (adShieldInitialized) return;
-    adShieldInitialized = true;
-    function handleVideoAds() {
-      const player = document.querySelector("#movie_player, .html5-video-player");
-      if (!player) return;
-      const isAdShowing = player.classList.contains("ad-showing") || player.classList.contains("ad-interrupting") || !!player.querySelector(".ytp-ad-player-overlay, .ytp-ad-text, .video-ads .ad-showing");
-      if (isAdShowing) {
-        const video = player.querySelector("video.html5-main-video") || player.querySelector("video");
-        if (video) {
-          if (isFinite(video.duration) && video.duration > 0) {
             try {
-              video.currentTime = video.duration;
-            } catch (e) {
+              ytcPolicy = window.trustedTypes.defaultPolicy;
+            } catch (err) {
             }
           }
-          try {
-            video.playbackRate = 16;
-          } catch (e) {
-          }
         }
-        const skipButtons = player.querySelectorAll(`
-                .ytp-ad-skip-button,
-                .ytp-ad-skip-button-modern,
-                .ytp-ad-skip-button-container button,
-                button.ytp-ad-skip-button,
-                .ytp-ad-overlay-close-button,
-                [id^="skip-button"] button
-            `);
-        skipButtons.forEach((btn) => {
-          try {
-            btn.click();
-          } catch (e) {
-          }
-        });
       }
     }
-    setInterval(handleVideoAds, 250);
-    const obs = new MutationObserver(() => {
-      handleVideoAds();
-    });
-    const target = document.querySelector("#movie_player") || document.body;
-    if (target) {
-      obs.observe(target, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
-    }
-  }
+  });
 
   // src/chat/chatState.js
-  init_config();
-  var CHATBOX_POS_KEY = "ytc_chatbox_pos";
-  var chatOverlayInitialized = false;
   function setChatOverlayInitialized(v) {
     chatOverlayInitialized = v;
   }
-  var danmakuContainer = null;
-  var streamerBox = null;
-  var streamerMessages = null;
-  var seenMessageIds = /* @__PURE__ */ new Set();
   function isDuplicateMessage(id, author, text) {
     if (id) {
       if (seenMessageIds.has(id)) return true;
@@ -985,7 +274,6 @@
     setTimeout(() => seenMessageIds.delete(key), 3500);
     return false;
   }
-  var isNativeChatHiddenByScript = false;
   function setNativeChatHiddenState(hidden) {
     isNativeChatHiddenByScript = !!hidden;
     const root = document.documentElement;
@@ -1000,19 +288,98 @@
     syncPlayerFullscreenSize();
   }
   function syncPlayerFullscreenSize() {
-    const isFs = !!(document.fullscreenElement || document.querySelector("#movie_player.ytp-fullscreen, .html5-video-player.ytp-fullscreen"));
-    const player = document.querySelector("#movie_player, .html5-video-player");
-    if (!player) return;
-    const video = player.querySelector("video.html5-main-video") || player.querySelector("video");
-    if (!video) return;
-    if (!isFs) {
-      delete video.dataset.ytcOverridden;
-      const pW = player.clientWidth || player.offsetWidth;
-      const pH = player.clientHeight || player.offsetHeight;
-      const vW = video.videoWidth;
-      const vH = video.videoHeight;
-      if (pW > 0 && pH > 0) {
-        if (vW > 0 && vH > 0) {
+    if (isSyncingPlayerSize) return;
+    isSyncingPlayerSize = true;
+    try {
+      const isFs = !!(document.fullscreenElement || document.querySelector("#movie_player.ytp-fullscreen, .html5-video-player.ytp-fullscreen"));
+      const player = document.querySelector("#movie_player, .html5-video-player");
+      if (!player) return;
+      const video = player.querySelector("video.html5-main-video") || player.querySelector("video");
+      if (!video) return;
+      if (!isFs) {
+        delete video.dataset.ytcOverridden;
+        const pW = player.clientWidth || player.offsetWidth;
+        const pH = player.clientHeight || player.offsetHeight;
+        const vW = video.videoWidth;
+        const vH = video.videoHeight;
+        if (pW > 0 && pH > 0) {
+          if (vW > 0 && vH > 0) {
+            const videoRatio = vW / vH;
+            const playerRatio = pW / pH;
+            let targetW, targetH, targetLeft, targetTop;
+            if (playerRatio > videoRatio) {
+              targetH = pH;
+              targetW = Math.round(targetH * videoRatio);
+              targetLeft = Math.round((pW - targetW) / 2);
+              targetTop = 0;
+            } else {
+              targetW = pW;
+              targetH = Math.round(targetW / videoRatio);
+              targetLeft = 0;
+              targetTop = Math.round((pH - targetH) / 2);
+            }
+            video.style.width = `${targetW}px`;
+            video.style.height = `${targetH}px`;
+            video.style.left = `${targetLeft}px`;
+            video.style.top = `${targetTop}px`;
+          } else {
+            video.style.width = "100%";
+            video.style.height = "100%";
+            video.style.left = "0px";
+            video.style.top = "0px";
+          }
+        }
+        if (typeof player.setInternalSize === "function") {
+          try {
+            player.setInternalSize();
+          } catch (e) {
+          }
+        }
+        return;
+      }
+      if (typeof player.setInternalSize === "function") {
+        try {
+          player.setInternalSize();
+        } catch (e) {
+        }
+      }
+      if (isNativeChatHiddenByScript) {
+        const video2 = player.querySelector("video.html5-main-video");
+        if (video2 && video2.videoWidth && video2.videoHeight) {
+          const screenW = window.innerWidth || screen.width;
+          const screenH = window.innerHeight || screen.height;
+          const videoRatio = video2.videoWidth / video2.videoHeight;
+          const screenRatio = screenW / screenH;
+          let targetW, targetH, targetLeft, targetTop;
+          if (screenRatio > videoRatio) {
+            targetH = screenH;
+            targetW = Math.round(targetH * videoRatio);
+            targetLeft = Math.round((screenW - targetW) / 2);
+            targetTop = 0;
+          } else {
+            targetW = screenW;
+            targetH = Math.round(targetW / videoRatio);
+            targetLeft = 0;
+            targetTop = Math.round((screenH - targetH) / 2);
+          }
+          const currentW = parseInt(video2.style.width) || 0;
+          if (currentW < targetW - 20) {
+            video2.dataset.ytcOverridden = "true";
+            video2.style.width = `${targetW}px`;
+            video2.style.height = `${targetH}px`;
+            video2.style.left = `${targetLeft}px`;
+            video2.style.top = `${targetTop}px`;
+          }
+        }
+      } else {
+        if (video.dataset.ytcOverridden) {
+          delete video.dataset.ytcOverridden;
+        }
+        const pW = player.clientWidth || player.offsetWidth;
+        const pH = player.clientHeight || player.offsetHeight;
+        const vW = video.videoWidth;
+        const vH = video.videoHeight;
+        if (pW > 0 && pH > 0 && vW > 0 && vH > 0) {
           const videoRatio = vW / vH;
           const playerRatio = pW / pH;
           let targetW, targetH, targetLeft, targetTop;
@@ -1031,85 +398,10 @@
           video.style.height = `${targetH}px`;
           video.style.left = `${targetLeft}px`;
           video.style.top = `${targetTop}px`;
-        } else {
-          video.style.width = "100%";
-          video.style.height = "100%";
-          video.style.left = "0px";
-          video.style.top = "0px";
         }
       }
-      if (typeof player.setInternalSize === "function") {
-        try {
-          player.setInternalSize();
-        } catch (e) {
-        }
-      }
-      window.dispatchEvent(new Event("resize"));
-      return;
-    }
-    window.dispatchEvent(new Event("resize"));
-    if (typeof player.setInternalSize === "function") {
-      try {
-        player.setInternalSize();
-      } catch (e) {
-      }
-    }
-    if (isNativeChatHiddenByScript) {
-      const video2 = player.querySelector("video.html5-main-video");
-      if (video2 && video2.videoWidth && video2.videoHeight) {
-        const screenW = window.innerWidth || screen.width;
-        const screenH = window.innerHeight || screen.height;
-        const videoRatio = video2.videoWidth / video2.videoHeight;
-        const screenRatio = screenW / screenH;
-        let targetW, targetH, targetLeft, targetTop;
-        if (screenRatio > videoRatio) {
-          targetH = screenH;
-          targetW = Math.round(targetH * videoRatio);
-          targetLeft = Math.round((screenW - targetW) / 2);
-          targetTop = 0;
-        } else {
-          targetW = screenW;
-          targetH = Math.round(targetW / videoRatio);
-          targetLeft = 0;
-          targetTop = Math.round((screenH - targetH) / 2);
-        }
-        const currentW = parseInt(video2.style.width) || 0;
-        if (currentW < targetW - 20) {
-          video2.dataset.ytcOverridden = "true";
-          video2.style.width = `${targetW}px`;
-          video2.style.height = `${targetH}px`;
-          video2.style.left = `${targetLeft}px`;
-          video2.style.top = `${targetTop}px`;
-        }
-      }
-    } else {
-      if (video.dataset.ytcOverridden) {
-        delete video.dataset.ytcOverridden;
-      }
-      const pW = player.clientWidth || player.offsetWidth;
-      const pH = player.clientHeight || player.offsetHeight;
-      const vW = video.videoWidth;
-      const vH = video.videoHeight;
-      if (pW > 0 && pH > 0 && vW > 0 && vH > 0) {
-        const videoRatio = vW / vH;
-        const playerRatio = pW / pH;
-        let targetW, targetH, targetLeft, targetTop;
-        if (playerRatio > videoRatio) {
-          targetH = pH;
-          targetW = Math.round(targetH * videoRatio);
-          targetLeft = Math.round((pW - targetW) / 2);
-          targetTop = 0;
-        } else {
-          targetW = pW;
-          targetH = Math.round(targetW / videoRatio);
-          targetLeft = 0;
-          targetTop = Math.round((pH - targetH) / 2);
-        }
-        video.style.width = `${targetW}px`;
-        video.style.height = `${targetH}px`;
-        video.style.left = `${targetLeft}px`;
-        video.style.top = `${targetTop}px`;
-      }
+    } finally {
+      isSyncingPlayerSize = false;
     }
   }
   function ensureChatOverlayContainers() {
@@ -1156,6 +448,21 @@
     streamerBox = sBox;
     streamerMessages = sBox.querySelector(".ytc-box-messages");
   }
+  var CHATBOX_POS_KEY, chatOverlayInitialized, danmakuContainer, streamerBox, streamerMessages, seenMessageIds, isNativeChatHiddenByScript, isSyncingPlayerSize;
+  var init_chatState = __esm({
+    "src/chat/chatState.js"() {
+      init_config();
+      init_utils();
+      CHATBOX_POS_KEY = "ytc_chatbox_pos";
+      chatOverlayInitialized = false;
+      danmakuContainer = null;
+      streamerBox = null;
+      streamerMessages = null;
+      seenMessageIds = /* @__PURE__ */ new Set();
+      isNativeChatHiddenByScript = false;
+      isSyncingPlayerSize = false;
+    }
+  });
 
   // src/chat/streamerBox.js
   function getSavedChatBoxPos() {
@@ -1419,21 +726,20 @@
       ro.observe(player);
     }
   }
+  var init_streamerBox = __esm({
+    "src/chat/streamerBox.js"() {
+      init_utils();
+      init_chatState();
+    }
+  });
 
   // src/chat/danmaku.js
-  var TOTAL_LANES = 10;
-  var laneNextAvailableTime = new Array(TOTAL_LANES).fill(0);
-  var danmakuQueue = [];
-  var danmakuSchedulerTimer = null;
-  var lastDanmakuSpawnTime = 0;
   function setLastDanmakuSpawnTime(t) {
     lastDanmakuSpawnTime = t;
   }
-  var lastSpawnedLane = -1;
   function setLastSpawnedLane(l) {
     lastSpawnedLane = l;
   }
-  var MIN_GLOBAL_INTERVAL = 420;
   function getAvailableLane(now) {
     const freeLanes = [];
     for (let i = 0; i < TOTAL_LANES; i++) {
@@ -1517,9 +823,22 @@
     lastDanmakuSpawnTime = 0;
     lastSpawnedLane = -1;
   }
+  var TOTAL_LANES, laneNextAvailableTime, danmakuQueue, danmakuSchedulerTimer, lastDanmakuSpawnTime, lastSpawnedLane, MIN_GLOBAL_INTERVAL;
+  var init_danmaku = __esm({
+    "src/chat/danmaku.js"() {
+      init_utils();
+      init_chatState();
+      TOTAL_LANES = 10;
+      laneNextAvailableTime = new Array(TOTAL_LANES).fill(0);
+      danmakuQueue = [];
+      danmakuSchedulerTimer = null;
+      lastDanmakuSpawnTime = 0;
+      lastSpawnedLane = -1;
+      MIN_GLOBAL_INTERVAL = 420;
+    }
+  });
 
   // src/chat/chatParser.js
-  init_config();
   function extractMessageData(node) {
     if (!node || node.nodeType !== 1) return null;
     const authorEl = node.querySelector("#author-name");
@@ -1615,11 +934,46 @@
       }, 45e3);
     }
   }
+  var init_chatParser = __esm({
+    "src/chat/chatParser.js"() {
+      init_config();
+      init_utils();
+      init_chatState();
+      init_danmaku();
+    }
+  });
+
+  // src/ui/sync.js
+  var sync_exports = {};
+  __export(sync_exports, {
+    syncPanelState: () => syncPanelState
+  });
+  function syncPanelState(targetPanel) {
+    const panel = targetPanel || document.getElementById("ytc-settings-panel");
+    if (!panel) return;
+    const currentMode = currentConfig.chatOverlay || "off";
+    panel.querySelectorAll(".ytc-mode-btn").forEach((btn) => {
+      btn.classList.toggle("active", btn.getAttribute("data-overlay") === currentMode);
+    });
+    panel.querySelectorAll(".ytc-item[data-toggle]").forEach((item) => {
+      const key = item.getAttribute("data-toggle");
+      const checkbox = item.querySelector('input[type="checkbox"]');
+      if (checkbox && key in currentConfig) {
+        checkbox.checked = !!currentConfig[key];
+      }
+    });
+    panel.querySelectorAll(".ytc-col-btn").forEach((colBtn) => {
+      const cols = parseInt(colBtn.getAttribute("data-cols"), 10);
+      colBtn.classList.toggle("active", cols === currentConfig.columns);
+    });
+  }
+  var init_sync = __esm({
+    "src/ui/sync.js"() {
+      init_config();
+    }
+  });
 
   // src/chat/chatObserver.js
-  init_config();
-  var userManuallyOpenedChat = false;
-  var hasAutoCollapsedChatForCurrentVideo = false;
   function resetChatCollapseState() {
     userManuallyOpenedChat = false;
     hasAutoCollapsedChatForCurrentVideo = false;
@@ -1684,34 +1038,10 @@
       }
     }
   }
-  var playerClassObserver = null;
   function observePlayerChatState() {
-    const player = document.querySelector("#movie_player, .html5-video-player");
-    if (!player) return;
-    if (playerClassObserver) {
-      playerClassObserver.disconnect();
-      playerClassObserver = null;
-    }
-    playerClassObserver = new MutationObserver(() => {
-      syncNativeChatFullscreenState();
-    });
-    playerClassObserver.observe(player, { attributes: true, attributeFilter: ["class"] });
   }
-  var fullscreenPanelsObserver = null;
   function observeFullscreenChatPanels() {
-    if (fullscreenPanelsObserver) return;
-    fullscreenPanelsObserver = new MutationObserver(() => {
-      syncNativeChatFullscreenState();
-    });
-    const target = document.querySelector("ytd-watch-flexy") || document.body || document.documentElement;
-    fullscreenPanelsObserver.observe(target, {
-      attributes: true,
-      attributeFilter: ["visibility", "has-active-panel", "panels-open", "fullscreen", "chat-collapsed", "class"],
-      subtree: true,
-      childList: true
-    });
   }
-  var chatToggleListenersBound = false;
   function setupChatToggleListeners() {
     if (chatToggleListenersBound) return;
     chatToggleListenersBound = true;
@@ -1768,7 +1098,6 @@
       autoCollapseNativeChatIfOpen();
     }
   }
-  var ensureNativeLiveChatRunning = syncNativeChatState;
   function getAllChatElements(scope) {
     const root = scope || document;
     return root.querySelectorAll(
@@ -1838,8 +1167,6 @@
       }
     });
   }
-  var bgChatIframe = null;
-  var currentBgVideoId = null;
   function getCurrentLiveVideoId() {
     const params = new URLSearchParams(window.location.search);
     const v = params.get("v");
@@ -2127,8 +1454,12 @@
       setTimeout(syncPlayerFullscreenSize, 300);
       setTimeout(syncPlayerFullscreenSize, 600);
     });
+    let windowResizeTimer = null;
     window.addEventListener("resize", () => {
-      syncPlayerFullscreenSize();
+      clearTimeout(windowResizeTimer);
+      windowResizeTimer = setTimeout(() => {
+        syncPlayerFullscreenSize();
+      }, 150);
     });
     window.addEventListener("ytc-close-streamer-box", () => {
       currentConfig.chatOverlay = "off";
@@ -2189,12 +1520,879 @@
       });
     }
   }
+  var userManuallyOpenedChat, hasAutoCollapsedChatForCurrentVideo, chatToggleListenersBound, ensureNativeLiveChatRunning, bgChatIframe, currentBgVideoId;
+  var init_chatObserver = __esm({
+    "src/chat/chatObserver.js"() {
+      init_config();
+      init_utils();
+      init_chatState();
+      init_streamerBox();
+      init_danmaku();
+      init_chatParser();
+      userManuallyOpenedChat = false;
+      hasAutoCollapsedChatForCurrentVideo = false;
+      chatToggleListenersBound = false;
+      ensureNativeLiveChatRunning = syncNativeChatState;
+      bgChatIframe = null;
+      currentBgVideoId = null;
+    }
+  });
+
+  // src/chat/index.js
+  var chat_exports = {};
+  __export(chat_exports, {
+    CHATBOX_POS_KEY: () => CHATBOX_POS_KEY,
+    TOTAL_LANES: () => TOTAL_LANES,
+    applyChatBoxPos: () => applyChatBoxPos,
+    autoCollapseNativeChatIfOpen: () => autoCollapseNativeChatIfOpen,
+    centerChatBox: () => centerChatBox,
+    chatOverlayInitialized: () => chatOverlayInitialized,
+    danmakuContainer: () => danmakuContainer,
+    danmakuQueue: () => danmakuQueue,
+    displayChatMessage: () => displayChatMessage,
+    ensureBackgroundLiveChat: () => ensureBackgroundLiveChat,
+    ensureChatOverlayContainers: () => ensureChatOverlayContainers,
+    ensureNativeLiveChatRunning: () => ensureNativeLiveChatRunning,
+    extractMessageData: () => extractMessageData,
+    getCurrentLiveVideoId: () => getCurrentLiveVideoId,
+    getSavedChatBoxPos: () => getSavedChatBoxPos,
+    hasAutoCollapsedChatForCurrentVideo: () => hasAutoCollapsedChatForCurrentVideo,
+    initChatOverlay: () => initChatOverlay,
+    initIframeChatSender: () => initIframeChatSender,
+    isDuplicateMessage: () => isDuplicateMessage,
+    isNativeChatHiddenByScript: () => isNativeChatHiddenByScript,
+    isNativeChatOpenInFullscreen: () => isNativeChatOpenInFullscreen,
+    laneNextAvailableTime: () => laneNextAvailableTime,
+    lastDanmakuSpawnTime: () => lastDanmakuSpawnTime,
+    lastSpawnedLane: () => lastSpawnedLane,
+    observeFullscreenChatPanels: () => observeFullscreenChatPanels,
+    observePlayerChatState: () => observePlayerChatState,
+    requestExistingMessages: () => requestExistingMessages,
+    resetChatCollapseState: () => resetChatCollapseState,
+    saveChatBoxPos: () => saveChatBoxPos,
+    seenMessageIds: () => seenMessageIds,
+    setChatOverlayInitialized: () => setChatOverlayInitialized,
+    setLastDanmakuSpawnTime: () => setLastDanmakuSpawnTime,
+    setLastSpawnedLane: () => setLastSpawnedLane,
+    setNativeChatHiddenState: () => setNativeChatHiddenState,
+    setupChatBoxInteractions: () => setupChatBoxInteractions,
+    setupChatToggleListeners: () => setupChatToggleListeners,
+    showInitialBox: () => showInitialBox,
+    startDanmakuScheduler: () => startDanmakuScheduler,
+    stopDanmakuScheduler: () => stopDanmakuScheduler,
+    streamerBox: () => streamerBox,
+    streamerMessages: () => streamerMessages,
+    syncNativeChatFullscreenState: () => syncNativeChatFullscreenState,
+    syncNativeChatState: () => syncNativeChatState,
+    syncPlayerFullscreenSize: () => syncPlayerFullscreenSize,
+    updateChatOverlayVisibility: () => updateChatOverlayVisibility,
+    userManuallyOpenedChat: () => userManuallyOpenedChat
+  });
+  var init_chat = __esm({
+    "src/chat/index.js"() {
+      init_chatState();
+      init_streamerBox();
+      init_danmaku();
+      init_chatParser();
+      init_chatObserver();
+    }
+  });
+
+  // src/styles.css
+  var styles_default = '/* ==========================================================================\n   YOUTUBE CUSTOMIZER - TẬP HỢP TOÀN BỘ ĐỊNH KIỂU CSS\n   ========================================================================== */\n\n/* --------------------------------------------------------------------------\n   1. LƯỚI VIDEO TRANG CHỦ & FEED: ÉP 3/4/5 CỘT CHUẨN XÁC\n   (Độ ưu tiên cao nhất, cố định vĩnh viễn khi F5 tải lại trang)\n   -------------------------------------------------------------------------- */\n@media (min-width: 900px) {\n    ytd-browse[page-subtype="home"] ytd-rich-grid-renderer,\n    ytd-browse[page-subtype="subscriptions"] ytd-rich-grid-renderer,\n    ytd-browse[page-subtype="channels"] ytd-rich-grid-renderer,\n    #page-manager ytd-browse ytd-rich-grid-renderer,\n    ytd-rich-grid-renderer.ytc-grid,\n    ytd-rich-grid-renderer {\n        --ytd-rich-grid-items-per-row: 3 !important;\n        --ytd-rich-grid-posts-per-row: 3 !important;\n        --ytd-rich-grid-item-max-width: none !important;\n    }\n\n    html[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,\n    html[data-ytc-cols="3"] ytd-rich-grid-renderer,\n    body[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,\n    body[data-ytc-cols="3"] ytd-rich-grid-renderer,\n    [data-ytc-cols="3"] #page-manager ytd-browse ytd-rich-grid-renderer,\n    [data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,\n    [data-ytc-cols="3"] ytd-browse ytd-rich-grid-renderer,\n    [data-ytc-cols="3"] ytd-rich-grid-renderer {\n        --ytd-rich-grid-items-per-row: 3 !important;\n        --ytd-rich-grid-posts-per-row: 3 !important;\n        --ytd-rich-grid-item-max-width: none !important;\n    }\n\n    html[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,\n    html[data-ytc-cols="4"] ytd-rich-grid-renderer,\n    body[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,\n    body[data-ytc-cols="4"] ytd-rich-grid-renderer,\n    [data-ytc-cols="4"] #page-manager ytd-browse ytd-rich-grid-renderer,\n    [data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,\n    [data-ytc-cols="4"] ytd-browse ytd-rich-grid-renderer,\n    [data-ytc-cols="4"] ytd-rich-grid-renderer {\n        --ytd-rich-grid-items-per-row: 4 !important;\n        --ytd-rich-grid-posts-per-row: 4 !important;\n        --ytd-rich-grid-item-max-width: none !important;\n    }\n\n    html[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,\n    html[data-ytc-cols="5"] ytd-rich-grid-renderer,\n    body[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,\n    body[data-ytc-cols="5"] ytd-rich-grid-renderer,\n    [data-ytc-cols="5"] #page-manager ytd-browse ytd-rich-grid-renderer,\n    [data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,\n    [data-ytc-cols="5"] ytd-browse ytd-rich-grid-renderer,\n    [data-ytc-cols="5"] ytd-rich-grid-renderer {\n        --ytd-rich-grid-items-per-row: 5 !important;\n        --ytd-rich-grid-posts-per-row: 5 !important;\n        --ytd-rich-grid-item-max-width: none !important;\n    }\n\n    #contents.ytd-rich-grid-row ytd-rich-item-renderer,\n    ytd-rich-grid-renderer ytd-rich-item-renderer {\n        width: calc(100% / var(--ytd-rich-grid-items-per-row, 3) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n        max-width: calc(100% / var(--ytd-rich-grid-items-per-row, 3) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n    }\n\n    [data-ytc-cols="3"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,\n    [data-ytc-cols="3"] ytd-rich-grid-renderer ytd-rich-item-renderer {\n        width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n        max-width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n    }\n\n    [data-ytc-cols="4"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,\n    [data-ytc-cols="4"] ytd-rich-grid-renderer ytd-rich-item-renderer {\n        width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n        max-width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n    }\n\n    [data-ytc-cols="5"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,\n    [data-ytc-cols="5"] ytd-rich-grid-renderer ytd-rich-item-renderer {\n        width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n        max-width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\n    }\n}\n\n/* --------------------------------------------------------------------------\n   2. TỐI ƯU HIỆU NĂNG, KHUNG HÌNH & LIVE CHAT (ZERO-LAG)\n   -------------------------------------------------------------------------- */\n#page-manager ytd-rich-item-renderer {\n    overflow: hidden !important;\n    border-radius: 12px;\n}\n#page-manager ytd-rich-item-renderer:hover {\n    z-index: 2;\n    position: relative;\n}\n\nytd-comment-thread-renderer {\n    content-visibility: auto;\n    contain-intrinsic-size: auto 200px;\n}\n\n@keyframes ytcConfirmInserted {\n    from { clip-path: inset(0); }\n    to { clip-path: inset(0); }\n}\nyt-confirm-dialog-renderer {\n    animation: ytcConfirmInserted 0.001s;\n}\n\n#movie_player.seeking-mode .ytp-chrome-bottom,\n#movie_player.seeking-mode .ytp-gradient-bottom,\n#movie_player.seeking-mode .ytp-chrome-top {\n    opacity: 0 !important;\n    transition: opacity 0.15s ease;\n}\n#movie_player.seeking-mode {\n    cursor: none !important;\n}\n\n.ytc-fs-locked .ytp-fullscreen-button {\n    opacity: 0.35 !important;\n    pointer-events: none !important;\n    cursor: not-allowed !important;\n    transition: opacity 0.2s ease !important;\n}\n\nytd-live-chat-frame#chat,\n#chat.ytd-watch-flexy,\niframe#chatframe {\n    contain: layout style paint !important;\n}\n\nyt-live-chat-text-message-renderer,\nyt-live-chat-paid-message-renderer,\nyt-live-chat-membership-item-renderer {\n    content-visibility: auto !important;\n    contain-intrinsic-size: auto 32px !important;\n}\n\n/* --------------------------------------------------------------------------\n   3. BỘ LỌC NỘI DUNG: SHORTS, CHƠI GAME, HỘI VIÊN, KHÁM PHÁ, CỘNG ĐỒNG, CLEAN SEARCH\n   -------------------------------------------------------------------------- */\n.ytc-hide-shorts ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),\n.ytc-hide-shorts ytd-rich-section-renderer:has(ytd-reel-shelf-renderer),\n.ytc-hide-shorts ytd-rich-shelf-renderer[is-shorts],\n.ytc-hide-shorts ytd-reel-shelf-renderer,\n.ytc-hide-shorts ytd-guide-entry-renderer:has(a[href^="/shorts"]),\n.ytc-hide-shorts ytd-mini-guide-entry-renderer:has(a[href^="/shorts"]),\n.ytc-hide-shorts ytd-guide-entry-renderer a[title="Shorts"],\n.ytc-hide-shorts ytd-mini-guide-entry-renderer[aria-label="Shorts"],\n.ytc-hide-shorts #endpoint[title="Shorts"],\n.ytc-hide-shorts ytd-mealbar-promo-renderer,\n.ytc-hide-shorts ytd-upsell-dialog-renderer {\n    display: none !important;\n}\n\n.ytc-hide-playables ytd-rich-section-renderer:has([is-mini-game-card-shelf]),\n.ytc-hide-playables ytd-rich-shelf-renderer[is-mini-game-card-shelf],\n.ytc-hide-playables ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-mini-game-card-shelf]),\n.ytc-hide-playables ytd-rich-section-renderer:has(a[href*="/playables"]),\n.ytc-hide-playables ytd-rich-section-renderer:has(a[href*="playables"]),\n.ytc-hide-playables ytd-guide-entry-renderer:has(a[href*="/playables"]),\n.ytc-hide-playables ytd-mini-guide-entry-renderer:has(a[href*="/playables"]),\n.ytc-hide-playables ytd-guide-entry-renderer a[title*="Chơi game"],\n.ytc-hide-playables ytd-guide-entry-renderer a[title*="Playables"],\n.ytc-hide-playables ytd-mini-guide-entry-renderer[aria-label*="Chơi game"],\n.ytc-hide-playables ytd-mini-guide-entry-renderer[aria-label*="Playables"],\n.ytc-hide-playables #endpoint[title*="Chơi game"],\n.ytc-hide-playables #endpoint[title*="Playables"] {\n    display: none !important;\n}\n\n.ytc-hide-members ytd-rich-section-renderer:has(.badge-style-type-members-only),\n.ytc-hide-members ytd-rich-section-renderer:has(.badge-style-type-members-first),\n.ytc-hide-members ytd-rich-section-renderer:has([badge-style="MEMBERS_FIRST"]),\n.ytc-hide-members ytd-rich-section-renderer:has([badge-style="MEMBERS_ONLY"]),\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="hội viên"]),\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Hội viên"]),\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Members only"]),\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="members only"]),\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Members first"]),\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="members first"]),\n.ytc-hide-members ytd-rich-section-renderer:has(a[href*="/membership"]),\n.ytc-hide-members ytd-rich-section-renderer:has(a[href*="/memberships"]),\n.ytc-hide-members ytd-rich-section-renderer.ytc-shelf-members,\n.ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-only),\n.ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-first),\n.ytc-hide-members ytd-rich-item-renderer:has([badge-style="MEMBERS_FIRST"]),\n.ytc-hide-members ytd-rich-item-renderer:has([badge-style="MEMBERS_ONLY"]),\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="hội viên"]),\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Hội viên"]),\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Members only"]),\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Members first"]),\n.ytc-hide-members ytd-rich-item-renderer.ytc-item-members,\n.ytc-hide-members ytd-video-renderer:has(.badge-style-type-members-only),\n.ytc-hide-members ytd-video-renderer:has(.badge-style-type-members-first),\n.ytc-hide-members ytd-video-renderer:has([badge-style="MEMBERS_FIRST"]),\n.ytc-hide-members ytd-video-renderer:has([badge-style="MEMBERS_ONLY"]),\n.ytc-hide-members ytd-video-renderer:has([aria-label*="hội viên"]),\n.ytc-hide-members ytd-video-renderer:has([aria-label*="Hội viên"]),\n.ytc-hide-members ytd-video-renderer.ytc-item-members,\n.ytc-hide-members ytd-compact-video-renderer:has(.badge-style-type-members-only),\n.ytc-hide-members ytd-compact-video-renderer:has(.badge-style-type-members-first),\n.ytc-hide-members ytd-compact-video-renderer:has([badge-style="MEMBERS_FIRST"]),\n.ytc-hide-members ytd-compact-video-renderer:has([badge-style="MEMBERS_ONLY"]),\n.ytc-hide-members ytd-compact-video-renderer.ytc-item-members {\n    display: none !important;\n}\n\n.ytc-hide-explore ytd-rich-section-renderer:has(yt-chip-cloud-chip-renderer),\n.ytc-hide-explore ytd-rich-section-renderer:has(yt-chip-cloud-renderer),\n.ytc-hide-explore ytd-rich-section-renderer:has(ytd-feed-filter-chip-bar-renderer),\n.ytc-hide-explore ytd-rich-section-renderer:has(#chips),\n.ytc-hide-explore ytd-rich-section-renderer.ytc-shelf-explore,\n.ytc-hide-explore ytd-rich-section-renderer:has([title*="Khám phá các chủ đề"]),\n.ytc-hide-explore ytd-rich-section-renderer:has([title*="Explore other topics"]),\n.ytc-hide-explore ytd-rich-section-renderer:has([title*="Explore topics"]) {\n    display: none !important;\n}\n\n.ytc-clean-search ytd-ad-slot-renderer,\n.ytc-clean-search ytd-rich-item-renderer:has(ytd-ad-slot-renderer),\n.ytc-clean-search ytd-rich-section-renderer:has(ytd-ad-slot-renderer),\n.ytc-clean-search ytd-video-renderer:has(.badge-style-type-ad) {\n    display: none !important;\n}\n\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-post-renderer),\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-backstage-post-renderer),\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-backstage-post-thread-renderer),\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-post-multi-image-renderer),\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-poll-renderer),\n.ytc-hide-community ytd-rich-section-renderer.ytc-shelf-community,\n.ytc-hide-community ytd-rich-item-renderer:has(ytd-post-renderer),\n.ytc-hide-community ytd-rich-item-renderer:has(ytd-backstage-post-renderer),\n.ytc-hide-community ytd-rich-item-renderer.ytc-item-community,\n.ytc-hide-community ytd-post-renderer,\n.ytc-hide-community ytd-backstage-post-renderer,\n.ytc-hide-community ytd-backstage-post-thread-renderer {\n    display: none !important;\n}\n\n/* --------------------------------------------------------------------------\n   4. TRÌNH PHÁT VIDEO: AMBIENT, THẺ KẾT THÚC, BANNER & LOGO PREMIUM\n   -------------------------------------------------------------------------- */\n.ytc-disable-ambient #cinematics,\n.ytc-disable-ambient ytd-cinematics-renderer,\n.ytc-disable-ambient .ytp-ambient-mode-rendering-container {\n    display: none !important;\n}\n\n.ytc-hide-endscreen .ytp-ce-element,\n.ytc-hide-endscreen .ytp-ce-covering-overlay,\n.ytc-hide-endscreen .ytp-ce-element-show,\n.ytc-hide-endscreen .ytp-ce-video,\n.ytc-hide-endscreen .ytp-ce-playlist,\n.ytc-hide-endscreen .ytp-ce-channel,\n.ytc-hide-endscreen .ytp-ce-subscribe,\n.ytc-hide-endscreen .ytp-cards-button,\n.ytc-hide-endscreen .ytp-cards-teaser,\n.ytc-hide-endscreen .ytp-cards-teaser-box,\n.ytc-hide-endscreen .ytp-card {\n    display: none !important;\n    opacity: 0 !important;\n    pointer-events: none !important;\n}\n\n/* Ẩn logo hình mờ kênh ở góc dưới bên phải video */\n.ytc-hide-watermark .annotation-type-custom.iv-branding,\n.ytc-hide-watermark .iv-branding,\n.ytc-hide-watermark .ytp-iv-video-content .iv-branding,\n.ytc-hide-watermark .ytp-branding-logo,\n.ytc-hide-watermark .ytp-featured-channel,\n.ytc-hide-watermark .ytp-branding-element {\n    display: none !important;\n    opacity: 0 !important;\n    pointer-events: none !important;\n    visibility: hidden !important;\n}\n\n.ytc-auto-dismiss ytd-mealbar-promo-renderer,\n.ytc-auto-dismiss yt-mealbar-promo-renderer,\n.ytc-auto-dismiss ytd-upsell-dialog-renderer,\n.ytc-auto-dismiss ytd-single-option-survey-renderer,\n.ytc-auto-dismiss ytd-in-feed-survey-renderer,\n.ytc-auto-dismiss yt-bubble-hint-renderer,\n.ytc-auto-dismiss .ytc-dismissed-toast {\n    display: none !important;\n    opacity: 0 !important;\n    pointer-events: none !important;\n}\n\n:root.ytc-premium-logo #start.ytd-masthead ytd-topbar-logo-renderer,\n:root.ytc-premium-logo ytd-topbar-logo-renderer#logo {\n    margin-left: 0 !important;\n    display: flex !important;\n    align-items: center !important;\n}\n:root.ytc-premium-logo ytd-topbar-logo-renderer #logo {\n    padding: 18px 4px 18px 16px !important;\n    display: inline-flex !important;\n    align-items: center !important;\n    box-sizing: content-box !important;\n}\nytd-topbar-logo-renderer ytd-yoodle-renderer,\nytd-yoodle-renderer ytd-logo,\nytd-topbar-logo-renderer ytd-yoodle-renderer * {\n    display: none !important;\n}\n:root.ytc-premium-logo ytd-topbar-logo-renderer #logo ytd-logo:not(.ytd-yoodle-renderer),\n:root.ytc-premium-logo ytd-topbar-logo-renderer #logo ytd-logo[hidden]:not(.ytd-yoodle-renderer),\n:root.ytc-premium-logo ytd-topbar-logo-renderer > #logo > div > ytd-logo {\n    width: 101px !important;\n    min-width: 101px !important;\n    max-width: 101px !important;\n    height: 20px !important;\n    display: flex !important;\n    align-items: center !important;\n    overflow: visible !important;\n    visibility: visible !important;\n    opacity: 1 !important;\n}\n:root.ytc-premium-logo ytd-logo:not(.ytd-yoodle-renderer) > *:not(.custom-premium-logo) {\n    display: none !important;\n}\nytd-logo, ytd-topbar-logo-renderer {\n    overflow: visible !important;\n}\n:root:not(.ytc-premium-logo) .custom-premium-logo {\n    display: none !important;\n}\n:root.ytc-premium-logo .custom-premium-logo {\n    display: flex !important;\n    align-items: center !important;\n    width: 101px !important;\n    height: 20px !important;\n    color: var(--yt-spec-wordmark-text, var(--yt-spec-text-primary, #0f0f0f)) !important;\n    pointer-events: none;\n    visibility: visible !important;\n    opacity: 1 !important;\n}\nhtml:not([dark]).ytc-premium-logo .custom-premium-logo,\nhtml:not([dark]) .custom-premium-logo,\n:root:not([dark]).ytc-premium-logo .custom-premium-logo {\n    color: var(--yt-spec-wordmark-text, #0f0f0f) !important;\n}\nhtml[dark].ytc-premium-logo .custom-premium-logo,\nhtml[dark] .custom-premium-logo,\n:root[dark].ytc-premium-logo .custom-premium-logo {\n    color: var(--yt-spec-wordmark-text, #f1f1f1) !important;\n}\n.custom-premium-logo svg {\n    width: 101px !important;\n    height: 20px !important;\n    fill: currentColor !important;\n}\n.custom-premium-logo svg #youtube-paths_yt19,\n.custom-premium-logo svg #youtube-paths_yt19 path {\n    fill: currentColor !important;\n}\n\n:root.ytc-premium-logo ytd-topbar-logo-renderer #country-code {\n    display: inline-block !important;\n    font-size: 10px !important;\n    font-weight: 400 !important;\n    font-family: "Roboto", "Arial", sans-serif !important;\n    line-height: 10px !important;\n    color: var(--yt-spec-text-secondary, #909090) !important;\n    margin-top: 14px !important;\n    margin-left: 4px !important;\n    margin-right: 0 !important;\n    margin-bottom: 0 !important;\n    align-self: flex-start !important;\n    vertical-align: top !important;\n    position: relative !important;\n    top: 0 !important;\n    left: 0 !important;\n}\nhtml:not([dark]).ytc-premium-logo ytd-topbar-logo-renderer #country-code,\nhtml:not([dark]) ytd-topbar-logo-renderer #country-code {\n    color: var(--yt-spec-text-secondary, #606060) !important;\n}\nhtml[dark].ytc-premium-logo ytd-topbar-logo-renderer #country-code,\nhtml[dark] ytd-topbar-logo-renderer #country-code {\n    color: var(--yt-spec-text-secondary, #909090) !important;\n}\n:root.ytc-premium-logo ytd-topbar-logo-renderer #country-code:empty {\n    display: none !important;\n}\n\n/* --------------------------------------------------------------------------\n   5. GIAO DIỆN CÀI ĐẶT: NÚT BÁNH RĂNG & MENU 4 TAB\n   -------------------------------------------------------------------------- */\n#ytc-settings-btn {\n    order: -1 !important;\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    width: 40px;\n    height: 40px;\n    border-radius: 50%;\n    border: none;\n    background: transparent;\n    color: var(--yt-spec-text-primary, #f1f1f1);\n    cursor: pointer;\n    margin-right: 8px;\n    flex-shrink: 0;\n    transition: background-color 0.15s;\n    position: relative;\n}\n#ytc-settings-btn:hover {\n    background-color: rgba(255, 255, 255, 0.1);\n}\nhtml:not([dark]) #ytc-settings-btn:hover {\n    background-color: rgba(0, 0, 0, 0.08);\n}\n#ytc-settings-btn svg {\n    width: 24px;\n    height: 24px;\n}\n\n#ytc-settings-panel {\n    position: fixed;\n    width: 350px;\n    max-height: calc(100vh - 80px);\n    overflow-y: auto;\n    background: var(--yt-spec-brand-background-primary, #282828);\n    color: var(--yt-spec-text-primary, #f1f1f1);\n    border-radius: 12px;\n    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.4);\n    padding: 12px;\n    z-index: 9999;\n    font-family: "Roboto", "Arial", sans-serif;\n    font-size: 14px;\n    display: none;\n    flex-direction: column;\n    gap: 6px;\n    user-select: none;\n    border: 1px solid rgba(255, 255, 255, 0.1);\n}\n#ytc-settings-panel::-webkit-scrollbar {\n    width: 4px;\n}\n#ytc-settings-panel::-webkit-scrollbar-thumb {\n    background: rgba(255, 255, 255, 0.2);\n    border-radius: 2px;\n}\n#ytc-settings-panel.open {\n    display: flex;\n}\n\n.ytc-header {\n    font-weight: 600;\n    font-size: 15px;\n    padding: 4px 6px 8px 6px;\n    border-bottom: 1px solid rgba(255, 255, 255, 0.1);\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n}\n.ytc-header-badge {\n    font-size: 11px;\n    background: #ff0033;\n    color: white;\n    padding: 2px 6px;\n    border-radius: 4px;\n    font-weight: bold;\n}\n\n.ytc-tabs {\n    display: flex;\n    align-items: center;\n    gap: 5px;\n    background: rgba(255, 255, 255, 0.06);\n    border-radius: 8px;\n    padding: 4px;\n    margin: 4px 0 6px 0;\n}\n.ytc-tab-btn {\n    flex: 1;\n    display: inline-flex;\n    align-items: center;\n    justify-content: center;\n    gap: 5px;\n    padding: 6px 6px;\n    border: none;\n    background: transparent;\n    color: #aaa;\n    font-size: 12px;\n    font-weight: 500;\n    border-radius: 6px;\n    cursor: pointer;\n    transition: all 0.15s ease;\n    white-space: nowrap;\n}\n.ytc-tab-btn:hover {\n    background: rgba(255, 255, 255, 0.08);\n    color: #fff;\n}\n.ytc-tab-btn.active {\n    background: #f1f1f1;\n    color: #0f0f0f;\n    font-weight: 600;\n}\n.ytc-tab-btn svg {\n    width: 14px;\n    height: 14px;\n    fill: currentColor;\n    flex-shrink: 0;\n}\n.ytc-tab-pane {\n    display: none;\n    flex-direction: column;\n    gap: 4px;\n}\n.ytc-tab-pane.active {\n    display: flex;\n}\n\n.ytc-item {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    padding: 8px 8px;\n    border-radius: 8px;\n    cursor: pointer;\n    transition: background 0.15s;\n}\n.ytc-item:hover {\n    background: rgba(255, 255, 255, 0.08);\n}\n\n.ytc-item-left {\n    display: flex;\n    align-items: center;\n    gap: 12px;\n}\n.ytc-item-left svg {\n    width: 20px;\n    height: 20px;\n    fill: currentColor;\n    opacity: 0.9;\n    flex-shrink: 0;\n}\n\n.ytc-switch {\n    position: relative;\n    display: inline-block;\n    width: 36px;\n    height: 20px;\n}\n.ytc-switch input {\n    opacity: 0;\n    width: 0;\n    height: 0;\n}\n.ytc-slider {\n    position: absolute;\n    cursor: pointer;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background-color: #606060;\n    border-radius: 20px;\n    transition: background-color 0.2s;\n}\n.ytc-slider:before {\n    position: absolute;\n    content: "";\n    height: 14px;\n    width: 14px;\n    left: 3px;\n    bottom: 3px;\n    background-color: white;\n    border-radius: 50%;\n    transition: transform 0.2s;\n}\n.ytc-switch input:checked + .ytc-slider {\n    background-color: #3ea6ff;\n}\n.ytc-switch input:checked + .ytc-slider:before {\n    transform: translateX(16px);\n}\n\n.ytc-cols-group {\n    display: flex;\n    align-items: center;\n    gap: 4px;\n    background: rgba(255, 255, 255, 0.08);\n    padding: 2px;\n    border-radius: 6px;\n}\n.ytc-col-btn {\n    border: none;\n    background: transparent;\n    color: #aaa;\n    font-size: 13px;\n    font-weight: 500;\n    padding: 4px 8px;\n    border-radius: 4px;\n    cursor: pointer;\n    transition: all 0.15s;\n}\n.ytc-col-btn.active {\n    background: #f1f1f1;\n    color: #0f0f0f;\n}\n\n.ytc-shortcut-hint {\n    font-size: 12px;\n    color: var(--yt-spec-text-secondary, #aaa);\n    background: rgba(255, 255, 255, 0.04);\n    padding: 8px 10px;\n    border-radius: 6px;\n    line-height: 1.6;\n    margin-top: 4px;\n    border: 1px solid rgba(255, 255, 255, 0.06);\n}\n.ytc-shortcut-hint kbd {\n    background: rgba(255, 255, 255, 0.15);\n    color: var(--yt-spec-text-primary, #fff);\n    padding: 2px 5px;\n    border-radius: 3px;\n    font-family: monospace;\n    font-size: 11px;\n    font-weight: bold;\n}\n\nhtml:not([dark]) #ytc-settings-panel {\n    background: #ffffff;\n    color: #0f0f0f;\n    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.15);\n    border: 1px solid rgba(0, 0, 0, 0.1);\n}\nhtml:not([dark]) .ytc-header {\n    border-bottom: 1px solid rgba(0, 0, 0, 0.08);\n}\nhtml:not([dark]) .ytc-tabs {\n    background: rgba(0, 0, 0, 0.05);\n}\nhtml:not([dark]) .ytc-tab-btn {\n    color: #606060;\n}\nhtml:not([dark]) .ytc-tab-btn:hover {\n    background: rgba(0, 0, 0, 0.06);\n    color: #0f0f0f;\n}\nhtml:not([dark]) .ytc-tab-btn.active {\n    background: #0f0f0f;\n    color: #ffffff;\n}\nhtml:not([dark]) .ytc-shortcut-hint {\n    background: rgba(0, 0, 0, 0.04);\n    color: #606060;\n    border-color: rgba(0, 0, 0, 0.08);\n}\nhtml:not([dark]) .ytc-shortcut-hint kbd {\n    background: rgba(0, 0, 0, 0.1);\n    color: #0f0f0f;\n}\n\n.ytc-divider {\n    height: 1px;\n    background: rgba(255, 255, 255, 0.1);\n    margin: 4px 0;\n}\n\n.ytc-mode-group {\n    display: flex;\n    align-items: center;\n    gap: 4px;\n    background: rgba(255, 255, 255, 0.08);\n    padding: 2px;\n    border-radius: 6px;\n}\n.ytc-mode-btn {\n    border: none;\n    background: transparent;\n    color: #aaa;\n    font-size: 12px;\n    font-weight: 500;\n    padding: 4px 8px;\n    border-radius: 4px;\n    cursor: pointer;\n    transition: all 0.15s;\n    white-space: nowrap;\n}\n.ytc-mode-btn.active {\n    background: #f1f1f1;\n    color: #0f0f0f;\n}\nhtml:not([dark]) .ytc-mode-group {\n    background: rgba(0, 0, 0, 0.05);\n}\nhtml:not([dark]) .ytc-mode-btn.active {\n    background: #0f0f0f;\n    color: #ffffff;\n}\n\n/* --------------------------------------------------------------------------\n   CHAT OVERLAY TRÊN VIDEO (DANMAKU & STREAMER BOX)\n   -------------------------------------------------------------------------- */\n#ytc-danmaku-container {\n    position: absolute;\n    inset: 0;\n    width: 100% !important;\n    height: 100% !important;\n    pointer-events: none;\n    overflow: hidden;\n    z-index: 35 !important;\n    container-type: inline-size;\n    transition: opacity 0.3s ease;\n    display: none;\n}\n\n.ytc-danmaku-item {\n    position: absolute;\n    left: 100%;\n    white-space: nowrap;\n    font-family: "YouTube Noto", Roboto, Arial, sans-serif !important;\n    font-weight: 700;\n    font-size: 18px;\n    line-height: 1.3;\n    color: #ffffff;\n    text-shadow: \n        1px 1px 2px #000, \n        -1px -1px 2px #000, \n        1px -1px 2px #000, \n        -1px 1px 2px #000,\n        0 0 4px #000;\n    will-change: transform;\n    animation: ytc-danmaku-slide 8.5s linear forwards;\n    display: flex;\n    align-items: center;\n    gap: 6px;\n    pointer-events: none;\n}\n\n@keyframes ytc-danmaku-slide {\n    from {\n        transform: translateX(0);\n    }\n    to {\n        transform: translateX(calc(-100% - 100cqi));\n    }\n}\n\n@supports not (container-type: inline-size) {\n    @keyframes ytc-danmaku-slide {\n        from {\n            transform: translateX(0);\n        }\n        to {\n            transform: translateX(calc(-100% - 100vw));\n        }\n    }\n}\n\n.ytc-chat-author {\n    color: #9ab4c7;\n    font-weight: 600;\n    flex-shrink: 0;\n}\n.ytc-chat-author.mod,\n.ytc-chat-text.mod {\n    color: #3ea6ff !important;\n}\n.ytc-chat-author.member,\n.ytc-chat-text.member {\n    color: #2ba640 !important;\n}\n.ytc-chat-author.owner,\n.ytc-chat-text.owner {\n    color: #ffd600 !important;\n}\n\n.ytc-chat-text {\n    color: #ffffff !important;\n    font-weight: 500;\n}\n\n.ytc-danmaku-item img,\n.ytc-danmaku-item .ytc-chat-text img,\n.ytc-danmaku-item img.emoji,\n.ytc-danmaku-item img.yt-emoji,\n.ytc-danmaku-item .emoji {\n    max-height: 22px !important;\n    max-width: 28px !important;\n    width: auto !important;\n    height: auto !important;\n    vertical-align: -3px !important;\n    margin: 0 2px !important;\n    display: inline-block !important;\n    object-fit: contain !important;\n}\n\n/* ĐIỀU KHIỂN HIỂN THỊ THEO TRẠNG THÁI CONFIG */\nhtml[data-ytc-chat="danmaku"] #ytc-danmaku-container,\nbody[data-ytc-chat="danmaku"] #ytc-danmaku-container {\n    display: block !important;\n}\n\nhtml[data-ytc-chat="streamer"] #ytc-streamer-box,\nbody[data-ytc-chat="streamer"] #ytc-streamer-box {\n    display: flex !important;\n}\n\nhtml[data-ytc-chat="off"] #ytc-danmaku-container,\nbody[data-ytc-chat="off"] #ytc-danmaku-container,\nhtml[data-ytc-chat="streamer"] #ytc-danmaku-container,\nbody[data-ytc-chat="streamer"] #ytc-danmaku-container {\n    display: none !important;\n}\n\nhtml[data-ytc-chat="off"] #ytc-streamer-box,\nbody[data-ytc-chat="off"] #ytc-streamer-box,\nhtml[data-ytc-chat="danmaku"] #ytc-streamer-box,\nbody[data-ytc-chat="danmaku"] #ytc-streamer-box {\n    display: none !important;\n}\n\n/* ==========================================================================\n   QUẢN LÝ KHUNG LIVE CHAT GỐC KHI BẬT OVERLAY\n   - Nếu Chat gốc BẬT: Giữ nguyên cho người dùng chat và hiển thị tự nhiên.\n   - Nếu Chat gốc TẮT (mặc định tắt hoặc người dùng ẩn):\n     + Chưa phóng to: Ẩn gọn off-screen để script lấy data ngầm.\n     + Phóng to Fullscreen: Ẩn triệt để panel bên phải & PHÓNG TO KHUNG VIDEO 100% FULL MÀN HÌNH.\n   ========================================================================== */\n\n/* 1. Giao diện thường (chưa phóng to):\n   Để YouTube xử lý thu gọn tự nhiên (hiện thẻ teaser "Mở bảng điều khiển" gọn gàng),\n   TUYỆT ĐỐI KHÔNG đẩy frame chat gốc ra -9999px để người dùng có thể nhấp mở/đóng bình thường. */\n\n/* 2. Trạng thái ẩn Chat gốc trong giao diện toàn màn hình (FULLSCREEN / PHÓNG TO) khi CHƯA MỞ CHAT */\n/* Triệt tiêu độ rộng side panel bên phải để video tràn 100vw khi CHƯA CÓ BẤT KỲ PANEL NÀO ĐƯỢC MỞ */\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #panels-full-bleed-container:not(:has([visibility*="EXPANDED"])),\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #chat-container,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #panels,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #secondary,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) .ytp-fullscreen:not(.ytp-chat-open) #chat-container,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) .ytp-fullscreen:not(.ytp-chat-open) .ytp-live-chat-panel {\n    width: 0 !important;\n    min-width: 0 !important;\n    max-width: 0 !important;\n    flex-basis: 0 !important;\n    overflow: hidden !important;\n    opacity: 0 !important;\n    pointer-events: none !important;\n}\n\n/* Phóng to toàn bộ các tầng container và movie_player ra 100vw x 100vh để xóa sổ vệt đen khi chat đang đóng */\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-full-bleed-container,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #full-bleed-container,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container-outer,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container-inner,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container,\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #movie_player:not(.ytp-chat-open),\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) .html5-video-player:not(.ytp-chat-open),\nhtml[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) .ytp-fullscreen.html5-video-player:not(.ytp-chat-open) {\n    width: 100vw !important;\n    min-width: 100vw !important;\n    max-width: 100vw !important;\n    height: 100vh !important;\n    min-height: 100vh !important;\n    max-height: 100vh !important;\n    margin-right: 0 !important;\n    padding-right: 0 !important;\n    left: 0 !important;\n    right: 0 !important;\n    top: 0 !important;\n    bottom: 0 !important;\n    transform: none !important;\n}\n\n/* Luôn đảm bảo nút Live Chat trên thanh điều khiển YouTube player và action bar hiển thị và bấm được */\n.ytp-live-chat-button,\n.ytp-chat-button,\n[aria-label*="trò chuyện" i],\n[aria-label*="chat" i],\n[target-id*="chat" i] {\n    pointer-events: auto !important;\n    cursor: pointer !important;\n}\n\n\n/* KHUNG LIVE CHAT BOX (NỀN TRONG SUỐT HUD OVERLAY CHO STREAMER) */\n#ytc-streamer-box {\n    position: absolute;\n    width: 320px;\n    min-height: 120px;\n    max-height: 80%;\n    background: transparent !important;\n    backdrop-filter: none !important;\n    border: none !important;\n    box-shadow: none !important;\n    border-radius: 6px;\n    z-index: 38 !important;\n    overflow: hidden;\n    display: flex;\n    flex-direction: column;\n    pointer-events: auto;\n    box-sizing: border-box;\n    transition: background-color 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;\n    user-select: none;\n}\n\n#ytc-streamer-box.ytc-dragging {\n    transition: none !important;\n    will-change: left, top;\n    user-select: none !important;\n}\n\n#ytc-streamer-box:hover,\n#ytc-streamer-box.ytc-box-initial,\n#ytc-streamer-box.ytc-dragging {\n    background: rgba(0, 0, 0, 0.45) !important;\n    backdrop-filter: blur(4px) !important;\n    border: 1px dashed rgba(255, 255, 255, 0.35) !important;\n    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6) !important;\n}\n\n.ytc-box-header {\n    height: 24px;\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    padding: 2px 6px;\n    background: rgba(0, 0, 0, 0.75);\n    color: #eee;\n    font-size: 11px;\n    font-weight: 600;\n    cursor: move;\n    opacity: 0;\n    pointer-events: none;\n    transition: opacity 0.2s ease;\n    flex-shrink: 0;\n    border-top-left-radius: 6px;\n    border-top-right-radius: 6px;\n}\n\n.ytc-box-title {\n    display: flex;\n    align-items: center;\n    gap: 5px;\n    font-size: 11px;\n    font-weight: 600;\n    color: #fff;\n    user-select: none;\n    letter-spacing: 0.2px;\n}\n\n.ytc-box-title svg {\n    flex-shrink: 0;\n    opacity: 0.9;\n}\n\n.ytc-box-close {\n    background: transparent !important;\n    border: none !important;\n    color: rgba(255, 255, 255, 0.7) !important;\n    cursor: pointer !important;\n    width: 20px !important;\n    height: 20px !important;\n    padding: 0 !important;\n    margin: 0 !important;\n    border-radius: 4px !important;\n    display: flex !important;\n    align-items: center !important;\n    justify-content: center !important;\n    transition: background 0.15s ease, color 0.15s ease !important;\n    outline: none !important;\n    box-shadow: none !important;\n}\n\n.ytc-box-close:hover {\n    background: rgba(255, 255, 255, 0.2) !important;\n    color: #fff !important;\n}\n\n.ytc-box-close svg {\n    display: block;\n}\n\n#ytc-streamer-box:hover .ytc-box-header,\n#ytc-streamer-box.ytc-box-initial .ytc-box-header,\n#ytc-streamer-box.ytc-dragging .ytc-box-header {\n    opacity: 1 !important;\n    pointer-events: auto !important;\n}\n\n#ytc-streamer-box:hover .ytc-box-resize,\n#ytc-streamer-box.ytc-box-initial .ytc-box-resize,\n#ytc-streamer-box.ytc-dragging .ytc-box-resize {\n    opacity: 1 !important;\n    pointer-events: auto !important;\n}\n\n.ytc-box-messages {\n    flex: 1;\n    overflow-y: hidden;\n    display: flex;\n    flex-direction: column;\n    justify-content: flex-end;\n    gap: 3px;\n    padding: 2px 4px;\n    pointer-events: none;\n}\n\n.ytc-box-item {\n    display: flex;\n    align-items: flex-start;\n    flex-shrink: 0 !important;\n    flex-grow: 0 !important;\n    width: 100%;\n    box-sizing: border-box;\n    height: auto !important;\n    min-height: min-content !important;\n    gap: 3px;\n    font-size: 10px;\n    line-height: 1.35;\n    color: #fff;\n    text-shadow: \n        1px 1px 2px #000, \n        -1px -1px 2px #000, \n        1px -1px 2px #000, \n        -1px 1px 2px #000, \n        0 0 3px #000;\n    animation: ytc-fade-in 0.12s ease-out;\n    word-break: break-word;\n    overflow-wrap: break-word;\n}\n\n.ytc-box-avatar {\n    width: 10px;\n    height: 10px;\n    border-radius: 50%;\n    flex-shrink: 0;\n    margin-top: 2px;\n}\n\n.ytc-box-content {\n    flex: 1;\n    min-width: 0;\n    word-break: break-word;\n    overflow-wrap: break-word;\n    line-height: 1.35;\n}\n\n#ytc-streamer-box .ytc-chat-author {\n    color: #b5b5b5 !important;\n    font-weight: 700 !important;\n    flex-shrink: 0;\n}\n#ytc-streamer-box .ytc-chat-author.mod {\n    color: #3ea6ff !important;\n    font-weight: 700 !important;\n}\n#ytc-streamer-box .ytc-chat-author.member {\n    color: #2ba640 !important;\n    font-weight: 700 !important;\n}\n#ytc-streamer-box .ytc-chat-author.owner {\n    color: #ffd600 !important;\n    font-weight: 700 !important;\n}\n\n#ytc-streamer-box .ytc-chat-text {\n    color: #ffffff !important;\n    font-weight: 700 !important;\n}\n\n/* THU NHỎ ICON EMOJI VÀ BADGE BẰNG CỠ CHỮ CHỈ ÁP DỤNG CHO KHUNG NỔI STREAMER */\n#ytc-streamer-box .ytc-box-content img,\n#ytc-streamer-box .ytc-box-item img,\n#ytc-streamer-box img.emoji,\n#ytc-streamer-box img.yt-emoji,\n#ytc-streamer-box .emoji {\n    max-height: 10px !important;\n    width: auto !important;\n    max-width: 12px !important;\n    height: auto !important;\n    vertical-align: -1px !important;\n    display: inline-block !important;\n    object-fit: contain !important;\n    margin: 0 1px !important;\n}\n\n.ytc-box-badge {\n    display: inline-flex;\n    align-items: center;\n    vertical-align: -1px;\n    margin: 0 2px;\n}\n.ytc-box-badge svg.ytc-mod-icon,\n.ytc-badge-mod,\n.ytc-mod-icon {\n    display: none !important;\n}\n.ytc-box-badge img {\n    width: 10px !important;\n    height: 10px !important;\n    max-width: 10px !important;\n    max-height: 10px !important;\n    display: inline-block !important;\n    vertical-align: -1px !important;\n    object-fit: contain !important;\n}\n\n.ytc-box-resize {\n    position: absolute;\n    right: 2px;\n    bottom: 2px;\n    width: 10px;\n    height: 10px;\n    cursor: nwse-resize;\n    opacity: 0;\n    pointer-events: none;\n    transition: opacity 0.2s ease;\n    border-right: 2px solid rgba(255, 255, 255, 0.6);\n    border-bottom: 2px solid rgba(255, 255, 255, 0.6);\n}\n\n#ytc-streamer-box:hover .ytc-box-resize,\n#ytc-streamer-box.ytc-box-initial .ytc-box-resize {\n    opacity: 1;\n    pointer-events: auto;\n}\n\n/* HIỆU ỨNG XUẤT HIỆN MƯỢT MÀ, KHÔNG DÙNG TRANSLATE-Y GÂY GIẬT LAG KHUNG HÌNH */\n@keyframes ytc-fade-in {\n    from { opacity: 0; }\n    to { opacity: 1; }\n}\n\n/* TỰ ĐỘNG CÂN ĐỐI TỶ LỆ KÍCH THƯỚC CHỮ KHI PHÓNG TO TOÀN MÀN HÌNH (FULLSCREEN / ZOOM) */\n.ytp-fullscreen .ytc-danmaku-item {\n    font-size: 25px !important;\n}\n.ytp-fullscreen .ytc-danmaku-item img,\n.ytp-fullscreen .ytc-danmaku-item .ytc-chat-text img,\n.ytp-fullscreen .ytc-danmaku-item img.emoji,\n.ytp-fullscreen .ytc-danmaku-item img.yt-emoji,\n.ytp-fullscreen .ytc-danmaku-item .emoji {\n    max-height: 28px !important;\n    max-width: 36px !important;\n    vertical-align: -4px !important;\n}\n\n/* ==========================================================================\n   ONBOARDING TOOLTIP KHI CÀI ĐẶT LẦN ĐẦU (FIRST-TIME USER EXPERIENCE)\n   ========================================================================== */\n#ytc-onboarding-tip {\n    position: fixed;\n    z-index: 100000;\n    width: 280px;\n    background: #18181b;\n    border: 1px solid rgba(255, 0, 51, 0.6);\n    border-radius: 10px;\n    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);\n    color: #fff;\n    padding: 12px 14px;\n    font-family: Roboto, Arial, sans-serif;\n    user-select: none;\n    box-sizing: border-box;\n    animation: ytc-fade-in 0.12s ease-out;\n}\n\n.ytc-onboarding-arrow {\n    position: absolute;\n    top: -6px;\n    right: 18px;\n    width: 10px;\n    height: 10px;\n    background: #18181b;\n    border-left: 1px solid rgba(255, 0, 51, 0.6);\n    border-top: 1px solid rgba(255, 0, 51, 0.6);\n    transform: rotate(45deg);\n}\n\n.ytc-onboarding-header {\n    display: flex;\n    align-items: center;\n    justify-content: space-between;\n    margin-bottom: 6px;\n}\n\n.ytc-onboarding-badge {\n    font-size: 10px;\n    font-weight: 700;\n    background: #ff0033;\n    color: #fff;\n    padding: 2px 6px;\n    border-radius: 4px;\n    letter-spacing: 0.5px;\n}\n\n.ytc-onboarding-close {\n    background: transparent;\n    border: none;\n    color: #aaa;\n    font-size: 13px;\n    cursor: pointer;\n    padding: 2px 4px;\n    line-height: 1;\n    border-radius: 4px;\n    transition: color 0.1s;\n}\n.ytc-onboarding-close:hover {\n    color: #fff;\n}\n\n.ytc-onboarding-title {\n    font-size: 13px;\n    font-weight: 700;\n    color: #fff;\n    line-height: 1.35;\n    margin-bottom: 4px;\n}\n\n.ytc-onboarding-desc {\n    font-size: 11.5px;\n    color: #ccc;\n    line-height: 1.4;\n    margin-bottom: 10px;\n}\n\n.ytc-onboarding-footer {\n    display: flex;\n    justify-content: flex-end;\n}\n\n.ytc-onboarding-btn {\n    background: #ff0033;\n    color: #fff;\n    border: none;\n    padding: 5px 14px;\n    font-size: 11.5px;\n    font-weight: 600;\n    border-radius: 6px;\n    cursor: pointer;\n    transition: background-color 0.15s;\n}\n.ytc-onboarding-btn:hover {\n    background: #cc0029;\n}\n\n\n\n';
+
+  // src/index.js
+  init_config();
+  init_utils();
+
+  // src/features/grid.js
+  init_config();
+  function isHomeFeedPath() {
+    const p = location.pathname;
+    return p === "/" || p.startsWith("/feed") || p.startsWith("/@") || p.startsWith("/channel");
+  }
+  function applyHomeGridColumns() {
+    if (!isHomeFeedPath()) return;
+    const cols = currentConfig.columns || 3;
+    const grids = document.querySelectorAll("ytd-rich-grid-renderer");
+    grids.forEach((grid) => {
+      if (!grid.classList.contains("ytc-grid")) {
+        grid.classList.add("ytc-grid");
+      }
+      grid.style.setProperty("--ytd-rich-grid-items-per-row", String(cols), "important");
+      grid.style.setProperty("--ytd-rich-grid-posts-per-row", String(cols), "important");
+      grid.style.setProperty("--ytd-rich-grid-item-max-width", "none", "important");
+    });
+  }
+
+  // src/features/logo.js
+  init_utils();
+  var LOGO_MARK = "M32.1819";
+  var logoSVG = '<g><path d="M14.4848 20C14.4848 20 23.5695 20 25.8229 19.4C27.0917 19.06 28.0459 18.08 28.3808 16.87C29 14.65 29 9.98 29 9.98C29 9.98 29 5.34 28.3808 3.14C28.0459 1.9 27.0917 0.94 25.8229 0.61C23.5695 0 14.4848 0 14.4848 0C14.4848 0 5.42037 0 3.17711 0.61C1.9286 0.94 0.954148 1.9 0.59888 3.14C0 5.34 0 9.98 0 9.98C0 9.98 0 14.65 0.59888 16.87C0.954148 18.08 1.9286 19.06 3.17711 19.4C5.42037 20 14.4848 20 14.4848 20Z" fill="#FF0033"/><path d="M19 10L11.5 5.75V14.25L19 10Z" fill="white"/></g><g id="youtube-paths_yt19"><path d="M32.1819 2.10016V18.9002H34.7619V12.9102H35.4519C38.8019 12.9102 40.5619 11.1102 40.5619 7.57016V6.88016C40.5619 3.31016 39.0019 2.10016 35.7219 2.10016H32.1819ZM37.8619 7.63016C37.8619 10.0002 37.1419 11.0802 35.4019 11.0802H34.7619V3.95016H35.4519C37.4219 3.95016 37.8619 4.76016 37.8619 7.13016V7.63016Z"/><path d="M41.982 18.9002H44.532V10.0902C44.952 9.37016 45.992 9.05016 47.302 9.32016L47.462 6.33016C47.292 6.31016 47.142 6.29016 47.002 6.29016C45.802 6.29016 44.832 7.20016 44.342 8.86016H44.162L43.952 6.54016H41.982V18.9002H41.982V18.9002Z"/><path d="M55.7461 11.5002C55.7461 8.52016 55.4461 6.31016 52.0161 6.31016C48.7861 6.31016 48.0661 8.46016 48.0661 11.6202V13.7902C48.0661 16.8702 48.7261 19.1102 51.9361 19.1102C54.4761 19.1102 55.7861 17.8402 55.6361 15.3802L53.3861 15.2602C53.3561 16.7802 53.0061 17.4002 51.9961 17.4002C50.7261 17.4002 50.6661 16.1902 50.6661 14.3902V13.5502H55.7461V11.5002ZM51.9561 7.97016C53.1761 7.97016 53.2661 9.12016 53.2661 11.0702V12.0802H50.6661V11.0702C50.6661 9.14016 50.7461 7.97016 51.9561 7.97016Z"/><path d="M60.1945 18.9002V8.92016C60.5745 8.39016 61.1945 8.07016 61.7945 8.07016C62.5645 8.07016 62.8445 8.61016 62.8445 9.69016V18.9002H65.5045L65.4845 8.93016C65.8545 8.37016 66.4845 8.04016 67.1045 8.04016C67.7745 8.04016 68.1445 8.61016 68.1445 9.69016V18.9002H70.8045V9.49016C70.8045 7.28016 70.0145 6.27016 68.3445 6.27016C67.1845 6.27016 66.1945 6.69016 65.2845 7.67016C64.9045 6.76016 64.1545 6.27016 63.0845 6.27016C61.8745 6.27016 60.7345 6.79016 59.9345 7.76016H59.7845L59.5945 6.54016H57.5445V18.9002H60.1945Z"/><path d="M74.0858 4.97016C74.9858 4.97016 75.4058 4.67016 75.4058 3.43016C75.4058 2.27016 74.9558 1.91016 74.0858 1.91016C73.2058 1.91016 72.7758 2.23016 72.7758 3.43016C72.7758 4.67016 73.1858 4.97016 74.0858 4.97016ZM72.8658 18.9002H75.3958V6.54016H72.8658V18.9002Z"/><path d="M79.9516 19.0902C81.4116 19.0902 82.3216 18.4802 83.0716 17.3802H83.1816L83.2916 18.9002H85.2816V6.54016H82.6416V16.4702C82.3616 16.9602 81.7116 17.3202 81.1016 17.3202C80.3316 17.3202 80.0916 16.7102 80.0916 15.6902V6.54016H77.4616V15.8102C77.4616 17.8202 78.0416 19.0902 79.9516 19.0902Z"/><path d="M90.0031 18.9002V8.92016C90.3831 8.39016 91.0031 8.07016 91.6031 8.07016C92.3731 8.07016 92.6531 8.61016 92.6531 9.69016V18.9002H95.3131L95.2931 8.93016C95.6631 8.37016 96.2931 8.04016 96.9131 8.04016C97.5831 8.04016 97.9531 8.61016 97.9531 9.69016V18.9002H100.613V9.49016C100.613 7.28016 99.8231 6.27016 98.1531 6.27016C96.9931 6.27016 96.0031 6.69016 95.0931 7.67016C94.7131 6.76016 93.9631 6.27016 92.8931 6.27016C91.6831 6.27016 90.5431 6.79016 89.7431 7.76016H89.5931L89.4031 6.54016H87.3531V18.9002H90.0031Z"/></g>';
+  function buildLogoHtml() {
+    return `<svg viewBox="0 0 101 20" width="101" height="20" preserveAspectRatio="xMinYMid meet">${logoSVG}</svg>`;
+  }
+  function ensurePremiumLogo(logo) {
+    if (!logo) return;
+    if (logo.closest("ytd-yoodle-renderer") || logo.classList.contains("ytd-yoodle-renderer")) {
+      const span = logo.querySelector(".custom-premium-logo");
+      if (span) span.remove();
+      return;
+    }
+    if (!logo.closest("ytd-topbar-logo-renderer")) return;
+    if (logo.hasAttribute("hidden")) logo.removeAttribute("hidden");
+    logo.style.overflow = "visible";
+    let parent = logo.parentElement;
+    while (parent && parent.tagName.toLowerCase() !== "ytd-topbar-logo-renderer") {
+      parent.style.overflow = "visible";
+      parent = parent.parentElement;
+    }
+    let customSpan = logo.querySelector(".custom-premium-logo");
+    const logoHtml = buildLogoHtml();
+    if (!customSpan) {
+      customSpan = document.createElement("span");
+      customSpan.className = "custom-premium-logo";
+      setElementHTML(customSpan, logoHtml);
+      logo.appendChild(customSpan);
+      logo.setAttribute("is-red-logo", "");
+    } else if (!customSpan.innerHTML.includes(LOGO_MARK)) {
+      setElementHTML(customSpan, logoHtml);
+    }
+  }
+  var scheduleLogoScan = rafThrottle((root) => {
+    const doc = root && root.ownerDocument || document;
+    const renderers = doc.querySelectorAll("ytd-topbar-logo-renderer");
+    renderers.forEach((renderer) => {
+      const logos = Array.from(renderer.querySelectorAll("ytd-logo")).filter(
+        (l) => !l.closest("ytd-yoodle-renderer") && !l.classList.contains("ytd-yoodle-renderer")
+      );
+      if (logos.length > 0) {
+        ensurePremiumLogo(logos[0]);
+        for (let i = 1; i < logos.length; i++) {
+          const extraSpan = logos[i].querySelector(".custom-premium-logo");
+          if (extraSpan) extraSpan.remove();
+        }
+      }
+    });
+  });
+  function setupLogoObserver() {
+    scheduleLogoScan(document);
+    const attach = (masthead2) => {
+      scheduleLogoScan(masthead2);
+      new MutationObserver((mutations) => {
+        let shouldScan = false;
+        for (const mutation of mutations) {
+          if (mutation.type === "childList") {
+            mutation.addedNodes.forEach((node) => {
+              if (node.nodeType === 1 && (node.matches?.("ytd-logo, ytd-topbar-logo-renderer") || node.querySelector?.("ytd-logo"))) {
+                shouldScan = true;
+              }
+            });
+          } else if (mutation.type === "attributes") {
+            if (mutation.target.matches?.("ytd-logo, ytd-topbar-logo-renderer, #logo")) {
+              shouldScan = true;
+            }
+          }
+          if (shouldScan) break;
+        }
+        if (shouldScan) scheduleLogoScan(masthead2);
+      }).observe(masthead2, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "hidden"] });
+    };
+    const masthead = document.querySelector("ytd-masthead");
+    if (masthead) attach(masthead);
+    else whenElement("ytd-masthead", attach);
+    let retryCount = 0;
+    const retryInterval = setInterval(() => {
+      retryCount++;
+      scheduleLogoScan(document);
+      if (retryCount >= 10 && document.querySelector("ytd-topbar-logo-renderer .custom-premium-logo")) {
+        clearInterval(retryInterval);
+      }
+    }, 300);
+  }
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("ytd-topbar-logo-renderer")) return;
+    if (isHomeFeedPath()) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, true);
+
+  // src/features/promos.js
+  init_config();
+  function dismissPromoBanners(scope) {
+    if (!currentConfig.autoDismissPromos) return;
+    const root = scope && scope.querySelectorAll ? scope : document;
+    const promos = root.querySelectorAll("ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer, ytd-upsell-dialog-renderer, ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer");
+    promos.forEach((promo) => {
+      const dismissBtn = promo.querySelector('#dismiss-button button, yt-button-renderer#dismiss-button button, yt-button-renderer#dismiss-button, #dismiss-button, button[aria-label*="Không"], button[aria-label*="Dismiss"], button[aria-label*="No thanks"]');
+      if (dismissBtn) {
+        try {
+          dismissBtn.click();
+        } catch (e) {
+        }
+      }
+    });
+    const toasts = root.querySelectorAll("tp-yt-paper-toast, #toast, yt-notification-action-renderer, yt-bubble-hint-renderer");
+    toasts.forEach((toast) => {
+      const text = (toast.textContent || "").toLowerCase();
+      if (text.includes("gián đoạn") || text.includes("interruption") || text.includes("sự cố") || text.includes("troubleshoot") || text.includes("tìm hiểu lý do") || text.includes("find out why")) {
+        try {
+          if (typeof toast.close === "function") toast.close();
+          if (typeof toast.hide === "function") toast.hide();
+        } catch (e) {
+        }
+        const closeBtn = toast.querySelector('button, #close-button, [aria-label*="Đóng"], [aria-label*="Close"], [aria-label*="Dismiss"]');
+        if (closeBtn) {
+          try {
+            closeBtn.click();
+          } catch (e) {
+          }
+        }
+        toast.style.setProperty("display", "none", "important");
+        toast.style.setProperty("opacity", "0", "important");
+        toast.style.setProperty("pointer-events", "none", "important");
+        toast.classList.add("ytc-dismissed-toast");
+      }
+    });
+    const playerPopups = root.querySelectorAll("#movie_player .ytp-popup, #movie_player .ytp-suggested-action-badge, #movie_player .ytp-paid-content-overlay");
+    playerPopups.forEach((popup) => {
+      const text = (popup.textContent || "").toLowerCase();
+      if (text.includes("gián đoạn") || text.includes("interruption") || text.includes("sự cố")) {
+        popup.style.setProperty("display", "none", "important");
+        popup.style.setProperty("opacity", "0", "important");
+        popup.style.setProperty("pointer-events", "none", "important");
+      }
+    });
+  }
+
+  // src/features/feedFilter.js
+  init_utils();
+  function scanAndTagFeedContent(scope) {
+    const root = scope && scope.querySelectorAll ? scope : document;
+    const sections = root.querySelectorAll("ytd-rich-section-renderer");
+    sections.forEach((sec) => {
+      if (!sec.classList.contains("ytc-shelf-members")) {
+        const text = sec.textContent || "";
+        if (text.includes("lợi ích từ hội viên") || text.includes("Ưu tiên hội viên") || text.includes("ưu tiên hội viên") || text.includes("hội viên") && text.includes("YouTube chọn lọc") || text.includes("Get more from memberships") || text.includes("Members only") || text.includes("Members first") || sec.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], a[href*="/membership"], a[href*="/memberships"]')) {
+          sec.classList.add("ytc-shelf-members");
+        }
+      }
+      if (!sec.classList.contains("ytc-shelf-explore")) {
+        const text = sec.textContent || "";
+        if (text.includes("Khám phá các chủ đề") || text.includes("Explore other topics") || text.includes("Explore topics") || sec.querySelector("yt-chip-cloud-chip-renderer, yt-chip-cloud-renderer, ytd-feed-filter-chip-bar-renderer")) {
+          sec.classList.add("ytc-shelf-explore");
+        }
+      }
+      if (!sec.classList.contains("ytc-shelf-community")) {
+        if (sec.querySelector("ytd-post-renderer, ytd-backstage-post-renderer, ytd-backstage-post-thread-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer")) {
+          sec.classList.add("ytc-shelf-community");
+        }
+      }
+    });
+    const videoCards = root.querySelectorAll("ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer");
+    videoCards.forEach((card) => {
+      if (!card.classList.contains("ytc-item-members")) {
+        const text = card.textContent || "";
+        if (text.includes("Ưu tiên hội viên") || text.includes("ưu tiên hội viên") || text.includes("Chỉ dành cho hội viên") || text.includes("chỉ dành cho hội viên") || text.includes("Members first") || text.includes("Members only") || text.includes("Members-only") || text.includes("Early access") || card.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], [aria-label*="hội viên"], [aria-label*="Hội viên"], [aria-label*="Members"]')) {
+          card.classList.add("ytc-item-members");
+        }
+      }
+      if (!card.classList.contains("ytc-item-community")) {
+        if (card.querySelector("ytd-post-renderer, ytd-backstage-post-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer")) {
+          card.classList.add("ytc-item-community");
+        }
+      }
+    });
+  }
+  var scheduleFeedScan = rafThrottle((root) => {
+    scanAndTagFeedContent(root);
+    applyHomeGridColumns();
+    dismissPromoBanners(root);
+  });
+  function setupFeedShelvesObserver() {
+    scheduleFeedScan(document);
+    applyHomeGridColumns();
+    dismissPromoBanners(document);
+    const attach = (container) => {
+      scheduleFeedScan(container);
+      applyHomeGridColumns();
+      dismissPromoBanners(container);
+      new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          if (mutation.addedNodes.length) {
+            scheduleFeedScan(container);
+            applyHomeGridColumns();
+            dismissPromoBanners(container);
+            break;
+          }
+        }
+      }).observe(container, { childList: true, subtree: true });
+    };
+    const target = document.getElementById("page-manager") || document.querySelector("ytd-page-manager") || document.body;
+    if (target) attach(target);
+    else whenElement("#page-manager", attach);
+    const attachPopup = (popupContainer2) => {
+      dismissPromoBanners(popupContainer2);
+      new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          if (mutation.addedNodes.length) {
+            dismissPromoBanners(popupContainer2);
+            break;
+          }
+        }
+      }).observe(popupContainer2, { childList: true, subtree: true });
+    };
+    const popupContainer = document.querySelector("ytd-popup-container");
+    if (popupContainer) attachPopup(popupContainer);
+    else whenElement("ytd-popup-container", attachPopup);
+  }
+
+  // src/player/fullscreenLock.js
+  var isWatchLoading = false;
+  var watchLoadTimeout = null;
+  function setWatchLoading(loading, duration = 1500) {
+    if (!location.pathname.startsWith("/watch")) {
+      isWatchLoading = false;
+      document.documentElement.classList.remove("ytc-fs-locked");
+      clearTimeout(watchLoadTimeout);
+      return;
+    }
+    isWatchLoading = loading;
+    document.documentElement.classList.toggle("ytc-fs-locked", loading);
+    clearTimeout(watchLoadTimeout);
+    if (loading) {
+      watchLoadTimeout = setTimeout(() => {
+        isWatchLoading = false;
+        document.documentElement.classList.remove("ytc-fs-locked");
+      }, duration);
+    }
+  }
+  var fsLockBound = false;
+  function setupFullscreenLock() {
+    if (fsLockBound) return;
+    fsLockBound = true;
+    document.addEventListener("click", (e) => {
+      if (isWatchLoading && e.target.closest(".ytp-fullscreen-button")) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+    }, true);
+    document.addEventListener("dblclick", (e) => {
+      if (isWatchLoading && e.target.closest("#movie_player")) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+    }, true);
+    document.addEventListener("fullscreenchange", () => {
+      if (isWatchLoading && document.fullscreenElement) {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+    });
+  }
+
+  // src/player/shortcuts.js
+  init_config();
+
+  // src/player/autoLive.js
+  init_config();
+  var autoLiveSyncTimer = null;
+  var lastSnapTime = 0;
+  var lastUserSeekTime = 0;
+  var userIsRewound = false;
+  function resetAutoLiveState() {
+    userIsRewound = false;
+    lastUserSeekTime = 0;
+    lastSnapTime = 0;
+  }
+  function recordUserSeek() {
+    lastUserSeekTime = Date.now();
+    userIsRewound = true;
+  }
+  function snapToLive(player) {
+    if (!player) player = document.querySelector("#movie_player, .html5-video-player");
+    if (!player) return;
+    const liveBadge = player.querySelector(".ytp-live-badge");
+    if (liveBadge) {
+      try {
+        liveBadge.click();
+      } catch (e) {
+      }
+    }
+    try {
+      if (typeof player.seekToStreamTime === "function") {
+        player.seekToStreamTime(Infinity);
+      } else if (typeof player.seekTo === "function") {
+        player.seekTo(Infinity, true);
+      }
+    } catch (e) {
+    }
+  }
+  function isCurrentlyActiveLive(player) {
+    if (!player) return false;
+    if (typeof player.getVideoData === "function") {
+      const vd = player.getVideoData();
+      if (vd) {
+        if (vd.isLive === true) return true;
+        if (vd.isLive === false) return false;
+      }
+    }
+    if (typeof player.isLive === "function") {
+      try {
+        if (player.isLive() === true) return true;
+      } catch (e) {
+      }
+    }
+    if (player.classList.contains("ytp-live") || !!player.querySelector(".ytp-live-badge")) {
+      return true;
+    }
+    if (location.pathname.startsWith("/live/")) {
+      return true;
+    }
+    return false;
+  }
+  function getLiveDelay(player, video) {
+    if (!video) return 0;
+    try {
+      if (video.seekable && video.seekable.length > 0) {
+        const liveEdge = video.seekable.end(video.seekable.length - 1);
+        if (isFinite(liveEdge) && isFinite(video.currentTime)) {
+          return Math.max(0, liveEdge - video.currentTime);
+        }
+      }
+    } catch (e) {
+    }
+    return 0;
+  }
+  function checkLiveSync() {
+    if (!currentConfig.autoLiveSync) return;
+    const player = document.querySelector("#movie_player, .html5-video-player");
+    if (!player) return;
+    if (!isCurrentlyActiveLive(player)) {
+      return;
+    }
+    const video = player.querySelector("video");
+    if (!video || video.paused || video.ended) return;
+    const liveBadge = player.querySelector(".ytp-live-badge");
+    if (!liveBadge) return;
+    const delay = getLiveDelay(player, video);
+    if (userIsRewound) {
+      if (delay <= 3) {
+        userIsRewound = false;
+      } else {
+        if (video.playbackRate === 1.08) {
+          video.playbackRate = 1;
+        }
+        return;
+      }
+    }
+    if (Date.now() - lastUserSeekTime < 8e3) return;
+    const isBadgeBehind = !liveBadge.hasAttribute("disabled");
+    const isBehind = isBadgeBehind || delay > 2.5;
+    if (!isBehind) {
+      if (video.playbackRate === 1.08) {
+        video.playbackRate = 1;
+      }
+      return;
+    }
+    const now = Date.now();
+    if (delay > 5 || isBadgeBehind && delay > 3) {
+      if (now - lastSnapTime > 4e3) {
+        lastSnapTime = now;
+        snapToLive(player);
+        if (video.playbackRate === 1.08) {
+          video.playbackRate = 1;
+        }
+      }
+    } else if (delay > 2) {
+      if (video.playbackRate === 1) {
+        video.playbackRate = 1.08;
+      }
+    }
+  }
+  function checkInitialLiveSnap() {
+    let attempts = 0;
+    const interval = setInterval(() => {
+      attempts++;
+      const player = document.querySelector("#movie_player, .html5-video-player");
+      if (player && isCurrentlyActiveLive(player)) {
+        const video = player.querySelector("video");
+        if (video && !video.paused) {
+          clearInterval(interval);
+          if (!userIsRewound && currentConfig.autoLiveSync) {
+            const delay = getLiveDelay(player, video);
+            const liveBadge = player.querySelector(".ytp-live-badge");
+            const isBadgeBehind = liveBadge && !liveBadge.hasAttribute("disabled");
+            if (delay > 3.5 || isBadgeBehind) {
+              snapToLive(player);
+            }
+          }
+          return;
+        }
+      }
+      if (attempts >= 15) {
+        clearInterval(interval);
+      }
+    }, 400);
+  }
+  function initAutoLiveSync() {
+    if (autoLiveSyncTimer) return;
+    autoLiveSyncTimer = setInterval(checkLiveSync, 1500);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && currentConfig.autoLiveSync) {
+        setTimeout(checkLiveSync, 300);
+      }
+    });
+    document.addEventListener("click", (e) => {
+      if (e.target.closest(".ytp-live-badge")) {
+        userIsRewound = false;
+        lastUserSeekTime = 0;
+        lastSnapTime = Date.now();
+        const player = document.querySelector("#movie_player, .html5-video-player");
+        snapToLive(player);
+      }
+      if (e.target.closest(".ytp-progress-bar")) {
+        lastUserSeekTime = Date.now();
+        setTimeout(() => {
+          const player = document.querySelector("#movie_player, .html5-video-player");
+          if (!player) return;
+          const video = player.querySelector("video");
+          const delay = getLiveDelay(player, video);
+          const liveBadge = player.querySelector(".ytp-live-badge");
+          const isBadgeBehind = liveBadge && !liveBadge.hasAttribute("disabled");
+          if (delay > 5 || isBadgeBehind) {
+            userIsRewound = true;
+          } else {
+            userIsRewound = false;
+          }
+        }, 250);
+      }
+    }, true);
+    document.addEventListener("yt-navigate-start", resetAutoLiveState);
+    document.addEventListener("yt-navigate-finish", () => {
+      resetAutoLiveState();
+      checkInitialLiveSnap();
+    });
+  }
+
+  // src/player/shortcuts.js
+  var seekModeTimer = null;
+  function triggerCleanSeek(player) {
+    if (!player) return;
+    player.classList.add("seeking-mode");
+    clearTimeout(seekModeTimer);
+    seekModeTimer = setTimeout(() => {
+      player.classList.remove("seeking-mode");
+    }, 600);
+  }
+  function getPlayerVideo(player) {
+    return player.querySelector("video.html5-main-video") || player.querySelector("video");
+  }
+  function changeVolume(player, delta) {
+    if (!player) return;
+    try {
+      if (delta > 0 && typeof player.volumeUp === "function") {
+        player.volumeUp();
+        if (typeof player.unMute === "function" && player.isMuted?.()) player.unMute();
+        return;
+      } else if (delta < 0 && typeof player.volumeDown === "function") {
+        player.volumeDown();
+        return;
+      }
+    } catch (e) {
+    }
+    try {
+      if (typeof player.getVolume === "function" && typeof player.setVolume === "function") {
+        const cur = player.getVolume();
+        const next = Math.max(0, Math.min(100, cur + delta));
+        player.setVolume(next);
+        if (delta > 0 && typeof player.unMute === "function" && player.isMuted?.()) player.unMute();
+        return;
+      }
+    } catch (e) {
+    }
+    const video = getPlayerVideo(player);
+    if (video) {
+      video.volume = Math.max(0, Math.min(1, video.volume + delta / 100));
+    }
+  }
+  function isPlayerFullscreen(player) {
+    if (!player) return false;
+    const fs = document.fullscreenElement || document.webkitFullscreenElement;
+    if (!fs) return false;
+    return player.classList.contains("ytp-fullscreen") || typeof player.isFullscreen === "function" && player.isFullscreen();
+  }
+  function canUseAsdKeys(player) {
+    if (!player) return false;
+    return isPlayerFullscreen(player) || player.matches(":hover");
+  }
+  function dispatchYtSeek(key, delta) {
+    const keyCode = key === "j" ? 74 : key === "l" ? 76 : key === "k" ? 75 : 0;
+    const code = key === "j" ? "KeyJ" : key === "l" ? "KeyL" : key === "k" ? "KeyK" : "";
+    const evDown = new KeyboardEvent("keydown", {
+      key,
+      code,
+      keyCode,
+      which: keyCode,
+      charCode: keyCode,
+      bubbles: true,
+      cancelable: true,
+      composed: true
+    });
+    evDown._ytcDispatched = true;
+    const evUp = new KeyboardEvent("keyup", {
+      key,
+      code,
+      keyCode,
+      which: keyCode,
+      charCode: keyCode,
+      bubbles: true,
+      cancelable: true,
+      composed: true
+    });
+    evUp._ytcDispatched = true;
+    const player = document.querySelector("#movie_player") || document.querySelector(".html5-video-player");
+    const target = player || document.body || document;
+    target.dispatchEvent(evDown);
+    window.dispatchEvent(evDown);
+    target.dispatchEvent(evUp);
+    window.dispatchEvent(evUp);
+    if (player && delta) {
+      const tBefore = player.getCurrentTime ? player.getCurrentTime() : 0;
+      setTimeout(() => {
+        const tAfter = player.getCurrentTime ? player.getCurrentTime() : 0;
+        if (Math.abs(tAfter - tBefore) < 1) {
+          if (typeof player.seekBy === "function") {
+            player.seekBy(delta);
+          } else {
+            const video = getPlayerVideo(player);
+            if (video) video.currentTime += delta;
+          }
+        }
+      }, 60);
+    }
+  }
+  var keysBound = false;
+  function bindGlobalKeys() {
+    if (keysBound) return;
+    keysBound = true;
+    const handleKeyDown = (e) => {
+      if (e._ytcDispatched) return;
+      if (!currentConfig.keyboardControls) return;
+      if (e.isComposing || e.keyCode === 229) return;
+      const target = e.target;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) {
+        return;
+      }
+      const code = e.code || "";
+      const isNumpad = e.location === 3 || code.startsWith("Numpad") || e.keyCode >= 96 && e.keyCode <= 111 || e.keyCode === 12;
+      const player = document.querySelector("#movie_player");
+      const asdAllowed = canUseAsdKeys(player);
+      let captured = false;
+      let isSeekAction = false;
+      if (isNumpad) {
+        captured = true;
+        if (code === "Numpad8" || e.key === "8" || e.key === "ArrowUp" || e.keyCode === 104 || e.keyCode === 38) {
+          if (player) changeVolume(player, 5);
+        } else if (code === "Numpad2" || e.key === "2" || e.key === "ArrowDown" || e.keyCode === 98 || e.keyCode === 40) {
+          if (player) changeVolume(player, -5);
+        } else if (code === "Numpad4" || e.key === "4" || e.key === "ArrowLeft" || e.keyCode === 100 || e.keyCode === 37) {
+          dispatchYtSeek("j", -10);
+          isSeekAction = true;
+        } else if (code === "Numpad6" || e.key === "6" || e.key === "ArrowRight" || e.keyCode === 102 || e.keyCode === 39) {
+          dispatchYtSeek("l", 10);
+          isSeekAction = true;
+        } else if (code === "Numpad5" || e.key === "5" || e.key === "Clear" || e.keyCode === 101 || e.keyCode === 12) {
+          dispatchYtSeek("k");
+        }
+      } else if (asdAllowed && code === "KeyA") {
+        captured = true;
+        dispatchYtSeek("j", -10);
+        isSeekAction = true;
+      } else if (asdAllowed && code === "KeyS") {
+        captured = true;
+        dispatchYtSeek("k");
+      } else if (asdAllowed && code === "KeyD") {
+        captured = true;
+        dispatchYtSeek("l", 10);
+        isSeekAction = true;
+      } else if (!e.ctrlKey && !e.altKey && !e.metaKey && (code === "KeyF" || e.key === "f" || e.key === "F")) {
+        if (isWatchLoading) {
+          captured = true;
+        }
+      }
+      if (captured) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+      } else if (["ArrowLeft", "ArrowRight", "j", "l", "J", "L"].includes(e.key)) {
+        isSeekAction = true;
+      }
+      if (isSeekAction && player) {
+        recordUserSeek();
+        triggerCleanSeek(player);
+      }
+    };
+    const handleKeyUp = (e) => {
+      if (e._ytcDispatched) return;
+      if (!currentConfig.keyboardControls) return;
+      const target = e.target;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) {
+        return;
+      }
+      const code = e.code || "";
+      const isNumpad = e.location === 3 || code.startsWith("Numpad") || e.keyCode >= 96 && e.keyCode <= 111 || e.keyCode === 12;
+      if (isNumpad) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown, true);
+    document.addEventListener("keydown", handleKeyDown, true);
+    window.addEventListener("keyup", handleKeyUp, true);
+    document.addEventListener("keyup", handleKeyUp, true);
+  }
+
+  // src/player/liveDvr.js
+  init_config();
+  var liveDvrHooked = false;
+  function patchData(data) {
+    if (!currentConfig.unlockLiveDvr) return;
+    if (!data || typeof data !== "object") return;
+    if (data.videoDetails && data.videoDetails.isLive) {
+      if (data.videoDetails.isLiveDvrEnabled === false) {
+        data.videoDetails.isLiveDvrEnabled = true;
+      }
+    }
+  }
+  function initLiveDvrHook() {
+    if (!currentConfig.unlockLiveDvr) return;
+    if (liveDvrHooked) return;
+    liveDvrHooked = true;
+    try {
+      const existingDesc = Object.getOwnPropertyDescriptor(window, "ytInitialPlayerResponse");
+      let _val = window.ytInitialPlayerResponse;
+      if (_val) patchData(_val);
+      if (existingDesc && existingDesc.configurable === false) {
+        if (window.ytInitialPlayerResponse) patchData(window.ytInitialPlayerResponse);
+      } else {
+        Object.defineProperty(window, "ytInitialPlayerResponse", {
+          get() {
+            return existingDesc && existingDesc.get ? existingDesc.get.call(this) : _val;
+          },
+          set(newVal) {
+            if (existingDesc && existingDesc.set) {
+              existingDesc.set.call(this, newVal);
+            }
+            _val = newVal;
+            patchData(_val);
+          },
+          configurable: true,
+          enumerable: true
+        });
+      }
+    } catch (e) {
+    }
+    try {
+      const origParse = JSON.parse;
+      JSON.parse = function(text, reviver) {
+        const res = origParse.apply(this, arguments);
+        if (currentConfig.unlockLiveDvr && typeof text === "string" && text.includes("isLiveDvrEnabled") && res && typeof res === "object" && res.videoDetails && res.videoDetails.isLive && res.videoDetails.isLiveDvrEnabled === false) {
+          res.videoDetails.isLiveDvrEnabled = true;
+        }
+        return res;
+      };
+    } catch (e) {
+    }
+  }
+
+  // src/player/adShield.js
+  init_utils();
+  var adShieldInitialized = false;
+  var wasAdShowing = false;
+  function isLiveStream(player) {
+    if (!player) return false;
+    if (typeof player.getVideoData === "function") {
+      const vd = player.getVideoData();
+      if (vd && vd.isLive) return true;
+    }
+    if (typeof player.isLive === "function") {
+      try {
+        if (player.isLive() === true) return true;
+      } catch (e) {
+      }
+    }
+    if (player.classList.contains("ytp-live") || !!player.querySelector(".ytp-live-badge")) {
+      return true;
+    }
+    if (location.pathname.startsWith("/live/")) {
+      return true;
+    }
+    return false;
+  }
+  function initAdShield() {
+    if (adShieldInitialized) return;
+    adShieldInitialized = true;
+    function handleVideoAds() {
+      const player = document.querySelector("#movie_player, .html5-video-player");
+      if (!player) return;
+      const isAdShowing = player.classList.contains("ad-showing") || player.classList.contains("ad-interrupting") || !!player.querySelector(".ytp-ad-player-overlay, .ytp-ad-text, .video-ads .ad-showing");
+      const video = player.querySelector("video.html5-main-video") || player.querySelector("video");
+      if (isAdShowing) {
+        wasAdShowing = true;
+        const isLive = isLiveStream(player);
+        if (video) {
+          if (!isLive && isFinite(video.duration) && video.duration > 0) {
+            try {
+              video.currentTime = video.duration;
+            } catch (e) {
+            }
+          }
+          try {
+            video.playbackRate = 16;
+          } catch (e) {
+          }
+        }
+        const skipButtons = player.querySelectorAll(`
+                .ytp-ad-skip-button,
+                .ytp-ad-skip-button-modern,
+                .ytp-ad-skip-button-container button,
+                button.ytp-ad-skip-button,
+                .ytp-ad-overlay-close-button,
+                [id^="skip-button"] button
+            `);
+        skipButtons.forEach((btn) => {
+          try {
+            btn.click();
+          } catch (e) {
+          }
+        });
+      } else if (wasAdShowing) {
+        wasAdShowing = false;
+        if (video && video.playbackRate > 2) {
+          video.playbackRate = 1;
+        }
+      }
+    }
+    setInterval(handleVideoAds, 300);
+    whenElement("#movie_player, .html5-video-player", (player) => {
+      const obs = new MutationObserver(() => {
+        handleVideoAds();
+      });
+      obs.observe(player, { attributes: true, attributeFilter: ["class"] });
+    });
+  }
+
+  // src/index.js
+  init_chat();
 
   // src/ui/index.js
   init_sync();
 
   // src/ui/notifier.js
   init_constants();
+  init_utils();
   var ONBOARDING_KEY = `ytc_onboarding_v${APP_VERSION.replace(/\./g, "_")}`;
   var updateCheckInitiated = false;
   function isNewerVersion(remote, current) {
@@ -2372,6 +2570,7 @@
 
   // src/ui/panel.js
   init_config();
+  init_utils();
   init_constants();
   init_sync();
   var menuDismissBound = false;
@@ -2664,6 +2863,12 @@
           panel.querySelectorAll(".ytc-mode-btn").forEach((b) => b.classList.remove("active"));
           modeBtn.classList.add("active");
           applyConfigToRoot();
+          Promise.resolve().then(() => (init_chat(), chat_exports)).then((m) => {
+            if (m && typeof m.updateChatOverlayVisibility === "function") {
+              m.updateChatOverlayVisibility();
+            }
+          }).catch(() => {
+          });
         });
       });
       panel.querySelectorAll(".ytc-item[data-toggle]").forEach((item) => {
@@ -2785,6 +2990,8 @@
       dismissPromoBanners(document);
       initChatOverlay();
       initAutoLiveSync();
+      resetAutoLiveState();
+      checkInitialLiveSnap();
       if (location.pathname.startsWith("/watch")) {
         setWatchLoading(true);
       } else if (isHomeFeedPath()) {
