@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.3.5
-// @description  YouTube Customizer v3.3.5 — Bổ sung tính năng Ưu tiên độ phân giải video (Tự động, Cao nhất, 2K, 1080p, 720p) trong tab Tối Ưu.
+// @version      3.3.6
+// @description  YouTube Customizer v3.3.6 — Bổ sung tính năng Ưu tiên độ phân giải video trong tab Tối Ưu, tinh chỉnh thứ tự bố cục cài đặt chuẩn xác.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -11,13 +11,14 @@
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.3.5:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.3.6:
  * ============================================================================
  * 1. [Mới] Tính năng Ưu tiên chọn độ phân giải video trong tab "Tối Ưu":
  *    - Hỗ trợ 5 mức tùy chọn: Tự động (mặc định), Cao nhất (Max / 4K), 2K, 1080p, 720p.
  *    - Tự động áp đặt độ phân giải mong muốn ngay khi mở hoặc chuyển tiếp video.
- *    - Đồng bộ mượt mà vào cấu hình người dùng và bộ nhớ trình phát YouTube.
- * 2. [Cải tiến UI] Chuyển mục Ẩn Danh sách phát & Mix xuống cuối tab Lọc gọn gàng, khoa học.
+ * 2. [Cải tiến UI] Sắp xếp lại bố cục theo nhu cầu sử dụng:
+ *    - Mục "Ẩn Danh sách phát & Mix" đặt ở dưới cùng tab "Lọc".
+ *    - Mục "Chặn AV1 / Ép Codec H.264" và "Chỉ phát âm thanh (Radio)" chuyển xuống dưới cùng tab "Tối Ưu".
  * ============================================================================
  */
 (() => {
@@ -40,7 +41,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, QUALITY_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.3.5";
+      APP_VERSION = "3.3.6";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -4138,17 +4139,6 @@
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="blockAv1" title="Chặn codec AV1 ngốn CPU, ép dùng bộ giải mã phần cứng H.264 & VP9 mượt mà, mát máy">
-                    <div class="ytc-item-left">
-                        ${CPU_SVG}
-                        <span>Chặn AV1 / Ép Codec H.264</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-blockav1">
-                        <input type="checkbox" id="ytc-chk-blockav1" name="blockAv1" aria-label="Chặn AV1 / Ép Codec H.264" ${currentConfig.blockAv1 ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
                 <div class="ytc-item" data-toggle="keyboardControls" title="Phím tắt: A/D hoặc 4/6 tua 10s, S hoặc 5 dừng/phát, 8/2 âm lượng (chặn nhảy % khi bật NumLock)">
                     <div class="ytc-item-left">
                         ${KEYBOARD_SVG}
@@ -4156,6 +4146,17 @@
                     </div>
                     <label class="ytc-switch" for="ytc-chk-keys">
                         <input type="checkbox" id="ytc-chk-keys" name="keyboardControls" aria-label="Phím tắt điều khiển" ${currentConfig.keyboardControls ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="blockAv1" title="Chặn codec AV1 ngốn CPU, ép dùng bộ giải mã phần cứng H.264 & VP9 mượt mà, mát máy">
+                    <div class="ytc-item-left">
+                        ${CPU_SVG}
+                        <span>Chặn AV1 / Ép Codec H.264</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-blockav1">
+                        <input type="checkbox" id="ytc-chk-blockav1" name="blockAv1" aria-label="Chặn AV1 / Ép Codec H.264" ${currentConfig.blockAv1 ? "checked" : ""}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>

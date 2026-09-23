@@ -364,17 +364,6 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="blockAv1" title="Chặn codec AV1 ngốn CPU, ép dùng bộ giải mã phần cứng H.264 & VP9 mượt mà, mát máy">
-                    <div class="ytc-item-left">
-                        ${CPU_SVG}
-                        <span>Chặn AV1 / Ép Codec H.264</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-blockav1">
-                        <input type="checkbox" id="ytc-chk-blockav1" name="blockAv1" aria-label="Chặn AV1 / Ép Codec H.264" ${currentConfig.blockAv1 ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
                 <div class="ytc-item" data-toggle="keyboardControls" title="Phím tắt: A/D hoặc 4/6 tua 10s, S hoặc 5 dừng/phát, 8/2 âm lượng (chặn nhảy % khi bật NumLock)">
                     <div class="ytc-item-left">
                         ${KEYBOARD_SVG}
@@ -382,6 +371,17 @@ export function createSettingsPanel() {
                     </div>
                     <label class="ytc-switch" for="ytc-chk-keys">
                         <input type="checkbox" id="ytc-chk-keys" name="keyboardControls" aria-label="Phím tắt điều khiển" ${currentConfig.keyboardControls ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="blockAv1" title="Chặn codec AV1 ngốn CPU, ép dùng bộ giải mã phần cứng H.264 & VP9 mượt mà, mát máy">
+                    <div class="ytc-item-left">
+                        ${CPU_SVG}
+                        <span>Chặn AV1 / Ép Codec H.264</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-blockav1">
+                        <input type="checkbox" id="ytc-chk-blockav1" name="blockAv1" aria-label="Chặn AV1 / Ép Codec H.264" ${currentConfig.blockAv1 ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
