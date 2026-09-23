@@ -45,7 +45,7 @@ import {
     SHOPPING_SVG
 } from '../core/constants.js';
 import { syncPanelState } from './sync.js';
-import { setupOnboardingAndUpdates } from './notifier.js';
+import { setupOnboardingAndUpdates, isNewerVersion } from './notifier.js';
 
 let menuDismissBound = false;
 export function bindGlobalMenuDismiss() {
@@ -423,15 +423,14 @@ export function createSettingsPanel() {
 
             <!-- TAB 5: THÔNG TIN & HỖ TRỢ -->
             <div class="ytc-tab-pane" id="ytc-pane-info">
-                <!-- Thẻ phiên bản & Nút cập nhật tinh gọn -->
+                <!-- Thẻ kiểm tra cập nhật tinh gọn -->
                 <div class="ytc-info-card">
                     <div class="ytc-info-title-wrap">
-                        <span class="ytc-info-title">YouTube Customizer</span>
-                        <span class="ytc-info-version">v${APP_VERSION}</span>
+                        <span class="ytc-info-title">Kiểm tra cập nhật</span>
                     </div>
                     <button class="ytc-update-btn" id="ytc-btn-update" title="Kiểm tra bản cập nhật mới nhất từ GitHub">
                         ${UPDATE_SVG}
-                        <span id="ytc-update-btn-text">Cập nhật</span>
+                        <span id="ytc-update-btn-text">Kiểm tra</span>
                     </button>
                 </div>
 
@@ -668,13 +667,23 @@ export function createSettingsPanel() {
             });
         }
 
-        // Tab 5: Nút Cập nhật phiên bản (Thông báo trực tiếp trên nút, không popup)
+        // Tab 5: Nút Kiểm tra cập nhật (Thông báo trực tiếp trên nút, không popup)
         const updateBtn = panel.querySelector('#ytc-btn-update');
         const updateBtnText = panel.querySelector('#ytc-update-btn-text');
         if (updateBtn) {
             let isChecking = false;
+            let hasNewVersion = false;
+            let newVersionUrl = '';
+
             updateBtn.addEventListener('click', async (e) => {
                 e.stopPropagation();
+
+                // Nếu đang ở trạng thái có bản mới (nút màu xanh dương "Cập nhật"), bấm vào sẽ tự nhảy ra link cập nhật
+                if (hasNewVersion && newVersionUrl) {
+                    window.open(newVersionUrl, '_blank');
+                    return;
+                }
+
                 if (isChecking) return;
                 isChecking = true;
 
@@ -687,20 +696,23 @@ export function createSettingsPanel() {
                     const res = await fetch(`https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?t=${Date.now()}`);
                     if (res.ok) {
                         const pkg = await res.json();
-                        if (pkg.version && pkg.version !== APP_VERSION) {
+                        if (pkg.version && isNewerVersion(pkg.version, APP_VERSION)) {
+                            hasNewVersion = true;
+                            newVersionUrl = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${pkg.version}`;
                             updateBtn.classList.remove('ytc-btn-loading');
                             updateBtn.classList.add('ytc-btn-has-update');
-                            if (updateBtnText) updateBtnText.textContent = `Có bản mới v${pkg.version}!`;
-                            setTimeout(() => {
-                                window.open(`https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${pkg.version}`, '_blank');
-                            }, 500);
+                            if (updateBtnText) updateBtnText.textContent = 'Cập nhật';
+                            updateBtn.title = `Có bản mới v${pkg.version} — Bấm để cập nhật ngay`;
+                            updateBtn.disabled = false;
+                            isChecking = false;
+                            return;
                         } else {
                             updateBtn.classList.remove('ytc-btn-loading');
                             updateBtn.classList.add('ytc-btn-success');
-                            if (updateBtnText) updateBtnText.textContent = '✓ Bản mới nhất';
+                            if (updateBtnText) updateBtnText.textContent = 'Bản mới nhất';
                             setTimeout(() => {
                                 updateBtn.classList.remove('ytc-btn-success');
-                                if (updateBtnText) updateBtnText.textContent = 'Cập nhật';
+                                if (updateBtnText) updateBtnText.textContent = 'Kiểm tra';
                                 updateBtn.disabled = false;
                                 isChecking = false;
                             }, 2500);
@@ -715,7 +727,7 @@ export function createSettingsPanel() {
 
                 setTimeout(() => {
                     updateBtn.classList.remove('ytc-btn-loading', 'ytc-btn-has-update');
-                    if (updateBtnText) updateBtnText.textContent = 'Cập nhật';
+                    if (updateBtnText) updateBtnText.textContent = 'Kiểm tra';
                     updateBtn.disabled = false;
                     isChecking = false;
                 }, 3000);

@@ -1860,10 +1860,31 @@ html:not([dark]) .ytc-info-version {
     color: #2ecc71 !important;
     border-color: rgba(46, 204, 113, 0.35) !important;
 }
+html:not([dark]) .ytc-update-btn.ytc-btn-success {
+    background: rgba(39, 174, 96, 0.1) !important;
+    color: #27ae60 !important;
+    border-color: rgba(39, 174, 96, 0.3) !important;
+}
 .ytc-update-btn.ytc-btn-has-update {
-    background: rgba(255, 0, 51, 0.15) !important;
-    color: #ff4e45 !important;
-    border-color: rgba(255, 0, 51, 0.35) !important;
+    background: rgba(62, 166, 255, 0.12) !important;
+    color: #3ea6ff !important;
+    border: 1px solid rgba(62, 166, 255, 0.25) !important;
+    cursor: pointer !important;
+}
+.ytc-update-btn.ytc-btn-has-update:hover {
+    background: #3ea6ff !important;
+    color: #0f0f0f !important;
+    border-color: #3ea6ff !important;
+}
+html:not([dark]) .ytc-update-btn.ytc-btn-has-update {
+    background: rgba(6, 95, 212, 0.08) !important;
+    color: #065fd4 !important;
+    border-color: rgba(6, 95, 212, 0.25) !important;
+}
+html:not([dark]) .ytc-update-btn.ytc-btn-has-update:hover {
+    background: #065fd4 !important;
+    color: #ffffff !important;
+    border-color: #065fd4 !important;
 }
 html:not([dark]) .ytc-update-btn {
     background: rgba(0, 0, 0, 0.05);
