@@ -1196,6 +1196,19 @@ body.ytc-hide-native-chat ytd-watch-flexy[fullscreen] video.html5-main-video {
     margin-right: auto !important;
 }
 
+/* Mở rộng khung mô tả khi ẩn Live Chat để lấp đầy khoảng trống bên phải */
+html.ytc-hide-native-chat #description,
+body.ytc-hide-native-chat #description,
+html.ytc-hide-native-chat #description-inner,
+body.ytc-hide-native-chat #description-inner,
+html.ytc-hide-native-chat ytd-watch-metadata #description,
+body.ytc-hide-native-chat ytd-watch-metadata #description,
+html.ytc-hide-native-chat ytd-text-inline-expander,
+body.ytc-hide-native-chat ytd-text-inline-expander {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
 /* ==========================================================================
    TÍNH NĂNG ẨN BIỂU TƯỢNG CẢM XÚC TRONG LIVE CHAT (hideChatEmojis)
    - Ẩn hoàn toàn thẻ ảnh emoji/sticker trong khung chat gốc
@@ -1475,10 +1488,31 @@ body[light] #ytc-toast-notification {
     vertical-align: -1px;
     margin: 0 2px;
 }
+.ytc-box-badge.ytc-badge-mod,
+.ytc-box-badge.ytc-badge-owner {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: -1px !important;
+    margin: 0 1px !important;
+}
 .ytc-box-badge svg.ytc-mod-icon,
 .ytc-badge-mod,
 .ytc-mod-icon {
-    display: none !important;
+    display: inline-block !important;
+    width: 10px !important;
+    height: 10px !important;
+    fill: #3ea6ff !important;
+    vertical-align: -1px !important;
+}
+.ytc-box-badge svg.ytc-owner-icon,
+.ytc-badge-owner,
+.ytc-owner-icon {
+    display: inline-block !important;
+    width: 10px !important;
+    height: 10px !important;
+    fill: #ffd600 !important;
+    vertical-align: -1px !important;
 }
 .ytc-box-badge img {
     width: 10px !important;

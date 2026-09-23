@@ -27,10 +27,35 @@ import { extractMessageData, displayChatMessage } from './chatParser.js';
 
 export let userManuallyOpenedChat = false;
 export let hasAutoCollapsedChatForCurrentVideo = false;
+export let hasAutoExpandedDescriptionForCurrentVideo = false;
 
 export function resetChatCollapseState() {
     userManuallyOpenedChat = false;
     hasAutoCollapsedChatForCurrentVideo = false;
+    hasAutoExpandedDescriptionForCurrentVideo = false;
+}
+
+export function autoExpandDescriptionIfCollapsed() {
+    if (!currentConfig.hideNativeLiveChat) return;
+    if (hasAutoExpandedDescriptionForCurrentVideo) return;
+    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
+
+    const expander = document.querySelector(
+        'ytd-watch-metadata ytd-text-inline-expander[is-collapsed], ' +
+        '#description ytd-text-inline-expander[is-collapsed], ' +
+        'ytd-text-inline-expander#description-inline-expander[is-collapsed]'
+    );
+    if (expander) {
+        const expandBtn = expander.querySelector('#expand, tp-yt-paper-button#expand, #more');
+        if (expandBtn) {
+            hasAutoExpandedDescriptionForCurrentVideo = true;
+            expandBtn.click();
+        } else {
+            hasAutoExpandedDescriptionForCurrentVideo = true;
+            expander.removeAttribute('is-collapsed');
+            expander.setAttribute('is-expanded', '');
+        }
+    }
 }
 
 export function hideNativeChatElements() {
@@ -83,6 +108,9 @@ export function hideNativeChatElements() {
             itemSection.style.setProperty('display', 'none', 'important');
         }
     });
+
+    // 4. Mở rộng khung mô tả để lấp đầy khoảng trống bên phải
+    autoExpandDescriptionIfCollapsed();
 }
 
 export const throttledHideNativeChatElements = rafThrottle(hideNativeChatElements);
