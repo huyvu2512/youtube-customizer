@@ -13,16 +13,19 @@ export function syncPanelState(targetPanel) {
     const chatRow = panel.querySelector('#ytc-row-chatoverlay');
     if (chatRow) {
         chatRow.classList.toggle('ytc-disabled', !hasChat);
-        const liveBtns = chatRow.querySelectorAll('.ytc-mode-btn:not([data-overlay="off"])');
-        liveBtns.forEach(btn => {
+        const allBtns = chatRow.querySelectorAll('.ytc-mode-btn');
+        allBtns.forEach(btn => {
             if (!hasChat) {
                 btn.setAttribute('disabled', 'disabled');
                 btn.setAttribute('title', 'Chỉ khả dụng khi xem Live Stream hoặc video có khung trò chuyện');
             } else {
                 btn.removeAttribute('disabled');
-                if (btn.getAttribute('data-overlay') === 'danmaku') {
+                const overlayMode = btn.getAttribute('data-overlay');
+                if (overlayMode === 'off') {
+                    btn.setAttribute('title', 'Tắt chat trên video');
+                } else if (overlayMode === 'danmaku') {
                     btn.setAttribute('title', 'Chữ chạy ngang màn hình dạng Danmaku');
-                } else if (btn.getAttribute('data-overlay') === 'streamer') {
+                } else if (overlayMode === 'streamer') {
                     btn.setAttribute('title', 'Khung chat nổi của streamer, kéo thả và co giãn tự do');
                 }
             }

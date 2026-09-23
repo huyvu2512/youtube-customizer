@@ -382,6 +382,11 @@ export function createSettingsPanel() {
                 applyConfigToRoot();
                 if (key === 'hideNativeLiveChat') {
                     import('../chat/index.js').then(m => {
+                        if (checkbox.checked) {
+                            if (m && typeof m.hideNativeChatElements === 'function') {
+                                m.hideNativeChatElements();
+                            }
+                        }
                         if (m && typeof m.autoCollapseNativeChatIfOpen === 'function') {
                             m.autoCollapseNativeChatIfOpen();
                         }

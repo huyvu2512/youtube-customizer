@@ -126,20 +126,29 @@ export function hasLiveOrChatSupport() {
     }
     const chatEl = document.querySelector(
         'ytd-live-chat-frame, ' +
-        '#chat.ytd-watch-flexy, ' +
-        '#chat-container, ' +
         'iframe#chatframe, ' +
+        'iframe[src*="/live_chat"], ' +
         '#chat-teaser, ' +
         '#teaser, ' +
-        '[target-id*="chat" i], ' +
-        '[target-id="engagement-panel-live-chat"], ' +
         'ytd-engagement-panel-section-list-renderer[target-id*="chat" i], ' +
+        '[target-id="engagement-panel-live-chat"], ' +
         '.ytp-live-chat-button, ' +
         '.ytp-chat-button, ' +
-        'button[aria-label*="trò chuyện" i], ' +
-        'button[aria-label*="chat" i]'
+        '#actions button[aria-label*="trò chuyện" i], ' +
+        '#actions button[aria-label*="chat" i], ' +
+        '#top-level-buttons-computed button[aria-label*="trò chuyện" i], ' +
+        '#top-level-buttons-computed button[aria-label*="chat" i]'
     );
-    return !!chatEl;
+    if (chatEl) return true;
+
+    // Kiểm tra #chat hoặc #chat-container nếu thực sự chứa nội dung (iframe, teaser hoặc frame)
+    const chatBox = document.querySelector('#chat.ytd-watch-flexy, #chat-container');
+    if (chatBox) {
+        const hasContent = chatBox.querySelector('ytd-live-chat-frame, iframe, #chat-teaser, #teaser, button');
+        if (hasContent) return true;
+    }
+
+    return false;
 }
 
 let toastTimer = null;

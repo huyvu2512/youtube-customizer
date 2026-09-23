@@ -832,6 +832,30 @@ html:not([dark]) .ytc-mode-btn.active {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
+/* Trạng thái vô hiệu hóa của Live Chat row khi video không hỗ trợ chat */
+#ytc-row-chatoverlay.ytc-disabled {
+    opacity: 0.35 !important;
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+}
+#ytc-row-chatoverlay.ytc-disabled:hover {
+    background: transparent !important;
+}
+#ytc-row-chatoverlay.ytc-disabled .ytc-mode-btn {
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+}
+#ytc-row-chatoverlay.ytc-disabled .ytc-mode-btn.active {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: rgba(255, 255, 255, 0.45) !important;
+    box-shadow: none !important;
+}
+html:not([dark]) #ytc-row-chatoverlay.ytc-disabled .ytc-mode-btn.active {
+    background: rgba(0, 0, 0, 0.08) !important;
+    color: rgba(0, 0, 0, 0.38) !important;
+    box-shadow: none !important;
+}
+
 html:not([dark]) .ytc-item:hover {
     background: rgba(0, 0, 0, 0.05);
 }
@@ -1043,10 +1067,13 @@ html.ytc-hide-native-chat ytd-live-chat-frame#chat,
 body.ytc-hide-native-chat ytd-live-chat-frame#chat,
 html.ytc-hide-native-chat #chat.ytd-watch-flexy,
 body.ytc-hide-native-chat #chat.ytd-watch-flexy {
-    display: none !important;
-    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
     width: 0 !important;
     height: 0 !important;
+    overflow: hidden !important;
+    visibility: visible !important;
 }
 
 /* Ẩn triệt để khung Teaser "Trò chuyện trực tiếp" & "Phát lại cuộc trò chuyện" */
