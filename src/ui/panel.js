@@ -32,7 +32,8 @@ import {
     BROOM_SVG,
     HEADPHONES_SVG,
     INFINITY_SVG,
-    SHIELD_CHECK_SVG
+    SHIELD_CHECK_SVG,
+    PLAYLIST_SVG
 } from '../core/constants.js';
 import { syncPanelState } from './sync.js';
 import { setupOnboardingAndUpdates } from './notifier.js';
@@ -198,7 +199,7 @@ export function createSettingsPanel() {
 
                 <div class="ytc-item" data-toggle="hideMixes" title="Ẩn Danh sách kết hợp (Mixes) trên trang chủ, tìm kiếm, gợi ý và tự động chuyển tiếp video đề xuất khi xem">
                     <div class="ytc-item-left">
-                        ${RADIO_SVG}
+                        ${PLAYLIST_SVG}
                         <span>Ẩn Danh sách kết hợp</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-mixes">

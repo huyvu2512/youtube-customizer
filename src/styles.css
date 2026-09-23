@@ -1584,21 +1584,23 @@ body.ytc-audio-only #movie_player video {
     user-select: none;
     z-index: 30;
     font-family: "YouTube Sans", Roboto, sans-serif;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+    width: 90%;
+    max-width: 650px;
 }
 
 .ytc-audio-badge-title {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 16px;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    line-height: 1.4;
+    color: #ffffff;
+    font-size: clamp(22px, 2.5vw, 30px);
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    line-height: 1.35;
 }
 
 .ytc-audio-badge-sub {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 13px;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: clamp(15px, 1.4vw, 19px);
     font-weight: 400;
-    margin-top: 5px;
+    margin-top: 10px;
     line-height: 1.4;
 }
