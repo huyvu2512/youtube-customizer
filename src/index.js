@@ -20,7 +20,9 @@ import {
     setupFeedShelvesObserver,
     dismissPromoBanners,
     isHomeFeedPath,
-    initMixFilter
+    initMixFilter,
+    initQualityManager,
+    applyPreferredQuality
 } from './features/index.js';
 import {
     bindGlobalKeys,
@@ -99,6 +101,7 @@ if (window.self !== window.top) {
         applyHomeGridColumns();
         updateChatOverlayVisibility();
         applyAudioOnlyState();
+        applyPreferredQuality();
     });
 
     applyConfigToRoot();
@@ -184,6 +187,7 @@ if (window.self !== window.top) {
     initChatOverlay();
     initAutoLiveSync();
     initMixFilter();
+    initQualityManager();
 
     if (location.pathname.startsWith('/watch')) {
         setWatchLoading(true);

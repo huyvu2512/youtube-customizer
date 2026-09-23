@@ -33,7 +33,8 @@ import {
     HEADPHONES_SVG,
     INFINITY_SVG,
     SHIELD_CHECK_SVG,
-    PLAYLIST_SVG
+    PLAYLIST_SVG,
+    QUALITY_SVG
 } from '../core/constants.js';
 import { syncPanelState } from './sync.js';
 import { setupOnboardingAndUpdates } from './notifier.js';
@@ -335,6 +336,23 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
+                <div class="ytc-item ytc-item-vertical" id="ytc-row-quality" title="Ưu tiên tự động chọn độ phân giải theo ý muốn (Mặc định: Tự động của YouTube)">
+                    <div class="ytc-item-header">
+                        <div class="ytc-item-left">
+                            ${QUALITY_SVG}
+                            <span>Độ phân giải video</span>
+                        </div>
+                        <span class="ytc-quality-badge">${currentConfig.preferredQuality === 'auto' ? 'TỰ ĐỘNG' : (currentConfig.preferredQuality === 'max' ? 'CAO NHẤT' : currentConfig.preferredQuality.toUpperCase())}</span>
+                    </div>
+                    <div class="ytc-mode-group ytc-quality-group">
+                        <button class="ytc-quality-btn ${(!currentConfig.preferredQuality || currentConfig.preferredQuality === 'auto') ? 'active' : ''}" data-quality="auto" title="Để YouTube tự động quyết định">Tự động</button>
+                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === 'max' ? 'active' : ''}" data-quality="max" title="Ưu tiên độ phân giải cao nhất khả dụng (4K, 2K...)">Cao nhất</button>
+                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === '1440p' ? 'active' : ''}" data-quality="1440p" title="Ưu tiên 2K (1440p)">2K</button>
+                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === '1080p' ? 'active' : ''}" data-quality="1080p" title="Ưu tiên Full HD (1080p)">1080p</button>
+                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === '720p' ? 'active' : ''}" data-quality="720p" title="Ưu tiên HD (720p)">720p</button>
+                    </div>
+                </div>
+
                 <div class="ytc-item" data-toggle="chatMemoryGc" title="Giới hạn tối đa 100 tin nhắn trong DOM Live Chat, dọn dẹp bộ nhớ định kỳ chống đầy tràn RAM khi xem stream lâu">
                     <div class="ytc-item-left">
                         ${BROOM_SVG}
@@ -412,7 +430,7 @@ export function createSettingsPanel() {
         });
 
         // Chọn chế độ Chat Overlay (Tắt / Ngang / Nổi)
-        panel.querySelectorAll('.ytc-mode-btn').forEach((modeBtn) => {
+        panel.querySelectorAll('#ytc-row-chatoverlay .ytc-mode-btn').forEach((modeBtn) => {
             modeBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const mode = modeBtn.getAttribute('data-overlay') || 'off';
@@ -423,13 +441,44 @@ export function createSettingsPanel() {
                 currentConfig.chatOverlay = mode;
                 saveConfig(currentConfig);
 
-                panel.querySelectorAll('.ytc-mode-btn').forEach(b => b.classList.remove('active'));
+                panel.querySelectorAll('#ytc-row-chatoverlay .ytc-mode-btn').forEach(b => b.classList.remove('active'));
                 modeBtn.classList.add('active');
 
                 applyConfigToRoot();
                 import('../chat/index.js').then(m => {
                     if (m && typeof m.updateChatOverlayVisibility === 'function') {
                         m.updateChatOverlayVisibility();
+                    }
+                }).catch(() => {});
+            });
+        });
+
+        // Chọn độ phân giải ưu tiên (Tự động / Cao nhất / 2K / 1080p / 720p)
+        panel.querySelectorAll('.ytc-quality-btn').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const quality = btn.getAttribute('data-quality') || 'auto';
+                currentConfig.preferredQuality = quality;
+                saveConfig(currentConfig);
+
+                panel.querySelectorAll('.ytc-quality-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const labelBadge = panel.querySelector('.ytc-quality-badge');
+                if (labelBadge) {
+                    const labels = {
+                        auto: 'TỰ ĐỘNG',
+                        max: 'CAO NHẤT',
+                        '1440p': '2K',
+                        '1080p': '1080P',
+                        '720p': '720P'
+                    };
+                    labelBadge.textContent = labels[quality] || quality.toUpperCase();
+                }
+
+                import('../features/qualityManager.js').then(m => {
+                    if (m && typeof m.applyPreferredQuality === 'function') {
+                        m.applyPreferredQuality();
                     }
                 }).catch(() => {});
             });

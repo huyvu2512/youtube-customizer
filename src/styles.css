@@ -906,6 +906,89 @@ html:not([dark]) .ytc-mode-btn.active {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
+/* Kiểu dáng mục phân giải video (2 tầng & segmented control) */
+.ytc-item-vertical {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+}
+.ytc-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+.ytc-quality-badge {
+    font-size: 10px;
+    font-weight: 700;
+    color: #ff4e45;
+    background: rgba(255, 78, 69, 0.12);
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+.ytc-quality-group {
+    display: flex;
+    width: 100%;
+    gap: 3px;
+    box-sizing: border-box;
+}
+.ytc-quality-btn {
+    border: none;
+    background: transparent;
+    color: #aaa;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 2px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    text-align: center;
+    box-sizing: border-box;
+    flex: 1;
+    min-width: 0;
+}
+.ytc-quality-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+.ytc-quality-btn.active {
+    background: #f1f1f1 !important;
+    color: #0f0f0f !important;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+html[dark] .ytc-quality-btn {
+    color: #aaa;
+    background: transparent;
+}
+html[dark] .ytc-quality-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+html[dark] .ytc-quality-btn.active {
+    background: #f1f1f1 !important;
+    color: #0f0f0f !important;
+    font-weight: 600;
+}
+
+html:not([dark]) .ytc-quality-btn {
+    color: #606060;
+    background: transparent;
+}
+html:not([dark]) .ytc-quality-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: #0f0f0f;
+}
+html:not([dark]) .ytc-quality-btn.active {
+    background: #0f0f0f !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
 /* Trạng thái vô hiệu hóa của Live Chat row khi video không hỗ trợ chat */
 #ytc-row-chatoverlay.ytc-disabled {
     opacity: 0.35 !important;

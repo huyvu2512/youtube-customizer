@@ -29,6 +29,7 @@ export const DEFAULT_CONFIG = {
     chatMemoryGc: false,       // Dọn dẹp DOM tin nhắn Live Chat chống tràn RAM (mặc định tắt)
     audioOnlyMode: false,      // Chế độ Radio / Chỉ phát âm thanh, ngắt render video (mặc định tắt)
     preventAutoPause: false,   // Chặn tự dừng video "Bạn vẫn đang xem chứ?" (mặc định tắt)
+    preferredQuality: 'auto',  // Ưu tiên độ phân giải video: 'auto', 'max', '1440p', '1080p', '720p'
 };
 
 export function loadConfig() {

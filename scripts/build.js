@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.3.4
-// @description  YouTube Customizer v3.3.4 — Sửa triệt để các video trên tab Âm nhạc, ẩn chính xác Danh sách phát (Playlists) & Danh sách kết hợp (Mixes).
+// @version      3.3.5
+// @description  YouTube Customizer v3.3.5 — Bổ sung tính năng Ưu tiên độ phân giải video (Tự động, Cao nhất, 2K, 1080p, 720p) trong tab Tối Ưu.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,14 +23,13 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.3.4:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.3.5:
  * ============================================================================
- * 1. [Sửa lỗi] Khắc phục triệt để các hàng video trên Tab "Âm nhạc":
- *    - Gỡ bỏ bộ lọc CSS list=RD trên thẻ video đơn lẻ, tránh ẩn nhầm các video ca nhạc thường.
- *    - Các hàng "Đề xuất mới", "Tuyển tập nhạc...", "Video nhạc hàng đầu..." hiển thị đầy đủ video.
- * 2. [Cải tiến] Lọc chuẩn xác Danh sách phát (Playlists / Khóa học) & Mix:
- *    - Ẩn hoàn toàn các thẻ Playlist / Khóa học (kể cả trên Trang chủ, Tìm kiếm và Gợi ý).
- *    - Bảo vệ an toàn các video có thời lượng cụ thể không bao giờ bị ẩn nhầm.
+ * 1. [Mới] Tính năng Ưu tiên chọn độ phân giải video trong tab "Tối Ưu":
+ *    - Hỗ trợ 5 mức tùy chọn: Tự động (mặc định), Cao nhất (Max / 4K), 2K, 1080p, 720p.
+ *    - Tự động áp đặt độ phân giải mong muốn ngay khi mở hoặc chuyển tiếp video.
+ *    - Đồng bộ mượt mà vào cấu hình người dùng và bộ nhớ trình phát YouTube.
+ * 2. [Cải tiến UI] Chuyển mục Ẩn Danh sách phát & Mix xuống cuối tab Lọc gọn gàng, khoa học.
  * ============================================================================
  */`;
 

@@ -52,5 +52,22 @@ export function syncPanelState(targetPanel) {
         const cols = parseInt(colBtn.getAttribute('data-cols'), 10);
         colBtn.classList.toggle('active', cols === currentConfig.columns);
     });
+
+    // 4. Đồng bộ độ phân giải video ưu tiên
+    const currentQuality = currentConfig.preferredQuality || 'auto';
+    panel.querySelectorAll('.ytc-quality-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.getAttribute('data-quality') === currentQuality);
+    });
+    const qualityBadge = panel.querySelector('.ytc-quality-badge');
+    if (qualityBadge) {
+        const labels = {
+            auto: 'TỰ ĐỘNG',
+            max: 'CAO NHẤT',
+            '1440p': '2K',
+            '1080p': '1080P',
+            '720p': '720P'
+        };
+        qualityBadge.textContent = labels[currentQuality] || currentQuality.toUpperCase();
+    }
 }
 

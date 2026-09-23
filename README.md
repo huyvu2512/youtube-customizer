@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.3.4-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.3.5-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,13 +25,15 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.3.4** ra mắt:
-- **Khắc phục triệt để các video trên tab "Âm nhạc":**
-  - Gỡ bỏ bộ lọc `list=RD` trên thẻ video đơn lẻ, giúp các hàng "Đề xuất mới", "Tuyển tập nhạc...", "Video nhạc hàng đầu..." hiển thị đầy đủ video ca nhạc như bình thường.
-  - Vẫn giữ nguyên cơ chế làm sạch URL: khi bấm vào bài hát, script tự gỡ bỏ mã radio để bài hát phát độc lập và chuyển tiếp sang video gợi ý khi kết thúc.
-- **Lọc chuẩn xác Danh sách phát & Mix:**
-  - Ẩn triệt để các thẻ Danh sách phát thủ công, khóa học ("68 bài học", "14 video", v.v.) và Danh sách kết hợp.
-  - Bảo vệ an toàn các video có thời lượng cụ thể không bao giờ bị ẩn nhầm.
+Phiên bản **v3.3.5** ra mắt:
+- **Tính năng Ưu tiên chọn độ phân giải video (`preferredQuality`) trong tab Tối Ưu:**
+  - Cung cấp thanh chọn 5 chế độ: **Tự động** (mặc định của YouTube), **Cao nhất** (Max / 4K / 8K), **2K** (1440p), **1080p** (Full HD) và **720p** (HD).
+  - Tự động áp đặt độ phân giải mong muốn ngay khi mở hoặc chuyển tiếp video, không cần chỉnh tay thủ công mỗi lần xem.
+  - Đồng bộ cấu hình mượt mà vào bộ nhớ trình phát YouTube và cache local.
+- **Tối ưu Bố cục tab Lọc:**
+  - Chuyển mục *Ẩn Danh sách phát & Mix* xuống cuối tab Lọc để các tính năng phổ biến hiển thị ưu tiên phía trên.
+- **Kế thừa các sửa lỗi từ v3.3.4:**
+  - Khắc phục hiển thị đầy đủ video ca nhạc trên tab Âm nhạc, ẩn chuẩn xác danh sách phát và khóa học.
 - **Kế thừa bộ tính năng tối ưu chuyên sâu từ v3.3.0:**
   - **Tab "Tối Ưu" (Optimization):** Chặn tự dừng video (`preventAutoPause`), Dọn rác bộ nhớ Live Chat RAM (`chatMemoryGc`), Chặn AV1 / Ép H.264 (`blockAv1`).
 - **Kế thừa và hoàn thiện từ v3.2.31:**
