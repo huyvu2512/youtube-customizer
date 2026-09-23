@@ -114,6 +114,9 @@ export function hasLiveOrChatSupport() {
     if (location.pathname.startsWith('/live')) {
         return true;
     }
+    if (document.getElementById('ytc-bg-live-chat')) {
+        return true;
+    }
     const player = document.querySelector('#movie_player:not(#inline-preview-player)');
     if (player) {
         try {

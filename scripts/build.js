@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.27
-// @description  YouTube Customizer v3.2.27 — Tối ưu hiển thị chọn Live Chat và duy trì kết nối khi chuyển chế độ rạp chiếu phim (phím T).
+// @version      3.2.28
+// @description  YouTube Customizer v3.2.28 — Khắc phục triệt để lỗi spam bật/tắt khung Live Chat và đảm bảo hoạt động mượt mà khi chuyển chế độ rạp chiếu phim (phím T).
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

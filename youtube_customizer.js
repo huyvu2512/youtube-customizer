@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.27
-// @description  YouTube Customizer v3.2.27 — Tối ưu hiển thị chọn Live Chat và duy trì kết nối khi chuyển chế độ rạp chiếu phim (phím T).
+// @version      3.2.28
+// @description  YouTube Customizer v3.2.28 — Khắc phục triệt để lỗi spam bật/tắt khung Live Chat và đảm bảo hoạt động mượt mà khi chuyển chế độ rạp chiếu phim (phím T).
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -28,7 +28,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.2.27";
+      APP_VERSION = "3.2.28";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -251,6 +251,9 @@
       return false;
     }
     if (location.pathname.startsWith("/live")) {
+      return true;
+    }
+    if (document.getElementById("ytc-bg-live-chat")) {
       return true;
     }
     const player = document.querySelector("#movie_player:not(#inline-preview-player)");
@@ -1133,9 +1136,6 @@
         }
       });
     }
-    if (!hasChat && currentConfig.chatOverlay !== "off") {
-      currentConfig.chatOverlay = "off";
-    }
     const currentMode = currentConfig.chatOverlay || "off";
     panel.querySelectorAll(".ytc-mode-btn").forEach((btn) => {
       btn.classList.toggle("active", btn.getAttribute("data-overlay") === currentMode);
@@ -1208,57 +1208,33 @@
   }
   function autoCollapseNativeChatIfOpen() {
     if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
-    const isOverlayOn = currentConfig.chatOverlay && currentConfig.chatOverlay !== "off";
-    const shouldCollapse = isOverlayOn || !!currentConfig.hideNativeLiveChat;
-    if (!shouldCollapse) return;
-    if (userManuallyOpenedChat && !currentConfig.hideNativeLiveChat) return;
-    if (currentConfig.hideNativeLiveChat) {
-      const chatPanel = document.querySelector(
-        '#panels-full-bleed-container ytd-engagement-panel-section-list-renderer[target-id*="chat" i], ytd-watch-flexy ytd-engagement-panel-section-list-renderer[target-id*="chat" i]'
-      );
-      if (chatPanel && chatPanel.getAttribute("visibility") !== "ENGAGEMENT_PANEL_VISIBILITY_HIDDEN") {
-        chatPanel.setAttribute("visibility", "ENGAGEMENT_PANEL_VISIBILITY_HIDDEN");
-      }
-      const watchFlexy2 = document.querySelector("ytd-watch-flexy");
-      if (watchFlexy2) {
-        const otherExpanded = watchFlexy2.querySelectorAll('ytd-engagement-panel-section-list-renderer:not([target-id*="chat" i])[visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"]');
-        if (otherExpanded.length === 0) {
-          if (watchFlexy2.hasAttribute("has-active-panel")) watchFlexy2.removeAttribute("has-active-panel");
-          if (watchFlexy2.hasAttribute("panels-open")) watchFlexy2.removeAttribute("panels-open");
-        }
-      }
-      const chatFrame2 = document.querySelector("ytd-live-chat-frame#chat, #chat.ytd-watch-flexy");
-      if (chatFrame2) {
-        if (isOverlayOn) {
-          if (chatFrame2.hasAttribute("collapsed")) {
-            chatFrame2.removeAttribute("collapsed");
-          }
-        } else {
-          if (!chatFrame2.hasAttribute("collapsed")) {
-            chatFrame2.setAttribute("collapsed", "");
-          }
-        }
-      }
-      return;
+    if (!currentConfig.hideNativeLiveChat) return;
+    const chatPanel = document.querySelector(
+      '#panels-full-bleed-container ytd-engagement-panel-section-list-renderer[target-id*="chat" i], ytd-watch-flexy ytd-engagement-panel-section-list-renderer[target-id*="chat" i]'
+    );
+    if (chatPanel && chatPanel.getAttribute("visibility") !== "ENGAGEMENT_PANEL_VISIBILITY_HIDDEN") {
+      chatPanel.setAttribute("visibility", "ENGAGEMENT_PANEL_VISIBILITY_HIDDEN");
     }
-    if (hasAutoCollapsedChatForCurrentVideo) return;
-    const chatFrame = document.querySelector("ytd-live-chat-frame#chat, #chat.ytd-watch-flexy");
     const watchFlexy = document.querySelector("ytd-watch-flexy");
-    if (!chatFrame) return;
-    const isCollapsed = chatFrame.hasAttribute("collapsed") || watchFlexy && watchFlexy.hasAttribute("chat-collapsed");
-    if (!isCollapsed) {
-      const hideBtn = chatFrame.querySelector(
-        '#show-hide-button button, #close-button button, #close-button, [aria-label*="Ẩn cuộc trò chuyện" i], [aria-label*="Hide chat" i]'
-      );
-      if (hideBtn) {
-        hasAutoCollapsedChatForCurrentVideo = true;
-        try {
-          hideBtn.click();
-        } catch (e) {
+    if (watchFlexy) {
+      const otherExpanded = watchFlexy.querySelectorAll('ytd-engagement-panel-section-list-renderer:not([target-id*="chat" i])[visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"]');
+      if (otherExpanded.length === 0) {
+        if (watchFlexy.hasAttribute("has-active-panel")) watchFlexy.removeAttribute("has-active-panel");
+        if (watchFlexy.hasAttribute("panels-open")) watchFlexy.removeAttribute("panels-open");
+      }
+    }
+    const chatFrame = document.querySelector("ytd-live-chat-frame#chat, #chat.ytd-watch-flexy");
+    if (chatFrame) {
+      const isOverlayOn = currentConfig.chatOverlay && currentConfig.chatOverlay !== "off";
+      if (isOverlayOn) {
+        if (chatFrame.hasAttribute("collapsed")) {
+          chatFrame.removeAttribute("collapsed");
+        }
+      } else {
+        if (!chatFrame.hasAttribute("collapsed")) {
+          chatFrame.setAttribute("collapsed", "");
         }
       }
-    } else {
-      hasAutoCollapsedChatForCurrentVideo = true;
     }
   }
   function isNativeChatOpenInFullscreen() {
@@ -1359,36 +1335,6 @@
       }
     } else {
       setNativeChatHiddenState(false);
-      if (currentConfig.chatOverlay && currentConfig.chatOverlay !== "off") {
-        ensureNativeLiveChatUncollapsed();
-      } else {
-        autoCollapseNativeChatIfOpen();
-      }
-    }
-  }
-  function ensureNativeLiveChatUncollapsed() {
-    if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
-    if (!currentConfig.chatOverlay || currentConfig.chatOverlay === "off") return;
-    const chatFrame = document.querySelector("ytd-live-chat-frame#chat, #chat.ytd-watch-flexy, ytd-live-chat-frame");
-    if (chatFrame) {
-      if (chatFrame.hasAttribute("collapsed")) {
-        chatFrame.removeAttribute("collapsed");
-      }
-      const expandBtn = chatFrame.querySelector(
-        '#show-hide-button button, button#show-button, #show-button, [aria-label*="Hiện cuộc trò chuyện" i], [aria-label*="Show chat" i], [aria-label*="Mở rộng cuộc trò chuyện" i], [aria-label*="Expand live chat" i]'
-      );
-      if (expandBtn) {
-        try {
-          expandBtn.click();
-        } catch (e) {
-        }
-      }
-    }
-    const chatPanel = document.querySelector(
-      '#panels-full-bleed-container ytd-engagement-panel-section-list-renderer[target-id*="chat" i], ytd-watch-flexy ytd-engagement-panel-section-list-renderer[target-id*="chat" i]'
-    );
-    if (chatPanel && chatPanel.getAttribute("visibility") === "ENGAGEMENT_PANEL_VISIBILITY_HIDDEN") {
-      chatPanel.setAttribute("visibility", "ENGAGEMENT_PANEL_VISIBILITY_EXPANDED");
     }
   }
   function onTheaterModeChanged(isTheater) {
@@ -1399,22 +1345,28 @@
       applyChatBoxPos(streamerBox, player);
     }
     if (currentConfig.chatOverlay && currentConfig.chatOverlay !== "off") {
-      ensureNativeLiveChatUncollapsed();
       if (currentConfig.chatOverlay === "danmaku") {
         startDanmakuScheduler();
       }
       setTimeout(() => {
-        ensureNativeLiveChatUncollapsed();
+        ensureChatOverlayContainers();
+        const p = document.querySelector("#movie_player:not(#inline-preview-player)");
+        if (p && streamerBox) applyChatBoxPos(streamerBox, p);
         findAndObserveItems();
         requestExistingMessages();
       }, 150);
       setTimeout(() => {
-        ensureNativeLiveChatUncollapsed();
+        ensureChatOverlayContainers();
+        const p = document.querySelector("#movie_player:not(#inline-preview-player)");
+        if (p && streamerBox) applyChatBoxPos(streamerBox, p);
         findAndObserveItems();
-      }, 500);
+      }, 600);
       setTimeout(() => {
+        ensureChatOverlayContainers();
+        const p = document.querySelector("#movie_player:not(#inline-preview-player)");
+        if (p && streamerBox) applyChatBoxPos(streamerBox, p);
         findAndObserveItems();
-      }, 1200);
+      }, 1500);
       ensureBackgroundLiveChat();
     }
   }
@@ -1993,23 +1945,6 @@
         findAndObserveItems();
         ensureNativeLiveChatRunning();
         ensureBackgroundLiveChat();
-        try {
-          if (!isUserInteractingWithChatMenu(document)) {
-            const showMore = document.querySelector("#show-more:not([hidden]) button, #show-more button");
-            if (showMore && showMore.offsetParent !== null) {
-              const rect = showMore.getBoundingClientRect();
-              if (rect.width > 0 && rect.height > 0) {
-                showMore.click();
-              }
-            }
-            const scroller = document.querySelector("#item-scroller, yt-live-chat-item-list-renderer #item-scroller");
-            if (scroller && !scroller.matches(":hover")) {
-              const dist = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight;
-              if (dist > 50) scroller.scrollTop = scroller.scrollHeight;
-            }
-          }
-        } catch (e) {
-        }
       }
     }, 2e3);
     if (location.pathname.startsWith("/watch") || location.pathname.startsWith("/live")) {
@@ -2063,7 +1998,6 @@
     ensureBackgroundLiveChat: () => ensureBackgroundLiveChat,
     ensureChatOverlayContainers: () => ensureChatOverlayContainers,
     ensureNativeLiveChatRunning: () => ensureNativeLiveChatRunning,
-    ensureNativeLiveChatUncollapsed: () => ensureNativeLiveChatUncollapsed,
     extractMessageData: () => extractMessageData,
     filterEmojisFromMessage: () => filterEmojisFromMessage,
     getCurrentLiveVideoId: () => getCurrentLiveVideoId,

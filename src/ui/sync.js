@@ -32,9 +32,6 @@ export function syncPanelState(targetPanel) {
         });
     }
 
-    if (!hasChat && currentConfig.chatOverlay !== 'off') {
-        currentConfig.chatOverlay = 'off';
-    }
 
     const currentMode = currentConfig.chatOverlay || 'off';
     panel.querySelectorAll('.ytc-mode-btn').forEach(btn => {
