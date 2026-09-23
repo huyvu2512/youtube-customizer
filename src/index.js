@@ -29,8 +29,7 @@ import {
     initAutoLiveSync,
     resetAutoLiveState,
     checkInitialLiveSnap,
-    initLiveDvrHook,
-    initAdShield
+    initLiveDvrHook
 } from './player/index.js';
 import {
     initChatOverlay,
@@ -54,11 +53,10 @@ import {
 // Re-export for compatibility
 export { CONFIG_KEY, DEFAULT_CONFIG, loadConfig, saveConfig, currentConfig, applyConfigToRoot };
 
-// Khởi chạy hook Codec Blocker, Live DVR và lá chắn AdShield ngay từ đầu trong top window
+// Khởi chạy hook Codec Blocker và Live DVR ngay từ đầu trong top window
 if (window.self === window.top) {
     initCodecBlocker();
     initLiveDvrHook();
-    initAdShield();
 }
 
 // --------------------------------------------------------------------------

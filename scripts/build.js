@@ -34,6 +34,9 @@ const banner = `// ==UserScript==
  * 2. [Cải tiến] Chế độ Chỉ Âm Thanh (Audio-Only):
  *    - Áp dụng Mẫu 1: Dòng thông báo 2 dòng chữ tối giản, thanh lịch căn giữa khung phát,
  *      loại bỏ hoàn toàn cảm giác khung hộp AI cồng kềnh.
+ *
+ * 3. [Gỡ bỏ] Loại bỏ hoàn toàn tính năng Ad Shield ngầm (chấm dứt hiện tượng tua nhanh 16x khi gặp quảng cáo).
+ * 4. [Mới] Thêm nút liên kết mở trang uBlock Origin ở dưới cùng tab Trình phát để người dùng chủ động cài đặt.
  * ============================================================================
  */`;
 

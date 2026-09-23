@@ -31,7 +31,8 @@ import {
     CPU_SVG,
     BROOM_SVG,
     HEADPHONES_SVG,
-    INFINITY_SVG
+    INFINITY_SVG,
+    SHIELD_CHECK_SVG
 } from '../core/constants.js';
 import { syncPanelState } from './sync.js';
 import { setupOnboardingAndUpdates } from './notifier.js';
@@ -307,6 +308,17 @@ export function createSettingsPanel() {
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
+
+                <div class="ytc-item ytc-item-link" id="ytc-btn-ublock" title="Mở trang tiện ích uBlock Origin — trình chặn quảng cáo số 1 thế giới, sạch sẽ, an toàn và không gây giật lag">
+                    <div class="ytc-item-left">
+                        ${SHIELD_CHECK_SVG}
+                        <span>Chặn quảng cáo (uBlock)</span>
+                    </div>
+                    <div class="ytc-link-badge">
+                        <span>Mở trang</span>
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                    </div>
+                </div>
             </div>
 
             <!-- TAB 4: TỐI ƯU HIỆU NĂNG & TIỆN ÍCH -->
@@ -489,6 +501,15 @@ export function createSettingsPanel() {
                 }
             });
         });
+
+        // Nút mở trang uBlock Origin
+        const ublockBtn = panel.querySelector('#ytc-btn-ublock');
+        if (ublockBtn) {
+            ublockBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.open('https://ublockorigin.com/', '_blank', 'noopener,noreferrer');
+            });
+        }
 
         panel.addEventListener('click', (e) => {
             e.stopPropagation();
