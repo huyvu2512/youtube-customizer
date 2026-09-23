@@ -526,7 +526,7 @@ html[dark] #ytc-settings-btn svg {
 
 #ytc-settings-panel {
     position: fixed;
-    width: 365px;
+    width: 380px;
     max-height: calc(100vh - 80px);
     overflow-y: auto;
     background: var(--yt-spec-brand-background-primary, #282828);
@@ -575,7 +575,7 @@ html[dark] #ytc-settings-btn svg {
 .ytc-tabs {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 3px;
     background: rgba(255, 255, 255, 0.06);
     border-radius: 8px;
     padding: 3px;
@@ -583,12 +583,13 @@ html[dark] #ytc-settings-btn svg {
     border: 1px solid rgba(255, 255, 255, 0.08);
 }
 .ytc-tab-btn {
-    flex: 1;
+    flex: 1 1 0px;
+    width: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 3px;
-    padding: 6px 2px;
+    padding: 6px 1px;
     border: none;
     background: transparent;
     color: #aaa;
@@ -596,8 +597,10 @@ html[dark] #ytc-settings-btn svg {
     font-weight: 500;
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: background 0.15s ease, color 0.15s ease;
     white-space: nowrap;
+    text-align: center;
+    box-sizing: border-box;
 }
 .ytc-tab-btn:hover {
     background: rgba(255, 255, 255, 0.08);
@@ -606,7 +609,7 @@ html[dark] #ytc-settings-btn svg {
 .ytc-tab-btn.active {
     background: #f1f1f1;
     color: #0f0f0f;
-    font-weight: 600;
+    font-weight: 500;
 }
 .ytc-tab-btn svg {
     width: 13px;
@@ -793,6 +796,7 @@ html:not([dark]) .ytc-tab-btn:hover {
 html:not([dark]) .ytc-tab-btn.active {
     background: #0f0f0f;
     color: #ffffff;
+    font-weight: 500;
 }
 html:not([dark]) .ytc-shortcut-hint {
     background: rgba(0, 0, 0, 0.04);
@@ -1748,10 +1752,11 @@ html:not([dark]) .ytc-item-sub-text {
 .ytc-info-card {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
-    padding: 10px 12px;
+    border-radius: 8px;
+    padding: 8px 10px;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
     gap: 8px;
     margin-bottom: 2px;
 }
@@ -1759,82 +1764,74 @@ html:not([dark]) .ytc-info-card {
     background: rgba(0, 0, 0, 0.02);
     border-color: rgba(0, 0, 0, 0.08);
 }
-.ytc-info-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
 .ytc-info-title-wrap {
     display: flex;
     align-items: center;
     gap: 6px;
+    min-width: 0;
 }
 .ytc-info-title {
     font-weight: 600;
     font-size: 13.5px;
-}
-.ytc-info-badge {
-    font-size: 10px;
-    background: rgba(46, 204, 113, 0.15);
-    color: #2ecc71;
-    border: 1px solid rgba(46, 204, 113, 0.3);
-    padding: 1px 5px;
-    border-radius: 4px;
-    font-weight: 600;
+    white-space: nowrap;
 }
 .ytc-info-version {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     color: #ff4e45;
     background: rgba(255, 78, 69, 0.12);
     padding: 1px 6px;
     border-radius: 4px;
+    white-space: nowrap;
 }
-.ytc-info-desc {
-    font-size: 11.5px;
-    color: #aaa;
-    line-height: 1.4;
-}
-html:not([dark]) .ytc-info-desc {
-    color: #606060;
-}
-.ytc-info-actions {
-    display: flex;
-    gap: 6px;
-    margin-top: 2px;
-}
-.ytc-action-btn {
-    flex: 1;
+.ytc-update-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 5px;
-    padding: 6px 10px;
+    padding: 5px 10px;
     background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: #eee;
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
-.ytc-action-btn:hover {
+.ytc-update-btn:hover {
     background: rgba(255, 255, 255, 0.15);
     color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
 }
-.ytc-action-btn svg {
+.ytc-update-btn svg {
     width: 13px;
     height: 13px;
     fill: currentColor;
     flex-shrink: 0;
 }
-html:not([dark]) .ytc-action-btn {
+.ytc-update-btn.ytc-btn-loading {
+    opacity: 0.8;
+    cursor: wait;
+}
+.ytc-update-btn.ytc-btn-success {
+    background: rgba(46, 204, 113, 0.15) !important;
+    color: #2ecc71 !important;
+    border-color: rgba(46, 204, 113, 0.35) !important;
+}
+.ytc-update-btn.ytc-btn-has-update {
+    background: rgba(255, 0, 51, 0.15) !important;
+    color: #ff4e45 !important;
+    border-color: rgba(255, 0, 51, 0.35) !important;
+}
+html:not([dark]) .ytc-update-btn {
     background: rgba(0, 0, 0, 0.05);
     border-color: rgba(0, 0, 0, 0.1);
     color: #0f0f0f;
 }
-html:not([dark]) .ytc-action-btn:hover {
+html:not([dark]) .ytc-update-btn:hover {
     background: rgba(0, 0, 0, 0.1);
 }
 
@@ -1891,14 +1888,25 @@ html:not([dark]) .ytc-donate-details {
     border-top-color: rgba(0, 0, 0, 0.06);
     background: rgba(0, 0, 0, 0.03);
 }
-.ytc-donate-note {
-    font-size: 11.5px;
-    color: #aaa;
-    margin-bottom: 8px;
-    font-style: italic;
+.ytc-donate-qr-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 6px 0 10px 0;
+    cursor: pointer;
 }
-html:not([dark]) .ytc-donate-note {
-    color: #555;
+.ytc-donate-qr-img {
+    max-width: 190px;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.ytc-donate-qr-img:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
 }
 .ytc-donate-list {
     display: flex;

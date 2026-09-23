@@ -411,41 +411,29 @@ export function createSettingsPanel() {
 
             <!-- TAB 5: THÔNG TIN & HỖ TRỢ -->
             <div class="ytc-tab-pane" id="ytc-pane-info">
-                <!-- Thẻ phiên bản & Hành động -->
+                <!-- Thẻ phiên bản & Nút cập nhật tinh gọn -->
                 <div class="ytc-info-card">
-                    <div class="ytc-info-header">
-                        <div class="ytc-info-title-wrap">
-                            <span class="ytc-info-title">YouTube Customizer</span>
-                            <span class="ytc-info-badge">Chính thức</span>
-                        </div>
+                    <div class="ytc-info-title-wrap">
+                        <span class="ytc-info-title">YouTube Customizer</span>
                         <span class="ytc-info-version">v${APP_VERSION}</span>
                     </div>
-                    <div class="ytc-info-desc">
-                        Tiện ích tùy biến và tối ưu hóa trải nghiệm YouTube mượt mà, sạch sẽ và thông minh.
-                    </div>
-                    <div class="ytc-info-actions">
-                        <button class="ytc-action-btn" id="ytc-btn-reload" title="Tải lại trang YouTube">
-                            ${REFRESH_SVG}
-                            <span>Làm mới</span>
-                        </button>
-                        <button class="ytc-action-btn" id="ytc-btn-update" title="Kiểm tra bản cập nhật mới nhất từ GitHub">
-                            ${UPDATE_SVG}
-                            <span>Cập nhật</span>
-                        </button>
-                    </div>
+                    <button class="ytc-update-btn" id="ytc-btn-update" title="Kiểm tra bản cập nhật mới nhất từ GitHub">
+                        ${UPDATE_SVG}
+                        <span id="ytc-update-btn-text">Cập nhật</span>
+                    </button>
                 </div>
 
                 <!-- Thông tin nhà phát triển -->
-                <div class="ytc-item ytc-item-link" id="ytc-btn-dev" title="Xem GitHub của tác giả Huy Vũ">
+                <div class="ytc-item ytc-item-link" id="ytc-btn-dev" title="Ghé thăm website cá nhân của Huy Vũ">
                     <div class="ytc-item-left">
                         ${USER_SVG}
                         <div class="ytc-item-text-group">
                             <span class="ytc-item-main-text">Huy Vũ</span>
-                            <span class="ytc-item-sub-text">Nhà phát triển • @huyvu2512</span>
+                            <span class="ytc-item-sub-text">huyvu2512.io.vn • Tác giả</span>
                         </div>
                     </div>
                     <div class="ytc-link-badge">
-                        <span>GitHub</span>
+                        <span>Website</span>
                         ${EXTERNAL_LINK_SVG}
                     </div>
                 </div>
@@ -478,26 +466,22 @@ export function createSettingsPanel() {
                         <button class="ytc-donate-pill-btn" id="ytc-btn-toggle-donate">Chi tiết</button>
                     </div>
                     <div class="ytc-donate-details" id="ytc-donate-box" style="display: none;">
-                        <div class="ytc-donate-note">Cảm ơn bạn đã sử dụng và đồng hành cùng YouTube Customizer! ❤️</div>
+                        <div class="ytc-donate-qr-wrap" id="ytc-qr-wrap" title="Bấm để mở ảnh VietQR kích thước lớn">
+                            <img src="https://vietqr.app/img?acc=0886308216&bank=MoMo&fullacc=true&holder=VU+QUANG+HUY&template=standee" alt="VietQR MoMo Huy Vũ" class="ytc-donate-qr-img" id="ytc-qr-img" />
+                        </div>
                         <div class="ytc-donate-list">
-                            <!-- THÔNG TIN DONATE: Bạn có thể cập nhật STK & MoMo bên dưới -->
                             <div class="ytc-donate-item">
-                                <span class="ytc-donate-label">Ngân hàng:</span>
-                                <span class="ytc-donate-val" id="ytc-bank-name">MB Bank (Quân Đội)</span>
+                                <span class="ytc-donate-label">Ví:</span>
+                                <span class="ytc-donate-val" id="ytc-bank-name">MoMo</span>
                             </div>
                             <div class="ytc-donate-item">
-                                <span class="ytc-donate-label">Số TK:</span>
-                                <span class="ytc-donate-val ytc-selectable" id="ytc-bank-acc">123456789</span>
-                                <button class="ytc-copy-btn" id="ytc-btn-copy-acc" title="Sao chép số tài khoản">Sao chép</button>
+                                <span class="ytc-donate-label">Số MoMo:</span>
+                                <span class="ytc-donate-val ytc-selectable" id="ytc-momo-val">0886308216</span>
+                                <button class="ytc-copy-btn" id="ytc-btn-copy-momo" title="Sao chép số MoMo">Sao chép</button>
                             </div>
                             <div class="ytc-donate-item">
                                 <span class="ytc-donate-label">Chủ TK:</span>
-                                <span class="ytc-donate-val" id="ytc-bank-holder">HUY VU</span>
-                            </div>
-                            <div class="ytc-donate-item">
-                                <span class="ytc-donate-label">MoMo:</span>
-                                <span class="ytc-donate-val ytc-selectable" id="ytc-momo-val">0987654321</span>
-                                <button class="ytc-copy-btn" id="ytc-btn-copy-momo" title="Sao chép số MoMo">Sao chép</button>
+                                <span class="ytc-donate-val" id="ytc-bank-holder">VU QUANG HUY</span>
                             </div>
                         </div>
                     </div>
@@ -684,35 +668,43 @@ export function createSettingsPanel() {
             });
         }
 
-        // Tab 5: Nút Làm mới trang
-        const reloadBtn = panel.querySelector('#ytc-btn-reload');
-        if (reloadBtn) {
-            reloadBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                showToast('🔄 Đang làm mới trang...');
-                setTimeout(() => {
-                    window.location.reload();
-                }, 350);
-            });
-        }
-
-        // Tab 5: Nút Cập nhật phiên bản
+        // Tab 5: Nút Cập nhật phiên bản (Thông báo trực tiếp trên nút, không popup)
         const updateBtn = panel.querySelector('#ytc-btn-update');
+        const updateBtnText = panel.querySelector('#ytc-update-btn-text');
         if (updateBtn) {
+            let isChecking = false;
             updateBtn.addEventListener('click', async (e) => {
                 e.stopPropagation();
-                showToast('🔍 Đang kiểm tra bản cập nhật mới...');
+                if (isChecking) return;
+                isChecking = true;
+
+                updateBtn.disabled = true;
+                updateBtn.classList.remove('ytc-btn-success', 'ytc-btn-has-update');
+                updateBtn.classList.add('ytc-btn-loading');
+                if (updateBtnText) updateBtnText.textContent = 'Đang kiểm tra...';
+
                 try {
                     const res = await fetch(`https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?t=${Date.now()}`);
                     if (res.ok) {
                         const pkg = await res.json();
                         if (pkg.version && pkg.version !== APP_VERSION) {
-                            showToast(`🚀 Có bản mới v${pkg.version}! Đang mở trang tải...`, 4000);
+                            updateBtn.classList.remove('ytc-btn-loading');
+                            updateBtn.classList.add('ytc-btn-has-update');
+                            if (updateBtnText) updateBtnText.textContent = `Có bản mới v${pkg.version}!`;
                             setTimeout(() => {
                                 window.open(`https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${pkg.version}`, '_blank');
-                            }, 800);
+                            }, 500);
                         } else {
-                            showToast(`✅ Bạn đang dùng phiên bản mới nhất (v${APP_VERSION})!`, 3000);
+                            updateBtn.classList.remove('ytc-btn-loading');
+                            updateBtn.classList.add('ytc-btn-success');
+                            if (updateBtnText) updateBtnText.textContent = '✓ Bản mới nhất';
+                            setTimeout(() => {
+                                updateBtn.classList.remove('ytc-btn-success');
+                                if (updateBtnText) updateBtnText.textContent = 'Cập nhật';
+                                updateBtn.disabled = false;
+                                isChecking = false;
+                            }, 2500);
+                            return;
                         }
                     } else {
                         window.open('https://github.com/huyvu2512/youtube-customizer/releases', '_blank');
@@ -720,15 +712,22 @@ export function createSettingsPanel() {
                 } catch (err) {
                     window.open('https://github.com/huyvu2512/youtube-customizer/releases', '_blank');
                 }
+
+                setTimeout(() => {
+                    updateBtn.classList.remove('ytc-btn-loading', 'ytc-btn-has-update');
+                    if (updateBtnText) updateBtnText.textContent = 'Cập nhật';
+                    updateBtn.disabled = false;
+                    isChecking = false;
+                }, 3000);
             });
         }
 
-        // Tab 5: Thông tin nhà phát triển (Huy Vũ)
+        // Tab 5: Thông tin nhà phát triển (Huy Vũ - huyvu2512.io.vn)
         const devBtn = panel.querySelector('#ytc-btn-dev');
         if (devBtn) {
             devBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                window.open('https://github.com/huyvu2512', '_blank', 'noopener,noreferrer');
+                window.open('https://huyvu2512.io.vn', '_blank', 'noopener,noreferrer');
             });
         }
 
@@ -756,23 +755,16 @@ export function createSettingsPanel() {
             });
         }
 
-        // Tab 5: Sao chép số tài khoản & MoMo
-        const copyAccBtn = panel.querySelector('#ytc-btn-copy-acc');
-        if (copyAccBtn) {
-            copyAccBtn.addEventListener('click', (e) => {
+        // Tab 5: Mở ảnh VietQR Standee
+        const qrWrap = panel.querySelector('#ytc-qr-wrap');
+        if (qrWrap) {
+            qrWrap.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const accEl = panel.querySelector('#ytc-bank-acc');
-                if (accEl) {
-                    const text = accEl.textContent.trim();
-                    navigator.clipboard.writeText(text).then(() => {
-                        showToast(`📋 Đã sao chép số tài khoản: ${text}`);
-                    }).catch(() => {
-                        showToast(`Số TK: ${text}`);
-                    });
-                }
+                window.open('https://vietqr.app/img?acc=0886308216&bank=MoMo&fullacc=true&holder=VU+QUANG+HUY&template=standee', '_blank', 'noopener,noreferrer');
             });
         }
 
+        // Tab 5: Sao chép số MoMo
         const copyMomoBtn = panel.querySelector('#ytc-btn-copy-momo');
         if (copyMomoBtn) {
             copyMomoBtn.addEventListener('click', (e) => {
@@ -781,7 +773,10 @@ export function createSettingsPanel() {
                 if (momoEl) {
                     const text = momoEl.textContent.trim();
                     navigator.clipboard.writeText(text).then(() => {
-                        showToast(`📋 Đã sao chép số MoMo: ${text}`);
+                        copyMomoBtn.textContent = 'Đã chép!';
+                        setTimeout(() => {
+                            copyMomoBtn.textContent = 'Sao chép';
+                        }, 2000);
                     }).catch(() => {
                         showToast(`MoMo: ${text}`);
                     });
