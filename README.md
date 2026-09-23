@@ -28,11 +28,10 @@
 Phiên bản **v3.3.0** ra mắt:
 - **Tab "Tối Ưu" (Optimization) chuyên sâu:**
   - Tái cấu trúc menu cài đặt: chuyển đổi tab Phím tắt thành tab **Tối Ưu**, tích hợp công tắc phím tắt điều khiển gọn gàng và loại bỏ bảng mô tả phím tắt rườm rà.
-  - **Chặn AV1 / Ép Codec H.264 & VP9 (`blockAv1`):** Can thiệp `MediaSource.isTypeSupported`, `HTMLMediaElement.canPlayType` và `navigator.mediaCapabilities` để từ chối codec AV1 (vốn ngốn nhiều CPU trên các máy không hỗ trợ giải mã phần cứng), ép YouTube cấp luồng video H.264 / VP9 sử dụng GPU Hardware Decoding mượt mà và mát máy.
-  - **Tiết kiệm Tab nền (`bgTabSaver`):** Tự động giảm chất lượng video xuống 144p (`tiny`) khi người dùng chuyển sang tab khác hoặc thu nhỏ trình duyệt, và tự động khôi phục độ phân giải gốc khi quay lại tab.
-  - **Dọn rác bộ nhớ Live Chat (`chatMemoryGc`):** Giới hạn tối đa ~100 phần tử tin nhắn trong DOM chat của cả trang chính lẫn iframe chạy ngầm, tự động dọn rác định kỳ mỗi 10 giây chống tràn RAM và đơ lag khi xem livestream thời gian dài.
-  - **Chế độ Chỉ phát âm thanh / Radio (`audioOnlyMode`):** Ngắt render khung hình video vào GPU/Compositor, hiển thị bảng thông báo trạng thái Radio thanh lịch và hạ chất lượng video xuống tối thiểu để nghe nhạc / podcast tiết kiệm RAM và GPU tối đa.
   - **Chặn tự dừng video (`preventAutoPause`):** Tự động xác nhận các hộp thoại *"Video đã tạm dừng. Bạn vẫn đang xem chứ?"* và làm mới mốc hoạt động `window._lact` định kỳ để video và danh sách phát chạy liên tục không bị ngắt quãng.
+  - **Dọn rác bộ nhớ Live Chat (`chatMemoryGc`):** Giới hạn tối đa ~100 phần tử tin nhắn trong DOM chat của cả trang chính lẫn iframe chạy ngầm, tự động dọn rác định kỳ mỗi 10 giây chống tràn RAM và đơ lag khi xem livestream thời gian dài.
+  - **Chặn AV1 / Ép Codec H.264 & VP9 (`blockAv1`):** Can thiệp `MediaSource.isTypeSupported`, `HTMLMediaElement.canPlayType` và `navigator.mediaCapabilities` để từ chối codec AV1 (vốn ngốn nhiều CPU trên các máy không hỗ trợ giải mã phần cứng), ép YouTube cấp luồng video H.264 / VP9 sử dụng GPU Hardware Decoding mượt mà và mát máy.
+  - **Chế độ Chỉ phát âm thanh / Radio (`audioOnlyMode`):** Ngắt render khung hình video vào GPU/Compositor, hiển thị thông báo chữ tối giản và hạ chất lượng video xuống tối thiểu để nghe nhạc / podcast tiết kiệm RAM và GPU tối đa.
 - **Kế thừa và hoàn thiện từ v3.2.31:**
   - Tự động tắt khung trò chuyện trực tiếp khi mới mở video (cho phép mở lại bình thường, Live Chat overlay chạy ngầm).
   - Tự do vuốt lên đọc tin nhắn Live Chat cũ mà không bao giờ bị giật về đáy.
@@ -124,7 +123,7 @@ Phiên bản **v3.3.0** ra mắt:
   - **Giao diện:** Tùy chọn số cột trang chủ (3, 4, 5 cột), Bật/tắt Logo YouTube Premium, Mở khóa tua Live Stream (Live DVR), Tự động trực tiếp (Auto Live), Live Chat (Tắt / Ngang / Nổi).
   - **Lọc:** Ẩn Shorts hoàn toàn, Ẩn Chơi game (Playables), Ẩn video Hội viên (Ưu tiên & Đặc quyền), Ẩn bài đăng cộng đồng, Lọc tìm kiếm sạch (Clean Search), Ẩn Khám phá các chủ đề khác.
   - **Trình phát:** Tắt ánh sáng viền video (Ambient Mode / Cinematics), Ẩn thẻ kết thúc & thẻ chú thích video, Ẩn logo góc video (Watermark), Tự động đóng banner & thông báo gián đoạn, Tắt trò chuyện trực tiếp (Native Live Chat), Ẩn biểu tượng trong Live Chat.
-  - **Tối Ưu:** Chặn AV1 / Ép Codec H.264 & VP9, Tiết kiệm Tab nền (144p), Dọn rác bộ nhớ Live Chat, Chế độ Chỉ phát âm thanh (Radio Audio-Only), Chặn tự dừng video ("Bạn vẫn đang xem chứ?"), Phím tắt điều khiển (A-S-D, Numpad).
+  - **Tối Ưu:** Chặn tự dừng video ("Bạn vẫn đang xem chứ?"), Dọn rác bộ nhớ Live Chat, Chặn AV1 / Ép Codec H.264 & VP9, Phím tắt điều khiển (A-S-D, Numpad), Chế độ Chỉ phát âm thanh (Radio Audio-Only).
   - Toàn bộ thiết lập được lưu tự động vào `localStorage` và cập nhật tức thì (Live Update) mà không cần tải lại trang.
 - **Tự động giữ mốc trực tiếp (Auto Live Sync):**
   - Tự động duy trì thời gian thực trên các luồng phát Live Stream YouTube.

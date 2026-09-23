@@ -29,7 +29,6 @@ import {
     EMOJI_OFF_SVG,
     OPTIMIZE_TAB_SVG,
     CPU_SVG,
-    LEAF_SVG,
     BROOM_SVG,
     HEADPHONES_SVG,
     INFINITY_SVG
@@ -312,17 +311,6 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="bgTabSaver" title="Tự động giảm chất lượng video xuống 144p khi chuyển sang tab khác và khôi phục khi quay lại giúp tiết kiệm RAM và GPU">
-                    <div class="ytc-item-left">
-                        ${LEAF_SVG}
-                        <span>Tiết kiệm Tab nền (144p)</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-bgtab">
-                        <input type="checkbox" id="ytc-chk-bgtab" name="bgTabSaver" aria-label="Tiết kiệm Tab nền" ${currentConfig.bgTabSaver ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
                 <div class="ytc-item" data-toggle="chatMemoryGc" title="Giới hạn tối đa 100 tin nhắn trong DOM Live Chat, dọn dẹp bộ nhớ định kỳ chống đầy tràn RAM khi xem stream lâu">
                     <div class="ytc-item-left">
                         ${BROOM_SVG}
@@ -458,13 +446,6 @@ export function createSettingsPanel() {
                     import('../optimization/audioOnly.js').then(m => {
                         if (m && typeof m.applyAudioOnlyState === 'function') {
                             m.applyAudioOnlyState();
-                        }
-                    }).catch(() => {});
-                }
-                if (key === 'bgTabSaver' && !checkbox.checked) {
-                    import('../optimization/bgTabSaver.js').then(m => {
-                        if (m && typeof m.resetBgTabQuality === 'function') {
-                            m.resetBgTabQuality();
                         }
                     }).catch(() => {});
                 }
