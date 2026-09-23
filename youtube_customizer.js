@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.16
-// @description  YouTube Customizer v3.2.16 — Tối ưu Live Chat Danmaku ngang: chống đè, chống dính chùm khi mới mở chat.
+// @version      3.2.17
+// @description  YouTube Customizer v3.2.17 — Khắc phục triệt để lỗi Auto Live can thiệp vào video xem lại buổi live đã kết thúc (PostLiveDvr).
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -28,7 +28,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.2.16";
+      APP_VERSION = "3.2.17";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 15s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`;
@@ -1991,8 +1991,9 @@
   function snapToLive(player) {
     if (!player) player = document.querySelector("#movie_player, .html5-video-player");
     if (!player) return;
+    if (!isCurrentlyActiveLive(player)) return;
     const liveBadge = player.querySelector(".ytp-live-badge");
-    if (liveBadge) {
+    if (liveBadge && liveBadge.offsetParent !== null && window.getComputedStyle(liveBadge).display !== "none") {
       try {
         liveBadge.click();
         return;
@@ -2002,8 +2003,6 @@
     try {
       if (typeof player.seekToStreamTime === "function") {
         player.seekToStreamTime(Infinity);
-      } else if (typeof player.seekTo === "function") {
-        player.seekTo(Infinity, true);
       }
     } catch (e) {
     }
@@ -2011,32 +2010,36 @@
   function isCurrentlyActiveLive(player) {
     if (!player) player = document.querySelector("#movie_player, .html5-video-player");
     if (!player) return false;
-    if (player.classList.contains("ytp-live") || !!player.querySelector(".ytp-live-badge")) {
-      return true;
-    }
-    if (location.pathname.startsWith("/live/")) {
-      return true;
-    }
     if (typeof player.getVideoData === "function") {
       const vd = player.getVideoData();
       if (vd) {
-        if (vd.isPostLiveDvr) return false;
-        if (vd.isLive || vd.isLiveDvr) return true;
+        if (vd.isPostLiveDvr === true) return false;
+        if (vd.isLive === false && !vd.isLiveDvr) return false;
+        if (vd.isLive === true && !vd.isPostLiveDvr) return true;
       }
     }
     if (typeof player.isLive === "function") {
       try {
-        if (player.isLive() === true) return true;
+        const live = player.isLive();
+        if (live === false) return false;
+        if (live === true) return true;
       } catch (e) {
       }
     }
-    if (document.querySelector("ytd-watch-flexy[is-live], ytd-live-chat-frame#chat:not([hidden])")) {
-      return true;
+    const hasLiveClass = player.classList.contains("ytp-live");
+    if (!hasLiveClass) {
+      return false;
     }
-    return false;
+    const liveBadge = player.querySelector(".ytp-live-badge");
+    const isBadgeVisible = !!(liveBadge && liveBadge.offsetParent !== null && window.getComputedStyle(liveBadge).display !== "none");
+    if (!isBadgeVisible) {
+      return false;
+    }
+    return true;
   }
   function getLiveDelay(player, video) {
     if (!video) return 0;
+    if (!isCurrentlyActiveLive(player)) return 0;
     try {
       if (video.seekable && video.seekable.length > 0) {
         const liveEdge = video.seekable.end(video.seekable.length - 1);
@@ -2100,21 +2103,31 @@
     initialSnapTimer = setInterval(() => {
       attempts++;
       const player = document.querySelector("#movie_player, .html5-video-player");
-      if (player && isCurrentlyActiveLive(player)) {
-        const video = player.querySelector("video");
-        if (video && !video.paused) {
-          const delay = getLiveDelay(player, video);
-          if (!userIsRewound && delay > 10) {
+      if (player) {
+        if (typeof player.getVideoData === "function") {
+          const vd = player.getVideoData();
+          if (vd && (vd.isPostLiveDvr === true || vd.isLive === false && !vd.isLiveDvr)) {
             clearInterval(initialSnapTimer);
             initialSnapTimer = null;
-            lastSnapTime = Date.now();
-            snapToLive(player);
             return;
           }
-          if (delay <= 10) {
-            clearInterval(initialSnapTimer);
-            initialSnapTimer = null;
-            return;
+        }
+        if (isCurrentlyActiveLive(player)) {
+          const video = player.querySelector("video");
+          if (video && !video.paused) {
+            const delay = getLiveDelay(player, video);
+            if (!userIsRewound && delay > 10) {
+              clearInterval(initialSnapTimer);
+              initialSnapTimer = null;
+              lastSnapTime = Date.now();
+              snapToLive(player);
+              return;
+            }
+            if (delay <= 10) {
+              clearInterval(initialSnapTimer);
+              initialSnapTimer = null;
+              return;
+            }
           }
         }
       }
@@ -2134,19 +2147,23 @@
     });
     document.addEventListener("click", (e) => {
       if (e.target.closest(".ytp-live-badge")) {
-        userIsRewound = false;
-        lastUserSeekTime = 0;
-        lastSnapTime = Date.now();
         const player = document.querySelector("#movie_player, .html5-video-player");
-        snapToLive(player);
+        if (player && isCurrentlyActiveLive(player)) {
+          userIsRewound = false;
+          lastUserSeekTime = 0;
+          lastSnapTime = Date.now();
+          snapToLive(player);
+        }
       }
       if (e.target.closest(".ytp-progress-bar")) {
+        const player = document.querySelector("#movie_player, .html5-video-player");
+        if (!player || !isCurrentlyActiveLive(player)) return;
         lastUserSeekTime = Date.now();
         setTimeout(() => {
-          const player = document.querySelector("#movie_player, .html5-video-player");
-          if (!player) return;
-          const video = player.querySelector("video");
-          const delay = getLiveDelay(player, video);
+          const p = document.querySelector("#movie_player, .html5-video-player");
+          if (!p || !isCurrentlyActiveLive(p)) return;
+          const video = p.querySelector("video");
+          const delay = getLiveDelay(p, video);
           if (delay > 15) {
             userIsRewound = true;
           } else {

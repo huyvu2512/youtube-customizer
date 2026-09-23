@@ -23,22 +23,23 @@ export function snapToLive(player) {
     if (!player) player = document.querySelector('#movie_player, .html5-video-player');
     if (!player) return;
 
-    // 1. Ưu tiên click nút "Trực tiếp" / "LIVE" chính thức của YouTube player
+    // Tuyệt đối không can thiệp nếu không phải luồng trực tiếp đang phát sóng
+    if (!isCurrentlyActiveLive(player)) return;
+
+    // 1. Ưu tiên click nút "Trực tiếp" / "LIVE" chính thức của YouTube player (chỉ khi nút đang hiển thị)
     // YouTube sẽ tự đồng bộ buffer và audio mượt mà theo đúng chuẩn native
     const liveBadge = player.querySelector('.ytp-live-badge');
-    if (liveBadge) {
+    if (liveBadge && liveBadge.offsetParent !== null && window.getComputedStyle(liveBadge).display !== 'none') {
         try {
             liveBadge.click();
             return;
         } catch (e) {}
     }
 
-    // 2. Dự phòng: chỉ gọi seekTo nếu không tìm thấy liveBadge
+    // 2. Dự phòng an toàn: chỉ gọi seekToStreamTime nếu player có hỗ trợ và đang là live thật sự
     try {
         if (typeof player.seekToStreamTime === 'function') {
             player.seekToStreamTime(Infinity);
-        } else if (typeof player.seekTo === 'function') {
-            player.seekTo(Infinity, true);
         }
     } catch (e) {}
 }
@@ -47,43 +48,53 @@ export function isCurrentlyActiveLive(player) {
     if (!player) player = document.querySelector('#movie_player, .html5-video-player');
     if (!player) return false;
 
-    // 1. Kiểm tra class trên player hoặc sự hiện diện của badge Trực tiếp
-    if (player.classList.contains('ytp-live') || !!player.querySelector('.ytp-live-badge')) {
-        return true;
-    }
-
-    // 2. Kiểm tra URL /live/
-    if (location.pathname.startsWith('/live/')) {
-        return true;
-    }
-
-    // 3. Kiểm tra API player
+    // 1. Kiểm tra API player.getVideoData() - Nguồn thông tin chính xác nhất của YouTube
     if (typeof player.getVideoData === 'function') {
         const vd = player.getVideoData();
         if (vd) {
-            // Nếu đã kết thúc live (PostLiveDvr) thì không phải đang phát trực tiếp
-            if (vd.isPostLiveDvr) return false;
-            // Hỗ trợ cả live thông thường và Live DVR (tua lại)
-            if (vd.isLive || vd.isLiveDvr) return true;
+            // Live đã kết thúc (PostLiveDvr) -> Chắc chắn là video xem lại, KHÔNG phải đang trực tiếp
+            if (vd.isPostLiveDvr === true) return false;
+
+            // Video thường (isLive: false và không phải Live DVR) -> Không phải trực tiếp
+            if (vd.isLive === false && !vd.isLiveDvr) return false;
+
+            // Đang phát trực tiếp (Live thông thường hoặc Premiere đang chiếu)
+            if (vd.isLive === true && !vd.isPostLiveDvr) return true;
         }
     }
 
+    // 2. Kiểm tra API player.isLive() của YouTube player
     if (typeof player.isLive === 'function') {
         try {
-            if (player.isLive() === true) return true;
+            const live = player.isLive();
+            // Nếu player.isLive() trả về false -> 100% không phải trực tiếp
+            if (live === false) return false;
+            if (live === true) return true;
         } catch (e) {}
     }
 
-    // 4. Kiểm tra cấu trúc DOM trang YouTube (ytd-watch-flexy có attribute is-live hoặc live chat frame)
-    if (document.querySelector('ytd-watch-flexy[is-live], ytd-live-chat-frame#chat:not([hidden])')) {
-        return true;
+    // 3. Kiểm tra class 'ytp-live' trên movie_player
+    // YouTube LUÔN gắn class 'ytp-live' khi video đang phát sóng trực tiếp
+    // Khi live kết thúc chuyển sang video xem lại, class 'ytp-live' sẽ lập tức bị xóa
+    const hasLiveClass = player.classList.contains('ytp-live');
+    if (!hasLiveClass) {
+        return false;
     }
 
-    return false;
+    // 4. Kiểm tra nút Live Badge (.ytp-live-badge) có đang THỰC SỰ HIỂN THỊ
+    // (Trên video thường hoặc live đã kết thúc, nút này bị ẩn display: none)
+    const liveBadge = player.querySelector('.ytp-live-badge');
+    const isBadgeVisible = !!(liveBadge && liveBadge.offsetParent !== null && window.getComputedStyle(liveBadge).display !== 'none');
+    if (!isBadgeVisible) {
+        return false;
+    }
+
+    return true;
 }
 
 function getLiveDelay(player, video) {
     if (!video) return 0;
+    if (!isCurrentlyActiveLive(player)) return 0;
     try {
         if (video.seekable && video.seekable.length > 0) {
             const liveEdge = video.seekable.end(video.seekable.length - 1);
@@ -167,23 +178,35 @@ export function checkInitialLiveSnap() {
     initialSnapTimer = setInterval(() => {
         attempts++;
         const player = document.querySelector('#movie_player, .html5-video-player');
-        if (player && isCurrentlyActiveLive(player)) {
-            const video = player.querySelector('video');
-            if (video && !video.paused) {
-                const delay = getLiveDelay(player, video);
-                // Nếu khi vừa vào video bị kẹt ở mốc cũ (> 10s hoặc ở 0:00) -> đưa về trực tiếp ngay!
-                if (!userIsRewound && delay > 10.0) {
+        if (player) {
+            if (typeof player.getVideoData === 'function') {
+                const vd = player.getVideoData();
+                if (vd && (vd.isPostLiveDvr === true || (vd.isLive === false && !vd.isLiveDvr))) {
+                    // Video xem lại hoặc video thường -> lập tức dừng timer, giữ nguyên vị trí xem của người dùng
                     clearInterval(initialSnapTimer);
                     initialSnapTimer = null;
-                    lastSnapTime = Date.now();
-                    snapToLive(player);
                     return;
                 }
-                // Nếu video đã ở mốc trực tiếp bình thường (delay <= 10s) -> dừng check
-                if (delay <= 10.0) {
-                    clearInterval(initialSnapTimer);
-                    initialSnapTimer = null;
-                    return;
+            }
+
+            if (isCurrentlyActiveLive(player)) {
+                const video = player.querySelector('video');
+                if (video && !video.paused) {
+                    const delay = getLiveDelay(player, video);
+                    // Nếu khi vừa vào video live bị kẹt ở mốc cũ (> 10s hoặc ở 0:00) -> đưa về trực tiếp ngay!
+                    if (!userIsRewound && delay > 10.0) {
+                        clearInterval(initialSnapTimer);
+                        initialSnapTimer = null;
+                        lastSnapTime = Date.now();
+                        snapToLive(player);
+                        return;
+                    }
+                    // Nếu video đã ở mốc trực tiếp bình thường (delay <= 10s) -> dừng check
+                    if (delay <= 10.0) {
+                        clearInterval(initialSnapTimer);
+                        initialSnapTimer = null;
+                        return;
+                    }
                 }
             }
         }
@@ -206,23 +229,28 @@ export function initAutoLiveSync() {
     });
 
     document.addEventListener('click', (e) => {
-        // Nhấp vào badge "Trực tiếp" -> hủy chế độ xem lại, ép về trực tiếp
+        // Nhấp vào badge "Trực tiếp" -> chỉ xử lý khi đang xem live stream thật sự
         if (e.target.closest('.ytp-live-badge')) {
-            userIsRewound = false;
-            lastUserSeekTime = 0;
-            lastSnapTime = Date.now();
             const player = document.querySelector('#movie_player, .html5-video-player');
-            snapToLive(player);
+            if (player && isCurrentlyActiveLive(player)) {
+                userIsRewound = false;
+                lastUserSeekTime = 0;
+                lastSnapTime = Date.now();
+                snapToLive(player);
+            }
         }
 
-        // Nhấp vào thanh tiến trình
+        // Nhấp vào thanh tiến trình -> chỉ theo dõi trạng thái tua lại nếu đang xem live
         if (e.target.closest('.ytp-progress-bar')) {
+            const player = document.querySelector('#movie_player, .html5-video-player');
+            if (!player || !isCurrentlyActiveLive(player)) return;
+
             lastUserSeekTime = Date.now();
             setTimeout(() => {
-                const player = document.querySelector('#movie_player, .html5-video-player');
-                if (!player) return;
-                const video = player.querySelector('video');
-                const delay = getLiveDelay(player, video);
+                const p = document.querySelector('#movie_player, .html5-video-player');
+                if (!p || !isCurrentlyActiveLive(p)) return;
+                const video = p.querySelector('video');
+                const delay = getLiveDelay(p, video);
                 if (delay > 15.0) {
                     userIsRewound = true;
                 } else {

@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.16
-// @description  YouTube Customizer v3.2.16 — Tối ưu Live Chat Danmaku ngang: chống đè, chống dính chùm khi mới mở chat.
+// @version      3.2.17
+// @description  YouTube Customizer v3.2.17 — Khắc phục triệt để lỗi Auto Live can thiệp vào video xem lại buổi live đã kết thúc (PostLiveDvr).
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
