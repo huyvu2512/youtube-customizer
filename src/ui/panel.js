@@ -423,17 +423,6 @@ export function createSettingsPanel() {
 
             <!-- TAB 5: THÔNG TIN & HỖ TRỢ -->
             <div class="ytc-tab-pane" id="ytc-pane-info">
-                <!-- Thẻ kiểm tra cập nhật tinh gọn -->
-                <div class="ytc-info-card">
-                    <div class="ytc-info-title-wrap">
-                        <span class="ytc-info-title">Kiểm tra cập nhật</span>
-                    </div>
-                    <button class="ytc-update-btn" id="ytc-btn-update" title="Kiểm tra bản cập nhật mới nhất từ GitHub">
-                        ${UPDATE_SVG}
-                        <span id="ytc-update-btn-text">Kiểm tra</span>
-                    </button>
-                </div>
-
                 <!-- Thông tin nhà phát triển -->
                 <div class="ytc-item ytc-item-link" id="ytc-btn-dev" title="Ghé thăm website cá nhân của Huy Vũ">
                     <div class="ytc-item-left">
@@ -477,6 +466,17 @@ export function createSettingsPanel() {
                         <span>Ủng hộ</span>
                         ${EXTERNAL_LINK_SVG}
                     </div>
+                </div>
+
+                <!-- Thẻ kiểm tra cập nhật tinh gọn -->
+                <div class="ytc-info-card">
+                    <div class="ytc-info-title-wrap">
+                        <span class="ytc-info-title">Kiểm tra cập nhật</span>
+                    </div>
+                    <button class="ytc-update-btn" id="ytc-btn-update" title="Kiểm tra bản cập nhật mới nhất từ GitHub">
+                        ${UPDATE_SVG}
+                        <span id="ytc-update-btn-text">Kiểm tra</span>
+                    </button>
                 </div>
             </div>
         `);

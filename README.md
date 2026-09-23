@@ -25,15 +25,13 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.3.7** ra mắt:
-- **Bổ sung Tab 5 "Thông tin" trong Menu cài đặt:**
-  - Hiển thị phiên bản hiện tại, trạng thái phát hành chính thức.
-  - Tích hợp 2 nút thao tác nhanh: **Làm mới trang** và **Kiểm tra cập nhật** qua GitHub.
-  - Giới thiệu thông tin nhà phát triển **Huy Vũ (@huyvu2512)** kèm link trang cá nhân.
-  - Mục **Báo cáo & Góp ý** liên kết trực tiếp với GitHub Issues.
-  - Mục **Tặng quà & Ủng hộ (Donate)** tinh tế với thông tin chuyển khoản ngân hàng / MoMo cùng nút sao chép nhanh tiện lợi.
-- **Tối ưu thứ tự Tab "Tối Ưu":**
-  - Chuyển tính năng **Độ phân giải video** lên vị trí trên cùng của tab.
+Phiên bản **v3.3.8** ra mắt:
+- **Tính năng "Ẩn sản phẩm gắn thẻ" (YouTube Shopping):**
+  - Tự động đóng/ẩn thanh trượt bên phải Sản phẩm (`engagement-panel-shopping-panel`), nút túi xách mua sắm trên player và kệ hàng tiếp thị liên kết Shopee.
+- **Hoàn thiện Tab 5 "Thông tin" trong Menu cài đặt:**
+  - Tinh chỉnh nút Kiểm tra cập nhật xuống dưới cùng của tab, hiển thị trạng thái "Bản mới nhất" (xanh lá) hoặc "Cập nhật" (xanh dương click mở link).
+  - Đơn giản hóa mục Tặng quà & Ủng hộ mở trực tiếp link VietQR MoMo.
+  - Thiết kế lại badge phiên bản (version badge) theo phong cách bán trong suốt đồng bộ.
 - **Tính năng Ưu tiên chọn độ phân giải video (`preferredQuality`) trong tab Tối Ưu:**
   - Cung cấp thanh chọn 5 chế độ: **Tự động** (mặc định của YouTube), **Cao nhất** (Max / 4K / 8K), **2K** (1440p), **1080p** (Full HD) và **720p** (HD).
   - Tự động áp đặt độ phân giải mong muốn ngay khi mở hoặc chuyển tiếp video, không cần chỉnh tay thủ công mỗi lần xem.

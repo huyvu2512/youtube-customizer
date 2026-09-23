@@ -1787,7 +1787,7 @@ html:not([dark]) .ytc-item-sub-text {
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    margin-bottom: 2px;
+    margin-top: 4px;
 }
 html:not([dark]) .ytc-info-card {
     background: rgba(0, 0, 0, 0.02);
