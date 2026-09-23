@@ -41,7 +41,8 @@ import {
     USER_SVG,
     BUG_SVG,
     GIFT_SVG,
-    EXTERNAL_LINK_SVG
+    EXTERNAL_LINK_SVG,
+    SHOPPING_SVG
 } from '../core/constants.js';
 import { syncPanelState } from './sync.js';
 import { setupOnboardingAndUpdates } from './notifier.js';
@@ -157,6 +158,17 @@ export function createSettingsPanel() {
                     </div>
                     <label class="ytc-switch" for="ytc-chk-autolive">
                         <input type="checkbox" id="ytc-chk-autolive" name="autoLiveSync" aria-label="Tự động trực tiếp (Auto Live)" ${currentConfig.autoLiveSync ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hideShopping" title="Ẩn bảng Sản phẩm (Shopping), nút túi xách mua sắm trên video và kệ sản phẩm gắn thẻ">
+                    <div class="ytc-item-left">
+                        ${SHOPPING_SVG}
+                        <span>Ẩn sản phẩm gắn thẻ</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-shopping">
+                        <input type="checkbox" id="ytc-chk-shopping" name="hideShopping" aria-label="Ẩn sản phẩm gắn thẻ" ${currentConfig.hideShopping ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -646,6 +658,13 @@ export function createSettingsPanel() {
                     import('../features/feedFilter.js').then(m => {
                         if (m && typeof m.scheduleFeedScan === 'function') {
                             m.scheduleFeedScan(document);
+                        }
+                    }).catch(() => {});
+                }
+                if (key === 'hideShopping' && checkbox.checked) {
+                    import('../features/shoppingFilter.js').then(m => {
+                        if (m && typeof m.dismissShoppingPanels === 'function') {
+                            m.dismissShoppingPanels(document);
                         }
                     }).catch(() => {});
                 }

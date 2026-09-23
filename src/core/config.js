@@ -19,6 +19,7 @@ export const DEFAULT_CONFIG = {
     chatOverlayHideOnRewind: false, // Tự động ẩn khi tua về quá khứ (mặc định tắt)
     autoDismissPromos: false,// Tự động đóng banner khuyến mại & thông báo gián đoạn (mặc định tắt)
     autoLiveSync: false,    // Tự động giữ mốc trực tiếp khi xem Live Stream (mặc định tắt)
+    hideShopping: false,    // Ẩn bảng sản phẩm gắn thẻ (YouTube Shopping), nút túi xách mua sắm (mặc định tắt)
     premiumLogo: false,     // Logo YouTube Premium (mặc định tắt)
     cleanSearch: false,     // Ẩn video tài trợ / quảng cáo tìm kiếm (mặc định tắt)
     disableAmbient: false,  // Tắt Ambient Mode (Cinematics) (mặc định tắt)
@@ -78,6 +79,7 @@ export function applyConfigToRoot() {
     root.classList.toggle('ytc-hide-community', !!currentConfig.hideCommunity);
     root.classList.toggle('ytc-hide-endscreen', !!currentConfig.hideEndscreen);
     root.classList.toggle('ytc-hide-watermark', !!currentConfig.hideWatermark);
+    root.classList.toggle('ytc-hide-shopping', !!currentConfig.hideShopping);
     root.classList.toggle('ytc-auto-dismiss', !!currentConfig.autoDismissPromos);
     root.classList.toggle('ytc-premium-logo', !!currentConfig.premiumLogo);
     root.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
@@ -97,6 +99,7 @@ export function applyConfigToRoot() {
         document.body.classList.toggle('ytc-hide-community', !!currentConfig.hideCommunity);
         document.body.classList.toggle('ytc-hide-endscreen', !!currentConfig.hideEndscreen);
         document.body.classList.toggle('ytc-hide-watermark', !!currentConfig.hideWatermark);
+        document.body.classList.toggle('ytc-hide-shopping', !!currentConfig.hideShopping);
         document.body.classList.toggle('ytc-auto-dismiss', !!currentConfig.autoDismissPromos);
         document.body.classList.toggle('ytc-premium-logo', !!currentConfig.premiumLogo);
         document.body.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);

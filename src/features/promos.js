@@ -2,8 +2,12 @@
 // TỰ ĐỘNG ĐÓNG PROMO BANNER & CẢNH BÁO GIÁN ĐOẠN
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
+import { dismissShoppingPanels } from './shoppingFilter.js';
 
 export function dismissPromoBanners(scope) {
+    if (currentConfig.hideShopping) {
+        dismissShoppingPanels(scope);
+    }
     if (!currentConfig.autoDismissPromos) return;
     const root = scope && scope.querySelectorAll ? scope : document;
 
