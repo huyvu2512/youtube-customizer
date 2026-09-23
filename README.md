@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.3.1-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.3.3-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,14 +25,14 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.3.1** ra mắt:
-- **Tính năng Ẩn Danh sách kết hợp (`hideMixes`) trong tab Bộ Lọc:**
-  - Ẩn toàn diện các playlist Mix do YouTube tự tạo (`ytd-radio-renderer`, `list=RD...`) trên Trang chủ, Kết quả tìm kiếm và thanh Gợi ý xem tiếp sidebar.
-  - Ẩn khung danh sách phát Mix (`#playlist`) khi xem video, đẩy danh sách gợi ý đề xuất lên vị trí ưu tiên.
-  - Tự động làm sạch URL (loại bỏ `&list=RD...` và `&index=...`), ngăn YouTube ép người xem vào danh sách kết hợp khi click vào video.
-  - Tự động chuyển tiếp mượt mà sang **video đề xuất tự nhiên** khi hết bài thay vì bị kẹt lại trong danh sách kết hợp.
+Phiên bản **v3.3.3** ra mắt:
+- **Sửa triệt để lỗi Tab "Âm nhạc" trên Trang chủ bị đen/trống:** Không còn ẩn nhầm toàn bộ các kệ danh sách nhạc trên tab Âm nhạc của YouTube.
+- **Mở rộng tính năng Ẩn Danh sách phát & Mix (`hideMixes`) trong tab Bộ Lọc:**
+  - Ẩn toàn bộ Danh sách kết hợp (Mixes / Radio) và Danh sách phát (Playlists) do người dùng tạo trong kết quả Tìm kiếm và thanh Gợi ý xem tiếp.
+  - Ẩn nút "Danh sách kết hợp" trên thanh chủ đề đầu trang.
+  - Tự động làm sạch URL và chuyển tiếp video đề xuất tự nhiên khi hết bài.
 - **Tinh chỉnh Chế độ Chỉ Âm Thanh / Radio (`audioOnlyMode`):**
-  - Áp dụng giao diện chữ tối giản 2 dòng căn giữa thanh lịch, loại bỏ hoàn toàn cảm giác khung hộp AI cồng kềnh.
+  - Giao diện chữ tối giản 2 dòng căn giữa thanh lịch.
 - **Kế thừa bộ tính năng tối ưu chuyên sâu từ v3.3.0:**
   - **Tab "Tối Ưu" (Optimization):** Chặn tự dừng video (`preventAutoPause`), Dọn rác bộ nhớ Live Chat RAM (`chatMemoryGc`), Chặn AV1 / Ép H.264 (`blockAv1`).
 - **Kế thừa và hoàn thiện từ v3.2.31:**
