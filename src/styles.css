@@ -1060,6 +1060,9 @@ body[data-ytc-chat="danmaku"] #ytc-streamer-box {
 /* 1. Giao diện thường (chưa phóng to):
    Để YouTube xử lý thu gọn tự nhiên (hiện thẻ teaser "Mở bảng điều khiển" gọn gàng),
    TUYỆT ĐỐI KHÔNG đẩy frame chat gốc ra -9999px để người dùng có thể nhấp mở/đóng bình thường. */
+ytd-live-chat-frame[collapsed] #chatframe {
+    display: none !important;
+}
 
 /* 2. Trạng thái ẩn Chat gốc trong giao diện toàn màn hình (FULLSCREEN / PHÓNG TO) khi CHƯA MỞ CHAT */
 /* Triệt tiêu độ rộng side panel bên phải để video tràn 100vw khi CHƯA CÓ BẤT KỲ PANEL NÀO ĐƯỢC MỞ */

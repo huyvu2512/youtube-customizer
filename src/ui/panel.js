@@ -451,10 +451,27 @@ export function createSettingsPanel() {
                             if (m && typeof m.resetChatCollapseState === 'function') {
                                 m.resetChatCollapseState();
                             }
+                            if (m && typeof m.autoCollapseNativeChatIfOpen === 'function') {
+                                m.autoCollapseNativeChatIfOpen(true);
+                            }
                             if (m && typeof m.setupAutoCloseObserver === 'function') {
                                 m.setupAutoCloseObserver();
-                            } else if (m && typeof m.autoCollapseNativeChatIfOpen === 'function') {
-                                m.autoCollapseNativeChatIfOpen();
+                            }
+                            setTimeout(() => m.autoCollapseNativeChatIfOpen?.(true), 100);
+                            setTimeout(() => m.autoCollapseNativeChatIfOpen?.(true), 300);
+                            setTimeout(() => m.autoCollapseNativeChatIfOpen?.(true), 700);
+                        } else {
+                            if (m && typeof m.setUserManuallyOpenedChat === 'function') {
+                                m.setUserManuallyOpenedChat(true);
+                            }
+                            if (m && typeof m.setNativeChatHiddenState === 'function') {
+                                m.setNativeChatHiddenState(false);
+                            }
+                            // Khôi phục hiển thị khung chat nếu đang bị collapsed
+                            const chatFrame = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy');
+                            if (chatFrame && chatFrame.hasAttribute('collapsed')) {
+                                const showBtn = chatFrame.querySelector('#show-hide-button yt-button-shape button, #show-hide-button button, #show-hide-button');
+                                if (showBtn) showBtn.click();
                             }
                         }
                         if (m && typeof m.syncPlayerFullscreenSize === 'function') {
