@@ -2,7 +2,7 @@
 // CHAT OBSERVER, BACKGROUND SYNC & IFRAME CONTROLLER
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
-import { whenElement, hasLiveOrChatSupport } from '../core/utils.js';
+import { whenElement, hasLiveOrChatSupport, rafThrottle } from '../core/utils.js';
 import {
     chatOverlayInitialized,
     setChatOverlayInitialized,
@@ -33,37 +33,80 @@ export function resetChatCollapseState() {
     hasAutoCollapsedChatForCurrentVideo = false;
 }
 
+export function hideNativeChatElements() {
+    if (!currentConfig.hideNativeLiveChat) return;
+
+    // 1. Ẩn nút icon chat trong Action Bar / Pill Bar / Player
+    const chatBtns = document.querySelectorAll(
+        '#actions [aria-label*="trò chuyện" i], ' +
+        '#actions [aria-label*="chat" i], ' +
+        '#actions [title*="trò chuyện" i], ' +
+        '#actions [title*="chat" i], ' +
+        '#top-level-buttons-computed [aria-label*="trò chuyện" i], ' +
+        '#top-level-buttons-computed [aria-label*="chat" i], ' +
+        '#top-level-buttons-computed [title*="trò chuyện" i], ' +
+        '#top-level-buttons-computed [title*="chat" i], ' +
+        'ytd-menu-renderer [aria-label*="trò chuyện" i], ' +
+        'ytd-menu-renderer [aria-label*="chat" i], ' +
+        '.ytp-live-chat-button, ' +
+        '.ytp-chat-button, ' +
+        '[aria-label*="Trò chuyện trực tiếp" i]'
+    );
+    chatBtns.forEach(btn => {
+        const wrapper = btn.closest('yt-button-view-model, yt-button-shape, ytd-button-renderer') || btn;
+        wrapper.style.setProperty('display', 'none', 'important');
+    });
+
+    // 2. Ẩn toàn bộ khung Teaser Live Chat (Trực tiếp & Phát lại)
+    const teasers = document.querySelectorAll(
+        '#chat-teaser, #teaser, ytd-live-chat-frame[collapsed], ' +
+        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i], ' +
+        '[target-id="engagement-panel-live-chat"], ' +
+        'ytd-live-chat-frame#chat, ' +
+        '#chat.ytd-watch-flexy'
+    );
+    teasers.forEach(t => {
+        const itemSection = t.closest('ytd-item-section-renderer') || t;
+        itemSection.style.setProperty('display', 'none', 'important');
+    });
+
+    // 3. Ẩn các khối chứa nút "Mở bảng điều khiển" của chat
+    const openPanelBtns = document.querySelectorAll(
+        'ytd-item-section-renderer button[aria-label*="Mở bảng điều khiển" i], ' +
+        'ytd-item-section-renderer button[aria-label*="Open panel" i], ' +
+        '#related button[aria-label*="Mở bảng điều khiển" i], ' +
+        '#below button[aria-label*="Mở bảng điều khiển" i]'
+    );
+    openPanelBtns.forEach(btn => {
+        const itemSection = btn.closest('ytd-item-section-renderer');
+        if (itemSection) {
+            itemSection.style.setProperty('display', 'none', 'important');
+        }
+    });
+}
+
+export const throttledHideNativeChatElements = rafThrottle(hideNativeChatElements);
+
+let chatElementsObserver = null;
+export function setupChatElementsObserver() {
+    if (chatElementsObserver) return;
+    chatElementsObserver = new MutationObserver(() => {
+        if (currentConfig.hideNativeLiveChat) {
+            throttledHideNativeChatElements();
+        }
+    });
+    const target = document.querySelector('ytd-app') || document.body || document.documentElement;
+    if (target) {
+        chatElementsObserver.observe(target, { childList: true, subtree: true });
+    }
+}
+
 export function autoCollapseNativeChatIfOpen() {
     const shouldCollapse = (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') || !!currentConfig.hideNativeLiveChat;
     if (!shouldCollapse) return;
     if (userManuallyOpenedChat && !currentConfig.hideNativeLiveChat) return;
 
-    // 1. Nhấp nút đóng/thu gọn chính thức của YouTube
-    const closeBtn = document.querySelector(
-        '#panels-full-bleed-container #visibility-button button, ' +
-        '#panels-full-bleed-container #close-button button, ' +
-        '#panels-full-bleed-container [aria-label*="Đóng" i], ' +
-        '#panels-full-bleed-container [aria-label*="Close" i], ' +
-        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] #visibility-button button, ' +
-        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] #close-button button, ' +
-        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] [aria-label*="Đóng" i], ' +
-        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] [aria-label*="Close" i], ' +
-        'ytd-live-chat-frame#chat #show-hide-button button, ' +
-        '#chat.ytd-watch-flexy #show-hide-button button, ' +
-        'ytd-live-chat-frame #close-button button, ' +
-        'ytd-live-chat-frame #close-button, ' +
-        '#show-hide-button button, ' +
-        '[aria-label*="Ẩn cuộc trò chuyện" i], ' +
-        '[aria-label*="Hide chat" i]'
-    );
-    if (closeBtn) {
-        hasAutoCollapsedChatForCurrentVideo = true;
-        try { closeBtn.click(); } catch (e) {}
-    } else {
-        hasAutoCollapsedChatForCurrentVideo = true;
-    }
-
-    // 2. Nếu hideNativeLiveChat đang bật: cưỡng chế đóng panel và xóa bỏ thuộc tính panels-open để flexy mở rộng 100%
+    // 1. Nếu hideNativeLiveChat đang bật: đóng panel bằng thuộc tính DOM, TUYỆT ĐỐI KHÔNG click giả lập để không làm đóng menu cài đặt
     if (currentConfig.hideNativeLiveChat) {
         const chatPanel = document.querySelector(
             '#panels-full-bleed-container ytd-engagement-panel-section-list-renderer[target-id*="chat" i], ' +
@@ -80,7 +123,31 @@ export function autoCollapseNativeChatIfOpen() {
                 watchFlexy.removeAttribute('panels-open');
             }
         }
-        window.dispatchEvent(new Event('resize'));
+        hideNativeChatElements();
+        return;
+    }
+
+    // 2. Chế độ thường khi bật overlay: chỉ thu gọn 1 lần duy nhất cho video hiện tại
+    if (hasAutoCollapsedChatForCurrentVideo) return;
+    const chatFrame = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy');
+    const watchFlexy = document.querySelector('ytd-watch-flexy');
+    if (!chatFrame) return;
+
+    const isCollapsed = chatFrame.hasAttribute('collapsed') || (watchFlexy && watchFlexy.hasAttribute('chat-collapsed'));
+    if (!isCollapsed) {
+        const hideBtn = chatFrame.querySelector(
+            '#show-hide-button button, ' +
+            '#close-button button, ' +
+            '#close-button, ' +
+            '[aria-label*="Ẩn cuộc trò chuyện" i], ' +
+            '[aria-label*="Hide chat" i]'
+        );
+        if (hideBtn) {
+            hasAutoCollapsedChatForCurrentVideo = true;
+            try { hideBtn.click(); } catch (e) {}
+        }
+    } else {
+        hasAutoCollapsedChatForCurrentVideo = true;
     }
 }
 
@@ -852,12 +919,15 @@ export function initChatOverlay() {
         }
     });
 
-    findAndObserveItems();
+    if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
+        findAndObserveItems();
+    }
+    if (currentConfig.hideNativeLiveChat) {
+        autoCollapseNativeChatIfOpen();
+    }
+    setupChatElementsObserver();
 
     setInterval(() => {
-        if (currentConfig.hideNativeLiveChat) {
-            autoCollapseNativeChatIfOpen();
-        }
         if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
             findAndObserveItems();
             ensureNativeLiveChatRunning();

@@ -35,7 +35,8 @@ import {
     initChatOverlay,
     updateChatOverlayVisibility,
     initIframeChatSender,
-    resetChatCollapseState
+    resetChatCollapseState,
+    hideNativeChatElements
 } from './chat/index.js';
 import {
     ensureSettingsElements,
@@ -111,6 +112,9 @@ if (window.self !== window.top) {
         setupFullscreenLock();
         dismissPromoBanners(document);
         initChatOverlay();
+        if (currentConfig.hideNativeLiveChat) {
+            hideNativeChatElements();
+        }
         initAutoLiveSync();
         resetAutoLiveState();
         checkInitialLiveSnap();

@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.20
-// @description  YouTube Customizer v3.2.20 — Tối ưu hóa Live Chat, ẩn triệt để khung chat gốc và sửa lỗi lọc biểu tượng cảm xúc.
+// @version      3.2.21
+// @description  YouTube Customizer v3.2.21 — Khắc phục triệt để lỗi tự đóng menu, tối ưu RAM siêu mượt cho Live Stream và xóa sạch teaser/icon chat.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
