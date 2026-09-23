@@ -85,13 +85,40 @@
 /* --------------------------------------------------------------------------
    2. TỐI ƯU HIỆU NĂNG, KHUNG HÌNH & LIVE CHAT (ZERO-LAG)
    -------------------------------------------------------------------------- */
-#page-manager ytd-rich-item-renderer {
-    overflow: hidden !important;
-    border-radius: 12px;
+/* Đảm bảo khung xem trước video inline khi hover không bao giờ bị cắt xén hay che khuất */
+#page-manager ytd-rich-grid-row {
+    overflow: visible !important;
 }
-#page-manager ytd-rich-item-renderer:hover {
-    z-index: 2;
-    position: relative;
+
+#page-manager ytd-rich-grid-row:hover,
+#page-manager ytd-rich-grid-row:has(ytd-video-preview, [is-hovered], [has-preview]) {
+    z-index: 10 !important;
+    position: relative !important;
+    overflow: visible !important;
+}
+
+#page-manager ytd-rich-item-renderer {
+    overflow: visible !important;
+}
+
+#page-manager ytd-rich-item-renderer:hover,
+#page-manager ytd-rich-item-renderer:has(ytd-video-preview, [is-hovered], [has-preview]),
+#page-manager ytd-rich-item-renderer[is-hovered],
+#page-manager ytd-rich-item-renderer[has-preview] {
+    z-index: 20 !important;
+    position: relative !important;
+    overflow: visible !important;
+}
+
+ytd-video-preview,
+#video-preview,
+#media-container.ytd-video-preview,
+ytd-video-preview #media-container,
+ytd-video-preview #player-container,
+ytd-moving-thumbnail-renderer,
+#inline-preview-player {
+    overflow: visible !important;
+    pointer-events: auto !important;
 }
 
 ytd-comment-thread-renderer {
@@ -855,9 +882,9 @@ html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [
 html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container-outer,
 html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container-inner,
 html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container,
-html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #movie_player:not(.ytp-chat-open),
-html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) .html5-video-player:not(.ytp-chat-open),
-html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) .ytp-fullscreen.html5-video-player:not(.ytp-chat-open) {
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #movie_player:not(#inline-preview-player):not(.ytp-chat-open),
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) .html5-video-player:not(#inline-preview-player):not(.ytp-chat-open),
+html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [has-active-panel], [panels-open], .ytp-chat-open)) .ytp-fullscreen.html5-video-player:not(#inline-preview-player):not(.ytp-chat-open) {
     width: 100vw !important;
     min-width: 100vw !important;
     max-width: 100vw !important;

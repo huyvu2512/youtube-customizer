@@ -51,12 +51,13 @@ export function setNativeChatHiddenState(hidden) {
 let isSyncingPlayerSize = false;
 
 export function syncPlayerFullscreenSize() {
+    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
     if (isSyncingPlayerSize) return;
     isSyncingPlayerSize = true;
 
     try {
-        const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen, .html5-video-player.ytp-fullscreen'));
-        const player = document.querySelector('#movie_player, .html5-video-player');
+        const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen'));
+        const player = document.querySelector('#movie_player:not(#inline-preview-player)');
         if (!player) return;
 
         const video = player.querySelector('video.html5-main-video') || player.querySelector('video');
@@ -176,7 +177,8 @@ export function syncPlayerFullscreenSize() {
 }
 
 export function ensureChatOverlayContainers() {
-    const player = document.querySelector('#movie_player, .html5-video-player');
+    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
+    const player = document.querySelector('#movie_player:not(#inline-preview-player)');
     if (!player) return;
 
     let dContainer = document.getElementById('ytc-danmaku-container');

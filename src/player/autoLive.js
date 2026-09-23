@@ -20,7 +20,8 @@ export function recordUserSeek() {
 }
 
 export function snapToLive(player) {
-    if (!player) player = document.querySelector('#movie_player, .html5-video-player');
+    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
+    if (!player) player = document.querySelector('#movie_player:not(#inline-preview-player)');
     if (!player) return;
 
     // Tuyệt đối không can thiệp nếu không phải luồng trực tiếp đang phát sóng
@@ -45,7 +46,8 @@ export function snapToLive(player) {
 }
 
 export function isCurrentlyActiveLive(player) {
-    if (!player) player = document.querySelector('#movie_player, .html5-video-player');
+    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return false;
+    if (!player) player = document.querySelector('#movie_player:not(#inline-preview-player)');
     if (!player) return false;
 
     // 1. Kiểm tra API player.getVideoData() - Nguồn thông tin chính xác nhất của YouTube
@@ -108,8 +110,9 @@ function getLiveDelay(player, video) {
 
 function checkLiveSync() {
     if (!currentConfig.autoLiveSync) return;
+    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
 
-    const player = document.querySelector('#movie_player, .html5-video-player');
+    const player = document.querySelector('#movie_player:not(#inline-preview-player)');
     if (!player) return;
 
     // Chỉ chạy khi đang là luồng phát trực tiếp theo thời gian thực (chưa kết thúc)
@@ -170,6 +173,7 @@ function checkLiveSync() {
 
 let initialSnapTimer = null;
 export function checkInitialLiveSnap() {
+    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
     if (initialSnapTimer) {
         clearInterval(initialSnapTimer);
         initialSnapTimer = null;
@@ -177,7 +181,7 @@ export function checkInitialLiveSnap() {
     let attempts = 0;
     initialSnapTimer = setInterval(() => {
         attempts++;
-        const player = document.querySelector('#movie_player, .html5-video-player');
+        const player = document.querySelector('#movie_player:not(#inline-preview-player)');
         if (player) {
             if (typeof player.getVideoData === 'function') {
                 const vd = player.getVideoData();
@@ -229,9 +233,11 @@ export function initAutoLiveSync() {
     });
 
     document.addEventListener('click', (e) => {
+        if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
+
         // Nhấp vào badge "Trực tiếp" -> chỉ xử lý khi đang xem live stream thật sự
         if (e.target.closest('.ytp-live-badge')) {
-            const player = document.querySelector('#movie_player, .html5-video-player');
+            const player = document.querySelector('#movie_player:not(#inline-preview-player)');
             if (player && isCurrentlyActiveLive(player)) {
                 userIsRewound = false;
                 lastUserSeekTime = 0;
@@ -242,12 +248,12 @@ export function initAutoLiveSync() {
 
         // Nhấp vào thanh tiến trình -> chỉ theo dõi trạng thái tua lại nếu đang xem live
         if (e.target.closest('.ytp-progress-bar')) {
-            const player = document.querySelector('#movie_player, .html5-video-player');
+            const player = document.querySelector('#movie_player:not(#inline-preview-player)');
             if (!player || !isCurrentlyActiveLive(player)) return;
 
             lastUserSeekTime = Date.now();
             setTimeout(() => {
-                const p = document.querySelector('#movie_player, .html5-video-player');
+                const p = document.querySelector('#movie_player:not(#inline-preview-player)');
                 if (!p || !isCurrentlyActiveLive(p)) return;
                 const video = p.querySelector('video');
                 const delay = getLiveDelay(p, video);

@@ -29,7 +29,8 @@ export function initAdShield() {
     adShieldInitialized = true;
 
     function handleVideoAds() {
-        const player = document.querySelector('#movie_player, .html5-video-player');
+        if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
+        const player = document.querySelector('#movie_player:not(#inline-preview-player)');
         if (!player) return;
 
         const isAdShowing = player.classList.contains('ad-showing') || 
@@ -75,7 +76,7 @@ export function initAdShield() {
 
     // Chỉ theo dõi sự thay đổi class trên #movie_player (khi có class ad-showing)
     // TUYỆT ĐỐI KHÔNG gắn observer subtree lên document.body
-    whenElement('#movie_player, .html5-video-player', (player) => {
+    whenElement('#movie_player:not(#inline-preview-player)', (player) => {
         const obs = new MutationObserver(() => {
             handleVideoAds();
         });

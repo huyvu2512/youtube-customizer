@@ -88,7 +88,7 @@ function dispatchYtSeek(key, delta) {
     });
     evUp._ytcDispatched = true;
 
-    const player = document.querySelector('#movie_player') || document.querySelector('.html5-video-player');
+    const player = document.querySelector('#movie_player:not(#inline-preview-player)');
     const target = player || document.body || document;
 
     target.dispatchEvent(evDown);

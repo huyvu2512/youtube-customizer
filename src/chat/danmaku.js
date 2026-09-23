@@ -35,7 +35,7 @@ function getAvailableLane(now) {
 function spawnDanmakuItem(data, laneIndex) {
     let container = danmakuContainer || document.getElementById('ytc-danmaku-container');
     if (!container) {
-        const player = document.querySelector('#movie_player, .html5-video-player');
+        const player = document.querySelector('#movie_player:not(#inline-preview-player)');
         if (player) {
             container = document.createElement('div');
             container.id = 'ytc-danmaku-container';

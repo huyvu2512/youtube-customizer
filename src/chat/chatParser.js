@@ -111,7 +111,7 @@ export function displayChatMessage(data, isBacklog = false) {
     if (!data || !currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') return;
 
     // Khi video đang tạm dừng: không nạp tin nhắn mới
-    const player = document.querySelector('#movie_player, .html5-video-player');
+    const player = document.querySelector('#movie_player:not(#inline-preview-player)');
     const video = player ? player.querySelector('video') : null;
     if (video && video.paused) return;
 

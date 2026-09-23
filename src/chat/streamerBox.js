@@ -21,7 +21,7 @@ export function saveChatBoxPos(data) {
 
 export function centerChatBox(box, player) {
     if (!box) return;
-    const p = player || document.querySelector('#movie_player, .html5-video-player');
+    const p = player || document.querySelector('#movie_player:not(#inline-preview-player)');
     const pWidth = p ? (p.offsetWidth || p.clientWidth) : window.innerWidth;
     const pHeight = p ? (p.offsetHeight || p.clientHeight) : window.innerHeight;
 
@@ -49,7 +49,7 @@ export function centerChatBox(box, player) {
 
 export function applyChatBoxPos(box, player) {
     if (!box) return;
-    const p = player || document.querySelector('#movie_player, .html5-video-player');
+    const p = player || document.querySelector('#movie_player:not(#inline-preview-player)');
     if (!p) return;
 
     const pos = getSavedChatBoxPos();
@@ -284,12 +284,14 @@ export function setupChatBoxInteractions(box, player) {
     }
 
     window.addEventListener('resize', () => {
-        const p = document.querySelector('#movie_player, .html5-video-player');
+        if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
+        const p = document.querySelector('#movie_player:not(#inline-preview-player)');
         if (box && p) applyChatBoxPos(box, p);
         syncPlayerFullscreenSize();
     });
     document.addEventListener('fullscreenchange', () => {
-        const p = document.querySelector('#movie_player, .html5-video-player');
+        if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
+        const p = document.querySelector('#movie_player:not(#inline-preview-player)');
         if (box && p) {
             applyChatBoxPos(box, p);
             setTimeout(() => applyChatBoxPos(box, p), 100);

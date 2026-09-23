@@ -66,7 +66,7 @@ export function autoCollapseNativeChatIfOpen() {
 
 export function isNativeChatOpenInFullscreen() {
     // 1. Kiểm tra class trên player (control bar button hoặc theme cũ)
-    const player = document.querySelector('#movie_player, .html5-video-player');
+    const player = document.querySelector('#movie_player:not(#inline-preview-player)');
     if (player && player.classList.contains('ytp-chat-open')) {
         return true;
     }
@@ -100,7 +100,7 @@ export function isNativeChatOpenInFullscreen() {
 }
 
 export function syncNativeChatFullscreenState() {
-    const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen, .html5-video-player.ytp-fullscreen'));
+    const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen'));
     if (!isFs) return;
 
     const isOpen = isNativeChatOpenInFullscreen();
@@ -130,6 +130,7 @@ export function setupChatToggleListeners() {
 
     document.addEventListener('click', (e) => {
         if (!e.isTrusted) return; // Bỏ qua click tự động / giả lập
+        if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
 
         // 1. Nút ĐÓNG / ẨN CHAT (X hoặc nút thu gọn):
         const isCloseBtn = !!e.target.closest(
@@ -153,7 +154,7 @@ export function setupChatToggleListeners() {
 
         if (isCloseBtn) {
             userManuallyOpenedChat = false;
-            const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen, .html5-video-player.ytp-fullscreen'));
+            const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen'));
             if (isFs && currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
                 setNativeChatHiddenState(true);
             }
@@ -191,7 +192,7 @@ export function setupChatToggleListeners() {
         );
 
         if (isChatBtn) {
-            const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen, .html5-video-player.ytp-fullscreen'));
+            const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen'));
             if (isFs) {
                 // Đang trong Fullscreen:
                 // Nếu chat đang đóng -> lập tức gỡ bỏ trạng thái ẩn để YouTube render khung chat nguyên bản
@@ -225,7 +226,7 @@ export function syncNativeChatState() {
         return;
     }
 
-    const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen, .html5-video-player.ytp-fullscreen'));
+    const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen'));
 
     if (isFs) {
         if (!userManuallyOpenedChat || currentConfig.hideNativeLiveChat) {
@@ -388,7 +389,7 @@ export function updateChatOverlayVisibility() {
     }
     const danmaku = document.getElementById('ytc-danmaku-container') || danmakuContainer;
     const streamer = document.getElementById('ytc-streamer-box') || streamerBox;
-    const player = document.querySelector('#movie_player, .html5-video-player');
+    const player = document.querySelector('#movie_player:not(#inline-preview-player)');
 
     const showDanmaku = mode === 'danmaku';
     const showStreamer = mode === 'streamer';
@@ -681,7 +682,7 @@ export function initChatOverlay() {
     observeFullscreenChatPanels();
 
     document.addEventListener('fullscreenchange', () => {
-        const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen, .html5-video-player.ytp-fullscreen'));
+        const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen'));
         const isOpen = isNativeChatOpenInFullscreen();
 
         if (!isFs) {
@@ -760,7 +761,7 @@ export function initChatOverlay() {
     }, 2000);
 
     if (location.pathname.startsWith('/watch') || location.pathname.startsWith('/live')) {
-        whenElement('#movie_player, .html5-video-player', () => {
+        whenElement('#movie_player:not(#inline-preview-player)', () => {
             observePlayerChatState();
             observeFullscreenChatPanels();
             ensureChatOverlayContainers();
