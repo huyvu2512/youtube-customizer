@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.3.6-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.3.7-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,13 +25,18 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.3.6** ra mắt:
+Phiên bản **v3.3.7** ra mắt:
+- **Bổ sung Tab 5 "Thông tin" trong Menu cài đặt:**
+  - Hiển thị phiên bản hiện tại, trạng thái phát hành chính thức.
+  - Tích hợp 2 nút thao tác nhanh: **Làm mới trang** và **Kiểm tra cập nhật** qua GitHub.
+  - Giới thiệu thông tin nhà phát triển **Huy Vũ (@huyvu2512)** kèm link trang cá nhân.
+  - Mục **Báo cáo & Góp ý** liên kết trực tiếp với GitHub Issues.
+  - Mục **Tặng quà & Ủng hộ (Donate)** tinh tế với thông tin chuyển khoản ngân hàng / MoMo cùng nút sao chép nhanh tiện lợi.
+- **Tối ưu thứ tự Tab "Tối Ưu":**
+  - Chuyển tính năng **Độ phân giải video** lên vị trí trên cùng của tab.
 - **Tính năng Ưu tiên chọn độ phân giải video (`preferredQuality`) trong tab Tối Ưu:**
   - Cung cấp thanh chọn 5 chế độ: **Tự động** (mặc định của YouTube), **Cao nhất** (Max / 4K / 8K), **2K** (1440p), **1080p** (Full HD) và **720p** (HD).
   - Tự động áp đặt độ phân giải mong muốn ngay khi mở hoặc chuyển tiếp video, không cần chỉnh tay thủ công mỗi lần xem.
-- **Sắp xếp lại bố cục Menu trực quan, khoa học:**
-  - Mục *Ẩn Danh sách phát & Mix* đặt cố định ở dưới cùng tab **Lọc**.
-  - Hai mục *Chặn AV1 / Ép Codec H.264* và *Chỉ phát âm thanh (Radio)* chuyển xuống dưới cùng tab **Tối Ưu**.
 - **Kế thừa bộ tính năng tối ưu chuyên sâu từ v3.3.0:**
   - **Tab "Tối Ưu" (Optimization):** Chặn tự dừng video (`preventAutoPause`), Dọn rác bộ nhớ Live Chat RAM (`chatMemoryGc`), Chặn AV1 / Ép H.264 (`blockAv1`).
 - **Kế thừa và hoàn thiện từ v3.2.31:**

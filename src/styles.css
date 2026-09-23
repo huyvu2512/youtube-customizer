@@ -526,7 +526,7 @@ html[dark] #ytc-settings-btn svg {
 
 #ytc-settings-panel {
     position: fixed;
-    width: 350px;
+    width: 365px;
     max-height: calc(100vh - 80px);
     overflow-y: auto;
     background: var(--yt-spec-brand-background-primary, #282828);
@@ -575,10 +575,10 @@ html[dark] #ytc-settings-btn svg {
 .ytc-tabs {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 2px;
     background: rgba(255, 255, 255, 0.06);
     border-radius: 8px;
-    padding: 4px;
+    padding: 3px;
     margin: 4px 0 6px 0;
     border: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -587,12 +587,12 @@ html[dark] #ytc-settings-btn svg {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    padding: 6px 6px;
+    gap: 3px;
+    padding: 6px 2px;
     border: none;
     background: transparent;
     color: #aaa;
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 500;
     border-radius: 6px;
     cursor: pointer;
@@ -609,8 +609,8 @@ html[dark] #ytc-settings-btn svg {
     font-weight: 600;
 }
 .ytc-tab-btn svg {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
     fill: currentColor;
     flex-shrink: 0;
 }
@@ -1708,4 +1708,243 @@ body.ytc-audio-only #movie_player video {
     font-weight: 400;
     margin-top: 10px;
     line-height: 1.4;
+}
+
+/* --------------------------------------------------------------------------
+   TAB 5: THÔNG TIN, NHÀ PHÁT TRIỂN & ỦNG HỘ
+   -------------------------------------------------------------------------- */
+.ytc-item-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: left;
+    min-width: 0;
+}
+.ytc-item-main-text {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: inherit;
+    line-height: 1.2;
+}
+.ytc-item-sub-text {
+    font-size: 11px;
+    color: #888;
+    line-height: 1.2;
+}
+html:not([dark]) .ytc-item-sub-text {
+    color: #606060;
+}
+
+.ytc-info-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+html:not([dark]) .ytc-info-card {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+.ytc-info-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.ytc-info-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.ytc-info-title {
+    font-weight: 600;
+    font-size: 13.5px;
+}
+.ytc-info-badge {
+    font-size: 10px;
+    background: rgba(46, 204, 113, 0.15);
+    color: #2ecc71;
+    border: 1px solid rgba(46, 204, 113, 0.3);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+.ytc-info-version {
+    font-size: 12px;
+    font-weight: 600;
+    color: #ff4e45;
+    background: rgba(255, 78, 69, 0.12);
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+.ytc-info-desc {
+    font-size: 11.5px;
+    color: #aaa;
+    line-height: 1.4;
+}
+html:not([dark]) .ytc-info-desc {
+    color: #606060;
+}
+.ytc-info-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 2px;
+}
+.ytc-action-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #eee;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.ytc-action-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+.ytc-action-btn svg {
+    width: 13px;
+    height: 13px;
+    fill: currentColor;
+    flex-shrink: 0;
+}
+html:not([dark]) .ytc-action-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #0f0f0f;
+}
+html:not([dark]) .ytc-action-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.ytc-donate-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+}
+html:not([dark]) .ytc-donate-card {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+.ytc-donate-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    cursor: pointer;
+}
+.ytc-donate-header:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+html:not([dark]) .ytc-donate-header:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+.ytc-donate-pill-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #ccc;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.ytc-donate-pill-btn:hover {
+    background: #ff0033;
+    border-color: #ff0033;
+    color: #fff;
+}
+html:not([dark]) .ytc-donate-pill-btn {
+    background: rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #333;
+}
+.ytc-donate-details {
+    padding: 8px 10px 10px 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.15);
+}
+html:not([dark]) .ytc-donate-details {
+    border-top-color: rgba(0, 0, 0, 0.06);
+    background: rgba(0, 0, 0, 0.03);
+}
+.ytc-donate-note {
+    font-size: 11.5px;
+    color: #aaa;
+    margin-bottom: 8px;
+    font-style: italic;
+}
+html:not([dark]) .ytc-donate-note {
+    color: #555;
+}
+.ytc-donate-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.ytc-donate-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+}
+.ytc-donate-label {
+    width: 68px;
+    color: #888;
+    flex-shrink: 0;
+}
+html:not([dark]) .ytc-donate-label {
+    color: #666;
+}
+.ytc-donate-val {
+    flex: 1;
+    font-weight: 500;
+    color: #eee;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+html:not([dark]) .ytc-donate-val {
+    color: #111;
+}
+.ytc-selectable {
+    user-select: all;
+    font-family: monospace;
+    font-size: 12px;
+}
+.ytc-copy-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #ccc;
+    font-size: 10.5px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+.ytc-copy-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+html:not([dark]) .ytc-copy-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+html:not([dark]) .ytc-copy-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
 }
