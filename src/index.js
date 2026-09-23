@@ -19,7 +19,8 @@ import {
     scheduleFeedScan,
     setupFeedShelvesObserver,
     dismissPromoBanners,
-    isHomeFeedPath
+    isHomeFeedPath,
+    initMixFilter
 } from './features/index.js';
 import {
     bindGlobalKeys,
@@ -184,6 +185,7 @@ if (window.self !== window.top) {
     setupFullscreenLock();
     initChatOverlay();
     initAutoLiveSync();
+    initMixFilter();
 
     if (location.pathname.startsWith('/watch')) {
         setWatchLoading(true);

@@ -7,7 +7,7 @@ import { applyHomeGridColumns } from './grid.js';
 import { dismissPromoBanners } from './promos.js';
 
 export function scanAndTagFeedContent(scope) {
-    if (!currentConfig.hideMembersOnly && !currentConfig.hideExploreTopics && !currentConfig.hideCommunity) return;
+    if (!currentConfig.hideMembersOnly && !currentConfig.hideExploreTopics && !currentConfig.hideCommunity && !currentConfig.hideMixes) return;
     const root = scope && scope.querySelectorAll ? scope : document;
 
     const sections = root.querySelectorAll('ytd-rich-section-renderer');
@@ -45,6 +45,16 @@ export function scanAndTagFeedContent(scope) {
                 sec.classList.add('ytc-shelf-community');
             }
         }
+        if (currentConfig.hideMixes && !sec.classList.contains('ytc-item-mix')) {
+            if (sec.querySelector('ytd-radio-renderer, a[href*="list=RD"]')) {
+                sec.classList.add('ytc-item-mix');
+            } else {
+                const text = sec.textContent || '';
+                if (text.includes('Danh sách kết hợp') || text.includes('Mixes') || text.includes('YouTube tạo danh sách phát này')) {
+                    sec.classList.add('ytc-item-mix');
+                }
+            }
+        }
     });
 
     if (currentConfig.hideMembersOnly) {
@@ -65,6 +75,26 @@ export function scanAndTagFeedContent(scope) {
                 ) {
                     card.classList.add('ytc-item-members');
                 }
+            }
+        });
+    }
+
+    if (currentConfig.hideMixes) {
+        const mixCards = root.querySelectorAll('ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, ytd-radio-renderer, ytd-compact-radio-renderer');
+        mixCards.forEach((card) => {
+            if (card.classList.contains('ytc-item-mix')) return;
+            const tag = card.tagName.toLowerCase();
+            if (tag === 'ytd-radio-renderer' || tag === 'ytd-compact-radio-renderer') {
+                card.classList.add('ytc-item-mix');
+                return;
+            }
+            if (card.querySelector('a[href*="list=RD"]')) {
+                card.classList.add('ytc-item-mix');
+                return;
+            }
+            const text = card.textContent || '';
+            if (text.includes('Danh sách kết hợp') || text.includes('YouTube tạo danh sách phát này')) {
+                card.classList.add('ytc-item-mix');
             }
         });
     }

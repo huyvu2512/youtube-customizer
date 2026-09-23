@@ -15,7 +15,10 @@ function ensureAudioBadge(player) {
 
     audioBadgeElement = document.createElement('div');
     audioBadgeElement.id = 'ytc-audio-only-badge';
-    audioBadgeElement.textContent = 'Chỉ phát âm thanh';
+    audioBadgeElement.innerHTML = `
+        <div class="ytc-audio-badge-title">Đang phát ở Chế độ Chỉ Âm Thanh</div>
+        <div class="ytc-audio-badge-sub">Đã tắt video để tiết kiệm tài nguyên</div>
+    `;
     player.appendChild(audioBadgeElement);
 }
 

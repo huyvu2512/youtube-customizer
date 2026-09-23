@@ -9,6 +9,7 @@ export const DEFAULT_CONFIG = {
     hideShorts: false,      // Ẩn Shorts hoàn toàn (mặc định tắt)
     hidePlayables: false,   // Ẩn Chơi game (Playables) (mặc định tắt)
     hideMembersOnly: false, // Ẩn mục video Hội viên (mặc định tắt)
+    hideMixes: false,       // Ẩn Danh sách kết hợp (Mixes / Radio) (mặc định tắt)
     hideExploreTopics: false,// Ẩn Khám phá các chủ đề khác (mặc định tắt)
     hideCommunity: false,   // Ẩn bài đăng cộng đồng (mặc định tắt)
     hideEndscreen: false,   // Ẩn thẻ kết thúc & chú thích (mặc định tắt)
@@ -71,6 +72,7 @@ export function applyConfigToRoot() {
     root.classList.toggle('ytc-hide-shorts', !!currentConfig.hideShorts);
     root.classList.toggle('ytc-hide-playables', !!currentConfig.hidePlayables);
     root.classList.toggle('ytc-hide-members', !!currentConfig.hideMembersOnly);
+    root.classList.toggle('ytc-hide-mixes', !!currentConfig.hideMixes);
     root.classList.toggle('ytc-hide-explore', !!currentConfig.hideExploreTopics);
     root.classList.toggle('ytc-hide-community', !!currentConfig.hideCommunity);
     root.classList.toggle('ytc-hide-endscreen', !!currentConfig.hideEndscreen);
@@ -89,6 +91,7 @@ export function applyConfigToRoot() {
         document.body.classList.toggle('ytc-hide-shorts', !!currentConfig.hideShorts);
         document.body.classList.toggle('ytc-hide-playables', !!currentConfig.hidePlayables);
         document.body.classList.toggle('ytc-hide-members', !!currentConfig.hideMembersOnly);
+        document.body.classList.toggle('ytc-hide-mixes', !!currentConfig.hideMixes);
         document.body.classList.toggle('ytc-hide-explore', !!currentConfig.hideExploreTopics);
         document.body.classList.toggle('ytc-hide-community', !!currentConfig.hideCommunity);
         document.body.classList.toggle('ytc-hide-endscreen', !!currentConfig.hideEndscreen);

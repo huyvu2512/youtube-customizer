@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.3.0-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.3.1-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,13 +25,16 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.3.0** ra mắt:
-- **Tab "Tối Ưu" (Optimization) chuyên sâu:**
-  - Tái cấu trúc menu cài đặt: chuyển đổi tab Phím tắt thành tab **Tối Ưu**, tích hợp công tắc phím tắt điều khiển gọn gàng và loại bỏ bảng mô tả phím tắt rườm rà.
-  - **Chặn tự dừng video (`preventAutoPause`):** Tự động xác nhận các hộp thoại *"Video đã tạm dừng. Bạn vẫn đang xem chứ?"* và làm mới mốc hoạt động `window._lact` định kỳ để video và danh sách phát chạy liên tục không bị ngắt quãng.
-  - **Dọn rác bộ nhớ Live Chat (`chatMemoryGc`):** Giới hạn tối đa ~100 phần tử tin nhắn trong DOM chat của cả trang chính lẫn iframe chạy ngầm, tự động dọn rác định kỳ mỗi 10 giây chống tràn RAM và đơ lag khi xem livestream thời gian dài.
-  - **Chặn AV1 / Ép Codec H.264 & VP9 (`blockAv1`):** Can thiệp `MediaSource.isTypeSupported`, `HTMLMediaElement.canPlayType` và `navigator.mediaCapabilities` để từ chối codec AV1 (vốn ngốn nhiều CPU trên các máy không hỗ trợ giải mã phần cứng), ép YouTube cấp luồng video H.264 / VP9 sử dụng GPU Hardware Decoding mượt mà và mát máy.
-  - **Chế độ Chỉ phát âm thanh / Radio (`audioOnlyMode`):** Ngắt render khung hình video vào GPU/Compositor, hiển thị thông báo chữ tối giản và hạ chất lượng video xuống tối thiểu để nghe nhạc / podcast tiết kiệm RAM và GPU tối đa.
+Phiên bản **v3.3.1** ra mắt:
+- **Tính năng Ẩn Danh sách kết hợp (`hideMixes`) trong tab Bộ Lọc:**
+  - Ẩn toàn diện các playlist Mix do YouTube tự tạo (`ytd-radio-renderer`, `list=RD...`) trên Trang chủ, Kết quả tìm kiếm và thanh Gợi ý xem tiếp sidebar.
+  - Ẩn khung danh sách phát Mix (`#playlist`) khi xem video, đẩy danh sách gợi ý đề xuất lên vị trí ưu tiên.
+  - Tự động làm sạch URL (loại bỏ `&list=RD...` và `&index=...`), ngăn YouTube ép người xem vào danh sách kết hợp khi click vào video.
+  - Tự động chuyển tiếp mượt mà sang **video đề xuất tự nhiên** khi hết bài thay vì bị kẹt lại trong danh sách kết hợp.
+- **Tinh chỉnh Chế độ Chỉ Âm Thanh / Radio (`audioOnlyMode`):**
+  - Áp dụng giao diện chữ tối giản 2 dòng căn giữa thanh lịch, loại bỏ hoàn toàn cảm giác khung hộp AI cồng kềnh.
+- **Kế thừa bộ tính năng tối ưu chuyên sâu từ v3.3.0:**
+  - **Tab "Tối Ưu" (Optimization):** Chặn tự dừng video (`preventAutoPause`), Dọn rác bộ nhớ Live Chat RAM (`chatMemoryGc`), Chặn AV1 / Ép H.264 (`blockAv1`).
 - **Kế thừa và hoàn thiện từ v3.2.31:**
   - Tự động tắt khung trò chuyện trực tiếp khi mới mở video (cho phép mở lại bình thường, Live Chat overlay chạy ngầm).
   - Tự do vuốt lên đọc tin nhắn Live Chat cũ mà không bao giờ bị giật về đáy.
@@ -150,6 +153,9 @@ Phiên bản **v3.3.0** ra mắt:
   - Ẩn triệt để kệ Shorts, Playables trên trang chủ, trang đăng ký và thanh điều hướng bên trái.
 - **Ẩn video Hội viên & Kệ Khám phá chủ đề khác:**
   - Ẩn cả video "Ưu tiên hội viên" (Early access) lẫn video "Chỉ dành cho hội viên" và kệ quảng bá gói hội viên.
+- **Ẩn Danh sách kết hợp (Mixes / Radio):**
+  - Tự động ẩn toàn diện các playlist Mix thuật toán trên Trang chủ, Tìm kiếm, Gợi ý xem tiếp và khung danh sách phát Watch page.
+  - Tự động làm sạch URL, ngăn YouTube ép vào playlist Mix khi click video và tự động chuyển sang video đề xuất tự nhiên khi hết bài.
 - **Clean Search (Ẩn video tài trợ):**
   - Tự động ẩn các thẻ video quảng cáo và nội dung được tài trợ (`Sponsored`).
 - **Tối ưu hiệu năng Live Chat & đồ họa:**

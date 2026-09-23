@@ -195,6 +195,17 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
+                <div class="ytc-item" data-toggle="hideMixes" title="Ẩn Danh sách kết hợp (Mixes) trên trang chủ, tìm kiếm, gợi ý và tự động chuyển tiếp video đề xuất khi xem">
+                    <div class="ytc-item-left">
+                        ${RADIO_SVG}
+                        <span>Ẩn Danh sách kết hợp</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-mixes">
+                        <input type="checkbox" id="ytc-chk-mixes" name="hideMixes" aria-label="Ẩn Danh sách kết hợp" ${currentConfig.hideMixes ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
                 <div class="ytc-item" data-toggle="hideCommunity" title="Ẩn bài viết, khảo sát và hình ảnh bài đăng cộng đồng trên feed">
                     <div class="ytc-item-left">
                         ${POST_SVG}
@@ -453,6 +464,19 @@ export function createSettingsPanel() {
                     import('../optimization/chatMemoryGc.js').then(m => {
                         if (m && typeof m.performChatMemoryGc === 'function') {
                             m.performChatMemoryGc();
+                        }
+                    }).catch(() => {});
+                }
+                if (key === 'hideMixes') {
+                    import('../features/mixFilter.js').then(m => {
+                        if (checkbox.checked) {
+                            if (typeof m.cleanMixUrl === 'function') m.cleanMixUrl();
+                            if (typeof m.tagWatchMixPanel === 'function') m.tagWatchMixPanel();
+                        }
+                    }).catch(() => {});
+                    import('../features/feedFilter.js').then(m => {
+                        if (m && typeof m.scheduleFeedScan === 'function') {
+                            m.scheduleFeedScan(document);
                         }
                     }).catch(() => {});
                 }

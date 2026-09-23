@@ -1,34 +1,30 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.3.0
-// @description  YouTube Customizer v3.3.0 — Tùy biến giao diện YouTube, bổ sung Tab Tối Ưu (Chặn AV1/Ép H.264, Dọn rác Live Chat RAM, Radio Audio-Only, Chặn tự dừng).
+// @version      3.3.1
+// @description  YouTube Customizer v3.3.1 — Bổ sung tính năng Ẩn Danh sách kết hợp (Mixes) trong tab Bộ Lọc & tinh chỉnh Chế độ Chỉ Âm Thanh Mẫu 1 tối giản.
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.3.0
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.3.1
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.3.0
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.3.0
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.3.1
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.3.1
 // ==/UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.3.0:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.3.1:
  * ============================================================================
- * 1. [Mới] Bổ sung Tab "Tối Ưu" (Optimization) trong bảng cài đặt:
- *    - Gom các thiết lập giảm tải tài nguyên hệ thống, chuyển công tắc Phím tắt vào tab này
- *      và loại bỏ bảng mô tả phím tắt thừa để giao diện tinh gọn, hiện đại.
+ * 1. [Mới] Tính năng Ẩn Danh sách kết hợp (Mixes / Radio) trong tab Bộ Lọc:
+ *    - Ẩn toàn diện các playlist Mix (list=RD...) trên Trang chủ, Tìm kiếm và Gợi ý xem tiếp.
+ *    - Ẩn khung danh sách phát Mix trên trang xem video.
+ *    - Tự động làm sạch URL và chặn nạp playlist Mix khi click xem video.
+ *    - Khi hết bài, YouTube tự động chuyển tiếp sang video đề xuất tự nhiên thay vì bị kẹt trong Mix.
  *
- * 2. [Mới] Các tính năng tối ưu hiệu năng và tài nguyên chuyên sâu:
- *    - Chặn tự dừng video ("Bạn vẫn đang xem chứ?"): Tự động xác nhận dialog và làm mới
- *      _lact định kỳ để phát video/nhạc liên tục không bao giờ bị dừng.
- *    - Dọn rác bộ nhớ Live Chat: Giới hạn DOM chat tối đa ~100 tin nhắn, tự động dọn sạch
- *      định kỳ chống tràn bộ nhớ RAM khi xem stream lâu.
- *    - Chặn AV1 / Ép Codec H.264: Can thiệp MediaSource & canPlayType chặn AV1 ngốn CPU,
- *      ép YouTube cấp luồng giải mã phần cứng H.264/VP9 mượt mà, mát máy (bật/tắt êm ái).
- *    - Chế độ Chỉ phát âm thanh (Radio): Ngắt render video, hiển thị chữ thông báo tối giản
- *      và hạ chất lượng tối thiểu để chỉ nghe tiếng, giảm tải triệt để RAM và GPU.
+ * 2. [Cải tiến] Chế độ Chỉ Âm Thanh (Audio-Only):
+ *    - Áp dụng Mẫu 1: Dòng thông báo 2 dòng chữ tối giản, thanh lịch căn giữa khung phát,
+ *      loại bỏ hoàn toàn cảm giác khung hộp AI cồng kềnh.
  * ============================================================================
  */
