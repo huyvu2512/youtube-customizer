@@ -1511,5 +1511,60 @@ body[light] #ytc-toast-notification {
     background: #cc0029;
 }
 
+/* --------------------------------------------------------------------------
+   CHẾ ĐỘ CHỈ PHÁT ÂM THANH (RADIO / AUDIO ONLY)
+   -------------------------------------------------------------------------- */
+html.ytc-audio-only #movie_player video,
+body.ytc-audio-only #movie_player video {
+    visibility: hidden !important;
+}
 
+#ytc-audio-only-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(18, 18, 18, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 24px 32px;
+    color: #ffffff;
+    text-align: center;
+    z-index: 30;
+    pointer-events: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    user-select: none;
+}
 
+#ytc-audio-only-badge svg {
+    fill: #3ea6ff;
+    width: 40px;
+    height: 40px;
+    filter: drop-shadow(0 0 10px rgba(62, 166, 255, 0.5));
+    animation: ytc-pulse 2s infinite ease-in-out;
+}
+
+@keyframes ytc-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.08); opacity: 1; }
+}
+
+.ytc-audio-badge-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+}
+
+.ytc-audio-badge-sub {
+    font-size: 12px;
+    color: #aaaaaa;
+    line-height: 1.4;
+    max-width: 280px;
+}

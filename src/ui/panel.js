@@ -26,7 +26,13 @@ import {
     MESSAGE_SVG,
     RADIO_SVG,
     CHAT_OFF_SVG,
-    EMOJI_OFF_SVG
+    EMOJI_OFF_SVG,
+    OPTIMIZE_TAB_SVG,
+    CPU_SVG,
+    LEAF_SVG,
+    BROOM_SVG,
+    HEADPHONES_SVG,
+    INFINITY_SVG
 } from '../core/constants.js';
 import { syncPanelState } from './sync.js';
 import { setupOnboardingAndUpdates } from './notifier.js';
@@ -89,9 +95,9 @@ export function createSettingsPanel() {
                     ${PLAYER_TAB_SVG}
                     <span>Trình phát</span>
                 </button>
-                <button class="ytc-tab-btn" data-tab="shortcuts" title="Phím tắt & Tiện ích">
-                    ${KEYBOARD_SVG}
-                    <span>Phím tắt</span>
+                <button class="ytc-tab-btn" data-tab="optimize" title="Tối ưu hiệu năng, RAM & GPU">
+                    ${OPTIMIZE_TAB_SVG}
+                    <span>Tối Ưu</span>
                 </button>
             </div>
 
@@ -293,8 +299,63 @@ export function createSettingsPanel() {
                 </div>
             </div>
 
-            <!-- TAB 4: PHÍM TẮT & TIỆN ÍCH -->
-            <div class="ytc-tab-pane" id="ytc-pane-shortcuts">
+            <!-- TAB 4: TỐI ƯU HIỆU NĂNG & TIỆN ÍCH -->
+            <div class="ytc-tab-pane" id="ytc-pane-optimize">
+                <div class="ytc-item" data-toggle="blockAv1" title="Chặn codec AV1 ngốn CPU, ép dùng bộ giải mã phần cứng H.264 & VP9 mượt mà, mát máy">
+                    <div class="ytc-item-left">
+                        ${CPU_SVG}
+                        <span>Chặn AV1 / Ép Codec H.264</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-blockav1">
+                        <input type="checkbox" id="ytc-chk-blockav1" name="blockAv1" aria-label="Chặn AV1 / Ép Codec H.264" ${currentConfig.blockAv1 ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="bgTabSaver" title="Tự động giảm chất lượng video xuống 144p khi chuyển sang tab khác và khôi phục khi quay lại">
+                    <div class="ytc-item-left">
+                        ${LEAF_SVG}
+                        <span>Tiết kiệm Tab nền (144p)</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-bgtab">
+                        <input type="checkbox" id="ytc-chk-bgtab" name="bgTabSaver" aria-label="Tiết kiệm Tab nền" ${currentConfig.bgTabSaver ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="chatMemoryGc" title="Giới hạn tối đa 100 tin nhắn trong DOM Live Chat, dọn dẹp bộ nhớ định kỳ chống đầy tràn RAM khi xem stream lâu">
+                    <div class="ytc-item-left">
+                        ${BROOM_SVG}
+                        <span>Dọn rác bộ nhớ Live Chat</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-chatgc">
+                        <input type="checkbox" id="ytc-chk-chatgc" name="chatMemoryGc" aria-label="Dọn rác bộ nhớ Live Chat" ${currentConfig.chatMemoryGc ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="audioOnlyMode" title="Chế độ Radio: Tắt hoàn toàn render hình ảnh video, hạ chất lượng tối thiểu để chỉ nghe tiếng, giảm tối đa RAM/GPU">
+                    <div class="ytc-item-left">
+                        ${HEADPHONES_SVG}
+                        <span>Chỉ phát âm thanh (Radio)</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-audioonly">
+                        <input type="checkbox" id="ytc-chk-audioonly" name="audioOnlyMode" aria-label="Chỉ phát âm thanh" ${currentConfig.audioOnlyMode ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="preventAutoPause" title="Tự động xác nhận hộp thoại 'Video đã tạm dừng. Bạn vẫn đang xem chứ?' và duy trì trạng thái hoạt động">
+                    <div class="ytc-item-left">
+                        ${INFINITY_SVG}
+                        <span>Chặn tự dừng video</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-autopause">
+                        <input type="checkbox" id="ytc-chk-autopause" name="preventAutoPause" aria-label="Chặn tự dừng video" ${currentConfig.preventAutoPause ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
                 <div class="ytc-item" data-toggle="keyboardControls" title="Phím tắt: A/D hoặc 4/6 tua 10s, S hoặc 5 dừng/phát, 8/2 âm lượng (chặn nhảy % khi bật NumLock)">
                     <div class="ytc-item-left">
                         ${KEYBOARD_SVG}
@@ -304,14 +365,6 @@ export function createSettingsPanel() {
                         <input type="checkbox" id="ytc-chk-keys" name="keyboardControls" aria-label="Phím tắt điều khiển" ${currentConfig.keyboardControls ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
-                </div>
-
-                <div class="ytc-shortcut-hint" title="Bảng hướng dẫn các phím tắt điều khiển nhanh">
-                    <div><kbd>A</kbd> / <kbd>D</kbd> (hoặc <kbd>J</kbd> / <kbd>L</kbd>) : Tua lùi / tiến 10 giây</div>
-                    <div style="margin-top:4px"><kbd>S</kbd> (hoặc <kbd>K</kbd>) : Tạm dừng / phát tiếp</div>
-                    <div style="margin-top:4px"><kbd>4</kbd> / <kbd>6</kbd> (Numpad) : Tua lùi / tiến 10 giây</div>
-                    <div style="margin-top:4px"><kbd>8</kbd> / <kbd>2</kbd> (Numpad) : Tăng / giảm âm lượng</div>
-                    <div style="margin-top:4px"><kbd>5</kbd> (Numpad) : Tạm dừng / phát tiếp</div>
                 </div>
             </div>
         `);
@@ -400,6 +453,30 @@ export function createSettingsPanel() {
                         }
                     }).catch(() => {});
                     window.dispatchEvent(new Event('resize'));
+                }
+                if (key === 'audioOnlyMode') {
+                    import('../optimization/audioOnly.js').then(m => {
+                        if (m && typeof m.applyAudioOnlyState === 'function') {
+                            m.applyAudioOnlyState();
+                        }
+                    }).catch(() => {});
+                }
+                if (key === 'bgTabSaver' && !checkbox.checked) {
+                    import('../optimization/bgTabSaver.js').then(m => {
+                        if (m && typeof m.resetBgTabQuality === 'function') {
+                            m.resetBgTabQuality();
+                        }
+                    }).catch(() => {});
+                }
+                if (key === 'chatMemoryGc' && checkbox.checked) {
+                    import('../optimization/chatMemoryGc.js').then(m => {
+                        if (m && typeof m.performChatMemoryGc === 'function') {
+                            m.performChatMemoryGc();
+                        }
+                    }).catch(() => {});
+                }
+                if (key === 'blockAv1') {
+                    showToast(checkbox.checked ? '⚡ Đã bật ép Codec phần cứng (tải lại trang để áp dụng hoàn toàn)' : 'Đã tắt chặn AV1');
                 }
             });
 

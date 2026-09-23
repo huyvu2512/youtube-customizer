@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.2.31-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.3.0-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,12 +25,17 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.2.9** hoàn thiện:
-- **Tối ưu trải nghiệm đóng/mở Live Chat nguyên bản theo tương tác người dùng:**
-  - Loại bỏ hoàn toàn cơ chế đẩy khung chat ra ngoài màn hình (`-9999px`) ở giao diện thường, giúp nút **"Mở bảng điều khiển"** và biểu tượng bong bóng chat trên player hoạt động trơn tru 100%.
-  - Tự động chuyển giao diện Live Chat sang dạng thu gọn (hiện thẻ teaser "Mở bảng điều khiển") một lần duy nhất khi vừa vào video giúp màn hình gọn gàng ("giả vờ như tắt"), trong khi luồng tin nhắn Danmaku vẫn bay mượt mà ở chế độ nền.
-  - Khi người dùng chủ động nhấp **"Mở bảng điều khiển"** hoặc bong bóng chat, bảng trò chuyện sẽ mở ra tự nhiên để tương tác, bình luận và xem siêu trò chuyện bình thường.
-- **Kế thừa các tính năng từ v3.2.8:**
+Phiên bản **v3.3.0** ra mắt:
+- **Tab "Tối Ưu" (Optimization) chuyên sâu:**
+  - Tái cấu trúc menu cài đặt: chuyển đổi tab Phím tắt thành tab **Tối Ưu**, tích hợp công tắc phím tắt điều khiển gọn gàng và loại bỏ bảng mô tả phím tắt rườm rà.
+  - **Chặn AV1 / Ép Codec H.264 & VP9 (`blockAv1`):** Can thiệp `MediaSource.isTypeSupported`, `HTMLMediaElement.canPlayType` và `navigator.mediaCapabilities` để từ chối codec AV1 (vốn ngốn nhiều CPU trên các máy không hỗ trợ giải mã phần cứng), ép YouTube cấp luồng video H.264 / VP9 sử dụng GPU Hardware Decoding mượt mà và mát máy.
+  - **Tiết kiệm Tab nền (`bgTabSaver`):** Tự động giảm chất lượng video xuống 144p (`tiny`) khi người dùng chuyển sang tab khác hoặc thu nhỏ trình duyệt, và tự động khôi phục độ phân giải gốc khi quay lại tab.
+  - **Dọn rác bộ nhớ Live Chat (`chatMemoryGc`):** Giới hạn tối đa ~100 phần tử tin nhắn trong DOM chat của cả trang chính lẫn iframe chạy ngầm, tự động dọn rác định kỳ mỗi 10 giây chống tràn RAM và đơ lag khi xem livestream thời gian dài.
+  - **Chế độ Chỉ phát âm thanh / Radio (`audioOnlyMode`):** Ngắt render khung hình video vào GPU/Compositor, hiển thị bảng thông báo trạng thái Radio thanh lịch và hạ chất lượng video xuống tối thiểu để nghe nhạc / podcast tiết kiệm RAM và GPU tối đa.
+  - **Chặn tự dừng video (`preventAutoPause`):** Tự động xác nhận các hộp thoại *"Video đã tạm dừng. Bạn vẫn đang xem chứ?"* và làm mới mốc hoạt động `window._lact` định kỳ để video và danh sách phát chạy liên tục không bị ngắt quãng.
+- **Kế thừa và hoàn thiện từ v3.2.31:**
+  - Tự động tắt khung trò chuyện trực tiếp khi mới mở video (cho phép mở lại bình thường, Live Chat overlay chạy ngầm).
+  - Tự do vuốt lên đọc tin nhắn Live Chat cũ mà không bao giờ bị giật về đáy.
   - Khắc phục 100% rào cản CSP Trusted Types qua `setElementHTML` và phân tách DOM an toàn.
   - Bổ sung nhãn `for`, `name`, `aria-label` cho toàn bộ công tắc cài đặt loại bỏ cảnh báo DevTools.
   - Hỗ trợ toàn diện cả Luồng Đang Trực Tiếp & Xem Lại Cuộc Trò Chuyện (Live Replay).
@@ -116,10 +121,10 @@ Phiên bản **v3.2.9** hoàn thiện:
 ## Tính năng chính
 
 - **Menu cài đặt phân nhóm 4 Tab hiện đại:**
-  - **Giao diện:** Tùy chọn số cột trang chủ (3, 4, 5 cột), Bật/tắt Logo YouTube Premium, Mở khóa tua Live Stream (Live DVR), Live Chat (Tắt / Ngang / Nổi / Cả hai).
-  - **Lọc nội dung:** Ẩn Shorts hoàn toàn, Ẩn Chơi game (Playables), Ẩn video Hội viên (Ưu tiên & Đặc quyền), Ẩn bài đăng cộng đồng, Lọc tìm kiếm sạch (Clean Search), Ẩn Khám phá các chủ đề khác.
-  - **Trình phát:** Tắt ánh sáng viền video (Ambient Mode / Cinematics), Ẩn thẻ kết thúc & thẻ chú thích video, Ẩn logo góc video (Watermark), Tự động đóng banner quảng cáo/thông báo, Tự động giữ mốc trực tiếp (Auto Live).
-  - **Phím tắt:** Bật/tắt phím tắt A-S-D & Numpad kèm bảng tra cứu phím tắt nhanh ngay trong menu.
+  - **Giao diện:** Tùy chọn số cột trang chủ (3, 4, 5 cột), Bật/tắt Logo YouTube Premium, Mở khóa tua Live Stream (Live DVR), Tự động trực tiếp (Auto Live), Live Chat (Tắt / Ngang / Nổi).
+  - **Lọc:** Ẩn Shorts hoàn toàn, Ẩn Chơi game (Playables), Ẩn video Hội viên (Ưu tiên & Đặc quyền), Ẩn bài đăng cộng đồng, Lọc tìm kiếm sạch (Clean Search), Ẩn Khám phá các chủ đề khác.
+  - **Trình phát:** Tắt ánh sáng viền video (Ambient Mode / Cinematics), Ẩn thẻ kết thúc & thẻ chú thích video, Ẩn logo góc video (Watermark), Tự động đóng banner & thông báo gián đoạn, Tắt trò chuyện trực tiếp (Native Live Chat), Ẩn biểu tượng trong Live Chat.
+  - **Tối Ưu:** Chặn AV1 / Ép Codec H.264 & VP9, Tiết kiệm Tab nền (144p), Dọn rác bộ nhớ Live Chat, Chế độ Chỉ phát âm thanh (Radio Audio-Only), Chặn tự dừng video ("Bạn vẫn đang xem chứ?"), Phím tắt điều khiển (A-S-D, Numpad).
   - Toàn bộ thiết lập được lưu tự động vào `localStorage` và cập nhật tức thì (Live Update) mà không cần tải lại trang.
 - **Tự động giữ mốc trực tiếp (Auto Live Sync):**
   - Tự động duy trì thời gian thực trên các luồng phát Live Stream YouTube.

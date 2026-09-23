@@ -1,33 +1,36 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.31
-// @description  YouTube Customizer v3.2.31 — Tự động tắt khung trò chuyện trực tiếp bằng nút Đóng (X) khi mới mở video (cho phép mở lại bình thường, Live Chat overlay chạy ngầm).
+// @version      3.3.0
+// @description  YouTube Customizer v3.3.0 — Tùy biến giao diện YouTube, bổ sung Tab Tối Ưu (Chặn AV1/Ép H.264, Tiết kiệm Tab nền, Dọn rác Live Chat RAM, Radio Audio-Only, Chặn tự dừng).
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.2.31
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.3.0
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.2.31
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.2.31
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.3.0
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.3.0
 // ==/UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.2.31:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.3.0:
  * ============================================================================
- * 1. [Sửa lỗi] Tự động tắt khung trò chuyện khi mới mở video / livestream:
- *    - Khắc phục triệt để lỗi không tự tắt khi đã bật sẵn tính năng từ trước.
- *    - Sử dụng Observer bắt đúng thời điểm khung chat mở để bấm nút Đóng (X) ngay lập tức.
- *    - Chỉ tắt 1 lần lúc đầu, người dùng bấm "Mở bảng điều khiển" vẫn xem bình thường.
+ * 1. [Mới] Bổ sung Tab "Tối Ưu" (Optimization) trong bảng cài đặt:
+ *    - Gom các thiết lập giảm tải tài nguyên hệ thống, chuyển công tắc Phím tắt vào tab này
+ *      và loại bỏ bảng mô tả phím tắt thừa để giao diện tinh gọn, hiện đại.
  *
- * 2. [Sửa lỗi] Khung trò chuyện bị tự động làm mới / không thể cuộn lên xem tin cũ:
- *    - Gỡ bỏ hoàn toàn mã cưỡng ép cuộn xuống đáy và tự bấm nút "Tin nhắn mới ↓" trên khung chat chính.
- *    - Cho phép vuốt lên đọc lại tin nhắn cũ thoải mái bao lâu tùy thích mà không bị giật về đáy.
- *
- * 3. [Tối ưu] Live Chat Overlay (Danmaku / Khung streamer):
- *    - Luồng ngầm độc lập (#ytc-bg-live-chat) duy trì nhận tin nhắn liên tục, không phụ thuộc
- *      vào việc khung chat chính đang đóng hay người dùng đang cuộn xem tin cũ.
+ * 2. [Mới] 5 tính năng tối ưu hiệu năng và tài nguyên chuyên sâu:
+ *    - Chặn AV1 / Ép Codec H.264: Can thiệp MediaSource & canPlayType chặn AV1 ngốn CPU,
+ *      ép YouTube cấp luồng giải mã phần cứng H.264/VP9 mượt mà, mát máy.
+ *    - Tiết kiệm Tab nền: Tự động hạ chất lượng video xuống 144p khi tab bị ẩn và khôi phục
+ *      độ phân giải cũ khi quay trở lại tab.
+ *    - Dọn rác bộ nhớ Live Chat: Giới hạn DOM chat tối đa ~100 tin nhắn, tự động dọn sạch
+ *      định kỳ chống tràn bộ nhớ RAM khi xem stream lâu.
+ *    - Chế độ Chỉ phát âm thanh (Radio): Ngắt render video, hiển thị bảng âm thanh và hạ
+ *      chất lượng tối thiểu để chỉ nghe tiếng, giảm tải triệt để RAM và GPU.
+ *    - Chặn tự dừng video ("Bạn vẫn đang xem chứ?"): Tự động xác nhận dialog và làm mới
+ *      _lact định kỳ để phát video/nhạc liên tục không bao giờ bị dừng.
  * ============================================================================
  */

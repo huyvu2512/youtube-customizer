@@ -44,12 +44,18 @@ import {
     setupSettingsObserver,
     syncPanelState
 } from './ui/index.js';
+import {
+    initCodecBlocker,
+    initOptimization,
+    applyAudioOnlyState
+} from './optimization/index.js';
 
 // Re-export for compatibility
 export { CONFIG_KEY, DEFAULT_CONFIG, loadConfig, saveConfig, currentConfig, applyConfigToRoot };
 
-// Khởi chạy hook Live DVR an toàn và lá chắn AdShield ngay từ đầu trong top window
+// Khởi chạy hook Codec Blocker, Live DVR và lá chắn AdShield ngay từ đầu trong top window
 if (window.self === window.top) {
+    initCodecBlocker();
     initLiveDvrHook();
     initAdShield();
 }
@@ -93,6 +99,7 @@ if (window.self !== window.top) {
     onConfigChange(() => {
         applyHomeGridColumns();
         updateChatOverlayVisibility();
+        applyAudioOnlyState();
     });
 
     applyConfigToRoot();
@@ -113,6 +120,7 @@ if (window.self !== window.top) {
         setupFullscreenLock();
         dismissPromoBanners(document);
         initChatOverlay();
+        initOptimization();
         if (currentConfig.hideNativeLiveChat) {
             setupAutoCloseObserver();
             autoCollapseNativeChatIfOpen();
