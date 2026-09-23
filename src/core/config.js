@@ -22,7 +22,7 @@ export const DEFAULT_CONFIG = {
     cleanSearch: false,     // Ẩn video tài trợ / quảng cáo tìm kiếm (mặc định tắt)
     disableAmbient: false,  // Tắt Ambient Mode (Cinematics) (mặc định tắt)
     keyboardControls: false,// Phím tắt A-S-D & Numpad (mặc định tắt)
-    hideNativeLiveChat: false, // Tự động ẩn khung trò chuyện trực tiếp mặc định (mặc định tắt)
+    hideNativeLiveChat: false, // Tự động tắt khung trò chuyện trực tiếp khi mở video (mặc định tắt)
     hideChatEmojis: false,     // Ẩn biểu tượng cảm xúc (Emoji/Sticker) trong Live Chat (mặc định tắt)
 };
 

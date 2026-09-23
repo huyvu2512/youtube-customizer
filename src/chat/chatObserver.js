@@ -35,112 +35,46 @@ export function resetChatCollapseState() {
 
 
 
-export function hideNativeChatElements() {
-    if (!currentConfig.hideNativeLiveChat) return;
-    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
-
-    // 1. Ẩn nút icon chat trong Action Bar / Pill Bar / Player
-    const chatBtns = document.querySelectorAll(
-        '#actions [aria-label*="trò chuyện" i], ' +
-        '#actions [aria-label*="chat" i], ' +
-        '#actions [title*="trò chuyện" i], ' +
-        '#actions [title*="chat" i], ' +
-        '#top-level-buttons-computed [aria-label*="trò chuyện" i], ' +
-        '#top-level-buttons-computed [aria-label*="chat" i], ' +
-        '#top-level-buttons-computed [title*="trò chuyện" i], ' +
-        '#top-level-buttons-computed [title*="chat" i], ' +
-        'ytd-menu-renderer [aria-label*="trò chuyện" i], ' +
-        'ytd-menu-renderer [aria-label*="chat" i], ' +
-        '.ytp-live-chat-button, ' +
-        '.ytp-chat-button, ' +
-        '[aria-label*="Trò chuyện trực tiếp" i]'
-    );
-    chatBtns.forEach(btn => {
-        const wrapper = btn.closest('yt-button-view-model, yt-button-shape, ytd-button-renderer') || btn;
-        wrapper.style.setProperty('display', 'none', 'important');
-    });
-
-    // 2. Ẩn toàn bộ khung Teaser Live Chat (Trực tiếp & Phát lại)
-    const teasers = document.querySelectorAll(
-        '#chat-teaser, #teaser, ytd-live-chat-frame[collapsed], ' +
-        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i], ' +
-        '[target-id="engagement-panel-live-chat"], ' +
-        'ytd-live-chat-frame#chat, ' +
-        '#chat.ytd-watch-flexy'
-    );
-    teasers.forEach(t => {
-        const itemSection = t.closest('ytd-item-section-renderer') || t;
-        itemSection.style.setProperty('display', 'none', 'important');
-    });
-
-    // 3. Ẩn các khối chứa nút "Mở bảng điều khiển" của chat
-    const openPanelBtns = document.querySelectorAll(
-        'ytd-item-section-renderer button[aria-label*="Mở bảng điều khiển" i], ' +
-        'ytd-item-section-renderer button[aria-label*="Open panel" i], ' +
-        '#related button[aria-label*="Mở bảng điều khiển" i], ' +
-        '#below button[aria-label*="Mở bảng điều khiển" i]'
-    );
-    openPanelBtns.forEach(btn => {
-        const itemSection = btn.closest('ytd-item-section-renderer');
-        if (itemSection) {
-            itemSection.style.setProperty('display', 'none', 'important');
-        }
-    });
-
-    // 4. Nếu tắt Live Chat Overlay: dọn dẹp iframe chạy ngầm
-    if (!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') {
-        stopAllLiveChatIfDisabled();
-    }
-}
-
-export const throttledHideNativeChatElements = rafThrottle(hideNativeChatElements);
-
-let chatElementsObserver = null;
-export function setupChatElementsObserver() {
-    if (chatElementsObserver) return;
-    chatElementsObserver = new MutationObserver(() => {
-        if (currentConfig.hideNativeLiveChat && (location.pathname.startsWith('/watch') || location.pathname.startsWith('/live'))) {
-            throttledHideNativeChatElements();
-        }
-    });
-    const target = document.querySelector('ytd-app') || document.body || document.documentElement;
-    if (target) {
-        chatElementsObserver.observe(target, { childList: true, subtree: true });
-    }
-}
-
 export function autoCollapseNativeChatIfOpen() {
     if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
     if (!currentConfig.hideNativeLiveChat) return;
+    if (hasAutoCollapsedChatForCurrentVideo || userManuallyOpenedChat) return;
 
-    // Đóng panel bằng thuộc tính DOM nếu hideNativeLiveChat đang bật, TUYỆT ĐỐI KHÔNG click giả lập
+    let didCollapse = false;
+
+    // 1. Thu gọn engagement panel nếu đang hiển thị
     const chatPanel = document.querySelector(
         '#panels-full-bleed-container ytd-engagement-panel-section-list-renderer[target-id*="chat" i], ' +
         'ytd-watch-flexy ytd-engagement-panel-section-list-renderer[target-id*="chat" i]'
     );
-    if (chatPanel && chatPanel.getAttribute('visibility') !== 'ENGAGEMENT_PANEL_VISIBILITY_HIDDEN') {
-        chatPanel.setAttribute('visibility', 'ENGAGEMENT_PANEL_VISIBILITY_HIDDEN');
+    if (chatPanel) {
+        const vis = chatPanel.getAttribute('visibility');
+        if (vis === 'ENGAGEMENT_PANEL_VISIBILITY_EXPANDED' || !vis) {
+            chatPanel.setAttribute('visibility', 'ENGAGEMENT_PANEL_VISIBILITY_HIDDEN');
+            didCollapse = true;
+        }
     }
+
     const watchFlexy = document.querySelector('ytd-watch-flexy');
-    if (watchFlexy) {
+    if (watchFlexy && didCollapse) {
         const otherExpanded = watchFlexy.querySelectorAll('ytd-engagement-panel-section-list-renderer:not([target-id*="chat" i])[visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"]');
         if (otherExpanded.length === 0) {
             if (watchFlexy.hasAttribute('has-active-panel')) watchFlexy.removeAttribute('has-active-panel');
             if (watchFlexy.hasAttribute('panels-open')) watchFlexy.removeAttribute('panels-open');
         }
     }
-    const chatFrame = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy');
+
+    // 2. Thu gọn live-chat-frame nếu chưa thu gọn
+    const chatFrame = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy, ytd-live-chat-frame');
     if (chatFrame) {
-        const isOverlayOn = currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off';
-        if (isOverlayOn) {
-            if (chatFrame.hasAttribute('collapsed')) {
-                chatFrame.removeAttribute('collapsed');
-            }
-        } else {
-            if (!chatFrame.hasAttribute('collapsed')) {
-                chatFrame.setAttribute('collapsed', '');
-            }
+        if (!chatFrame.hasAttribute('collapsed')) {
+            chatFrame.setAttribute('collapsed', '');
+            didCollapse = true;
         }
+    }
+
+    if (didCollapse || chatFrame || chatPanel) {
+        hasAutoCollapsedChatForCurrentVideo = true;
     }
 }
 
@@ -1028,8 +962,10 @@ export function initChatOverlay() {
     }
     if (currentConfig.hideNativeLiveChat) {
         autoCollapseNativeChatIfOpen();
+        setTimeout(autoCollapseNativeChatIfOpen, 300);
+        setTimeout(autoCollapseNativeChatIfOpen, 800);
+        setTimeout(autoCollapseNativeChatIfOpen, 1500);
     }
-    setupChatElementsObserver();
     setupTheaterModeObserver();
 
     setInterval(() => {

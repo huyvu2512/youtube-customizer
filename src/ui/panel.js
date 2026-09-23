@@ -270,13 +270,13 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hideNativeLiveChat" title="Tự động ẩn khung trò chuyện trực tiếp khi mở video live/công chiếu (vẫn chạy ngầm nếu bật Live Chat)">
+                <div class="ytc-item" data-toggle="hideNativeLiveChat" title="Tự động tắt khung trò chuyện khi mới mở video (người dùng vẫn có thể bấm mở lại bình thường, Live Chat Overlay vẫn chạy ngầm nếu bật)">
                     <div class="ytc-item-left">
                         ${CHAT_OFF_SVG}
-                        <span>Ẩn trò chuyện trực tiếp</span>
+                        <span>Tắt trò chuyện trực tiếp</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-hidenativechat">
-                        <input type="checkbox" id="ytc-chk-hidenativechat" name="hideNativeLiveChat" aria-label="Ẩn trò chuyện trực tiếp" ${currentConfig.hideNativeLiveChat ? 'checked' : ''}>
+                        <input type="checkbox" id="ytc-chk-hidenativechat" name="hideNativeLiveChat" aria-label="Tắt trò chuyện trực tiếp" ${currentConfig.hideNativeLiveChat ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -382,11 +382,6 @@ export function createSettingsPanel() {
                 applyConfigToRoot();
                 if (key === 'hideNativeLiveChat') {
                     import('../chat/index.js').then(m => {
-                        if (checkbox.checked) {
-                            if (m && typeof m.hideNativeChatElements === 'function') {
-                                m.hideNativeChatElements();
-                            }
-                        }
                         if (m && typeof m.autoCollapseNativeChatIfOpen === 'function') {
                             m.autoCollapseNativeChatIfOpen();
                         }
