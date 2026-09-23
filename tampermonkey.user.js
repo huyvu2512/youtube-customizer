@@ -2,7 +2,7 @@
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
 // @version      3.2.17
-// @description  YouTube Customizer v3.2.17 — Khắc phục triệt để lỗi Auto Live can thiệp vào video xem lại buổi live đã kết thúc (PostLiveDvr).
+// @description  YouTube Customizer v3.2.17 — Khắc phục triệt để lỗi xem trước video (hover preview) trên lưới trang chủ và tối ưu Auto Live.
 // @author       Huy Vũ
 // @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.2.17
 // @match        https://www.youtube.com/*

@@ -57,6 +57,12 @@
         --ytd-rich-grid-item-max-width: none !important;
     }
 
+    /* Làm phẳng cấu trúc dòng ytd-rich-grid-row để thẻ video chảy đều như trang kênh và chuẩn hitbox hover */
+    #contents > ytd-rich-grid-row,
+    #contents > ytd-rich-grid-row > #contents {
+        display: contents !important;
+    }
+
     #contents.ytd-rich-grid-row ytd-rich-item-renderer,
     ytd-rich-grid-renderer ytd-rich-item-renderer {
         width: calc(100% / var(--ytd-rich-grid-items-per-row, 3) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
@@ -110,6 +116,11 @@
     overflow: visible !important;
 }
 
+/* Đặt z-index của #preview và ytd-video-preview lên 1000 !important để luôn nổi lên trên thẻ video khi hover */
+#preview,
+#preview.ytd-rich-grid-renderer,
+ytd-rich-grid-renderer #preview,
+#page-manager #preview,
 ytd-video-preview,
 #video-preview,
 #media-container.ytd-video-preview,
@@ -117,6 +128,7 @@ ytd-video-preview #media-container,
 ytd-video-preview #player-container,
 ytd-moving-thumbnail-renderer,
 #inline-preview-player {
+    z-index: 1000 !important;
     overflow: visible !important;
     pointer-events: auto !important;
 }

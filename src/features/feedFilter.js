@@ -87,13 +87,36 @@ export function setupFeedShelvesObserver() {
         applyHomeGridColumns();
         dismissPromoBanners(container);
         new MutationObserver((mutations) => {
+            let hasRelevantChanges = false;
             for (const mutation of mutations) {
-                if (mutation.addedNodes.length) {
-                    scheduleFeedScan(container);
-                    applyHomeGridColumns();
-                    dismissPromoBanners(container);
-                    break;
+                if (!mutation.addedNodes.length) continue;
+                // Bỏ qua các mutation phát sinh từ preview player, video player hoặc chat overlay
+                if (mutation.target.closest && mutation.target.closest('#preview, ytd-video-preview, #inline-preview-player, .html5-video-player, #ytc-streamer-box, #ytc-danmaku-container, ytd-moving-thumbnail-renderer')) {
+                    continue;
                 }
+                for (const node of mutation.addedNodes) {
+                    if (node.nodeType === 1) {
+                        const tag = node.tagName.toLowerCase();
+                        if (
+                            tag === 'ytd-rich-grid-row' ||
+                            tag === 'ytd-rich-grid-renderer' ||
+                            tag === 'ytd-rich-item-renderer' ||
+                            tag === 'ytd-rich-section-renderer' ||
+                            tag === 'ytd-continuation-item-renderer'
+                        ) {
+                            hasRelevantChanges = true;
+                            break;
+                        }
+                        if (node.querySelector && node.querySelector('ytd-rich-grid-row, ytd-rich-item-renderer, ytd-rich-section-renderer')) {
+                            hasRelevantChanges = true;
+                            break;
+                        }
+                    }
+                }
+                if (hasRelevantChanges) break;
+            }
+            if (hasRelevantChanges) {
+                scheduleFeedScan(container);
             }
         }).observe(container, { childList: true, subtree: true });
     };
