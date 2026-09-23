@@ -919,13 +919,23 @@ html:not([dark]) .ytc-mode-btn.active {
     width: 100%;
 }
 .ytc-quality-badge {
-    font-size: 10px;
-    font-weight: 700;
-    color: #ff4e45;
-    background: rgba(255, 78, 69, 0.12);
-    padding: 2px 7px;
-    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #3ea6ff;
+    background: rgba(62, 166, 255, 0.12);
+    border: 1px solid rgba(62, 166, 255, 0.25);
+    padding: 2px 8px;
+    border-radius: 6px;
     letter-spacing: 0.5px;
+    user-select: none;
+    flex-shrink: 0;
+}
+html:not([dark]) .ytc-quality-badge {
+    color: #065fd4;
+    background: rgba(6, 95, 212, 0.08);
+    border-color: rgba(6, 95, 212, 0.25);
 }
 .ytc-quality-group {
     display: flex;
