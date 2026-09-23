@@ -1900,26 +1900,28 @@
         }
       }
     }, true);
-    setInterval(() => {
-      try {
-        if (isUserInteractingWithChatMenu(document)) return;
-        const showMoreBtn = document.querySelector("#show-more:not([hidden]) button, #show-more button");
-        if (showMoreBtn && showMoreBtn.offsetParent !== null) {
-          const rect = showMoreBtn.getBoundingClientRect();
-          if (rect.width > 0 && rect.height > 0) {
-            showMoreBtn.click();
+    if (isBgFrame) {
+      setInterval(() => {
+        try {
+          if (isUserInteractingWithChatMenu(document)) return;
+          const showMoreBtn = document.querySelector("#show-more:not([hidden]) button, #show-more button");
+          if (showMoreBtn && showMoreBtn.offsetParent !== null) {
+            const rect = showMoreBtn.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) {
+              showMoreBtn.click();
+            }
           }
-        }
-        const scroller = document.querySelector("#item-scroller, yt-live-chat-item-list-renderer #item-scroller");
-        if (scroller && !scroller.matches(":hover")) {
-          const distFromBottom = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight;
-          if (distFromBottom > 50) {
-            scroller.scrollTop = scroller.scrollHeight;
+          const scroller = document.querySelector("#item-scroller, yt-live-chat-item-list-renderer #item-scroller");
+          if (scroller) {
+            const distFromBottom = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight;
+            if (distFromBottom > 50) {
+              scroller.scrollTop = scroller.scrollHeight;
+            }
           }
+        } catch (e) {
         }
-      } catch (e) {
-      }
-    }, 2e3);
+      }, 2e3);
+    }
   }
   function isUserInteractingWithChatMenu(doc) {
     const root = doc || document;
