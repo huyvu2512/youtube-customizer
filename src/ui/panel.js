@@ -466,36 +466,17 @@ export function createSettingsPanel() {
                 </div>
 
                 <!-- Tặng quà / Ủng hộ -->
-                <div class="ytc-donate-card">
-                    <div class="ytc-donate-header" id="ytc-header-donate" title="Bấm để xem/ẩn thông tin ủng hộ">
-                        <div class="ytc-item-left">
-                            ${GIFT_SVG}
-                            <div class="ytc-item-text-group">
-                                <span class="ytc-item-main-text">Tặng quà & Ủng hộ</span>
-                                <span class="ytc-item-sub-text">Ủng hộ 1 ly cà phê tiếp thêm động lực</span>
-                            </div>
+                <div class="ytc-item ytc-item-link" id="ytc-btn-donate" title="Ủng hộ tác giả 1 ly cà phê tiếp thêm động lực">
+                    <div class="ytc-item-left">
+                        ${GIFT_SVG}
+                        <div class="ytc-item-text-group">
+                            <span class="ytc-item-main-text">Tặng quà & Ủng hộ</span>
+                            <span class="ytc-item-sub-text">Ủng hộ 1 ly cà phê tiếp thêm động lực</span>
                         </div>
-                        <button class="ytc-donate-pill-btn" id="ytc-btn-toggle-donate">Chi tiết</button>
                     </div>
-                    <div class="ytc-donate-details" id="ytc-donate-box" style="display: none;">
-                        <div class="ytc-donate-qr-wrap" id="ytc-qr-wrap" title="Bấm để mở ảnh VietQR kích thước lớn">
-                            <img src="https://vietqr.app/img?acc=0886308216&bank=MoMo&fullacc=true&holder=VU+QUANG+HUY&template=standee" alt="VietQR MoMo Huy Vũ" class="ytc-donate-qr-img" id="ytc-qr-img" />
-                        </div>
-                        <div class="ytc-donate-list">
-                            <div class="ytc-donate-item">
-                                <span class="ytc-donate-label">Ví:</span>
-                                <span class="ytc-donate-val" id="ytc-bank-name">MoMo</span>
-                            </div>
-                            <div class="ytc-donate-item">
-                                <span class="ytc-donate-label">Số MoMo:</span>
-                                <span class="ytc-donate-val ytc-selectable" id="ytc-momo-val">0886308216</span>
-                                <button class="ytc-copy-btn" id="ytc-btn-copy-momo" title="Sao chép số MoMo">Sao chép</button>
-                            </div>
-                            <div class="ytc-donate-item">
-                                <span class="ytc-donate-label">Chủ TK:</span>
-                                <span class="ytc-donate-val" id="ytc-bank-holder">VU QUANG HUY</span>
-                            </div>
-                        </div>
+                    <div class="ytc-link-badge">
+                        <span>Ủng hộ</span>
+                        ${EXTERNAL_LINK_SVG}
                     </div>
                 </div>
             </div>
@@ -759,47 +740,12 @@ export function createSettingsPanel() {
             });
         }
 
-        // Tab 5: Mở/Đóng thông tin Tặng quà & Ủng hộ
-        const donateHeader = panel.querySelector('#ytc-header-donate');
-        const donateBox = panel.querySelector('#ytc-donate-box');
-        const toggleDonateBtn = panel.querySelector('#ytc-btn-toggle-donate');
-        if (donateHeader && donateBox) {
-            donateHeader.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isHidden = donateBox.style.display === 'none';
-                donateBox.style.display = isHidden ? 'block' : 'none';
-                if (toggleDonateBtn) {
-                    toggleDonateBtn.textContent = isHidden ? 'Đóng' : 'Chi tiết';
-                }
-            });
-        }
-
-        // Tab 5: Mở ảnh VietQR Standee
-        const qrWrap = panel.querySelector('#ytc-qr-wrap');
-        if (qrWrap) {
-            qrWrap.addEventListener('click', (e) => {
+        // Tab 5: Mở link Tặng quà & Ủng hộ
+        const donateBtn = panel.querySelector('#ytc-btn-donate');
+        if (donateBtn) {
+            donateBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 window.open('https://vietqr.app/img?acc=0886308216&bank=MoMo&fullacc=true&holder=VU+QUANG+HUY&template=standee', '_blank', 'noopener,noreferrer');
-            });
-        }
-
-        // Tab 5: Sao chép số MoMo
-        const copyMomoBtn = panel.querySelector('#ytc-btn-copy-momo');
-        if (copyMomoBtn) {
-            copyMomoBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const momoEl = panel.querySelector('#ytc-momo-val');
-                if (momoEl) {
-                    const text = momoEl.textContent.trim();
-                    navigator.clipboard.writeText(text).then(() => {
-                        copyMomoBtn.textContent = 'Đã chép!';
-                        setTimeout(() => {
-                            copyMomoBtn.textContent = 'Sao chép';
-                        }, 2000);
-                    }).catch(() => {
-                        showToast(`MoMo: ${text}`);
-                    });
-                }
             });
         }
 
