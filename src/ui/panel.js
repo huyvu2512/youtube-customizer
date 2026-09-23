@@ -388,6 +388,9 @@ export function createSettingsPanel() {
                         if (m && typeof m.syncPlayerFullscreenSize === 'function') {
                             m.syncPlayerFullscreenSize();
                         }
+                        if (m && typeof m.updateChatOverlayVisibility === 'function') {
+                            m.updateChatOverlayVisibility();
+                        }
                     }).catch(() => {});
                     window.dispatchEvent(new Event('resize'));
                 }

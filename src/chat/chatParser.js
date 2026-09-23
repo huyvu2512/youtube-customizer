@@ -40,7 +40,7 @@ export function getFallbackAvatar(authorClass, author) {
     if (authorClass === 'mod') {
         bg = '#1a73e8';
         isSvgIcon = true;
-        iconPath = '<path fill="%23fff" d="M22.7 6.3a5 5 0 0 0-6.6-.5l-2.5 2.5 3.5 3.5 2.5-2.5a2 2 0 1 1 2.8 2.8l-2.5 2.5 3.5 3.5 2.5-2.5a5 5 0 0 0-.5-6.6l-1.2-1.2zm-8.8 5.5l-9.4 9.4a2 2 0 0 0 2.8 2.8l9.4-9.4-2.8-2.8z"/>';
+        iconPath = '<path fill="%23fff" d="M16 6.5l-7 3v6c0 4.8 3 9.3 7 10.8 4-1.5 7-6 7-10.8v-6l-7-3z"/>';
     } else if (authorClass === 'owner') {
         bg = '#e6a100';
         isSvgIcon = true;
@@ -97,9 +97,9 @@ export function extractMessageData(node) {
 
     let streamerBadges = [];
 
-    // 1. Huy hiệu Người điều hành (Moderator)
+    // 1. Huy hiệu Người điều hành (Moderator) - Biểu tượng Cái Khiên (Shield)
     if (isMod) {
-        streamerBadges.push(`<span class="ytc-box-badge ytc-badge-mod" title="Người kiểm duyệt"><svg class="ytc-mod-icon" viewBox="0 0 16 16" width="10" height="10"><path fill="#3ea6ff" d="M14.37 3.37a3.5 3.5 0 0 0-4.66-.35L7.96 4.77l1.77 1.77 1.75-1.75a1.5 1.5 0 0 1 2.12 2.12l-1.75 1.75 1.77 1.77 1.75-1.75a3.5 3.5 0 0 0-.35-4.66l-.4-.4zm-6.2 3.84L2.3 13.08a1.25 1.25 0 0 0 1.77 1.77l5.87-5.87-1.77-1.77z"/></svg></span>`);
+        streamerBadges.push(`<span class="ytc-box-badge ytc-badge-mod" title="Người kiểm duyệt"><svg class="ytc-mod-icon" viewBox="0 0 16 16" width="10" height="10"><path fill="#3ea6ff" d="M8 1.5L2.5 3.8v4.2c0 3.8 2.3 7.3 5.5 8.5 3.2-1.2 5.5-4.7 5.5-8.5V3.8L8 1.5z"/></svg></span>`);
     } else if (isOwner) {
         streamerBadges.push(`<span class="ytc-box-badge ytc-badge-owner" title="Chủ sở hữu"><svg class="ytc-owner-icon" viewBox="0 0 16 16" width="10" height="10"><path fill="#ffd600" d="M2.5 13h11v1.5h-11zm1.2-8.5l2.8 3.5 2.5-4 2.5 4 2.8-3.5 1.7 7h-14z"/></svg></span>`);
     }

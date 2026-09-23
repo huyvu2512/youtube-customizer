@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.22
-// @description  YouTube Customizer v3.2.22 — Tự động mở rộng mô tả video lấp đầy khoảng trống khi ẩn chat và sửa hiển thị avatar/logo mod trong khung chat nổi.
+// @version      3.2.23
+// @description  YouTube Customizer v3.2.23 — Đổi logo Mod thành Khiên, tối ưu ngắt hoàn toàn kết nối chat khi tắt overlay chống lag ngầm.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -28,7 +28,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.2.22";
+      APP_VERSION = "3.2.23";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -930,7 +930,7 @@
     if (authorClass === "mod") {
       bg = "#1a73e8";
       isSvgIcon = true;
-      iconPath = '<path fill="%23fff" d="M22.7 6.3a5 5 0 0 0-6.6-.5l-2.5 2.5 3.5 3.5 2.5-2.5a2 2 0 1 1 2.8 2.8l-2.5 2.5 3.5 3.5 2.5-2.5a5 5 0 0 0-.5-6.6l-1.2-1.2zm-8.8 5.5l-9.4 9.4a2 2 0 0 0 2.8 2.8l9.4-9.4-2.8-2.8z"/>';
+      iconPath = '<path fill="%23fff" d="M16 6.5l-7 3v6c0 4.8 3 9.3 7 10.8 4-1.5 7-6 7-10.8v-6l-7-3z"/>';
     } else if (authorClass === "owner") {
       bg = "#e6a100";
       isSvgIcon = true;
@@ -972,7 +972,7 @@
     }
     let streamerBadges = [];
     if (isMod) {
-      streamerBadges.push(`<span class="ytc-box-badge ytc-badge-mod" title="Người kiểm duyệt"><svg class="ytc-mod-icon" viewBox="0 0 16 16" width="10" height="10"><path fill="#3ea6ff" d="M14.37 3.37a3.5 3.5 0 0 0-4.66-.35L7.96 4.77l1.77 1.77 1.75-1.75a1.5 1.5 0 0 1 2.12 2.12l-1.75 1.75 1.77 1.77 1.75-1.75a3.5 3.5 0 0 0-.35-4.66l-.4-.4zm-6.2 3.84L2.3 13.08a1.25 1.25 0 0 0 1.77 1.77l5.87-5.87-1.77-1.77z"/></svg></span>`);
+      streamerBadges.push(`<span class="ytc-box-badge ytc-badge-mod" title="Người kiểm duyệt"><svg class="ytc-mod-icon" viewBox="0 0 16 16" width="10" height="10"><path fill="#3ea6ff" d="M8 1.5L2.5 3.8v4.2c0 3.8 2.3 7.3 5.5 8.5 3.2-1.2 5.5-4.7 5.5-8.5V3.8L8 1.5z"/></svg></span>`);
     } else if (isOwner) {
       streamerBadges.push(`<span class="ytc-box-badge ytc-badge-owner" title="Chủ sở hữu"><svg class="ytc-owner-icon" viewBox="0 0 16 16" width="10" height="10"><path fill="#ffd600" d="M2.5 13h11v1.5h-11zm1.2-8.5l2.8 3.5 2.5-4 2.5 4 2.8-3.5 1.7 7h-14z"/></svg></span>`);
     }
@@ -1201,6 +1201,11 @@
       }
     });
     autoExpandDescriptionIfCollapsed();
+    if (!currentConfig.chatOverlay || currentConfig.chatOverlay === "off") {
+      stopAllLiveChatIfDisabled();
+    } else {
+      restoreNativeLiveChatIfSaved();
+    }
   }
   function setupChatElementsObserver() {
     if (chatElementsObserver) return;
@@ -1471,6 +1476,37 @@
     bgChatIframe.style.cssText = "position:fixed !important;top:-9999px !important;left:-9999px !important;width:350px !important;height:600px !important;opacity:0.01 !important;pointer-events:none !important;z-index:-9999 !important;border:none !important;";
     document.body.appendChild(bgChatIframe);
   }
+  function stopAllLiveChatIfDisabled() {
+    const isOverlayOn = currentConfig.chatOverlay && currentConfig.chatOverlay !== "off";
+    if (!isOverlayOn && currentConfig.hideNativeLiveChat) {
+      if (bgChatIframe) {
+        bgChatIframe.remove();
+        bgChatIframe = null;
+        currentBgVideoId = null;
+      }
+      const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]');
+      frames.forEach((frame) => {
+        if (frame.id === "ytc-bg-live-chat") {
+          frame.remove();
+          return;
+        }
+        if (frame.src && frame.src !== "about:blank" && !frame.src.startsWith("about:")) {
+          frame.dataset.ytcSavedSrc = frame.src;
+          frame.src = "about:blank";
+        }
+      });
+      autoCollapseNativeChatIfOpen();
+    }
+  }
+  function restoreNativeLiveChatIfSaved() {
+    const frames = document.querySelectorAll("iframe#chatframe, ytd-live-chat-frame iframe");
+    frames.forEach((frame) => {
+      if (frame.dataset.ytcSavedSrc && frame.src === "about:blank") {
+        frame.src = frame.dataset.ytcSavedSrc;
+        delete frame.dataset.ytcSavedSrc;
+      }
+    });
+  }
   function updateChatOverlayVisibility() {
     const mode = currentConfig.chatOverlay || "off";
     if (mode !== "off") {
@@ -1515,17 +1551,14 @@
       }
     }
     if (mode !== "off") {
+      restoreNativeLiveChatIfSaved();
       ensureNativeLiveChatRunning();
       seenMessageIds.clear();
       ensureBackgroundLiveChat();
       requestExistingMessages();
     } else {
       setNativeChatHiddenState(false);
-      if (bgChatIframe) {
-        bgChatIframe.remove();
-        bgChatIframe = null;
-        currentBgVideoId = null;
-      }
+      stopAllLiveChatIfDisabled();
     }
   }
   function initIframeChatSender() {
@@ -1894,9 +1927,11 @@
         observePlayerChatState();
         observeFullscreenChatPanels();
         ensureChatOverlayContainers();
-        ensureBackgroundLiveChat();
         if (currentConfig.chatOverlay && currentConfig.chatOverlay !== "off") {
+          ensureBackgroundLiveChat();
           ensureNativeLiveChatRunning();
+        } else if (currentConfig.hideNativeLiveChat) {
+          stopAllLiveChatIfDisabled();
         }
       });
     }
@@ -1959,6 +1994,7 @@
     observePlayerChatState: () => observePlayerChatState,
     requestExistingMessages: () => requestExistingMessages,
     resetChatCollapseState: () => resetChatCollapseState,
+    restoreNativeLiveChatIfSaved: () => restoreNativeLiveChatIfSaved,
     saveChatBoxPos: () => saveChatBoxPos,
     seenMessageIds: () => seenMessageIds,
     setChatOverlayInitialized: () => setChatOverlayInitialized,
@@ -1970,6 +2006,7 @@
     setupChatToggleListeners: () => setupChatToggleListeners,
     showInitialBox: () => showInitialBox,
     startDanmakuScheduler: () => startDanmakuScheduler,
+    stopAllLiveChatIfDisabled: () => stopAllLiveChatIfDisabled,
     stopDanmakuScheduler: () => stopDanmakuScheduler,
     streamerBox: () => streamerBox,
     streamerMessages: () => streamerMessages,
@@ -3352,6 +3389,9 @@
               }
               if (m && typeof m.syncPlayerFullscreenSize === "function") {
                 m.syncPlayerFullscreenSize();
+              }
+              if (m && typeof m.updateChatOverlayVisibility === "function") {
+                m.updateChatOverlayVisibility();
               }
             }).catch(() => {
             });

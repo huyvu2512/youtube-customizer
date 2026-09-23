@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.22
-// @description  YouTube Customizer v3.2.22 — Tự động mở rộng mô tả video lấp đầy khoảng trống khi ẩn chat và sửa hiển thị avatar/logo mod trong khung chat nổi.
+// @version      3.2.23
+// @description  YouTube Customizer v3.2.23 — Đổi logo Mod thành Khiên, tối ưu ngắt hoàn toàn kết nối chat khi tắt overlay chống lag ngầm.
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.2.22
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.2.23
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.2.22
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.2.22
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.2.23
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.2.23
 // ==/UserScript==

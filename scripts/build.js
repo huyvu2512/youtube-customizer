@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.22
-// @description  YouTube Customizer v3.2.22 — Tự động mở rộng mô tả video lấp đầy khoảng trống khi ẩn chat và sửa hiển thị avatar/logo mod trong khung chat nổi.
+// @version      3.2.23
+// @description  YouTube Customizer v3.2.23 — Đổi logo Mod thành Khiên, tối ưu ngắt hoàn toàn kết nối chat khi tắt overlay chống lag ngầm.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
