@@ -301,18 +301,18 @@ export function createSettingsPanel() {
 
             <!-- TAB 4: TỐI ƯU HIỆU NĂNG & TIỆN ÍCH -->
             <div class="ytc-tab-pane" id="ytc-pane-optimize">
-                <div class="ytc-item" data-toggle="blockAv1" title="Chặn codec AV1 ngốn CPU, ép dùng bộ giải mã phần cứng H.264 & VP9 mượt mà, mát máy">
+                <div class="ytc-item" data-toggle="preventAutoPause" title="Tự động xác nhận hộp thoại 'Video đã tạm dừng. Bạn vẫn đang xem chứ?' và duy trì trạng thái hoạt động để phát nhạc/video liên tục">
                     <div class="ytc-item-left">
-                        ${CPU_SVG}
-                        <span>Chặn AV1 / Ép Codec H.264</span>
+                        ${INFINITY_SVG}
+                        <span>Chặn tự dừng video</span>
                     </div>
-                    <label class="ytc-switch" for="ytc-chk-blockav1">
-                        <input type="checkbox" id="ytc-chk-blockav1" name="blockAv1" aria-label="Chặn AV1 / Ép Codec H.264" ${currentConfig.blockAv1 ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-autopause">
+                        <input type="checkbox" id="ytc-chk-autopause" name="preventAutoPause" aria-label="Chặn tự dừng video" ${currentConfig.preventAutoPause ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="bgTabSaver" title="Tự động giảm chất lượng video xuống 144p khi chuyển sang tab khác và khôi phục khi quay lại">
+                <div class="ytc-item" data-toggle="bgTabSaver" title="Tự động giảm chất lượng video xuống 144p khi chuyển sang tab khác và khôi phục khi quay lại giúp tiết kiệm RAM và GPU">
                     <div class="ytc-item-left">
                         ${LEAF_SVG}
                         <span>Tiết kiệm Tab nền (144p)</span>
@@ -334,24 +334,13 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="audioOnlyMode" title="Chế độ Radio: Tắt hoàn toàn render hình ảnh video, hạ chất lượng tối thiểu để chỉ nghe tiếng, giảm tối đa RAM/GPU">
+                <div class="ytc-item" data-toggle="blockAv1" title="Chặn codec AV1 ngốn CPU, ép dùng bộ giải mã phần cứng H.264 & VP9 mượt mà, mát máy">
                     <div class="ytc-item-left">
-                        ${HEADPHONES_SVG}
-                        <span>Chỉ phát âm thanh (Radio)</span>
+                        ${CPU_SVG}
+                        <span>Chặn AV1 / Ép Codec H.264</span>
                     </div>
-                    <label class="ytc-switch" for="ytc-chk-audioonly">
-                        <input type="checkbox" id="ytc-chk-audioonly" name="audioOnlyMode" aria-label="Chỉ phát âm thanh" ${currentConfig.audioOnlyMode ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="preventAutoPause" title="Tự động xác nhận hộp thoại 'Video đã tạm dừng. Bạn vẫn đang xem chứ?' và duy trì trạng thái hoạt động">
-                    <div class="ytc-item-left">
-                        ${INFINITY_SVG}
-                        <span>Chặn tự dừng video</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-autopause">
-                        <input type="checkbox" id="ytc-chk-autopause" name="preventAutoPause" aria-label="Chặn tự dừng video" ${currentConfig.preventAutoPause ? 'checked' : ''}>
+                    <label class="ytc-switch" for="ytc-chk-blockav1">
+                        <input type="checkbox" id="ytc-chk-blockav1" name="blockAv1" aria-label="Chặn AV1 / Ép Codec H.264" ${currentConfig.blockAv1 ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -363,6 +352,17 @@ export function createSettingsPanel() {
                     </div>
                     <label class="ytc-switch" for="ytc-chk-keys">
                         <input type="checkbox" id="ytc-chk-keys" name="keyboardControls" aria-label="Phím tắt điều khiển" ${currentConfig.keyboardControls ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="audioOnlyMode" title="Chế độ Radio: Tắt hoàn toàn render hình ảnh video, hạ chất lượng tối thiểu để chỉ nghe tiếng, giảm tối đa RAM/GPU">
+                    <div class="ytc-item-left">
+                        ${HEADPHONES_SVG}
+                        <span>Chỉ phát âm thanh (Radio)</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-audioonly">
+                        <input type="checkbox" id="ytc-chk-audioonly" name="audioOnlyMode" aria-label="Chỉ phát âm thanh" ${currentConfig.audioOnlyMode ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -474,9 +474,6 @@ export function createSettingsPanel() {
                             m.performChatMemoryGc();
                         }
                     }).catch(() => {});
-                }
-                if (key === 'blockAv1') {
-                    showToast(checkbox.checked ? '⚡ Đã bật ép Codec phần cứng (tải lại trang để áp dụng hoàn toàn)' : 'Đã tắt chặn AV1');
                 }
             });
 
