@@ -444,18 +444,39 @@ html[dark] ytd-topbar-logo-renderer #country-code {
     cursor: pointer;
     margin-right: 8px;
     flex-shrink: 0;
-    transition: background-color 0.15s;
+    transition: background-color 0.15s, color 0.15s;
     position: relative;
 }
 #ytc-settings-btn:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
-html:not([dark]) #ytc-settings-btn:hover {
-    background-color: rgba(0, 0, 0, 0.08);
-}
 #ytc-settings-btn svg {
     width: 24px;
     height: 24px;
+    stroke: currentColor;
+    display: block;
+}
+html:not([dark]) #ytc-settings-btn,
+body:not([dark]) #ytc-settings-btn {
+    color: #0f0f0f !important;
+}
+html:not([dark]) #ytc-settings-btn svg,
+body:not([dark]) #ytc-settings-btn svg {
+    stroke: #0f0f0f !important;
+    color: #0f0f0f !important;
+}
+html:not([dark]) #ytc-settings-btn:hover,
+body:not([dark]) #ytc-settings-btn:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+html[dark] #ytc-settings-btn,
+body[dark] #ytc-settings-btn {
+    color: #f1f1f1 !important;
+}
+html[dark] #ytc-settings-btn svg,
+body[dark] #ytc-settings-btn svg {
+    stroke: #f1f1f1 !important;
+    color: #f1f1f1 !important;
 }
 
 #ytc-settings-panel {
@@ -629,6 +650,7 @@ html:not([dark]) #ytc-settings-btn:hover {
     background: rgba(255, 255, 255, 0.08);
     padding: 2px;
     border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
 }
 .ytc-col-btn {
     border: none;
@@ -641,9 +663,14 @@ html:not([dark]) #ytc-settings-btn:hover {
     cursor: pointer;
     transition: all 0.15s;
 }
+.ytc-col-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+}
 .ytc-col-btn.active {
     background: #f1f1f1;
     color: #0f0f0f;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .ytc-shortcut-hint {
@@ -712,6 +739,7 @@ html:not([dark]) .ytc-shortcut-hint kbd {
     background: rgba(255, 255, 255, 0.08);
     padding: 2px;
     border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
 }
 .ytc-mode-btn {
     border: none;
@@ -725,16 +753,78 @@ html:not([dark]) .ytc-shortcut-hint kbd {
     transition: all 0.15s;
     white-space: nowrap;
 }
+.ytc-mode-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+}
 .ytc-mode-btn.active {
     background: #f1f1f1;
     color: #0f0f0f;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
-html:not([dark]) .ytc-mode-group {
+
+/* Định kiểu đồng bộ chuẩn xác cho chế độ Sáng (Light mode) */
+html:not([dark]) .ytc-cols-group,
+body:not([dark]) .ytc-cols-group {
     background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
-html:not([dark]) .ytc-mode-btn.active {
+html:not([dark]) .ytc-col-btn,
+body:not([dark]) .ytc-col-btn {
+    color: #606060;
+}
+html:not([dark]) .ytc-col-btn:hover,
+body:not([dark]) .ytc-col-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: #0f0f0f;
+}
+html:not([dark]) .ytc-col-btn.active,
+body:not([dark]) .ytc-col-btn.active {
     background: #0f0f0f;
     color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+html:not([dark]) .ytc-mode-group,
+body:not([dark]) .ytc-mode-group {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+html:not([dark]) .ytc-mode-btn,
+body:not([dark]) .ytc-mode-btn {
+    color: #606060;
+}
+html:not([dark]) .ytc-mode-btn:hover,
+body:not([dark]) .ytc-mode-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: #0f0f0f;
+}
+html:not([dark]) .ytc-mode-btn.active,
+body:not([dark]) .ytc-mode-btn.active {
+    background: #0f0f0f;
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+html:not([dark]) .ytc-item:hover,
+body:not([dark]) .ytc-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+html:not([dark]) .ytc-divider,
+body:not([dark]) .ytc-divider {
+    background: rgba(0, 0, 0, 0.08);
+}
+html:not([dark]) .ytc-slider,
+body:not([dark]) .ytc-slider {
+    background-color: #b0b0b0;
+}
+html:not([dark]) .ytc-slider:before,
+body:not([dark]) .ytc-slider:before {
+    background-color: #ffffff;
+}
+html:not([dark]) .ytc-switch input:checked + .ytc-slider,
+body:not([dark]) .ytc-switch input:checked + .ytc-slider {
+    background-color: #065fd4;
 }
 
 /* --------------------------------------------------------------------------

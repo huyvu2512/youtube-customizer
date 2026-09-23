@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.17
-// @description  YouTube Customizer v3.2.17 — Khắc phục lỗi xem trước video (inline preview) khi di chuột trên lưới trang chủ và tối ưu Auto Live.
+// @version      3.2.18
+// @description  YouTube Customizer v3.2.18 — Tối ưu giao diện Sáng (nút cài đặt, khung số cột) và khắc phục lỗi xem trước video (inline preview).
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
