@@ -45,14 +45,11 @@ export function scanAndTagFeedContent(scope) {
                 sec.classList.add('ytc-shelf-community');
             }
         }
-        if (currentConfig.hideMixes && !sec.classList.contains('ytc-item-mix')) {
-            if (sec.querySelector('ytd-radio-renderer, a[href*="list=RD"]')) {
-                sec.classList.add('ytc-item-mix');
-            } else {
-                const text = sec.textContent || '';
-                if (text.includes('Danh sách kết hợp') || text.includes('Mixes') || text.includes('YouTube tạo danh sách phát này')) {
-                    sec.classList.add('ytc-item-mix');
-                }
+        if (currentConfig.hideMixes && !sec.classList.contains('ytc-shelf-mix')) {
+            const titleEl = sec.querySelector('#title, #title-container, yt-formatted-string#title');
+            const titleText = (titleEl ? titleEl.textContent : '') || '';
+            if (titleText.includes('Danh sách kết hợp') || titleText.includes('Mixes') || titleText.includes('YouTube tạo danh sách phát này')) {
+                sec.classList.add('ytc-shelf-mix');
             }
         }
     });
@@ -80,15 +77,23 @@ export function scanAndTagFeedContent(scope) {
     }
 
     if (currentConfig.hideMixes) {
-        const mixCards = root.querySelectorAll('ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, ytd-radio-renderer, ytd-compact-radio-renderer');
+        const mixCards = root.querySelectorAll(
+            'ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, ' +
+            'ytd-radio-renderer, ytd-compact-radio-renderer, ytd-playlist-renderer, ytd-compact-playlist-renderer'
+        );
         mixCards.forEach((card) => {
             if (card.classList.contains('ytc-item-mix')) return;
             const tag = card.tagName.toLowerCase();
-            if (tag === 'ytd-radio-renderer' || tag === 'ytd-compact-radio-renderer') {
+            if (
+                tag === 'ytd-radio-renderer' ||
+                tag === 'ytd-compact-radio-renderer' ||
+                tag === 'ytd-playlist-renderer' ||
+                tag === 'ytd-compact-playlist-renderer'
+            ) {
                 card.classList.add('ytc-item-mix');
                 return;
             }
-            if (card.querySelector('a[href*="list=RD"]')) {
+            if (card.querySelector('ytd-radio-renderer, ytd-playlist-renderer')) {
                 card.classList.add('ytc-item-mix');
                 return;
             }

@@ -9,7 +9,7 @@ export const DEFAULT_CONFIG = {
     hideShorts: false,      // Ẩn Shorts hoàn toàn (mặc định tắt)
     hidePlayables: false,   // Ẩn Chơi game (Playables) (mặc định tắt)
     hideMembersOnly: false, // Ẩn mục video Hội viên (mặc định tắt)
-    hideMixes: false,       // Ẩn Danh sách kết hợp (Mixes / Radio) (mặc định tắt)
+    hideMixes: false,       // Ẩn Danh sách phát & Mix (Playlists / Radio) (mặc định tắt)
     hideExploreTopics: false,// Ẩn Khám phá các chủ đề khác (mặc định tắt)
     hideCommunity: false,   // Ẩn bài đăng cộng đồng (mặc định tắt)
     hideEndscreen: false,   // Ẩn thẻ kết thúc & chú thích (mặc định tắt)

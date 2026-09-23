@@ -197,13 +197,13 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hideMixes" title="Ẩn Danh sách kết hợp (Mixes) trên trang chủ, tìm kiếm, gợi ý và tự động chuyển tiếp video đề xuất khi xem">
+                <div class="ytc-item" data-toggle="hideMixes" title="Ẩn toàn bộ Danh sách kết hợp (Mixes/Radio) và Danh sách phát (Playlists) trên trang chủ, tìm kiếm, gợi ý và tự động chuyển tiếp video đề xuất khi xem">
                     <div class="ytc-item-left">
                         ${PLAYLIST_SVG}
-                        <span>Ẩn Danh sách kết hợp</span>
+                        <span>Ẩn Danh sách phát & Mix</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-mixes">
-                        <input type="checkbox" id="ytc-chk-mixes" name="hideMixes" aria-label="Ẩn Danh sách kết hợp" ${currentConfig.hideMixes ? 'checked' : ''}>
+                        <input type="checkbox" id="ytc-chk-mixes" name="hideMixes" aria-label="Ẩn Danh sách phát & Mix" ${currentConfig.hideMixes ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>

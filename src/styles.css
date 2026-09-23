@@ -246,24 +246,22 @@ yt-live-chat-membership-item-renderer {
     display: none !important;
 }
 
-/* Ẩn Danh sách kết hợp (Mixes / Radio) trên Feed, Tìm kiếm, Gợi ý và Watch page */
+/* Ẩn Danh sách kết hợp (Mixes / Radio) và Danh sách phát (Playlists) trên Feed, Tìm kiếm, Gợi ý và Watch page */
+.ytc-hide-mixes ytd-playlist-renderer,
+.ytc-hide-mixes ytd-compact-playlist-renderer,
 .ytc-hide-mixes ytd-radio-renderer,
 .ytc-hide-mixes ytd-compact-radio-renderer,
 .ytc-hide-mixes ytd-grid-radio-renderer,
+.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-playlist-renderer),
 .ytc-hide-mixes ytd-rich-item-renderer:has(ytd-radio-renderer),
 .ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="list=RD"]),
 .ytc-hide-mixes ytd-rich-item-renderer.ytc-item-mix,
-.ytc-hide-mixes ytd-rich-section-renderer:has(ytd-radio-renderer),
-.ytc-hide-mixes ytd-rich-section-renderer:has(a[href*="list=RD"]),
-.ytc-hide-mixes ytd-rich-section-renderer.ytc-item-mix,
-.ytc-hide-mixes ytd-shelf-renderer:has(ytd-radio-renderer),
-.ytc-hide-mixes ytd-shelf-renderer:has(a[href*="list=RD"]),
-.ytc-hide-mixes ytd-shelf-renderer.ytc-item-mix,
 .ytc-hide-mixes ytd-video-renderer:has(a[href*="list=RD"]),
 .ytc-hide-mixes ytd-video-renderer.ytc-item-mix,
 .ytc-hide-mixes ytd-compact-video-renderer:has(a[href*="list=RD"]),
 .ytc-hide-mixes ytd-compact-video-renderer.ytc-item-mix,
 .ytc-hide-mixes #related ytd-compact-radio-renderer,
+.ytc-hide-mixes #related ytd-compact-playlist-renderer,
 .ytc-hide-mixes #related ytd-compact-video-renderer:has(a[href*="list=RD"]),
 .ytc-hide-mixes #playlist:has(a[href*="list=RD"]),
 .ytc-hide-mixes #playlist:has([title*="Danh sách kết hợp"]),
@@ -273,6 +271,20 @@ yt-live-chat-membership-item-renderer {
 .ytc-hide-mixes ytd-playlist-panel-renderer:has([title*="Danh sách kết hợp"]),
 .ytc-hide-mixes ytd-playlist-panel-renderer:has([title*="Mixes"]),
 .ytc-hide-mixes ytd-playlist-panel-renderer:has([title*="Mix -"]),
+/* Kệ Mix chuyên biệt (dựa theo tiêu đề rõ ràng, không ẩn oan toàn bộ kệ nhạc) */
+.ytc-hide-mixes ytd-rich-section-renderer:has(#title-container [title*="Danh sách kết hợp"]),
+.ytc-hide-mixes ytd-rich-section-renderer:has(#title-container [title*="Mixes"]),
+.ytc-hide-mixes ytd-rich-section-renderer:has(#title[title*="Danh sách kết hợp"]),
+.ytc-hide-mixes ytd-rich-section-renderer:has(#title[title*="Mixes"]),
+.ytc-hide-mixes ytd-shelf-renderer:has(#title-container [title*="Danh sách kết hợp"]),
+.ytc-hide-mixes ytd-shelf-renderer:has(#title-container [title*="Mixes"]),
+.ytc-hide-mixes ytd-shelf-renderer:has(#title[title*="Danh sách kết hợp"]),
+.ytc-hide-mixes ytd-shelf-renderer:has(#title[title*="Mixes"]),
+.ytc-hide-mixes ytd-rich-section-renderer.ytc-shelf-mix,
+.ytc-hide-mixes ytd-shelf-renderer.ytc-shelf-mix,
+/* Chip "Danh sách kết hợp" trên thanh chủ đề */
+.ytc-hide-mixes yt-chip-cloud-chip-renderer:has([title*="Danh sách kết hợp"]),
+.ytc-hide-mixes yt-chip-cloud-chip-renderer:has([title*="Mixes"]),
 .ytc-hide-mixes .ytc-item-mix {
     display: none !important;
 }
