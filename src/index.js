@@ -36,7 +36,8 @@ import {
     updateChatOverlayVisibility,
     initIframeChatSender,
     resetChatCollapseState,
-    autoCollapseNativeChatIfOpen
+    autoCollapseNativeChatIfOpen,
+    setupAutoCloseObserver
 } from './chat/index.js';
 import {
     ensureSettingsElements,
@@ -113,6 +114,7 @@ if (window.self !== window.top) {
         dismissPromoBanners(document);
         initChatOverlay();
         if (currentConfig.hideNativeLiveChat) {
+            setupAutoCloseObserver();
             autoCollapseNativeChatIfOpen();
             setTimeout(autoCollapseNativeChatIfOpen, 300);
             setTimeout(autoCollapseNativeChatIfOpen, 800);

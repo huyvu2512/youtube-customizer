@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.30
-// @description  YouTube Customizer v3.2.30 — Tự động tắt khung trò chuyện trực tiếp bằng nút Đóng (X) khi mới mở video (cho phép mở lại bình thường, Live Chat overlay chạy ngầm).
+// @version      3.2.31
+// @description  YouTube Customizer v3.2.31 — Tự động tắt khung trò chuyện trực tiếp bằng nút Đóng (X) khi mới mở video (cho phép mở lại bình thường, Live Chat overlay chạy ngầm).
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -28,7 +28,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.2.30";
+      APP_VERSION = "3.2.31";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -1160,14 +1160,38 @@
   });
 
   // src/chat/chatObserver.js
+  function setUserManuallyOpenedChat(v) {
+    userManuallyOpenedChat = v;
+    try {
+      window.userManuallyOpenedChat = v;
+    } catch (e) {
+    }
+  }
+  function setHasAutoCollapsedChatForCurrentVideo(v) {
+    hasAutoCollapsedChatForCurrentVideo = v;
+    try {
+      window.hasAutoCollapsedChatForCurrentVideo = v;
+    } catch (e) {
+    }
+  }
   function resetChatCollapseState() {
-    userManuallyOpenedChat = false;
-    hasAutoCollapsedChatForCurrentVideo = false;
+    setUserManuallyOpenedChat(false);
+    setHasAutoCollapsedChatForCurrentVideo(false);
+    if (chatAutoCloseObserver) {
+      chatAutoCloseObserver.disconnect();
+      chatAutoCloseObserver = null;
+    }
+    if (chatAutoCloseTimeout) {
+      clearTimeout(chatAutoCloseTimeout);
+      chatAutoCloseTimeout = null;
+    }
   }
   function findNativeChatCloseButton() {
     const topSelectors = [
       'ytd-engagement-panel-section-list-renderer[target-id*="chat" i][visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"] #visibility-button button',
       'ytd-engagement-panel-section-list-renderer[target-id*="chat" i][visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"] #close-button button',
+      'ytd-engagement-panel-section-list-renderer[target-id*="chat" i][visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"] button[aria-label="Đóng"]',
+      'ytd-engagement-panel-section-list-renderer[target-id*="chat" i][visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"] button[aria-label="Close"]',
       'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] #visibility-button button',
       'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] #close-button button',
       'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] button[aria-label="Đóng"]',
@@ -1181,7 +1205,7 @@
     ];
     for (const sel of topSelectors) {
       const btn = document.querySelector(sel);
-      if (btn && (btn.offsetParent !== null || btn.offsetWidth > 0 || btn.offsetHeight > 0)) {
+      if (btn) {
         return btn;
       }
     }
@@ -1203,7 +1227,7 @@
         if (doc) {
           for (const sel of iframeSelectors) {
             const btn = doc.querySelector(sel);
-            if (btn && (btn.offsetParent !== null || btn.offsetWidth > 0 || btn.offsetHeight > 0)) {
+            if (btn) {
               return btn;
             }
           }
@@ -1214,29 +1238,18 @@
     return null;
   }
   function autoCollapseNativeChatIfOpen() {
-    if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
-    if (!currentConfig.hideNativeLiveChat) return;
-    if (hasAutoCollapsedChatForCurrentVideo || userManuallyOpenedChat) return;
-    const isAlreadyClosed = (() => {
-      const teaser = document.querySelector(
-        'ytd-live-chat-frame[collapsed] #teaser, #chat-messages [aria-label*="Mở bảng điều khiển" i], button[aria-label*="Mở bảng điều khiển" i], ytd-item-section-renderer #teaser'
-      );
-      if (teaser) return true;
-      const panel = document.querySelector('ytd-engagement-panel-section-list-renderer[target-id*="chat" i]');
-      if (panel && panel.getAttribute("visibility") === "ENGAGEMENT_PANEL_VISIBILITY_HIDDEN") return true;
-      const frame = document.querySelector("ytd-live-chat-frame#chat, #chat.ytd-watch-flexy");
-      if (frame && frame.hasAttribute("collapsed")) return true;
-      return false;
-    })();
-    if (isAlreadyClosed) {
-      hasAutoCollapsedChatForCurrentVideo = true;
-      return;
-    }
+    if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return false;
+    if (!currentConfig.hideNativeLiveChat) return false;
+    if (hasAutoCollapsedChatForCurrentVideo || userManuallyOpenedChat) return false;
     const closeBtn = findNativeChatCloseButton();
     if (closeBtn) {
       closeBtn.click();
-      hasAutoCollapsedChatForCurrentVideo = true;
-      return;
+      setHasAutoCollapsedChatForCurrentVideo(true);
+      if (chatAutoCloseObserver) {
+        chatAutoCloseObserver.disconnect();
+        chatAutoCloseObserver = null;
+      }
+      return true;
     }
     const nativeFrames = document.querySelectorAll(
       "iframe#chatframe:not(#ytc-bg-live-chat), ytd-live-chat-frame iframe:not(#ytc-bg-live-chat)"
@@ -1252,11 +1265,57 @@
       nativeFrame._ytcAutoCloseBound = true;
       nativeFrame.addEventListener("load", () => {
         if (!hasAutoCollapsedChatForCurrentVideo && !userManuallyOpenedChat && currentConfig.hideNativeLiveChat) {
-          setTimeout(autoCollapseNativeChatIfOpen, 80);
-          setTimeout(autoCollapseNativeChatIfOpen, 250);
+          setTimeout(autoCollapseNativeChatIfOpen, 50);
+          setTimeout(autoCollapseNativeChatIfOpen, 200);
+          setTimeout(autoCollapseNativeChatIfOpen, 500);
         }
       });
     }
+    return false;
+  }
+  function setupAutoCloseObserver() {
+    if (!currentConfig.hideNativeLiveChat) return;
+    if (hasAutoCollapsedChatForCurrentVideo || userManuallyOpenedChat) return;
+    if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
+    if (chatAutoCloseObserver) {
+      chatAutoCloseObserver.disconnect();
+      chatAutoCloseObserver = null;
+    }
+    if (chatAutoCloseTimeout) {
+      clearTimeout(chatAutoCloseTimeout);
+      chatAutoCloseTimeout = null;
+    }
+    if (autoCollapseNativeChatIfOpen()) {
+      return;
+    }
+    chatAutoCloseObserver = new MutationObserver(() => {
+      if (hasAutoCollapsedChatForCurrentVideo || userManuallyOpenedChat || !currentConfig.hideNativeLiveChat) {
+        if (chatAutoCloseObserver) {
+          chatAutoCloseObserver.disconnect();
+          chatAutoCloseObserver = null;
+        }
+        return;
+      }
+      if (autoCollapseNativeChatIfOpen()) {
+        if (chatAutoCloseObserver) {
+          chatAutoCloseObserver.disconnect();
+          chatAutoCloseObserver = null;
+        }
+      }
+    });
+    const target = document.querySelector("#panels-full-bleed-container, #panels, ytd-watch-flexy") || document.body || document.documentElement;
+    chatAutoCloseObserver.observe(target, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["visibility", "collapsed", "panels-open", "has-active-panel"]
+    });
+    chatAutoCloseTimeout = setTimeout(() => {
+      if (chatAutoCloseObserver) {
+        chatAutoCloseObserver.disconnect();
+        chatAutoCloseObserver = null;
+      }
+    }, 12e3);
   }
   function isNativeChatOpenInFullscreen() {
     const player = document.querySelector("#movie_player:not(#inline-preview-player)");
@@ -1309,7 +1368,8 @@
         '#close-button, #visibility-button, #panels-full-bleed-container #visibility-button, #panels-full-bleed-container #close-button, #panels-full-bleed-container [aria-label*="Đóng" i], #panels-full-bleed-container [aria-label*="Close" i], ytd-engagement-panel-section-list-renderer #visibility-button, ytd-engagement-panel-section-list-renderer #close-button, ytd-engagement-panel-section-list-renderer [aria-label*="Đóng" i], ytd-engagement-panel-section-list-renderer [aria-label*="Close" i], ytd-live-chat-frame #close-button button, ytd-live-chat-frame #close-button, yt-live-chat-header-renderer #close-button, yt-live-chat-header-renderer #close-button button, [aria-label*="Ẩn cuộc trò chuyện" i], [aria-label*="Thu gọn cuộc trò chuyện" i], [aria-label*="Hide chat" i], [aria-label*="Collapse live chat" i], [aria-label*="Close chat" i]'
       );
       if (isCloseBtn) {
-        userManuallyOpenedChat = false;
+        setUserManuallyOpenedChat(false);
+        setHasAutoCollapsedChatForCurrentVideo(true);
         const isFs = !!(document.fullscreenElement || document.querySelector("#movie_player.ytp-fullscreen"));
         if (isFs && currentConfig.chatOverlay && currentConfig.chatOverlay !== "off") {
           setNativeChatHiddenState(true);
@@ -1320,16 +1380,20 @@
         '.ytp-live-chat-button, .ytp-chat-button, button[data-tooltip-target-id*="chat" i], #actions [aria-label*="trò chuyện" i], #actions [aria-label*="chat" i], #top-level-buttons-computed [aria-label*="trò chuyện" i], #top-level-buttons-computed [aria-label*="chat" i], button[aria-label*="trò chuyện" i], button[aria-label*="chat" i], button[target-id*="chat" i], button[data-target-id*="chat" i], button[aria-controls*="chat" i], #show-hide-button button, button#show-button, #show-button, [aria-label*="Hiện cuộc trò chuyện" i], [aria-label*="Mở rộng cuộc trò chuyện" i], [aria-label*="Mở bảng điều khiển" i], [aria-label*="Show chat" i], [aria-label*="Expand live chat" i], [aria-label*="Open panel" i], #teaser, #chat-teaser, ytd-live-chat-frame[collapsed] #teaser, ytd-live-chat-frame[collapsed] ytd-button-renderer, ytd-live-chat-frame[collapsed] yt-button-shape'
       ) || e.target.textContent && e.target.textContent.includes("Mở bảng điều khiển"));
       if (isChatBtn) {
+        setUserManuallyOpenedChat(true);
+        setHasAutoCollapsedChatForCurrentVideo(true);
+        if (chatAutoCloseObserver) {
+          chatAutoCloseObserver.disconnect();
+          chatAutoCloseObserver = null;
+        }
         const isFs = !!(document.fullscreenElement || document.querySelector("#movie_player.ytp-fullscreen"));
         if (isFs) {
           if (!isNativeChatOpenInFullscreen()) {
-            userManuallyOpenedChat = true;
             setNativeChatHiddenState(false);
           } else {
-            userManuallyOpenedChat = false;
+            setUserManuallyOpenedChat(false);
           }
         } else {
-          userManuallyOpenedChat = true;
           setNativeChatHiddenState(false);
         }
       }
@@ -1535,6 +1599,11 @@
     let targetSrc = `https://www.youtube.com/live_chat?v=${videoId}`;
     if (nativeFrame && nativeFrame.src && nativeFrame.src.includes("live_chat")) {
       targetSrc = nativeFrame.src;
+    }
+    if (targetSrc.includes("?")) {
+      targetSrc += "&ytc_bg=1";
+    } else {
+      targetSrc += "?ytc_bg=1";
     }
     bgChatIframe.src = targetSrc;
     bgChatIframe.style.cssText = "position:fixed !important;bottom:0 !important;right:0 !important;width:2px !important;height:2px !important;opacity:0.001 !important;pointer-events:none !important;z-index:-9999 !important;border:none !important;";
@@ -1783,11 +1852,44 @@
         const btn = document.querySelector(
           'yt-live-chat-header-renderer #close-button button, #close-button yt-button-renderer button, #close-button button, yt-button-shape button[aria-label="Đóng"], yt-button-shape button[aria-label="Close"], button[aria-label="Đóng"], button[aria-label="Close"]'
         );
-        if (btn && btn.offsetParent !== null) {
+        if (btn) {
           btn.click();
         }
       }
     });
+    const isBgFrame = window.frameElement && window.frameElement.id === "ytc-bg-live-chat" || location.href.includes("ytc_bg=1");
+    if (!isBgFrame && iframeConfig.hideNativeLiveChat) {
+      let tryClickIframeClose = function() {
+        try {
+          if (window.top && (window.top.hasAutoCollapsedChatForCurrentVideo || window.top.userManuallyOpenedChat)) {
+            return true;
+          }
+        } catch (e) {
+        }
+        const closeBtn = document.querySelector(
+          'yt-live-chat-header-renderer #close-button button, #close-button yt-button-renderer button, #close-button button, yt-button-shape button[aria-label="Đóng"], yt-button-shape button[aria-label="Close"], button[aria-label="Đóng"], button[aria-label="Close"]'
+        );
+        if (closeBtn) {
+          closeBtn.click();
+          try {
+            if (window.top) window.top.hasAutoCollapsedChatForCurrentVideo = true;
+            window.top?.postMessage({ type: "YTC_NATIVE_CHAT_CLOSED_SUCCESS" }, "*");
+          } catch (e) {
+          }
+          return true;
+        }
+        return false;
+      };
+      if (!tryClickIframeClose()) {
+        const iframeObs = new MutationObserver(() => {
+          if (tryClickIframeClose()) {
+            iframeObs.disconnect();
+          }
+        });
+        iframeObs.observe(document.body || document.documentElement, { childList: true, subtree: true });
+        setTimeout(() => iframeObs.disconnect(), 1e4);
+      }
+    }
     document.addEventListener("click", (e) => {
       if (!e.isTrusted) return;
       const isClose = !!e.target.closest('#close-button, [aria-label*="Đóng" i], [aria-label*="Close" i]');
@@ -1971,13 +2073,22 @@
         displayChatMessage(e.data.payload, isBacklog);
       }
       if (e.data && e.data.type === "YTC_NATIVE_CHAT_CLOSED_BY_USER") {
-        userManuallyOpenedChat = false;
+        setUserManuallyOpenedChat(false);
+        setHasAutoCollapsedChatForCurrentVideo(true);
+      }
+      if (e.data && e.data.type === "YTC_NATIVE_CHAT_CLOSED_SUCCESS") {
+        setHasAutoCollapsedChatForCurrentVideo(true);
+        if (chatAutoCloseObserver) {
+          chatAutoCloseObserver.disconnect();
+          chatAutoCloseObserver = null;
+        }
       }
     });
     if (currentConfig.chatOverlay && currentConfig.chatOverlay !== "off") {
       findAndObserveItems();
     }
     if (currentConfig.hideNativeLiveChat) {
+      setupAutoCloseObserver();
       autoCollapseNativeChatIfOpen();
       setTimeout(autoCollapseNativeChatIfOpen, 300);
       setTimeout(autoCollapseNativeChatIfOpen, 800);
@@ -2005,7 +2116,7 @@
       });
     }
   }
-  var userManuallyOpenedChat, hasAutoCollapsedChatForCurrentVideo, chatToggleListenersBound, ensureNativeLiveChatRunning, theaterObserver, bgChatIframe, currentBgVideoId, UNICODE_EMOJI_REGEX2;
+  var userManuallyOpenedChat, hasAutoCollapsedChatForCurrentVideo, chatAutoCloseObserver, chatAutoCloseTimeout, chatToggleListenersBound, ensureNativeLiveChatRunning, theaterObserver, bgChatIframe, currentBgVideoId, UNICODE_EMOJI_REGEX2;
   var init_chatObserver = __esm({
     "src/chat/chatObserver.js"() {
       init_config();
@@ -2016,6 +2127,8 @@
       init_chatParser();
       userManuallyOpenedChat = false;
       hasAutoCollapsedChatForCurrentVideo = false;
+      chatAutoCloseObserver = null;
+      chatAutoCloseTimeout = null;
       chatToggleListenersBound = false;
       ensureNativeLiveChatRunning = syncNativeChatState;
       theaterObserver = null;
@@ -2064,9 +2177,12 @@
     saveChatBoxPos: () => saveChatBoxPos,
     seenMessageIds: () => seenMessageIds,
     setChatOverlayInitialized: () => setChatOverlayInitialized,
+    setHasAutoCollapsedChatForCurrentVideo: () => setHasAutoCollapsedChatForCurrentVideo,
     setLastDanmakuSpawnTime: () => setLastDanmakuSpawnTime,
     setLastSpawnedLane: () => setLastSpawnedLane,
     setNativeChatHiddenState: () => setNativeChatHiddenState,
+    setUserManuallyOpenedChat: () => setUserManuallyOpenedChat,
+    setupAutoCloseObserver: () => setupAutoCloseObserver,
     setupChatBoxInteractions: () => setupChatBoxInteractions,
     setupChatToggleListeners: () => setupChatToggleListeners,
     setupTheaterModeObserver: () => setupTheaterModeObserver,
@@ -3452,7 +3568,9 @@
                 if (m && typeof m.resetChatCollapseState === "function") {
                   m.resetChatCollapseState();
                 }
-                if (m && typeof m.autoCollapseNativeChatIfOpen === "function") {
+                if (m && typeof m.setupAutoCloseObserver === "function") {
+                  m.setupAutoCloseObserver();
+                } else if (m && typeof m.autoCollapseNativeChatIfOpen === "function") {
                   m.autoCollapseNativeChatIfOpen();
                 }
               }
@@ -3577,6 +3695,7 @@
       dismissPromoBanners(document);
       initChatOverlay();
       if (currentConfig.hideNativeLiveChat) {
+        setupAutoCloseObserver();
         autoCollapseNativeChatIfOpen();
         setTimeout(autoCollapseNativeChatIfOpen, 300);
         setTimeout(autoCollapseNativeChatIfOpen, 800);

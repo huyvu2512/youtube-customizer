@@ -386,7 +386,9 @@ export function createSettingsPanel() {
                             if (m && typeof m.resetChatCollapseState === 'function') {
                                 m.resetChatCollapseState();
                             }
-                            if (m && typeof m.autoCollapseNativeChatIfOpen === 'function') {
+                            if (m && typeof m.setupAutoCloseObserver === 'function') {
+                                m.setupAutoCloseObserver();
+                            } else if (m && typeof m.autoCollapseNativeChatIfOpen === 'function') {
                                 m.autoCollapseNativeChatIfOpen();
                             }
                         }
