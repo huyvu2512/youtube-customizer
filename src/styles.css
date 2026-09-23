@@ -598,6 +598,9 @@ html[dark] #ytc-settings-btn svg {
     opacity: 0.9;
     flex-shrink: 0;
 }
+.ytc-item-left svg[fill="none"] {
+    fill: none;
+}
 
 .ytc-switch {
     position: relative;

@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.18
-// @description  YouTube Customizer v3.2.18 — Tối ưu giao diện Sáng (nút cài đặt, khung số cột) và khắc phục lỗi xem trước video (inline preview).
+// @version      3.2.19
+// @description  YouTube Customizer v3.2.19 — Tối ưu và vẽ lại toàn bộ hệ thống icon sắc nét chuẩn YouTube, hỗ trợ 2 chế độ Sáng/Tối hoàn hảo.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
