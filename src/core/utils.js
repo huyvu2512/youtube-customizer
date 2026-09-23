@@ -103,3 +103,62 @@ export function whenElement(selector, callback, timeout = 5000) {
         timer = setTimeout(() => observer.disconnect(), timeout);
     }
 }
+
+/**
+ * Kiểm tra xem video hiện tại có phải Live Stream hoặc có khung trò chuyện / phát lại trò chuyện không
+ */
+export function hasLiveOrChatSupport() {
+    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) {
+        return false;
+    }
+    if (location.pathname.startsWith('/live')) {
+        return true;
+    }
+    const player = document.querySelector('#movie_player:not(#inline-preview-player)');
+    if (player) {
+        try {
+            if (typeof player.getVideoData === 'function') {
+                const data = player.getVideoData();
+                if (data && (data.isLive || data.isPostLiveDvr)) return true;
+            }
+            if (typeof player.isLive === 'function' && player.isLive()) return true;
+        } catch (e) {}
+    }
+    const chatEl = document.querySelector(
+        'ytd-live-chat-frame, ' +
+        '#chat.ytd-watch-flexy, ' +
+        '#chat-container, ' +
+        'iframe#chatframe, ' +
+        '#chat-teaser, ' +
+        '#teaser, ' +
+        '[target-id*="chat" i], ' +
+        '[target-id="engagement-panel-live-chat"], ' +
+        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i], ' +
+        '.ytp-live-chat-button, ' +
+        '.ytp-chat-button, ' +
+        'button[aria-label*="trò chuyện" i], ' +
+        'button[aria-label*="chat" i]'
+    );
+    return !!chatEl;
+}
+
+let toastTimer = null;
+/**
+ * Hiển thị thông báo Toast nhẹ nhàng ở giữa cạnh dưới màn hình
+ */
+export function showToast(message, duration = 3000) {
+    if (!document.body) return;
+    let toast = document.getElementById('ytc-toast-notification');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'ytc-toast-notification';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add('ytc-toast-show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+        toast.classList.remove('ytc-toast-show');
+    }, duration);
+}
+

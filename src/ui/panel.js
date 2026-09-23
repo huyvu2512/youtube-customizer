@@ -2,7 +2,7 @@
 // SETTINGS PANEL UI & MASTHEAD GEAR OBSERVER
 // ==========================================================================
 import { currentConfig, saveConfig, applyConfigToRoot } from '../core/config.js';
-import { safeHTML, setElementHTML, whenElement, rafThrottle } from '../core/utils.js';
+import { safeHTML, setElementHTML, whenElement, rafThrottle, hasLiveOrChatSupport, showToast } from '../core/utils.js';
 import {
     APP_VERSION,
     GEAR_SVG,
@@ -351,6 +351,10 @@ export function createSettingsPanel() {
             modeBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const mode = modeBtn.getAttribute('data-overlay') || 'off';
+                if (mode !== 'off' && !hasLiveOrChatSupport()) {
+                    showToast('⚠️ Live Chat chỉ khả dụng khi xem Live Stream hoặc video có khung trò chuyện!');
+                    return;
+                }
                 currentConfig.chatOverlay = mode;
                 saveConfig(currentConfig);
 
@@ -381,7 +385,11 @@ export function createSettingsPanel() {
                         if (m && typeof m.autoCollapseNativeChatIfOpen === 'function') {
                             m.autoCollapseNativeChatIfOpen();
                         }
+                        if (m && typeof m.syncPlayerFullscreenSize === 'function') {
+                            m.syncPlayerFullscreenSize();
+                        }
                     }).catch(() => {});
+                    window.dispatchEvent(new Event('resize'));
                 }
             });
 

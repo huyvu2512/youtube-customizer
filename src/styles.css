@@ -1036,7 +1036,8 @@ html[data-ytc-chat-hidden="true"]:not(:has([visibility*="EXPANDED"], [opened], [
 /* ==========================================================================
    TÍNH NĂNG ẨN KHUNG LIVE CHAT GỐC CỦA YOUTUBE (hideNativeLiveChat)
    - Đẩy khung chat gốc ra ngoài màn hình off-screen thay vì display:none để iframe vẫn chạy ngầm
-   - Ẩn triệt để tất cả các nút bật/tắt chat, teaser mở bảng điều khiển, nút trên thanh player
+   - Ẩn triệt để tất cả các nút bật/tắt chat, teaser mở bảng điều khiển, nút trên thanh player & action bar
+   - Xóa bỏ vệt đen bên phải khi ẩn chat trên video Live Stream, mở rộng player ra 100% chiều rộng
    ========================================================================== */
 html.ytc-hide-native-chat ytd-live-chat-frame#chat,
 body.ytc-hide-native-chat ytd-live-chat-frame#chat,
@@ -1052,29 +1053,204 @@ body.ytc-hide-native-chat #chat.ytd-watch-flexy {
     visibility: hidden !important;
 }
 
-html.ytc-hide-native-chat #chat-container,
-body.ytc-hide-native-chat #chat-container {
-    width: 0 !important;
-    min-width: 0 !important;
-    max-width: 0 !important;
-    overflow: hidden !important;
+/* Ẩn triệt để khung Teaser "Phát lại cuộc trò chuyện trực tiếp" */
+html.ytc-hide-native-chat #chat-teaser,
+body.ytc-hide-native-chat #chat-teaser,
+html.ytc-hide-native-chat #teaser,
+body.ytc-hide-native-chat #teaser,
+html.ytc-hide-native-chat ytd-live-chat-frame #teaser,
+body.ytc-hide-native-chat ytd-live-chat-frame #teaser,
+html.ytc-hide-native-chat ytd-live-chat-frame[collapsed],
+body.ytc-hide-native-chat ytd-live-chat-frame[collapsed],
+html.ytc-hide-native-chat ytd-item-section-renderer:has(#chat-teaser),
+body.ytc-hide-native-chat ytd-item-section-renderer:has(#chat-teaser),
+html.ytc-hide-native-chat ytd-item-section-renderer:has(#teaser),
+body.ytc-hide-native-chat ytd-item-section-renderer:has(#teaser),
+html.ytc-hide-native-chat ytd-item-section-renderer:has(ytd-live-chat-frame),
+body.ytc-hide-native-chat ytd-item-section-renderer:has(ytd-live-chat-frame),
+html.ytc-hide-native-chat ytd-engagement-panel-section-list-renderer[target-id*="chat" i],
+body.ytc-hide-native-chat ytd-engagement-panel-section-list-renderer[target-id*="chat" i],
+html.ytc-hide-native-chat [target-id="engagement-panel-live-chat"],
+body.ytc-hide-native-chat [target-id="engagement-panel-live-chat"],
+html.ytc-hide-native-chat #show-hide-button,
+body.ytc-hide-native-chat #show-hide-button {
+    display: none !important;
 }
 
+/* Ẩn triệt để nút biểu tượng trò chuyện trên thanh công cụ dưới video và player */
 html.ytc-hide-native-chat .ytp-live-chat-button,
 body.ytc-hide-native-chat .ytp-live-chat-button,
 html.ytc-hide-native-chat .ytp-chat-button,
 body.ytc-hide-native-chat .ytp-chat-button,
-html.ytc-hide-native-chat #show-hide-button,
-body.ytc-hide-native-chat #show-hide-button,
-html.ytc-hide-native-chat #chat-teaser,
-body.ytc-hide-native-chat #chat-teaser,
-html.ytc-hide-native-chat ytd-live-chat-frame #teaser,
-body.ytc-hide-native-chat ytd-live-chat-frame #teaser,
-html.ytc-hide-native-chat ytd-engagement-panel-section-list-renderer[target-id*="chat" i],
-body.ytc-hide-native-chat ytd-engagement-panel-section-list-renderer[target-id*="chat" i],
-html.ytc-hide-native-chat [target-id="engagement-panel-live-chat"],
-body.ytc-hide-native-chat [target-id="engagement-panel-live-chat"] {
+html.ytc-hide-native-chat ytd-watch-metadata #actions ytd-button-renderer:has(button[aria-label*="trò chuyện" i], button[aria-label*="chat" i]),
+body.ytc-hide-native-chat ytd-watch-metadata #actions ytd-button-renderer:has(button[aria-label*="trò chuyện" i], button[aria-label*="chat" i]),
+html.ytc-hide-native-chat ytd-watch-metadata #actions yt-button-shape:has(button[aria-label*="trò chuyện" i], button[aria-label*="chat" i]),
+body.ytc-hide-native-chat ytd-watch-metadata #actions yt-button-shape:has(button[aria-label*="trò chuyện" i], button[aria-label*="chat" i]),
+html.ytc-hide-native-chat ytd-watch-metadata #actions yt-button-view-model:has(button[aria-label*="trò chuyện" i], button[aria-label*="chat" i]),
+body.ytc-hide-native-chat ytd-watch-metadata #actions yt-button-view-model:has(button[aria-label*="trò chuyện" i], button[aria-label*="chat" i]),
+html.ytc-hide-native-chat ytd-menu-renderer ytd-button-renderer:has(button[aria-label*="trò chuyện" i], button[aria-label*="chat" i]),
+body.ytc-hide-native-chat ytd-menu-renderer ytd-button-renderer:has(button[aria-label*="trò chuyện" i], button[aria-label*="chat" i]),
+html.ytc-hide-native-chat ytd-menu-renderer yt-button-shape:has(button[aria-label*="trò chuyện" i], button[aria-label*="chat" i]),
+body.ytc-hide-native-chat ytd-menu-renderer yt-button-shape:has(button[aria-label*="trò chuyện" i], button[aria-label*="chat" i]),
+html.ytc-hide-native-chat ytd-menu-renderer yt-button-view-model:has(button[aria-label*="trò chuyện" i], button[aria-label*="chat" i]),
+body.ytc-hide-native-chat ytd-menu-renderer yt-button-view-model:has(button[aria-label*="trò chuyện" i], button[aria-label*="chat" i]),
+html.ytc-hide-native-chat ytd-menu-renderer button[aria-label*="trò chuyện" i],
+body.ytc-hide-native-chat ytd-menu-renderer button[aria-label*="trò chuyện" i],
+html.ytc-hide-native-chat ytd-menu-renderer button[aria-label*="chat" i],
+body.ytc-hide-native-chat ytd-menu-renderer button[aria-label*="chat" i],
+html.ytc-hide-native-chat button[aria-label*="Phát lại cuộc trò chuyện" i],
+body.ytc-hide-native-chat button[aria-label*="Phát lại cuộc trò chuyện" i],
+html.ytc-hide-native-chat button[aria-label*="Mở bảng điều khiển" i],
+body.ytc-hide-native-chat button[aria-label*="Mở bảng điều khiển" i] {
     display: none !important;
+}
+
+/* Triệt tiêu độ rộng side panel bên phải khi chỉ chứa chat để video không bị thu nhỏ */
+html.ytc-hide-native-chat #chat-container,
+body.ytc-hide-native-chat #chat-container,
+html.ytc-hide-native-chat #panels-full-bleed-container:not(:has(ytd-engagement-panel-section-list-renderer:not([target-id*="chat" i])[visibility*="EXPANDED"])),
+body.ytc-hide-native-chat #panels-full-bleed-container:not(:has(ytd-engagement-panel-section-list-renderer:not([target-id*="chat" i])[visibility*="EXPANDED"])),
+html.ytc-hide-native-chat ytd-watch-flexy[panels-open]:not(:has(ytd-engagement-panel-section-list-renderer:not([target-id*="chat" i])[visibility*="EXPANDED"])) #panels-full-bleed-container,
+body.ytc-hide-native-chat ytd-watch-flexy[panels-open]:not(:has(ytd-engagement-panel-section-list-renderer:not([target-id*="chat" i])[visibility*="EXPANDED"])) #panels-full-bleed-container {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    flex: 0 0 0% !important;
+    overflow: hidden !important;
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Xóa sổ vệt đen bên phải trong chế độ Rạp chiếu phim (Theater Mode) */
+html.ytc-hide-native-chat ytd-watch-flexy[theater] #player-full-bleed-container,
+body.ytc-hide-native-chat ytd-watch-flexy[theater] #player-full-bleed-container,
+html.ytc-hide-native-chat ytd-watch-flexy[theater] #full-bleed-container,
+body.ytc-hide-native-chat ytd-watch-flexy[theater] #full-bleed-container,
+html.ytc-hide-native-chat ytd-watch-flexy[theater] #player-container-outer,
+body.ytc-hide-native-chat ytd-watch-flexy[theater] #player-container-outer,
+html.ytc-hide-native-chat ytd-watch-flexy[theater] #player-container-inner,
+body.ytc-hide-native-chat ytd-watch-flexy[theater] #player-container-inner,
+html.ytc-hide-native-chat ytd-watch-flexy[theater] #player-container,
+body.ytc-hide-native-chat ytd-watch-flexy[theater] #player-container,
+html.ytc-hide-native-chat ytd-watch-flexy[theater] #movie_player,
+body.ytc-hide-native-chat ytd-watch-flexy[theater] #movie_player,
+html.ytc-hide-native-chat ytd-watch-flexy[theater] .html5-video-player,
+body.ytc-hide-native-chat ytd-watch-flexy[theater] .html5-video-player {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Xóa sổ vệt đen bên phải trong chế độ Toàn màn hình (Fullscreen Mode) */
+html.ytc-hide-native-chat ytd-watch-flexy[fullscreen] #player-full-bleed-container,
+body.ytc-hide-native-chat ytd-watch-flexy[fullscreen] #player-full-bleed-container,
+html.ytc-hide-native-chat ytd-watch-flexy[fullscreen] #full-bleed-container,
+body.ytc-hide-native-chat ytd-watch-flexy[fullscreen] #full-bleed-container,
+html.ytc-hide-native-chat ytd-watch-flexy[fullscreen] #player-container-outer,
+body.ytc-hide-native-chat ytd-watch-flexy[fullscreen] #player-container-outer,
+html.ytc-hide-native-chat ytd-watch-flexy[fullscreen] #player-container-inner,
+body.ytc-hide-native-chat ytd-watch-flexy[fullscreen] #player-container-inner,
+html.ytc-hide-native-chat ytd-watch-flexy[fullscreen] #player-container,
+body.ytc-hide-native-chat ytd-watch-flexy[fullscreen] #player-container,
+html.ytc-hide-native-chat ytd-watch-flexy[fullscreen] #movie_player,
+body.ytc-hide-native-chat ytd-watch-flexy[fullscreen] #movie_player,
+html.ytc-hide-native-chat ytd-watch-flexy[fullscreen] .html5-video-player,
+body.ytc-hide-native-chat ytd-watch-flexy[fullscreen] .html5-video-player {
+    width: 100vw !important;
+    min-width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+html.ytc-hide-native-chat ytd-watch-flexy[theater] video.html5-main-video,
+body.ytc-hide-native-chat ytd-watch-flexy[theater] video.html5-main-video,
+html.ytc-hide-native-chat ytd-watch-flexy[fullscreen] video.html5-main-video,
+body.ytc-hide-native-chat ytd-watch-flexy[fullscreen] video.html5-main-video {
+    left: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* ==========================================================================
+   TÍNH NĂNG ẨN BIỂU TƯỢNG CẢM XÚC TRONG LIVE CHAT (hideChatEmojis)
+   - Ẩn hoàn toàn thẻ ảnh emoji/sticker trong khung chat gốc
+   - Ẩn hoàn toàn các bình luận chỉ chứa icon/emoji không có chữ
+   ========================================================================== */
+html.ytc-hide-chat-emojis img.emoji,
+body.ytc-hide-chat-emojis img.emoji,
+html.ytc-hide-chat-emojis img.yt-emoji,
+body.ytc-hide-chat-emojis img.yt-emoji,
+html.ytc-hide-chat-emojis .emoji,
+body.ytc-hide-chat-emojis .emoji,
+html.ytc-hide-chat-emojis yt-live-chat-paid-sticker-renderer,
+body.ytc-hide-chat-emojis yt-live-chat-paid-sticker-renderer {
+    display: none !important;
+}
+
+html.ytc-hide-chat-emojis .ytc-emoji-only-msg,
+body.ytc-hide-chat-emojis .ytc-emoji-only-msg {
+    display: none !important;
+}
+
+/* ==========================================================================
+   TOAST NOTIFICATION (HỖ TRỢ THÔNG BÁO NHẸ NHÀNG)
+   ========================================================================== */
+#ytc-toast-notification {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(18, 18, 18, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15);
+    z-index: 999999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    font-family: "YouTube Sans", "Roboto", sans-serif;
+    white-space: nowrap;
+}
+
+#ytc-toast-notification.ytc-toast-show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+html[light] #ytc-toast-notification,
+body[light] #ytc-toast-notification {
+    background: rgba(255, 255, 255, 0.95);
+    color: #0f0f0f;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+/* Trạng thái disabled cho các mục không hỗ trợ trong menu */
+.ytc-item.ytc-disabled {
+    opacity: 0.55;
+}
+
+.ytc-item.ytc-disabled .ytc-mode-btn:not([data-overlay="off"]) {
+    cursor: not-allowed !important;
+    opacity: 0.45;
+    pointer-events: auto !important;
 }
 
 

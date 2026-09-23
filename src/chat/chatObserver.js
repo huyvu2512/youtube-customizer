@@ -2,7 +2,7 @@
 // CHAT OBSERVER, BACKGROUND SYNC & IFRAME CONTROLLER
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
-import { whenElement } from '../core/utils.js';
+import { whenElement, hasLiveOrChatSupport } from '../core/utils.js';
 import {
     chatOverlayInitialized,
     setChatOverlayInitialized,
@@ -37,30 +37,50 @@ export function autoCollapseNativeChatIfOpen() {
     const shouldCollapse = (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') || !!currentConfig.hideNativeLiveChat;
     if (!shouldCollapse) return;
     if (userManuallyOpenedChat && !currentConfig.hideNativeLiveChat) return;
-    if (hasAutoCollapsedChatForCurrentVideo) return;
 
-    const chatFrame = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy');
-    const watchFlexy = document.querySelector('ytd-watch-flexy');
-    if (!chatFrame) return;
-
-    const isCollapsed = chatFrame.hasAttribute('collapsed') || (watchFlexy && watchFlexy.hasAttribute('chat-collapsed'));
-    if (!isCollapsed) {
-        // Chat đang mở trên giao diện thường -> nhấp nút đóng chính thức của YouTube để chuyển sang dạng thu gọn
-        const hideBtn = chatFrame.querySelector(
-            '#show-hide-button button, ' +
-            '#close-button button, ' +
-            '#close-button, ' +
-            '[aria-label*="Ẩn cuộc trò chuyện" i], ' +
-            '[aria-label*="Hide chat" i], ' +
-            'ytd-button-renderer#show-hide-button button, ' +
-            'yt-button-shape button'
-        );
-        if (hideBtn) {
-            hasAutoCollapsedChatForCurrentVideo = true;
-            try { hideBtn.click(); } catch (e) {}
-        }
+    // 1. Nhấp nút đóng/thu gọn chính thức của YouTube
+    const closeBtn = document.querySelector(
+        '#panels-full-bleed-container #visibility-button button, ' +
+        '#panels-full-bleed-container #close-button button, ' +
+        '#panels-full-bleed-container [aria-label*="Đóng" i], ' +
+        '#panels-full-bleed-container [aria-label*="Close" i], ' +
+        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] #visibility-button button, ' +
+        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] #close-button button, ' +
+        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] [aria-label*="Đóng" i], ' +
+        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] [aria-label*="Close" i], ' +
+        'ytd-live-chat-frame#chat #show-hide-button button, ' +
+        '#chat.ytd-watch-flexy #show-hide-button button, ' +
+        'ytd-live-chat-frame #close-button button, ' +
+        'ytd-live-chat-frame #close-button, ' +
+        '#show-hide-button button, ' +
+        '[aria-label*="Ẩn cuộc trò chuyện" i], ' +
+        '[aria-label*="Hide chat" i]'
+    );
+    if (closeBtn) {
+        hasAutoCollapsedChatForCurrentVideo = true;
+        try { closeBtn.click(); } catch (e) {}
     } else {
         hasAutoCollapsedChatForCurrentVideo = true;
+    }
+
+    // 2. Nếu hideNativeLiveChat đang bật: cưỡng chế đóng panel và xóa bỏ thuộc tính panels-open để flexy mở rộng 100%
+    if (currentConfig.hideNativeLiveChat) {
+        const chatPanel = document.querySelector(
+            '#panels-full-bleed-container ytd-engagement-panel-section-list-renderer[target-id*="chat" i], ' +
+            'ytd-watch-flexy ytd-engagement-panel-section-list-renderer[target-id*="chat" i]'
+        );
+        if (chatPanel) {
+            chatPanel.setAttribute('visibility', 'ENGAGEMENT_PANEL_VISIBILITY_HIDDEN');
+        }
+        const watchFlexy = document.querySelector('ytd-watch-flexy');
+        if (watchFlexy) {
+            const otherExpanded = watchFlexy.querySelectorAll('ytd-engagement-panel-section-list-renderer:not([target-id*="chat" i])[visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"]');
+            if (otherExpanded.length === 0) {
+                watchFlexy.removeAttribute('has-active-panel');
+                watchFlexy.removeAttribute('panels-open');
+            }
+        }
+        window.dispatchEvent(new Event('resize'));
     }
 }
 
@@ -361,6 +381,10 @@ export function ensureBackgroundLiveChat() {
         return;
     }
 
+    if (!hasLiveOrChatSupport()) {
+        return;
+    }
+
     const videoId = getCurrentLiveVideoId();
     if (!videoId) return;
 
@@ -447,9 +471,76 @@ export function updateChatOverlayVisibility() {
 // --------------------------------------------------------------------------
 // KHỞI CHẠY BÊN TRONG IFRAME LIVE CHAT
 // --------------------------------------------------------------------------
+const UNICODE_EMOJI_REGEX = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{200D}\u{FE0F}]/gu;
+
 export function initIframeChatSender() {
+    let iframeConfig = currentConfig;
+
+    function injectIframeEmojiStyle() {
+        let style = document.getElementById('ytc-iframe-emoji-style');
+        if (!style) {
+            style = document.createElement('style');
+            style.id = 'ytc-iframe-emoji-style';
+            style.textContent = `
+                html.ytc-hide-chat-emojis img.emoji,
+                html.ytc-hide-chat-emojis img.yt-emoji,
+                html.ytc-hide-chat-emojis .emoji,
+                html.ytc-hide-chat-emojis yt-live-chat-paid-sticker-renderer {
+                    display: none !important;
+                }
+                html.ytc-hide-chat-emojis .ytc-emoji-only-msg {
+                    display: none !important;
+                }
+            `;
+            (document.head || document.documentElement).appendChild(style);
+        }
+    }
+
+    function filterSingleMessageNode(node, hideEmojis) {
+        if (!node || node.nodeType !== 1) return;
+        if (!hideEmojis) {
+            node.classList.remove('ytc-emoji-only-msg');
+            return;
+        }
+        if (node.tagName && node.tagName.toLowerCase().includes('sticker')) {
+            node.classList.add('ytc-emoji-only-msg');
+            return;
+        }
+        const msgEl = node.querySelector('#message');
+        if (msgEl) {
+            const clone = msgEl.cloneNode(true);
+            const images = clone.querySelectorAll('img');
+            images.forEach(img => img.remove());
+            let textOnly = (clone.textContent || '').replace(UNICODE_EMOJI_REGEX, '').trim();
+            if (textOnly.length === 0) {
+                node.classList.add('ytc-emoji-only-msg');
+            } else {
+                node.classList.remove('ytc-emoji-only-msg');
+            }
+        }
+    }
+
+    function filterAllIframeMessages(hideEmojis) {
+        const all = getAllChatElements(document);
+        all.forEach(el => filterSingleMessageNode(el, hideEmojis));
+    }
+
+    function updateIframeEmojiState(cfg) {
+        iframeConfig = cfg || iframeConfig;
+        const hide = !!iframeConfig.hideChatEmojis;
+        document.documentElement.classList.toggle('ytc-hide-chat-emojis', hide);
+        if (document.body) {
+            document.body.classList.toggle('ytc-hide-chat-emojis', hide);
+        }
+        filterAllIframeMessages(hide);
+    }
+
+    injectIframeEmojiStyle();
+    updateIframeEmojiState(currentConfig);
+
     function handleNode(node) {
         if (!node || node.nodeType !== 1) return;
+        filterSingleMessageNode(node, !!iframeConfig.hideChatEmojis);
         const selector = 'yt-live-chat-text-message-renderer, yt-live-chat-paid-message-renderer, yt-live-chat-membership-item-renderer, yt-live-chat-paid-sticker-renderer';
         if (node.matches && node.matches(selector)) {
             const data = extractMessageData(node);
@@ -461,6 +552,7 @@ export function initIframeChatSender() {
         if (node.querySelectorAll) {
             const targets = node.querySelectorAll(selector);
             targets.forEach(t => {
+                filterSingleMessageNode(t, !!iframeConfig.hideChatEmojis);
                 const data = extractMessageData(t);
                 if (data) {
                     try { window.top.postMessage({ type: 'YTC_LIVE_CHAT_MSG', payload: data }, '*'); } catch (e) {}
@@ -472,6 +564,7 @@ export function initIframeChatSender() {
     function sendExisting(items) {
         const existing = getAllChatElements(items);
         if (existing && existing.length) {
+            existing.forEach(node => filterSingleMessageNode(node, !!iframeConfig.hideChatEmojis));
             // Khi quét tin có sẵn lúc đầu: chỉ lấy 4 tin mới nhất để chống đè và dính chùm
             const recent = Array.from(existing).slice(-4);
             recent.forEach((node) => {
@@ -498,10 +591,14 @@ export function initIframeChatSender() {
                 for (const node of m.addedNodes) {
                     if (!node || node.nodeType !== 1) continue;
                     if (node.matches && node.matches(selector)) {
+                        filterSingleMessageNode(node, !!iframeConfig.hideChatEmojis);
                         newNodes.push(node);
                     } else if (node.querySelectorAll) {
                         const targets = node.querySelectorAll(selector);
-                        targets.forEach(t => newNodes.push(t));
+                        targets.forEach(t => {
+                            filterSingleMessageNode(t, !!iframeConfig.hideChatEmojis);
+                            newNodes.push(t);
+                        });
                     }
                 }
             }
@@ -547,6 +644,9 @@ export function initIframeChatSender() {
     }
 
     window.addEventListener('message', (e) => {
+        if (e.data && e.data.type === 'YTC_CONFIG_UPDATED' && e.data.config) {
+            updateIframeEmojiState(e.data.config);
+        }
         if (e.data && e.data.type === 'YTC_REQUEST_EXISTING_MSGS') {
             const items = document.querySelector('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #chat #items, #items') || document;
             if (items) sendExisting(items);
@@ -663,6 +763,27 @@ function findAndObserveItems() {
         try {
             const doc = frame.contentDocument || frame.contentWindow?.document;
             if (doc) {
+                let docStyle = doc.getElementById('ytc-iframe-emoji-style');
+                if (!docStyle) {
+                    docStyle = doc.createElement('style');
+                    docStyle.id = 'ytc-iframe-emoji-style';
+                    docStyle.textContent = `
+                        html.ytc-hide-chat-emojis img.emoji,
+                        html.ytc-hide-chat-emojis img.yt-emoji,
+                        html.ytc-hide-chat-emojis .emoji,
+                        html.ytc-hide-chat-emojis yt-live-chat-paid-sticker-renderer {
+                            display: none !important;
+                        }
+                        html.ytc-hide-chat-emojis .ytc-emoji-only-msg {
+                            display: none !important;
+                        }
+                    `;
+                    (doc.head || doc.documentElement).appendChild(docStyle);
+                }
+                doc.documentElement.classList.toggle('ytc-hide-chat-emojis', !!currentConfig.hideChatEmojis);
+                if (doc.body) {
+                    doc.body.classList.toggle('ytc-hide-chat-emojis', !!currentConfig.hideChatEmojis);
+                }
                 const iframeItems = doc.querySelectorAll('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #items');
                 iframeItems.forEach(items => observeItemsElement(items));
             }

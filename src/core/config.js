@@ -76,6 +76,7 @@ export function applyConfigToRoot() {
     root.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
     root.classList.toggle('ytc-disable-ambient', !!currentConfig.disableAmbient);
     root.classList.toggle('ytc-hide-native-chat', !!currentConfig.hideNativeLiveChat);
+    root.classList.toggle('ytc-hide-chat-emojis', !!currentConfig.hideChatEmojis);
     root.setAttribute('data-ytc-cols', String(currentConfig.columns || 3));
     root.setAttribute('data-ytc-chat', currentConfig.chatOverlay || 'off');
 
@@ -92,11 +93,27 @@ export function applyConfigToRoot() {
         document.body.classList.toggle('ytc-clean-search', !!currentConfig.cleanSearch);
         document.body.classList.toggle('ytc-disable-ambient', !!currentConfig.disableAmbient);
         document.body.classList.toggle('ytc-hide-native-chat', !!currentConfig.hideNativeLiveChat);
+        document.body.classList.toggle('ytc-hide-chat-emojis', !!currentConfig.hideChatEmojis);
         document.body.setAttribute('data-ytc-cols', String(currentConfig.columns || 3));
         document.body.setAttribute('data-ytc-chat', currentConfig.chatOverlay || 'off');
     }
+
+    broadcastConfigToIframes(currentConfig);
 
     configListeners.forEach(fn => {
         try { fn(currentConfig); } catch (e) {}
     });
 }
+
+export function broadcastConfigToIframes(cfg = currentConfig) {
+    if (typeof window === 'undefined') return;
+    const frames = document.querySelectorAll('iframe');
+    frames.forEach(frame => {
+        try {
+            if (frame.contentWindow) {
+                frame.contentWindow.postMessage({ type: 'YTC_CONFIG_UPDATED', config: cfg }, '*');
+            }
+        } catch (e) {}
+    });
+}
+
