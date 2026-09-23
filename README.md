@@ -6,7 +6,7 @@
 
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.3.3-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.3.4-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -25,14 +25,13 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
 
-Phiên bản **v3.3.3** ra mắt:
-- **Sửa triệt để lỗi Tab "Âm nhạc" trên Trang chủ bị đen/trống:** Không còn ẩn nhầm toàn bộ các kệ danh sách nhạc trên tab Âm nhạc của YouTube.
-- **Mở rộng tính năng Ẩn Danh sách phát & Mix (`hideMixes`) trong tab Bộ Lọc:**
-  - Ẩn toàn bộ Danh sách kết hợp (Mixes / Radio) và Danh sách phát (Playlists) do người dùng tạo trong kết quả Tìm kiếm và thanh Gợi ý xem tiếp.
-  - Ẩn nút "Danh sách kết hợp" trên thanh chủ đề đầu trang.
-  - Tự động làm sạch URL và chuyển tiếp video đề xuất tự nhiên khi hết bài.
-- **Tinh chỉnh Chế độ Chỉ Âm Thanh / Radio (`audioOnlyMode`):**
-  - Giao diện chữ tối giản 2 dòng căn giữa thanh lịch.
+Phiên bản **v3.3.4** ra mắt:
+- **Khắc phục triệt để các video trên tab "Âm nhạc":**
+  - Gỡ bỏ bộ lọc `list=RD` trên thẻ video đơn lẻ, giúp các hàng "Đề xuất mới", "Tuyển tập nhạc...", "Video nhạc hàng đầu..." hiển thị đầy đủ video ca nhạc như bình thường.
+  - Vẫn giữ nguyên cơ chế làm sạch URL: khi bấm vào bài hát, script tự gỡ bỏ mã radio để bài hát phát độc lập và chuyển tiếp sang video gợi ý khi kết thúc.
+- **Lọc chuẩn xác Danh sách phát & Mix:**
+  - Ẩn triệt để các thẻ Danh sách phát thủ công, khóa học ("68 bài học", "14 video", v.v.) và Danh sách kết hợp.
+  - Bảo vệ an toàn các video có thời lượng cụ thể không bao giờ bị ẩn nhầm.
 - **Kế thừa bộ tính năng tối ưu chuyên sâu từ v3.3.0:**
   - **Tab "Tối Ưu" (Optimization):** Chặn tự dừng video (`preventAutoPause`), Dọn rác bộ nhớ Live Chat RAM (`chatMemoryGc`), Chặn AV1 / Ép H.264 (`blockAv1`).
 - **Kế thừa và hoàn thiện từ v3.2.31:**

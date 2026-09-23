@@ -1,30 +1,27 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.3.3
-// @description  YouTube Customizer v3.3.3 — Sửa lỗi tab Âm nhạc bị trống trơn, mở rộng tính năng ẩn Danh sách phát (Playlists) trong Tìm kiếm & thanh chủ đề.
+// @version      3.3.4
+// @description  YouTube Customizer v3.3.4 — Sửa triệt để các video trên tab Âm nhạc, ẩn chính xác Danh sách phát (Playlists) & Danh sách kết hợp (Mixes).
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.3.3
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.3.4
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.3.3
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.3.3
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.3.4
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.3.4
 // ==/UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.3.3:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.3.4:
  * ============================================================================
- * 1. [Sửa lỗi] Khắc phục triệt để lỗi Tab "Âm nhạc" trên Trang chủ bị đen sì / trống trơn:
- *    - Thu hẹp phạm vi quét hàng `ytd-rich-section-renderer`: không còn ẩn oan toàn bộ kệ nhạc
- *      chỉ vì có chứa link Mix.
- *    - Các video ca nhạc trong tab "Âm nhạc" hiển thị đầy đủ, đẹp mắt và tự động làm sạch URL khi click.
- * 2. [Mở rộng] Tính năng "Ẩn Danh sách phát & Mix" (`hideMixes`):
- *    - Ẩn toàn diện cả Danh sách phát người dùng tạo (`ytd-playlist-renderer`, `ytd-compact-playlist-renderer`)
- *      trong kết quả Tìm kiếm và thanh Gợi ý xem tiếp.
- *    - Ẩn luôn chip nút bấm "Danh sách kết hợp" trên thanh chủ đề đầu trang chủ.
- *    - Cập nhật nhãn cài đặt thành "Ẩn Danh sách phát & Mix" trực quan, chính xác.
+ * 1. [Sửa lỗi] Khắc phục triệt để các hàng video trên Tab "Âm nhạc":
+ *    - Gỡ bỏ bộ lọc CSS list=RD trên thẻ video đơn lẻ, tránh ẩn nhầm các video ca nhạc thường.
+ *    - Các hàng "Đề xuất mới", "Tuyển tập nhạc...", "Video nhạc hàng đầu..." hiển thị đầy đủ video.
+ * 2. [Cải tiến] Lọc chuẩn xác Danh sách phát (Playlists / Khóa học) & Mix:
+ *    - Ẩn hoàn toàn các thẻ Playlist / Khóa học (kể cả trên Trang chủ, Tìm kiếm và Gợi ý).
+ *    - Bảo vệ an toàn các video có thời lượng cụ thể không bao giờ bị ẩn nhầm.
  * ============================================================================
  */
