@@ -153,28 +153,6 @@ export function createSettingsPanel() {
                         <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'streamer' ? 'active' : ''}" data-overlay="streamer" title="Khung chat nổi của streamer, kéo thả và co giãn tự do">Nổi</button>
                     </div>
                 </div>
-
-                <div class="ytc-item" data-toggle="hideNativeLiveChat" title="Tự động ẩn khung trò chuyện trực tiếp khi mở video live/công chiếu (vẫn chạy ngầm nếu bật Live Chat)">
-                    <div class="ytc-item-left">
-                        ${CHAT_OFF_SVG}
-                        <span>Ẩn trò chuyện trực tiếp</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-hidenativechat">
-                        <input type="checkbox" id="ytc-chk-hidenativechat" name="hideNativeLiveChat" aria-label="Ẩn trò chuyện trực tiếp" ${currentConfig.hideNativeLiveChat ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="hideChatEmojis" title="Ẩn biểu tượng cảm xúc (emoji/sticker) trong Live Chat: cmt chỉ có icon sẽ ẩn hẳn, cmt có chữ sẽ chỉ hiện chữ">
-                    <div class="ytc-item-left">
-                        ${EMOJI_OFF_SVG}
-                        <span>Ẩn biểu tượng trong Live Chat</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-hidechatemojis">
-                        <input type="checkbox" id="ytc-chk-hidechatemojis" name="hideChatEmojis" aria-label="Ẩn biểu tượng trong Live Chat" ${currentConfig.hideChatEmojis ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
             </div>
 
             <!-- TAB 2: LỌC NỘI DUNG SẠCH -->
@@ -288,6 +266,28 @@ export function createSettingsPanel() {
                     </div>
                     <label class="ytc-switch" for="ytc-chk-promos">
                         <input type="checkbox" id="ytc-chk-promos" name="autoDismissPromos" aria-label="Tự đóng banner & thông báo" ${currentConfig.autoDismissPromos ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hideNativeLiveChat" title="Tự động ẩn khung trò chuyện trực tiếp khi mở video live/công chiếu (vẫn chạy ngầm nếu bật Live Chat)">
+                    <div class="ytc-item-left">
+                        ${CHAT_OFF_SVG}
+                        <span>Ẩn trò chuyện trực tiếp</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-hidenativechat">
+                        <input type="checkbox" id="ytc-chk-hidenativechat" name="hideNativeLiveChat" aria-label="Ẩn trò chuyện trực tiếp" ${currentConfig.hideNativeLiveChat ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hideChatEmojis" title="Ẩn biểu tượng cảm xúc (emoji/sticker) trong Live Chat: cmt chỉ có icon sẽ ẩn hẳn, cmt có chữ sẽ chỉ hiện chữ">
+                    <div class="ytc-item-left">
+                        ${EMOJI_OFF_SVG}
+                        <span>Ẩn biểu tượng trong Live Chat</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-hidechatemojis">
+                        <input type="checkbox" id="ytc-chk-hidechatemojis" name="hideChatEmojis" aria-label="Ẩn biểu tượng trong Live Chat" ${currentConfig.hideChatEmojis ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
