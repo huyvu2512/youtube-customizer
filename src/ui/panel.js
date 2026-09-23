@@ -382,8 +382,13 @@ export function createSettingsPanel() {
                 applyConfigToRoot();
                 if (key === 'hideNativeLiveChat') {
                     import('../chat/index.js').then(m => {
-                        if (m && typeof m.autoCollapseNativeChatIfOpen === 'function') {
-                            m.autoCollapseNativeChatIfOpen();
+                        if (checkbox.checked) {
+                            if (m && typeof m.resetChatCollapseState === 'function') {
+                                m.resetChatCollapseState();
+                            }
+                            if (m && typeof m.autoCollapseNativeChatIfOpen === 'function') {
+                                m.autoCollapseNativeChatIfOpen();
+                            }
                         }
                         if (m && typeof m.syncPlayerFullscreenSize === 'function') {
                             m.syncPlayerFullscreenSize();

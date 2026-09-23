@@ -117,6 +117,8 @@ if (window.self !== window.top) {
             setTimeout(autoCollapseNativeChatIfOpen, 300);
             setTimeout(autoCollapseNativeChatIfOpen, 800);
             setTimeout(autoCollapseNativeChatIfOpen, 1500);
+            setTimeout(autoCollapseNativeChatIfOpen, 2500);
+            setTimeout(autoCollapseNativeChatIfOpen, 4000);
         }
         initAutoLiveSync();
         resetAutoLiveState();

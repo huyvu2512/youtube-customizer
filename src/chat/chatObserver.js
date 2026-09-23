@@ -35,46 +35,117 @@ export function resetChatCollapseState() {
 
 
 
+export function findNativeChatCloseButton() {
+    // 1. Kiểm tra trên top window (engagement panel header hoặc live chat header)
+    const topSelectors = [
+        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i][visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"] #visibility-button button',
+        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i][visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"] #close-button button',
+        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] #visibility-button button',
+        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] #close-button button',
+        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] button[aria-label="Đóng"]',
+        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] button[aria-label="Close"]',
+        '#panels-full-bleed-container [target-id*="chat" i] #visibility-button button',
+        '#panels-full-bleed-container [target-id*="chat" i] #close-button button',
+        'ytd-live-chat-frame #close-button button',
+        'yt-live-chat-header-renderer #close-button button',
+        '#close-button button[aria-label="Đóng"]',
+        '#close-button button[aria-label="Close"]'
+    ];
+
+    for (const sel of topSelectors) {
+        const btn = document.querySelector(sel);
+        if (btn && (btn.offsetParent !== null || btn.offsetWidth > 0 || btn.offsetHeight > 0)) {
+            return btn;
+        }
+    }
+
+    // 2. Kiểm tra bên trong iframe chat gốc (iframe#chatframe, loại trừ iframe chạy ngầm)
+    const nativeFrames = document.querySelectorAll(
+        'iframe#chatframe:not(#ytc-bg-live-chat), ' +
+        'ytd-live-chat-frame iframe:not(#ytc-bg-live-chat), ' +
+        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i] iframe:not(#ytc-bg-live-chat)'
+    );
+
+    const iframeSelectors = [
+        'yt-live-chat-header-renderer #close-button button',
+        '#close-button yt-button-renderer button',
+        '#close-button button',
+        'yt-button-shape button[aria-label="Đóng"]',
+        'yt-button-shape button[aria-label="Close"]',
+        'button[aria-label="Đóng"]',
+        'button[aria-label="Close"]'
+    ];
+
+    for (const frame of nativeFrames) {
+        try {
+            const doc = frame.contentDocument || frame.contentWindow?.document;
+            if (doc) {
+                for (const sel of iframeSelectors) {
+                    const btn = doc.querySelector(sel);
+                    if (btn && (btn.offsetParent !== null || btn.offsetWidth > 0 || btn.offsetHeight > 0)) {
+                        return btn;
+                    }
+                }
+            }
+        } catch (e) {}
+    }
+
+    return null;
+}
+
 export function autoCollapseNativeChatIfOpen() {
     if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
     if (!currentConfig.hideNativeLiveChat) return;
     if (hasAutoCollapsedChatForCurrentVideo || userManuallyOpenedChat) return;
 
-    let didCollapse = false;
+    // 1. Nếu khung chat đã ở trạng thái tắt / thu gọn sẵn từ đầu
+    const isAlreadyClosed = (() => {
+        const teaser = document.querySelector(
+            'ytd-live-chat-frame[collapsed] #teaser, ' +
+            '#chat-messages [aria-label*="Mở bảng điều khiển" i], ' +
+            'button[aria-label*="Mở bảng điều khiển" i], ' +
+            'ytd-item-section-renderer #teaser'
+        );
+        if (teaser) return true;
+        const panel = document.querySelector('ytd-engagement-panel-section-list-renderer[target-id*="chat" i]');
+        if (panel && panel.getAttribute('visibility') === 'ENGAGEMENT_PANEL_VISIBILITY_HIDDEN') return true;
+        const frame = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy');
+        if (frame && frame.hasAttribute('collapsed')) return true;
+        return false;
+    })();
 
-    // 1. Thu gọn engagement panel nếu đang hiển thị
-    const chatPanel = document.querySelector(
-        '#panels-full-bleed-container ytd-engagement-panel-section-list-renderer[target-id*="chat" i], ' +
-        'ytd-watch-flexy ytd-engagement-panel-section-list-renderer[target-id*="chat" i]'
-    );
-    if (chatPanel) {
-        const vis = chatPanel.getAttribute('visibility');
-        if (vis === 'ENGAGEMENT_PANEL_VISIBILITY_EXPANDED' || !vis) {
-            chatPanel.setAttribute('visibility', 'ENGAGEMENT_PANEL_VISIBILITY_HIDDEN');
-            didCollapse = true;
-        }
-    }
-
-    const watchFlexy = document.querySelector('ytd-watch-flexy');
-    if (watchFlexy && didCollapse) {
-        const otherExpanded = watchFlexy.querySelectorAll('ytd-engagement-panel-section-list-renderer:not([target-id*="chat" i])[visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"]');
-        if (otherExpanded.length === 0) {
-            if (watchFlexy.hasAttribute('has-active-panel')) watchFlexy.removeAttribute('has-active-panel');
-            if (watchFlexy.hasAttribute('panels-open')) watchFlexy.removeAttribute('panels-open');
-        }
-    }
-
-    // 2. Thu gọn live-chat-frame nếu chưa thu gọn
-    const chatFrame = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy, ytd-live-chat-frame');
-    if (chatFrame) {
-        if (!chatFrame.hasAttribute('collapsed')) {
-            chatFrame.setAttribute('collapsed', '');
-            didCollapse = true;
-        }
-    }
-
-    if (didCollapse || chatFrame || chatPanel) {
+    if (isAlreadyClosed) {
         hasAutoCollapsedChatForCurrentVideo = true;
+        return;
+    }
+
+    // 2. Tìm và bấm nút X (Đóng) của YouTube để tắt chuẩn xác
+    const closeBtn = findNativeChatCloseButton();
+    if (closeBtn) {
+        closeBtn.click();
+        hasAutoCollapsedChatForCurrentVideo = true;
+        return;
+    }
+
+    // Gửi message cho iframe chat phòng khi sandbox
+    const nativeFrames = document.querySelectorAll(
+        'iframe#chatframe:not(#ytc-bg-live-chat), ' +
+        'ytd-live-chat-frame iframe:not(#ytc-bg-live-chat)'
+    );
+    nativeFrames.forEach(frame => {
+        try { frame.contentWindow?.postMessage({ type: 'YTC_CLOSE_NATIVE_CHAT' }, '*'); } catch (e) {}
+    });
+
+    // Lắng nghe load của native iframe để bấm ngay khi iframe vừa render xong
+    const nativeFrame = document.querySelector('iframe#chatframe:not(#ytc-bg-live-chat)');
+    if (nativeFrame && !nativeFrame._ytcAutoCloseBound) {
+        nativeFrame._ytcAutoCloseBound = true;
+        nativeFrame.addEventListener('load', () => {
+            if (!hasAutoCollapsedChatForCurrentVideo && !userManuallyOpenedChat && currentConfig.hideNativeLiveChat) {
+                setTimeout(autoCollapseNativeChatIfOpen, 80);
+                setTimeout(autoCollapseNativeChatIfOpen, 250);
+            }
+        });
     }
 }
 
@@ -148,6 +219,8 @@ export function setupChatToggleListeners() {
 
         // 1. Nút ĐÓNG / ẨN CHAT (X hoặc nút thu gọn):
         const isCloseBtn = !!e.target.closest(
+            '#close-button, ' +
+            '#visibility-button, ' +
             '#panels-full-bleed-container #visibility-button, ' +
             '#panels-full-bleed-container #close-button, ' +
             '#panels-full-bleed-container [aria-label*="Đóng" i], ' +
@@ -156,9 +229,10 @@ export function setupChatToggleListeners() {
             'ytd-engagement-panel-section-list-renderer #close-button, ' +
             'ytd-engagement-panel-section-list-renderer [aria-label*="Đóng" i], ' +
             'ytd-engagement-panel-section-list-renderer [aria-label*="Close" i], ' +
-            'ytd-live-chat-frame #show-hide-button button, ' +
             'ytd-live-chat-frame #close-button button, ' +
             'ytd-live-chat-frame #close-button, ' +
+            'yt-live-chat-header-renderer #close-button, ' +
+            'yt-live-chat-header-renderer #close-button button, ' +
             '[aria-label*="Ẩn cuộc trò chuyện" i], ' +
             '[aria-label*="Thu gọn cuộc trò chuyện" i], ' +
             '[aria-label*="Hide chat" i], ' +
@@ -176,21 +250,19 @@ export function setupChatToggleListeners() {
         }
 
         // 2. Click vào bất kỳ nút nào để BẬT / TOGGLE Live Chat (Player bar, Action bar cạnh Like/Dislike, Teaser):
-        const isChatBtn = !!e.target.closest(
+        const isChatBtn = !isCloseBtn && (!!e.target.closest(
             '.ytp-live-chat-button, ' +
             '.ytp-chat-button, ' +
             'button[data-tooltip-target-id*="chat" i], ' +
-            '[aria-label*="trò chuyện" i], ' +
-            '[aria-label*="chat" i], ' +
-            '[aria-label*="cuộc trò chuyện" i], ' +
-            '[title*="trò chuyện" i], ' +
-            '[title*="chat" i], ' +
-            '[target-id*="chat" i], ' +
-            '[target-id*="engagement-panel" i], ' +
-            '[data-target-id*="chat" i], ' +
-            '[data-target-id*="engagement-panel" i], ' +
-            '[aria-controls*="chat" i], ' +
-            '[aria-controls*="engagement" i], ' +
+            '#actions [aria-label*="trò chuyện" i], ' +
+            '#actions [aria-label*="chat" i], ' +
+            '#top-level-buttons-computed [aria-label*="trò chuyện" i], ' +
+            '#top-level-buttons-computed [aria-label*="chat" i], ' +
+            'button[aria-label*="trò chuyện" i], ' +
+            'button[aria-label*="chat" i], ' +
+            'button[target-id*="chat" i], ' +
+            'button[data-target-id*="chat" i], ' +
+            'button[aria-controls*="chat" i], ' +
             '#show-hide-button button, ' +
             'button#show-button, ' +
             '#show-button, ' +
@@ -200,10 +272,12 @@ export function setupChatToggleListeners() {
             '[aria-label*="Show chat" i], ' +
             '[aria-label*="Expand live chat" i], ' +
             '[aria-label*="Open panel" i], ' +
+            '#teaser, ' +
+            '#chat-teaser, ' +
             'ytd-live-chat-frame[collapsed] #teaser, ' +
             'ytd-live-chat-frame[collapsed] ytd-button-renderer, ' +
             'ytd-live-chat-frame[collapsed] yt-button-shape'
-        );
+        ) || (e.target.textContent && e.target.textContent.includes('Mở bảng điều khiển')));
 
         if (isChatBtn) {
             const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen'));
@@ -742,7 +816,31 @@ export function initIframeChatSender() {
             const items = document.querySelector('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #chat #items, #items') || document;
             if (items) sendExisting(items);
         }
+        if (e.data && e.data.type === 'YTC_CLOSE_NATIVE_CHAT') {
+            const btn = document.querySelector(
+                'yt-live-chat-header-renderer #close-button button, ' +
+                '#close-button yt-button-renderer button, ' +
+                '#close-button button, ' +
+                'yt-button-shape button[aria-label="Đóng"], ' +
+                'yt-button-shape button[aria-label="Close"], ' +
+                'button[aria-label="Đóng"], ' +
+                'button[aria-label="Close"]'
+            );
+            if (btn && btn.offsetParent !== null) {
+                btn.click();
+            }
+        }
     });
+
+    document.addEventListener('click', (e) => {
+        if (!e.isTrusted) return;
+        const isClose = !!e.target.closest('#close-button, [aria-label*="Đóng" i], [aria-label*="Close" i]');
+        if (isClose) {
+            try {
+                window.top.postMessage({ type: 'YTC_NATIVE_CHAT_CLOSED_BY_USER' }, '*');
+            } catch (err) {}
+        }
+    }, true);
 
     setInterval(() => {
         try {
@@ -954,6 +1052,9 @@ export function initChatOverlay() {
         if (e.data && e.data.type === 'YTC_LIVE_CHAT_MSG' && e.data.payload) {
             const isBacklog = !!e.data.isBacklog || !!e.data.payload.isBacklog;
             displayChatMessage(e.data.payload, isBacklog);
+        }
+        if (e.data && e.data.type === 'YTC_NATIVE_CHAT_CLOSED_BY_USER') {
+            userManuallyOpenedChat = false;
         }
     });
 

@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.29
-// @description  YouTube Customizer v3.2.29 — Tùy chỉnh tự động tắt khung trò chuyện khi mới mở video (cho phép mở lại bình thường, Live Chat overlay chạy ngầm).
+// @version      3.2.30
+// @description  YouTube Customizer v3.2.30 — Tự động tắt khung trò chuyện trực tiếp bằng nút Đóng (X) khi mới mở video (cho phép mở lại bình thường, Live Chat overlay chạy ngầm).
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
