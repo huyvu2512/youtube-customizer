@@ -197,17 +197,6 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hideMixes" title="Ẩn toàn bộ Danh sách kết hợp (Mixes/Radio) và Danh sách phát (Playlists) trên trang chủ, tìm kiếm, gợi ý và tự động chuyển tiếp video đề xuất khi xem">
-                    <div class="ytc-item-left">
-                        ${PLAYLIST_SVG}
-                        <span>Ẩn Danh sách phát & Mix</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-mixes">
-                        <input type="checkbox" id="ytc-chk-mixes" name="hideMixes" aria-label="Ẩn Danh sách phát & Mix" ${currentConfig.hideMixes ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
                 <div class="ytc-item" data-toggle="hideCommunity" title="Ẩn bài viết, khảo sát và hình ảnh bài đăng cộng đồng trên feed">
                     <div class="ytc-item-left">
                         ${POST_SVG}
@@ -237,6 +226,17 @@ export function createSettingsPanel() {
                     </div>
                     <label class="ytc-switch" for="ytc-chk-explore">
                         <input type="checkbox" id="ytc-chk-explore" name="hideExploreTopics" aria-label="Ẩn Khám phá chủ đề" ${currentConfig.hideExploreTopics ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hideMixes" title="Ẩn toàn bộ Danh sách kết hợp (Mixes/Radio) và Danh sách phát (Playlists) trên trang chủ, tìm kiếm, gợi ý và tự động chuyển tiếp video đề xuất khi xem">
+                    <div class="ytc-item-left">
+                        ${PLAYLIST_SVG}
+                        <span>Ẩn Danh sách phát & Mix</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-mixes">
+                        <input type="checkbox" id="ytc-chk-mixes" name="hideMixes" aria-label="Ẩn Danh sách phát & Mix" ${currentConfig.hideMixes ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
