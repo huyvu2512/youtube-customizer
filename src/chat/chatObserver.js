@@ -60,6 +60,7 @@ export function autoExpandDescriptionIfCollapsed() {
 
 export function hideNativeChatElements() {
     if (!currentConfig.hideNativeLiveChat) return;
+    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
 
     // 1. Ẩn nút icon chat trong Action Bar / Pill Bar / Player
     const chatBtns = document.querySelectorAll(
@@ -112,11 +113,9 @@ export function hideNativeChatElements() {
     // 4. Mở rộng khung mô tả để lấp đầy khoảng trống bên phải
     autoExpandDescriptionIfCollapsed();
 
-    // 5. Nếu tắt Live Chat Overlay và đang ẩn khung chat: ngắt hoàn toàn iframe chat gốc chống chạy ngầm ngốn RAM
+    // 5. Nếu tắt Live Chat Overlay: dọn dẹp iframe chạy ngầm
     if (!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') {
         stopAllLiveChatIfDisabled();
-    } else {
-        restoreNativeLiveChatIfSaved();
     }
 }
 
@@ -126,7 +125,7 @@ let chatElementsObserver = null;
 export function setupChatElementsObserver() {
     if (chatElementsObserver) return;
     chatElementsObserver = new MutationObserver(() => {
-        if (currentConfig.hideNativeLiveChat) {
+        if (currentConfig.hideNativeLiveChat && (location.pathname.startsWith('/watch') || location.pathname.startsWith('/live'))) {
             throttledHideNativeChatElements();
         }
     });
@@ -137,6 +136,7 @@ export function setupChatElementsObserver() {
 }
 
 export function autoCollapseNativeChatIfOpen() {
+    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
     const shouldCollapse = (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') || !!currentConfig.hideNativeLiveChat;
     if (!shouldCollapse) return;
     if (userManuallyOpenedChat && !currentConfig.hideNativeLiveChat) return;
@@ -147,18 +147,21 @@ export function autoCollapseNativeChatIfOpen() {
             '#panels-full-bleed-container ytd-engagement-panel-section-list-renderer[target-id*="chat" i], ' +
             'ytd-watch-flexy ytd-engagement-panel-section-list-renderer[target-id*="chat" i]'
         );
-        if (chatPanel) {
+        if (chatPanel && chatPanel.getAttribute('visibility') !== 'ENGAGEMENT_PANEL_VISIBILITY_HIDDEN') {
             chatPanel.setAttribute('visibility', 'ENGAGEMENT_PANEL_VISIBILITY_HIDDEN');
         }
         const watchFlexy = document.querySelector('ytd-watch-flexy');
         if (watchFlexy) {
             const otherExpanded = watchFlexy.querySelectorAll('ytd-engagement-panel-section-list-renderer:not([target-id*="chat" i])[visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"]');
             if (otherExpanded.length === 0) {
-                watchFlexy.removeAttribute('has-active-panel');
-                watchFlexy.removeAttribute('panels-open');
+                if (watchFlexy.hasAttribute('has-active-panel')) watchFlexy.removeAttribute('has-active-panel');
+                if (watchFlexy.hasAttribute('panels-open')) watchFlexy.removeAttribute('panels-open');
             }
         }
-        hideNativeChatElements();
+        const chatFrame = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy');
+        if (chatFrame && !chatFrame.hasAttribute('collapsed')) {
+            chatFrame.setAttribute('collapsed', '');
+        }
         return;
     }
 
@@ -511,42 +514,18 @@ export function ensureBackgroundLiveChat() {
 export function stopAllLiveChatIfDisabled() {
     const isOverlayOn = currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off';
 
-    // Khi người dùng tắt Live Chat Overlay VÀ đang bật tính năng ẩn khung chat gốc:
-    // TẮT HẲN toàn bộ kết nối chat ngầm, dọn sạch iframe để không bao giờ chạy ngầm ngốn RAM hay gây giật lag
-    if (!isOverlayOn && currentConfig.hideNativeLiveChat) {
-        // 1. Gỡ bỏ hoàn toàn iframe chat ngầm nếu có
+    // Khi người dùng tắt Live Chat Overlay: dọn dẹp iframe chạy ngầm để giải phóng 100% tài nguyên
+    if (!isOverlayOn) {
         if (bgChatIframe) {
             bgChatIframe.remove();
             bgChatIframe = null;
             currentBgVideoId = null;
         }
-
-        // 2. Tạm ngắt kết nối iframe chat gốc của YouTube (set src = about:blank) để giải phóng RAM & CPU
-        const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]');
-        frames.forEach(frame => {
-            if (frame.id === 'ytc-bg-live-chat') {
-                frame.remove();
-                return;
-            }
-            if (frame.src && frame.src !== 'about:blank' && !frame.src.startsWith('about:')) {
-                frame.dataset.ytcSavedSrc = frame.src;
-                frame.src = 'about:blank';
-            }
-        });
-
-        // 3. Đóng panel chat nếu đang mở
-        autoCollapseNativeChatIfOpen();
     }
 }
 
 export function restoreNativeLiveChatIfSaved() {
-    const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe');
-    frames.forEach(frame => {
-        if (frame.dataset.ytcSavedSrc && frame.src === 'about:blank') {
-            frame.src = frame.dataset.ytcSavedSrc;
-            delete frame.dataset.ytcSavedSrc;
-        }
-    });
+    // Không làm gì nếu không có trạng thái lưu
 }
 
 export function updateChatOverlayVisibility() {
@@ -597,7 +576,6 @@ export function updateChatOverlayVisibility() {
     }
 
     if (mode !== 'off') {
-        restoreNativeLiveChatIfSaved();
         ensureNativeLiveChatRunning();
         seenMessageIds.clear();
         ensureBackgroundLiveChat();

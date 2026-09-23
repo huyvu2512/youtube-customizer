@@ -2,15 +2,17 @@
 // BỘ LỌC NỘI DUNG FEED (SHORTS, PLAYABLES, HỘI VIÊN, KHÁM PHÁ, CỘNG ĐỒNG)
 // ==========================================================================
 import { rafThrottle, whenElement } from '../core/utils.js';
+import { currentConfig } from '../core/config.js';
 import { applyHomeGridColumns } from './grid.js';
 import { dismissPromoBanners } from './promos.js';
 
 export function scanAndTagFeedContent(scope) {
+    if (!currentConfig.hideMembersOnly && !currentConfig.hideExploreTopics && !currentConfig.hideCommunity) return;
     const root = scope && scope.querySelectorAll ? scope : document;
 
     const sections = root.querySelectorAll('ytd-rich-section-renderer');
     sections.forEach((sec) => {
-        if (!sec.classList.contains('ytc-shelf-members')) {
+        if (currentConfig.hideMembersOnly && !sec.classList.contains('ytc-shelf-members')) {
             const text = sec.textContent || '';
             if (
                 text.includes('lợi ích từ hội viên') ||
@@ -25,7 +27,7 @@ export function scanAndTagFeedContent(scope) {
                 sec.classList.add('ytc-shelf-members');
             }
         }
-        if (!sec.classList.contains('ytc-shelf-explore')) {
+        if (currentConfig.hideExploreTopics && !sec.classList.contains('ytc-shelf-explore')) {
             const text = sec.textContent || '';
             if (
                 text.includes('Khám phá các chủ đề') ||
@@ -36,7 +38,7 @@ export function scanAndTagFeedContent(scope) {
                 sec.classList.add('ytc-shelf-explore');
             }
         }
-        if (!sec.classList.contains('ytc-shelf-community')) {
+        if (currentConfig.hideCommunity && !sec.classList.contains('ytc-shelf-community')) {
             if (
                 sec.querySelector('ytd-post-renderer, ytd-backstage-post-renderer, ytd-backstage-post-thread-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer')
             ) {
@@ -45,30 +47,27 @@ export function scanAndTagFeedContent(scope) {
         }
     });
 
-    const videoCards = root.querySelectorAll('ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer');
-    videoCards.forEach((card) => {
-        if (!card.classList.contains('ytc-item-members')) {
-            const text = card.textContent || '';
-            if (
-                text.includes('Ưu tiên hội viên') ||
-                text.includes('ưu tiên hội viên') ||
-                text.includes('Chỉ dành cho hội viên') ||
-                text.includes('chỉ dành cho hội viên') ||
-                text.includes('Members first') ||
-                text.includes('Members only') ||
-                text.includes('Members-only') ||
-                text.includes('Early access') ||
-                card.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], [aria-label*="hội viên"], [aria-label*="Hội viên"], [aria-label*="Members"]')
-            ) {
-                card.classList.add('ytc-item-members');
+    if (currentConfig.hideMembersOnly) {
+        const videoCards = root.querySelectorAll('ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer');
+        videoCards.forEach((card) => {
+            if (!card.classList.contains('ytc-item-members')) {
+                const text = card.textContent || '';
+                if (
+                    text.includes('Ưu tiên hội viên') ||
+                    text.includes('ưu tiên hội viên') ||
+                    text.includes('Chỉ dành cho hội viên') ||
+                    text.includes('chỉ dành cho hội viên') ||
+                    text.includes('Members first') ||
+                    text.includes('Members only') ||
+                    text.includes('Members-only') ||
+                    text.includes('Early access') ||
+                    card.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], [aria-label*="hội viên"], [aria-label*="Hội viên"], [aria-label*="Members"]')
+                ) {
+                    card.classList.add('ytc-item-members');
+                }
             }
-        }
-        if (!card.classList.contains('ytc-item-community')) {
-            if (card.querySelector('ytd-post-renderer, ytd-backstage-post-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer')) {
-                card.classList.add('ytc-item-community');
-            }
-        }
-    });
+        });
+    }
 }
 
 export const scheduleFeedScan = rafThrottle((root) => {

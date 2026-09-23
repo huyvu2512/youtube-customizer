@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.2.24
-// @description  YouTube Customizer v3.2.24 — Chuyển các tùy chọn ẩn chat và ẩn biểu tượng sang mục Trình phát cho giao diện gọn gàng.
+// @version      3.2.25
+// @description  YouTube Customizer v3.2.25 — Khắc phục triệt để lỗi đơ khi xem Live Stream và tối ưu tốc độ tải trang chủ.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -28,7 +28,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.2.24";
+      APP_VERSION = "3.2.25";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -1177,6 +1177,7 @@
   }
   function hideNativeChatElements() {
     if (!currentConfig.hideNativeLiveChat) return;
+    if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
     const chatBtns = document.querySelectorAll(
       '#actions [aria-label*="trò chuyện" i], #actions [aria-label*="chat" i], #actions [title*="trò chuyện" i], #actions [title*="chat" i], #top-level-buttons-computed [aria-label*="trò chuyện" i], #top-level-buttons-computed [aria-label*="chat" i], #top-level-buttons-computed [title*="trò chuyện" i], #top-level-buttons-computed [title*="chat" i], ytd-menu-renderer [aria-label*="trò chuyện" i], ytd-menu-renderer [aria-label*="chat" i], .ytp-live-chat-button, .ytp-chat-button, [aria-label*="Trò chuyện trực tiếp" i]'
     );
@@ -1203,14 +1204,12 @@
     autoExpandDescriptionIfCollapsed();
     if (!currentConfig.chatOverlay || currentConfig.chatOverlay === "off") {
       stopAllLiveChatIfDisabled();
-    } else {
-      restoreNativeLiveChatIfSaved();
     }
   }
   function setupChatElementsObserver() {
     if (chatElementsObserver) return;
     chatElementsObserver = new MutationObserver(() => {
-      if (currentConfig.hideNativeLiveChat) {
+      if (currentConfig.hideNativeLiveChat && (location.pathname.startsWith("/watch") || location.pathname.startsWith("/live"))) {
         throttledHideNativeChatElements();
       }
     });
@@ -1220,6 +1219,7 @@
     }
   }
   function autoCollapseNativeChatIfOpen() {
+    if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
     const shouldCollapse = currentConfig.chatOverlay && currentConfig.chatOverlay !== "off" || !!currentConfig.hideNativeLiveChat;
     if (!shouldCollapse) return;
     if (userManuallyOpenedChat && !currentConfig.hideNativeLiveChat) return;
@@ -1227,18 +1227,21 @@
       const chatPanel = document.querySelector(
         '#panels-full-bleed-container ytd-engagement-panel-section-list-renderer[target-id*="chat" i], ytd-watch-flexy ytd-engagement-panel-section-list-renderer[target-id*="chat" i]'
       );
-      if (chatPanel) {
+      if (chatPanel && chatPanel.getAttribute("visibility") !== "ENGAGEMENT_PANEL_VISIBILITY_HIDDEN") {
         chatPanel.setAttribute("visibility", "ENGAGEMENT_PANEL_VISIBILITY_HIDDEN");
       }
       const watchFlexy2 = document.querySelector("ytd-watch-flexy");
       if (watchFlexy2) {
         const otherExpanded = watchFlexy2.querySelectorAll('ytd-engagement-panel-section-list-renderer:not([target-id*="chat" i])[visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"]');
         if (otherExpanded.length === 0) {
-          watchFlexy2.removeAttribute("has-active-panel");
-          watchFlexy2.removeAttribute("panels-open");
+          if (watchFlexy2.hasAttribute("has-active-panel")) watchFlexy2.removeAttribute("has-active-panel");
+          if (watchFlexy2.hasAttribute("panels-open")) watchFlexy2.removeAttribute("panels-open");
         }
       }
-      hideNativeChatElements();
+      const chatFrame2 = document.querySelector("ytd-live-chat-frame#chat, #chat.ytd-watch-flexy");
+      if (chatFrame2 && !chatFrame2.hasAttribute("collapsed")) {
+        chatFrame2.setAttribute("collapsed", "");
+      }
       return;
     }
     if (hasAutoCollapsedChatForCurrentVideo) return;
@@ -1478,34 +1481,15 @@
   }
   function stopAllLiveChatIfDisabled() {
     const isOverlayOn = currentConfig.chatOverlay && currentConfig.chatOverlay !== "off";
-    if (!isOverlayOn && currentConfig.hideNativeLiveChat) {
+    if (!isOverlayOn) {
       if (bgChatIframe) {
         bgChatIframe.remove();
         bgChatIframe = null;
         currentBgVideoId = null;
       }
-      const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]');
-      frames.forEach((frame) => {
-        if (frame.id === "ytc-bg-live-chat") {
-          frame.remove();
-          return;
-        }
-        if (frame.src && frame.src !== "about:blank" && !frame.src.startsWith("about:")) {
-          frame.dataset.ytcSavedSrc = frame.src;
-          frame.src = "about:blank";
-        }
-      });
-      autoCollapseNativeChatIfOpen();
     }
   }
   function restoreNativeLiveChatIfSaved() {
-    const frames = document.querySelectorAll("iframe#chatframe, ytd-live-chat-frame iframe");
-    frames.forEach((frame) => {
-      if (frame.dataset.ytcSavedSrc && frame.src === "about:blank") {
-        frame.src = frame.dataset.ytcSavedSrc;
-        delete frame.dataset.ytcSavedSrc;
-      }
-    });
   }
   function updateChatOverlayVisibility() {
     const mode = currentConfig.chatOverlay || "off";
@@ -1551,7 +1535,6 @@
       }
     }
     if (mode !== "off") {
-      restoreNativeLiveChatIfSaved();
       ensureNativeLiveChatRunning();
       seenMessageIds.clear();
       ensureBackgroundLiveChat();
@@ -2203,42 +2186,41 @@
 
   // src/features/feedFilter.js
   init_utils();
+  init_config();
   function scanAndTagFeedContent(scope) {
+    if (!currentConfig.hideMembersOnly && !currentConfig.hideExploreTopics && !currentConfig.hideCommunity) return;
     const root = scope && scope.querySelectorAll ? scope : document;
     const sections = root.querySelectorAll("ytd-rich-section-renderer");
     sections.forEach((sec) => {
-      if (!sec.classList.contains("ytc-shelf-members")) {
+      if (currentConfig.hideMembersOnly && !sec.classList.contains("ytc-shelf-members")) {
         const text = sec.textContent || "";
         if (text.includes("lợi ích từ hội viên") || text.includes("Ưu tiên hội viên") || text.includes("ưu tiên hội viên") || text.includes("hội viên") && text.includes("YouTube chọn lọc") || text.includes("Get more from memberships") || text.includes("Members only") || text.includes("Members first") || sec.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], a[href*="/membership"], a[href*="/memberships"]')) {
           sec.classList.add("ytc-shelf-members");
         }
       }
-      if (!sec.classList.contains("ytc-shelf-explore")) {
+      if (currentConfig.hideExploreTopics && !sec.classList.contains("ytc-shelf-explore")) {
         const text = sec.textContent || "";
         if (text.includes("Khám phá các chủ đề") || text.includes("Explore other topics") || text.includes("Explore topics") || sec.querySelector("yt-chip-cloud-chip-renderer, yt-chip-cloud-renderer, ytd-feed-filter-chip-bar-renderer")) {
           sec.classList.add("ytc-shelf-explore");
         }
       }
-      if (!sec.classList.contains("ytc-shelf-community")) {
+      if (currentConfig.hideCommunity && !sec.classList.contains("ytc-shelf-community")) {
         if (sec.querySelector("ytd-post-renderer, ytd-backstage-post-renderer, ytd-backstage-post-thread-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer")) {
           sec.classList.add("ytc-shelf-community");
         }
       }
     });
-    const videoCards = root.querySelectorAll("ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer");
-    videoCards.forEach((card) => {
-      if (!card.classList.contains("ytc-item-members")) {
-        const text = card.textContent || "";
-        if (text.includes("Ưu tiên hội viên") || text.includes("ưu tiên hội viên") || text.includes("Chỉ dành cho hội viên") || text.includes("chỉ dành cho hội viên") || text.includes("Members first") || text.includes("Members only") || text.includes("Members-only") || text.includes("Early access") || card.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], [aria-label*="hội viên"], [aria-label*="Hội viên"], [aria-label*="Members"]')) {
-          card.classList.add("ytc-item-members");
+    if (currentConfig.hideMembersOnly) {
+      const videoCards = root.querySelectorAll("ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer");
+      videoCards.forEach((card) => {
+        if (!card.classList.contains("ytc-item-members")) {
+          const text = card.textContent || "";
+          if (text.includes("Ưu tiên hội viên") || text.includes("ưu tiên hội viên") || text.includes("Chỉ dành cho hội viên") || text.includes("chỉ dành cho hội viên") || text.includes("Members first") || text.includes("Members only") || text.includes("Members-only") || text.includes("Early access") || card.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], [aria-label*="hội viên"], [aria-label*="Hội viên"], [aria-label*="Members"]')) {
+            card.classList.add("ytc-item-members");
+          }
         }
-      }
-      if (!card.classList.contains("ytc-item-community")) {
-        if (card.querySelector("ytd-post-renderer, ytd-backstage-post-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer")) {
-          card.classList.add("ytc-item-community");
-        }
-      }
-    });
+      });
+    }
   }
   var scheduleFeedScan = rafThrottle((root) => {
     scanAndTagFeedContent(root);
