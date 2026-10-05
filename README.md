@@ -2,18 +2,19 @@
 
 # YouTube Customizer
 
-**Userscript Tampermonkey tùy biến giao diện YouTube, tối ưu hiệu năng và điều khiển video thông minh**
+**Userscript tùy biến giao diện YouTube, tối ưu hiệu năng và điều khiển video thông minh**
 
-[![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
-[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Version](https://img.shields.io/badge/Version-3.3.7-red)](https://github.com/huyvu2512/youtube-customizer)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
+[![Version](https://img.shields.io/badge/Version-3.4.0-red)](https://github.com/huyvu2512/youtube-customizer)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
 [![Forks](https://img.shields.io/github/forks/huyvu2512/youtube-customizer?style=flat-square&label=Forks&color=6e7681)](https://github.com/huyvu2512/youtube-customizer/forks)
 [![Issues](https://img.shields.io/github/issues/huyvu2512/youtube-customizer?style=flat-square&label=Issues&color=f85149)](https://github.com/huyvu2512/youtube-customizer/issues)
 [![Last Commit](https://img.shields.io/github/last-commit/huyvu2512/youtube-customizer?style=flat-square&label=Last%20Commit&color=3fb950)](https://github.com/huyvu2512/youtube-customizer/commits/main)
-[![Visitors](https://visitor-badge.laobi.icu/badge?page_id=huyvu2512.youtube-customizer&left_text=Visitors&left_color=6e7681&right_color=00B4C8)](https://github.com/huyvu2512/youtube-customizer)
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=huyvu2512.youtube-customizer&left_text=Visitors&left_color=6e7681&right_color=FF0000)
 
 [Cài Đặt Script](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js) · [Báo Lỗi](https://github.com/huyvu2512/youtube-customizer/issues) · [Yêu Cầu Tính Năng](https://github.com/huyvu2512/youtube-customizer/issues)
 
@@ -21,159 +22,115 @@
 
 ---
 
+<div align="center">
+  <img src="assets/preview.png" alt="Giao diện YouTube Customizer" width="480">
+</div>
+
+---
+
 ## Giới thiệu
 
-**YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn.
+**YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.3.8** ra mắt:
-- **Tính năng "Ẩn sản phẩm gắn thẻ" (YouTube Shopping):**
-  - Tự động đóng/ẩn thanh trượt bên phải Sản phẩm (`engagement-panel-shopping-panel`), nút túi xách mua sắm trên player và kệ hàng tiếp thị liên kết Shopee.
-- **Hoàn thiện Tab 5 "Thông tin" trong Menu cài đặt:**
-  - Tinh chỉnh nút Kiểm tra cập nhật xuống dưới cùng của tab, hiển thị trạng thái "Bản mới nhất" (xanh lá) hoặc "Cập nhật" (xanh dương click mở link).
-  - Đơn giản hóa mục Tặng quà & Ủng hộ mở trực tiếp link VietQR MoMo.
-  - Thiết kế lại badge phiên bản (version badge) theo phong cách bán trong suốt đồng bộ.
-- **Tính năng Ưu tiên chọn độ phân giải video (`preferredQuality`) trong tab Tối Ưu:**
-  - Cung cấp thanh chọn 5 chế độ: **Tự động** (mặc định của YouTube), **Cao nhất** (Max / 4K / 8K), **2K** (1440p), **1080p** (Full HD) và **720p** (HD).
-  - Tự động áp đặt độ phân giải mong muốn ngay khi mở hoặc chuyển tiếp video, không cần chỉnh tay thủ công mỗi lần xem.
-- **Kế thừa bộ tính năng tối ưu chuyên sâu từ v3.3.0:**
-  - **Tab "Tối Ưu" (Optimization):** Chặn tự dừng video (`preventAutoPause`), Dọn rác bộ nhớ Live Chat RAM (`chatMemoryGc`), Chặn AV1 / Ép H.264 (`blockAv1`).
-- **Kế thừa và hoàn thiện từ v3.2.31:**
-  - Tự động tắt khung trò chuyện trực tiếp khi mới mở video (cho phép mở lại bình thường, Live Chat overlay chạy ngầm).
-  - Tự do vuốt lên đọc tin nhắn Live Chat cũ mà không bao giờ bị giật về đáy.
-  - Khắc phục 100% rào cản CSP Trusted Types qua `setElementHTML` và phân tách DOM an toàn.
-  - Bổ sung nhãn `for`, `name`, `aria-label` cho toàn bộ công tắc cài đặt loại bỏ cảnh báo DevTools.
-  - Hỗ trợ toàn diện cả Luồng Đang Trực Tiếp & Xem Lại Cuộc Trò Chuyện (Live Replay).
-  - Khôi phục iframe ngầm chuyên biệt `bgChatIframe` hoạt động song song khi bật Overlay.
-  - Chuẩn hóa hoạt ảnh Danmaku `translateX` theo container `cqi` mượt mà trên mọi chế độ hiển thị.
-  - Khắc phục triệt để xung đột uBlock Origin (xóa sổ quảng cáo 6s).
-  - Tích hợp lá chắn Ad Shield dự phòng.
-  - Tái cấu trúc toàn bộ codebase thành các module sạch (`core/`, `features/`, `player/`, `chat/`, `ui/`).
-- **Tích hợp lá chắn Ad Shield dự phòng:**
-  - Tự động nhận diện container quảng cáo video (`.ad-showing`), tua nhanh đến hết thời lượng và kích hoạt sự kiện bấm nút bỏ qua (Skip Ad) ngay trong 0.05s.
-- **Tái cấu trúc mã nguồn theo kiến trúc module chuyên sâu:**
-  - Phân tách toàn bộ các file monolithic cũ (>1.000 dòng) thành các module đơn trách nhiệm dưới `src/` (`core/`, `features/`, `player/`, `chat/`, `ui/`), giúp dự án hoạt động ổn định và dễ bảo trì.
-- **Kế thừa các tính năng từ v3.2.3:**
-  - Giữ nguyên Chat gốc khi mở tự nhiên (cả thường lẫn toàn màn hình).
-  - Tự động phóng to 100% Video Fullscreen khi Chat bị ẩn, xóa sổ khoảng trống màu đen.
-- **Kế thừa các tính năng từ v3.2.2:**
-- **Đưa "Tự động trực tiếp (Auto Live)" lên Tab Giao diện:**
-  - Chuyển mục Auto Live từ tab Trình phát sang tab Bố cục & Giao diện, đặt liền kề mục Mở khóa tua Live Stream giúp quản lý các thiết lập luồng phát trực quan, thuận tiện hơn.
-- **Khung thông báo khi có phiên bản mới từ GitHub:**
-  - Tích hợp cơ chế kiểm tra phiên bản từ xa tự động. Khi phát hiện bản phát hành mới trên GitHub, giao diện sẽ hiển thị thẻ thông báo nổi chuyên dụng với huy hiệu "BẢN MỚI" cùng nút "Cập nhật ngay".
-- **Bảo vệ cài đặt đa tầng chống mất cấu hình khi update:**
-  - Nâng cấp hệ thống lưu trữ đồng bộ đa nguồn (ytc_config, ytc_config_v3, ytc_config_persistent, sessionStorage). Bảo toàn 100% các cài đặt người dùng đã tùy chỉnh qua các phiên bản cập nhật.
-- **Đồng bộ bảng cài đặt chính xác:**
-  - Sửa lỗi định danh phần tử trong hàm syncPanelState, giúp trạng thái các nút gạt và chế độ luôn được đồng bộ chuẩn xác ngay khi mở bảng menu.
-- **Kế thừa các tính năng từ v3.2.1:**
-- **Mặc định 3 cột trang chủ chuẩn YouTube:**
-  - Thiết lập giá trị mặc định cho lưới video trang chủ và kênh là 3 cột theo chuẩn nguyên bản của YouTube.
-- **Kế thừa cấu hình đa phiên bản chống mất cài đặt:**
-  - Nâng cấp cơ chế loadConfig tự động phát hiện và chuyển tiếp cấu hình từ các bản trước (ytc_config_v3, ytc_config_v2) sang bộ nhớ vĩnh viễn ytc_config. Người dùng nâng cấp lên phiên bản mới không còn bị reset cài đặt về trạng thái tắt.
-- **Sửa lỗi đè dòng tin nhắn nhiều dòng tại khung nổi Streamer:**
-  - Khóa cứng cơ chế co giãn Flexbox (flex-shrink: 0), giúp các bình luận dài xuống 2-3 dòng luôn giữ nguyên chiều cao tự nhiên, không bao giờ bị đè hoặc chen lấn lên các bình luận tiếp theo.
-- **Cố định kích thước chữ 10px đồng nhất:**
-  - Giữ nguyên kích thước 10px siêu gọn cho khung nổi Streamer ở cả chế độ thường lẫn toàn màn hình (Fullscreen), tránh phóng to gây chiếm diện tích.
-- **Tùy biến màu sắc và độ đậm nhạt tên tác giả:**
-  - Chuyển tên tác giả (@tên) sang màu xám nhạt trung tính (#b5b5b5) với nét chữ thường (font-weight: 400), trong khi nội dung tin nhắn được in đậm nổi bật (font-weight: 700) với màu trắng tinh tế.
-- **Kế thừa các tính năng từ v3.2.0 & v3.1.9:**
-  - Bổ sung icon cờ lê Moderator SVG màu xanh chuẩn xác, không bị khoảng trắng thừa.
-  - Phục hồi kích thước icon đầy đủ cho Danmaku chạy ngang.
-  - Tối ưu triệt để độ mượt, loại bỏ các hiệu ứng lơ lửng và làm mờ nền gây giật lag.
-- **Kế thừa các tính năng nổi bật từ v3.1.7 & v3.1.6:**
-  - Tự động tắt Live Chat triệt để khi rời video hoặc về trang chủ.
-  - Chống tự động đóng/tắt menu dropdown trong Live Chat.
-  - Khung nổi Streamer 10px siêu gọn, đều tăm tắp, không lỗi icon emoji.
-  - Tự động cân đối tỷ lệ kích thước chữ khi phóng to toàn màn hình (Responsive Zoom / Fullscreen).
-  - Khung chat gốc chạy ngầm off-screen 100% cho cả Live và Replay, khóa vĩnh viễn popup khi Fullscreen.
-  - Tối ưu Auto Live chống dừng/tắt video khi xem lại live cũ.
-- **Kế thừa các tính năng nổi bật từ v3.1.5 & v3.1.4:**
-  - Khung nổi Streamer bám góc tuyệt đối (CSS Corner Anchor) khi phóng to / thu nhỏ.
-  - Danmaku dãn cách thưa thớt (10 làn chạy, cooldown 420ms chống đè chữ, loại bỏ dồn cục lúc đầu bật).
-  - Chống đứng chat YouTube bằng cơ chế auto-unpause và auto-scroll.
-  - Live chat session-only luôn tắt mặc định khi F5 hoặc chuyển video.
-  - Danmaku dãn cách thưa thớt (10 làn chạy, cooldown 420ms chống đè chữ, loại bỏ dồn cục lúc đầu bật).
-  - Chạy ngầm Live Chat độc lập bằng Video ID (tắt khung chat gốc YouTube vẫn chạy bình thường).
-  - Tính năng Tự động trực tiếp (Auto Live) chống trễ luồng phát.
-- **Kế thừa các tối ưu của v2.9.9.1 & v2.9.8:**
-  - Tách riêng module chat.js chuyên biệt, nạp tin nhắn song song qua postMessage và DOM hook.
-  - Kích hoạt hiệu ứng tua mặc định của YouTube cho Numpad 4/6 và A/D.
-  - Mở rộng menu 4 tab (350px) không bị co hẹp.
-- **Kế thừa các tối ưu của v2.9.6:** Bộ biểu tượng SVG vẽ lại chuẩn Material Design sắc nét, phân nhóm tab chuẩn xác, triệt tiêu lỗi phím Numpad và tự đóng banner thông báo.
-- **Triệt tiêu toàn diện lỗi phím Numpad (Chống nhảy % video & chống Home/End/PageUp/PageDown):** Chặn độc lập 100% tất cả các phím Numpad (ở cả 2 tầng sự kiện `keydown` và `keyup`), không phụ thuộc vào trạng thái tải của player. Khắc phục triệt để hiện tượng ấn 1, 7 nhảy đầu/cuối video, 3, 9 cuộn trang khi tắt NumLock và 1-9 nhảy % video khi bật NumLock.
-- **Tự động đóng banner & thông báo gián đoạn:** Tự động phát hiện và đóng/ẩn ngay lập tức các thông báo toast gây phiền toái như *"Bạn đang gặp sự cố gây gián đoạn?"* (*"Experiencing interruptions? Find out why"*), banner mời dùng thử Premium, khảo sát và popup phiền phức trên giao diện xem video.
-- **Chuẩn hóa phím tắt Numpad & A-S-D / J-K-L:**
-  - Numpad 4 / 6: Tua lùi / Tua tiến 10 giây.
-  - Numpad 8 / 2: Tăng / Giảm âm lượng (chuẩn OSD YouTube).
-  - Numpad 5: Tạm dừng / Phát tiếp video.
-  - A / D hoặc J / L: Tua lùi / Tua tiến 10 giây.
-  - S hoặc K: Tạm dừng / Phát tiếp video.
-  - Chặn triệt để toàn bộ các phím Numpad khác (0, 1, 3, 7, 9, dấu chấm, +, -, *, /, Enter) không cho YouTube nhận diện phím số 1-9 nhảy % video khi bật NumLock.
-- **Tooltip hướng dẫn trực quan:** Tích hợp mô tả tính năng ngắn gọn, đúng trọng tâm hiển thị qua khung tooltip mặc định của trình duyệt khi di chuột vào từng mục trong bảng cài đặt.
-- **Tối ưu hóa Live Chat:** Đổi tên hiển thị thành **Live Chat**, mặc định áp dụng tính năng tự động ẩn khi tua lùi video và loại bỏ tùy chọn thừa trong menu.
-- **Live Chat Overlay trên Video (Danmaku & Khung Streamer):** Hiển thị luồng chat trực tiếp hoặc replay nổi ngay trên video player với 2 chế độ tùy chọn:
-  - **Chạy ngang (Danmaku / Bullet Chat):** Tin nhắn lướt ngang màn hình từ phải sang trái theo từng làn, phân biệt màu sắc Mod (xanh dương) và Hội viên (xanh lá).
-  - **Khung nổi Streamer trong suốt:** Khung chat không nền giống trên luồng phát của streamer, có thể kéo thả di chuyển vị trí và co giãn kích thước tùy ý, hiển thị avatar/logo và huy hiệu.
-  - **Tự động ẩn khi tua lùi:** Tự động ẩn chat khi người xem tua video về quá khứ và tự động hiện lại khi quay về mốc Trực tiếp.
-- **Mở khóa tua Live Stream (Force Enable Live DVR):** Tự động khôi phục thanh trượt tua lại (Seekbar scrubber) trên các luồng phát trực tiếp (YouTube Live) mà chủ kênh tắt tính năng tua, cho phép xem lại các diễn biến vừa diễn ra mà không bị khóa cứng ở mốc thời gian thực (Real-time).
-- **Ẩn logo hình mờ (Watermark) ở góc video:** Tự động xóa bỏ hoàn toàn biểu tượng/avatar của kênh hiển thị ở góc dưới cùng bên phải của trình phát video (`.iv-branding`, `.ytp-iv-video-content .iv-branding`, `.ytp-branding-logo`), giúp khung hình video hoàn toàn thông thoáng.
-- **Tối giản hóa kiến trúc mã nguồn:** Toàn bộ mã nguồn phát triển trong `src/` được tổ chức tinh gọn thành 4 tệp chuyên biệt, build tự động siêu tốc bằng `esbuild`.
-- **Phân nhóm cài đặt trong Menu theo 4 Tab:** Bảng cài đặt 4 danh mục trực quan gồm **Giao diện**, **Lọc nội dung**, **Trình phát** và **Phím tắt**.
-- **Kế thừa các tối ưu cốt lõi:** Ẩn thẻ kết thúc (Endscreen Cards) & chú thích (Info Cards), ẩn bài đăng cộng đồng trên feed, tự đóng banner quảng cáo/hội viên, cố định số cột 3-4-5 không bị hoàn tác khi F5, sửa triệt để logo Premium kèm mã quốc gia chuẩn xác, ẩn Shorts/Playables/Hội viên/Khám phá chủ đề, Clean Search và phím tắt A-S-D / Numpad.
+Phiên bản **v3.4.0** khắc phục triệt để lỗi tua video nhảy cóc 20s trên các phím tắt A-D & Numpad 4-6, bổ sung cơ chế chống repeat khi nhấn giữ phím, chuẩn hóa toàn diện tài liệu dự án và nâng cấp hiệu năng điều khiển trình phát.
 
 ---
 
 ## Tính năng chính
 
-- **Menu cài đặt phân nhóm 4 Tab hiện đại:**
-  - **Giao diện:** Tùy chọn số cột trang chủ (3, 4, 5 cột), Bật/tắt Logo YouTube Premium, Mở khóa tua Live Stream (Live DVR), Tự động trực tiếp (Auto Live), Live Chat (Tắt / Ngang / Nổi).
-  - **Lọc:** Ẩn Shorts hoàn toàn, Ẩn Chơi game (Playables), Ẩn video Hội viên (Ưu tiên & Đặc quyền), Ẩn bài đăng cộng đồng, Lọc tìm kiếm sạch (Clean Search), Ẩn Khám phá các chủ đề khác.
-  - **Trình phát:** Tắt ánh sáng viền video (Ambient Mode / Cinematics), Ẩn thẻ kết thúc & thẻ chú thích video, Ẩn logo góc video (Watermark), Tự động đóng banner & thông báo gián đoạn, Tắt trò chuyện trực tiếp (Native Live Chat), Ẩn biểu tượng trong Live Chat.
-  - **Tối Ưu:** Chặn tự dừng video ("Bạn vẫn đang xem chứ?"), Dọn rác bộ nhớ Live Chat, Chặn AV1 / Ép Codec H.264 & VP9, Phím tắt điều khiển (A-S-D, Numpad), Chế độ Chỉ phát âm thanh (Radio Audio-Only).
-  - Toàn bộ thiết lập được lưu tự động vào `localStorage` và cập nhật tức thì (Live Update) mà không cần tải lại trang.
-- **Tự động giữ mốc trực tiếp (Auto Live Sync):**
-  - Tự động duy trì thời gian thực trên các luồng phát Live Stream YouTube.
-  - Tự động tăng tốc nhẹ (1.08x) để bắt kịp khi chậm nhẹ hoặc nhảy về Live Head khi chậm nhiều, loại bỏ tình trạng stream bị tụt lùi thời gian do micro-buffering hoặc chuyển tab nền.
-- **Live Chat Overlay trên Video (Danmaku & Streamer Box):**
-  - Hỗ trợ 3 chế độ hiển thị: Chạy ngang (Danmaku), Khung nổi Streamer trong suốt và Cả hai đồng thời.
-  - Phân biệt màu sắc rõ ràng: Mod màu xanh dương, Hội viên màu xanh lá, Chủ kênh màu vàng, người thường màu trắng; phông chữ có viền bóng đậm nét chống chói trên mọi khung cảnh video.
-  - Tự động ẩn khi tua video về quá khứ và hiện lại khi quay về mốc thời gian thực.
-  - Hỗ trợ cho cả phiên Live đang phát trực tiếp lẫn video đã kết thúc có Chat Replay.
-- **Mở khóa tua Live Stream (Force Enable Live DVR):**
-  - Can thiệp an toàn vào dữ liệu khởi tạo luồng stream (`isLiveDvrEnabled: true`), phục hồi thanh tua thời gian cho các buổi phát trực tiếp bị người phát khóa tính năng tua lùi.
-- **Ẩn logo hình mờ kênh ở góc video (Clean Video Watermark):**
-  - Tự động ẩn biểu tượng logo hoặc ảnh đại diện kênh xuất hiện ở góc dưới cùng bên phải trình phát video.
-- **Ẩn thẻ kết thúc & Chú thích video (Clean Endscreen):**
-  - Vô hiệu hóa triệt để các khung gợi ý video đè lên phần outro (`.ytp-ce-element`, `.ytp-ce-covering-image`, `.ytp-ce-element-shadow`).
-  - Ẩn nút thẻ chú thích góc trên bên phải player (`.ytp-cards-button`) và thanh thông báo teaser (`.ytp-cards-teaser`).
-- **Ẩn Bài đăng cộng đồng trên Trang chủ:**
-  - Tự động phát hiện và triệt tiêu các bài đăng cộng đồng (kèm khảo sát, hình ảnh) dạng `ytd-post-renderer`, `ytd-backstage-post-thread-renderer` và kệ cộng đồng `ytd-rich-shelf-renderer` trên feed.
-- **Tự động đóng Banner thông báo phiền toái:**
-  - Tự động kích hoạt nút đóng (`#dismiss-button`) trên các banner mealbar promo (`ytd-mealbar-promo-renderer`), banner dùng thử Premium, popup khảo sát.
-- **Tùy biến lưới video linh hoạt:**
-  - Hỗ trợ chuyển đổi nhanh bố cục hiển thị **3 cột**, **4 cột** hoặc **5 cột** trên trang chủ và kênh đăng ký, giữ cố định vĩnh viễn ngay cả khi F5 tải lại trang.
-- **Ẩn hoàn toàn nội dung Shorts & Chơi game (Playables):**
-  - Ẩn triệt để kệ Shorts, Playables trên trang chủ, trang đăng ký và thanh điều hướng bên trái.
-- **Ẩn video Hội viên & Kệ Khám phá chủ đề khác:**
-  - Ẩn cả video "Ưu tiên hội viên" (Early access) lẫn video "Chỉ dành cho hội viên" và kệ quảng bá gói hội viên.
-- **Ẩn Danh sách kết hợp (Mixes / Radio):**
-  - Tự động ẩn toàn diện các playlist Mix thuật toán trên Trang chủ, Tìm kiếm, Gợi ý xem tiếp và khung danh sách phát Watch page.
-  - Tự động làm sạch URL, ngăn YouTube ép vào playlist Mix khi click video và tự động chuyển sang video đề xuất tự nhiên khi hết bài.
-- **Clean Search (Ẩn video tài trợ):**
-  - Tự động ẩn các thẻ video quảng cáo và nội dung được tài trợ (`Sponsored`).
-- **Tối ưu hiệu năng Live Chat & đồ họa:**
-  - **Zero-Lag Live Chat:** Áp dụng CSS containment và lazy-render loại bỏ giật lag khung chat.
-  - **Giảm tải GPU:** Tắt hiệu ứng Ambient Mode (Cinematics) giúp tiết kiệm tài nguyên máy tính.
-  - **Tối ưu bình luận:** Áp dụng cơ chế lazy-render cho danh sách bình luận dưới video.
-  - **Zero CPU idle:** Không sử dụng event listener bắt chuột toàn cục (`mouseover`/`mousemove`), không gây tốn pin hay tải CPU lúc rảnh.
-- **Khóa an toàn nút phóng to (Fullscreen Safe Lock):**
-  - Tự động vô hiệu hóa tạm thời nút phóng to (1.5 giây) khi vừa tải hoặc F5 lại trang video, chống lỗi kẹt giao diện inline/toàn màn hình của trình phát YouTube.
-- **Logo YouTube Premium & Mã quốc gia chuẩn xác:**
-  - Thay thế logo mặc định bằng biểu tượng YouTube Premium sắc nét với khoảng cách chuẩn so với nút menu tab.
-  - Giữ nguyên mã quốc gia (VN, US, JP,...) và hiển thị chuẩn xác ở góc trên bên phải của chữ Premium, không bao giờ bị đè chữ.
-  - Tự động thích ứng màu sắc của cả logo lẫn mã quốc gia theo giao diện Sáng / Tối (Light / Dark theme) ngay lập tức khi đổi giao diện mà không cần tải lại trang.
-  - Nhấp chuột vào logo ở trang chủ/feed hỗ trợ cuộn mượt (smooth scroll) lên đầu trang.
-- **Tự động tiếp tục phát video:**
-  - Tự động đóng hộp thoại xác nhận "Vẫn đang xem? / Video đã tạm dừng" để tiếp tục phát nhạc nền hoặc playlist dài.
+- **Menu cài đặt 5 Tab trực quan** - Phân chia khoa học thành Giao diện, Lọc nội dung, Trình phát, Tối Ưu và Thông tin tiện ích với giao diện Dark Mode bán trong suốt tinh tế.
+- **Ẩn sản phẩm gắn thẻ (YouTube Shopping)** - Tự động đóng và ẩn thanh trượt Sản phẩm bên phải (`engagement-panel-shopping-panel`), nút túi xách mua sắm trên video player và các kệ hàng tiếp thị liên kết Shopee.
+- **Ưu tiên độ phân giải video** - Cung cấp thanh chọn 5 chế độ: Tự động (YouTube mặc định), Cao nhất (Max / 4K / 8K), 2K (1440p), 1080p (Full HD) và 720p (HD), tự động áp đặt ngay khi mở hoặc chuyển tiếp video.
+- **Live Chat Overlay trên Video** - Hiển thị bình luận trực tiếp ngay trên khung video với 2 chế độ: Chạy ngang màn hình (Danmaku) hoặc Khung nổi Streamer trong suốt có thể kéo thả, hỗ trợ cả Luồng trực tiếp và Xem lại trò chuyện (Live Replay).
+- **Mở khóa tua Live Stream (Force Live DVR)** - Phục hồi thanh tua thời gian cho các buổi phát trực tiếp bị chủ kênh khóa tua lùi, cho phép xem lại các diễn biến vừa diễn ra mà không bị gò bó ở mốc thời gian thực.
+- **Tự động giữ mốc trực tiếp (Auto Live Sync)** - Duy trì thời gian thực trên các luồng phát Live Stream YouTube, tự động bù trễ nhẹ hoặc snap về Live Head khi chuyển tab nền.
+- **Tối ưu RAM & Giải phóng bộ nhớ Live Chat** - Tự động dọn dẹp DOM tin nhắn Live Chat định kỳ chống tràn RAM và giật lag trình duyệt khi xem stream kéo dài.
+- **Chặn AV1 / Ép Codec phần cứng** - Chặn codec AV1 tốn tài nguyên trên các máy tính không hỗ trợ giải mã phần cứng, ép YouTube sử dụng H.264 hoặc VP9 tiết kiệm pin và mát máy.
+- **Chặn tự dừng video** - Tự động phát hiện và đóng hộp thoại xác nhận *"Bạn vẫn đang xem chứ? / Video đã tạm dừng"* để phát nhạc nền hoặc danh sách phát liên tục.
+- **Chế độ Radio (Chỉ phát âm thanh)** - Ngắt kết xuất hình ảnh video, chỉ duy trì luồng âm thanh giúp tiết kiệm tối đa CPU, GPU và tiêu thụ điện năng khi nghe podcast hoặc nhạc.
+- **Điều khiển phím tắt thông minh** - Tua lùi/tiến 10s bằng phím A / D hoặc Numpad 4 / 6 chuẩn xác, tạm dừng bằng S hoặc Numpad 5, tăng giảm âm lượng bằng Numpad 8 / 2.
+- **Lọc sạch nội dung rác trên Feed** - Ẩn triệt để Shorts, Chơi game (Playables), video dành cho Hội viên, bài đăng cộng đồng và video quảng cáo tài trợ trên kết quả tìm kiếm (Clean Search).
+- **Ẩn hình mờ & Thẻ kết thúc** - Tự động loại bỏ logo watermark kênh ở góc dưới bên phải video, vô hiệu hóa thẻ kết thúc Outro (Endscreen Cards) và thẻ chú thích (Info Cards) che khuất nội dung.
+- **Tự động đóng banner phiền toái** - Tự động đóng các banner mời dùng thử Premium, khảo sát và thông báo gián đoạn gây phiền toái.
+- **Tùy biến lưới video trang chủ** - Cố định linh hoạt số cột hiển thị video trang chủ và kênh (3 cột, 4 cột hoặc 5 cột), không bị hoàn tác khi tải lại trang.
+
+---
+
+## Công nghệ
+
+| Thành phần | Công nghệ |
+| :--- | :--- |
+| Nền tảng | Userscript (Tampermonkey, Violentmonkey) |
+| Ngôn ngữ | Vanilla JavaScript (ES6+, IIFE Bundle) |
+| Styling | Vanilla CSS3 (Custom Design System, Dark Mode) |
+| Đóng gói & Xây dựng | Node.js, esbuild |
+| Bảo mật DOM | Trusted Types, Safe HTML Sanitization |
+| Trình duyệt hỗ trợ | Google Chrome, Microsoft Edge, Mozilla Firefox, Brave, Cốc Cốc, Opera |
+
+---
+
+## Cấu trúc thư mục
+
+```text
+youtube-customizer/
+├── assets/                       # Tài nguyên hình ảnh và ảnh xem trước
+│   └── preview.png               # Ảnh chụp giao diện bảng cài đặt tiện ích
+├── scripts/                      # Kịch bản tự động hóa và đóng gói
+│   └── build.js                  # Script đóng gói IIFE bundle bằng esbuild
+├── src/                          # Mã nguồn phát triển theo kiến trúc module
+│   ├── chat/                     # Hệ thống Live Chat Overlay (Danmaku & Streamer Box)
+│   │   ├── chatObserver.js       # Quan sát và lắng nghe tin nhắn chat
+│   │   ├── chatParser.js         # Bóc tách cấu trúc tin nhắn, avatar, emoji
+│   │   ├── chatState.js          # Quản lý hàng đợi và trạng thái tin nhắn
+│   │   ├── danmaku.js            # Bình luận chạy ngang màn hình video
+│   │   ├── index.js              # Điểm xuất khẩu module chat
+│   │   └── streamerBox.js        # Khung chat nổi streamer bám góc video
+│   ├── core/                     # Cấu hình cốt lõi, hằng số và tiện ích nền tảng
+│   │   ├── config.js             # Quản lý cấu hình, lưu trữ localStorage
+│   │   ├── constants.js          # Biểu tượng SVG, phiên bản và hằng số
+│   │   └── utils.js              # Chuẩn hóa Trusted Types, bộ hỗ trợ DOM
+│   ├── features/                 # Các tính năng tùy biến nội dung và bộ lọc
+│   │   ├── feedFilter.js         # Lọc Shorts, Playables, Hội viên, Community
+│   │   ├── grid.js               # Bố cục lưới video trang chủ (3, 4, 5 cột)
+│   │   ├── index.js              # Điểm xuất khẩu module features
+│   │   ├── logo.js               # Thay thế logo YouTube Premium
+│   │   ├── mixFilter.js          # Bộ lọc playlist Mix và Radio
+│   │   ├── promos.js             # Tự động đóng banner quảng cáo và khảo sát
+│   │   ├── qualityManager.js     # Quản lý ưu tiên độ phân giải video
+│   │   └── shoppingFilter.js     # Ẩn kệ sản phẩm và bảng YouTube Shopping
+│   ├── optimization/             # Tối ưu hóa tài nguyên phần cứng, RAM & GPU
+│   │   ├── audioOnly.js          # Chế độ Radio ngắt render video tiết kiệm pin
+│   │   ├── chatMemoryGc.js       # Dọn dẹp DOM tin nhắn chat chống tràn RAM
+│   │   ├── codecBlocker.js       # Chặn codec AV1, ép giải mã H.264/VP9
+│   │   ├── index.js              # Điểm xuất khẩu module optimization
+│   │   └── preventAutoPause.js   # Chặn popup tự động tạm dừng video
+│   ├── player/                   # Điều khiển trình phát và tương tác video
+│   │   ├── autoLive.js           # Đồng bộ mốc phát trực tiếp (Auto Live)
+│   │   ├── fullscreenLock.js     # Xử lý khóa và mở rộng toàn màn hình
+│   │   ├── index.js              # Điểm xuất khẩu module player
+│   │   ├── liveDvr.js            # Mở khóa tua lại luồng trực tiếp (Live DVR)
+│   │   └── shortcuts.js          # Phím tắt điều khiển (A-S-D, Numpad 4/6/8/2)
+│   ├── ui/                       # Giao diện người dùng bảng điều khiển
+│   │   ├── index.js              # Điểm xuất khẩu module ui
+│   │   ├── notifier.js           # Kiểm tra phiên bản mới từ GitHub & thông báo
+│   │   ├── panel.js              # Menu cài đặt 5 tab hiện đại
+│   │   └── sync.js               # Đồng bộ trạng thái công tắc và cài đặt
+│   ├── index.js                  # Điểm khởi đầu ứng dụng và điều phối vòng đời
+│   └── styles.css                # Toàn bộ hệ thống stylesheet của tiện ích
+├── package.json                  # Cấu hình npm và scripts khởi chạy
+├── package-lock.json             # Khóa phiên bản gói thư viện npm
+├── tampermonkey.user.js          # Header metadata nạp Userscript
+├── youtube_customizer.js         # Tệp bundle phân phối chính đã đóng gói
+├── SECURITY.md                   # Chính sách bảo mật và quy trình báo lỗi
+├── LICENSE                       # Giấy phép mã nguồn mở MIT
+└── README.md                     # Tài liệu hướng dẫn sử dụng dự án
+```
+
+### Đóng gói mã nguồn (Dành cho lập trình viên)
+
+- **Cài đặt thư viện build:** `npm install`
+- **Đóng gói mã nguồn ra file script:** `npm run build` (tạo tệp bundle `youtube_customizer.js`)
+- **Chế độ tự động theo dõi & build (Watch mode):** `npm run dev`
 
 ---
 
@@ -181,80 +138,28 @@ Phiên bản **v3.3.8** ra mắt:
 
 | Phím | Chức năng | Điều kiện kích hoạt |
 | :--- | :--- | :--- |
-| **A / S / D** | Lùi 10s / Play-Pause / Tiến 10s | Chuột nằm trong player hoặc chế độ Fullscreen |
-| **Numpad 8 / 2** | Tăng / Giảm âm lượng 5% (chuẩn OSD YouTube) | Toàn cục (khi player đang hoạt động) |
+| **A / D** | Tua lùi / Tua tiến 10 giây | Chuột nằm trong player hoặc chế độ Fullscreen |
+| **S** | Tạm dừng / Phát tiếp video | Chuột nằm trong player hoặc chế độ Fullscreen |
 | **Numpad 4 / 6** | Tua lùi / Tua tiến 10 giây | Toàn cục (khi player đang hoạt động) |
-| **Numpad 5** | Phát / Tạm dừng video | Toàn cục (khi player đang hoạt động) |
-| **Numpad 1, 3, 7, 9** | Vô hiệu hóa (chống nhảy video nhầm lẫn) | Toàn cục |
+| **Numpad 5** | Tạm dừng / Phát tiếp video | Toàn cục (khi player đang hoạt động) |
+| **Numpad 8 / 2** | Tăng / Giảm âm lượng 5% | Toàn cục (hỗ trợ nhấn giữ phím) |
+| **Numpad 1, 3, 7, 9** | Vô hiệu hóa (chống nhảy % video) | Toàn cục |
 
-- **Tương thích bộ gõ tiếng Việt:** Phím A/S/D bắt mã phím vật lý `e.code` (`KeyA`, `KeyS`, `KeyD`), không bị ảnh hưởng bởi Unikey / EVKey.
+- **Tương thích bộ gõ tiếng Việt:** Phím A/S/D bắt mã phím vật lý `e.code` (`KeyA`, `KeyS`, `KeyD`), hoàn toàn không bị ảnh hưởng bởi Unikey / EVKey.
 - **Chống gõ nhầm:** Tự động vô hiệu hóa phím tắt khi người dùng đang nhập văn bản trong ô tìm kiếm, viết bình luận hoặc khung chat trực tiếp.
-- **Clean Seek:** Tự động ẩn thanh điều khiển và con trỏ chuột trong quá trình tua video nhằm giữ khung nhìn tập trung và thông thoáng.
 
 ---
 
-## Cấu trúc thư mục
-
-Dự án được tổ chức theo kiến trúc module hóa:
-
-```text
-youtube-customizer/
-├── package.json            # Cấu hình dự án và lệnh build
-├── scripts/
-│   └── build.js            # Script đóng gói bằng esbuild
-├── src/
-│   ├── index.js            # Khởi tạo và điều phối vòng đời
-│   ├── styles.css          # Định kiểu CSS toàn bộ giao diện
-│   ├── core/               # Cấu hình, bộ lưu trữ, tiện ích & icon
-│   │   ├── config.js
-│   │   ├── constants.js
-│   │   └── utils.js
-│   ├── features/           # Bố cục cột, logo, đóng banner & lọc feed
-│   │   ├── grid.js
-│   │   ├── logo.js
-│   │   ├── promos.js
-│   │   └── feedFilter.js
-│   ├── player/             # Trình phát, phím tắt, Auto Live & Ad Shield
-│   │   ├── shortcuts.js
-│   │   ├── fullscreenLock.js
-│   │   ├── autoLive.js
-│   │   ├── liveDvr.js
-│   │   └── adShield.js
-│   ├── chat/               # Live Chat Danmaku & Khung nổi Streamer
-│   │   ├── chatState.js
-│   │   ├── streamerBox.js
-│   │   ├── danmaku.js
-│   │   ├── chatParser.js
-│   │   └── chatObserver.js
-│   └── ui/                 # Menu 4 tab, đồng bộ state & thông báo update
-│       ├── panel.js
-│       ├── sync.js
-│       └── notifier.js
-├── LICENSE                 # Giấy phép nguồn mở MIT
-├── README.md               # Tài liệu hướng dẫn sử dụng
-├── tampermonkey.user.js    # Header nạp Tampermonkey
-└── youtube_customizer.js   # Bundle phân phối chính
-```
-
-### Lệnh phát triển
-
-- **Cài đặt thư viện phát triển:** `npm install`
-- **Đóng gói mã nguồn:** `npm run build` (tạo tệp `youtube_customizer.js`)
-- **Chế độ theo dõi tự động (Watch mode):** `npm run dev` (tự động build lại ngay khi lưu tệp trong `src/`)
-
----
-
-## Hướng dẫn cài đặt
+## Hướng dẫn cài đặt Userscript
 
 ### Yêu cầu tiên quyết
 Cài đặt tiện ích quản lý Userscript trên trình duyệt của bạn:
 - [Tampermonkey](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) (Khuyên dùng cho Chrome, Edge, Cốc Cốc, Brave, Firefox, Opera)
+- Hoặc [Violentmonkey](https://violentmonkey.github.io/)
 
 ### Cách 1: Cài đặt trực tiếp từ GitHub (Khuyên dùng)
 
-[![Cài đặt Script](https://img.shields.io/badge/CÀI%20ĐẶT-SCRIPT-2ea44f?style=for-the-badge)](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)
-
-1. Nhấp vào nút **CÀI ĐẶT SCRIPT** ở trên (hoặc mở [liên kết tệp script](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)).
+1. Nhấp vào liên kết: [**Cài đặt YouTube Customizer**](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js).
 2. Tiện ích Tampermonkey sẽ tự động mở giao diện cài đặt, chọn **Install** (hoặc **Update** nếu đã cài bản cũ).
 3. Mở YouTube hoặc tải lại trang (F5) để bắt đầu sử dụng.
 
@@ -264,11 +169,27 @@ Cài đặt tiện ích quản lý Userscript trên trình duyệt của bạn:
 2. Xóa toàn bộ nội dung mẫu có sẵn.
 3. Mở tệp [`tampermonkey.user.js`](./tampermonkey.user.js), xóa dòng `@require ...`.
 4. Sao chép toàn bộ nội dung từ tệp [`youtube_customizer.js`](./youtube_customizer.js) và dán tiếp nối vào bên dưới phần header metadata.
-5. Chọn **File** → **Save** (hoặc nhấn tổ hợp phím `Ctrl + S`), sau đó tải lại YouTube.
+5. Nhấn tổ hợp phím `Ctrl + S` để lưu, sau đó tải lại YouTube.
 
 ---
 
-## Tác giả & Giấy phép
+## Tài liệu
 
-- **Tác giả:** Huy Vũ ([@huyvu2512](https://github.com/huyvu2512))
-- **Giấy phép:** Dự án được phân phối theo giấy phép [MIT License](./LICENSE).
+| Tài liệu | Nội dung |
+| :--- | :--- |
+| [SECURITY.md](./SECURITY.md) | Chính sách bảo mật cho Userscript, an toàn dữ liệu và quy trình báo lỗi |
+| [LICENSE](./LICENSE) | Giấy phép mã nguồn mở MIT |
+
+---
+
+## Tuyên bố miễn trừ trách nhiệm
+
+Dự án này là một Userscript được phát triển hoàn toàn vì mục đích học tập, nghiên cứu về cơ chế can thiệp DOM và tối ưu hóa trải nghiệm người dùng cá nhân trên trình duyệt mang tính chất phi thương mại. Dự án không liên kết, không được tài trợ và không đại diện cho Google LLC hoặc YouTube. Tên gọi, logo "YouTube" và các nhãn hiệu liên quan thuộc quyền sở hữu của Google LLC.
+
+Người sử dụng chịu trách nhiệm về việc cài đặt và sử dụng Userscript trên trình duyệt của mình. Tác giả hoàn toàn không chịu bất kỳ trách nhiệm nào liên quan đến việc sử dụng sai mục đích.
+
+---
+
+## Giấy phép
+
+Mã nguồn được phát hành theo giấy phép [MIT License](./LICENSE).

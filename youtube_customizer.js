@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.3.8
-// @description  YouTube Customizer v3.3.8 — Bổ sung tính năng Ẩn sản phẩm gắn thẻ (YouTube Shopping), tinh chỉnh Tab 5 Thông tin & Kiểm tra cập nhật mượt mà.
+// @version      3.4.0
+// @description  YouTube Customizer v3.4.0 — Khắc phục lỗi tua video nhảy cóc 20s trên phím tắt A-D & Numpad, chuẩn hóa tài liệu & tối ưu hiệu năng.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -11,15 +11,14 @@
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.3.8:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.4.0:
  * ============================================================================
- * 1. [Mới] Bổ sung tính năng "Ẩn sản phẩm gắn thẻ" (YouTube Shopping):
- *    - Tự động đóng/ẩn thanh bên Sản phẩm (Shopping), nút túi xách trên video và kệ sản phẩm tiếp thị liên kết.
- * 2. [Cải tiến UI] Hoàn thiện Tab 5 "Thông tin":
- *    - Đưa thẻ "Kiểm tra cập nhật" xuống dưới cùng tab 5 trực quan.
- *    - Tinh chỉnh nút Kiểm tra -> hiển thị trạng thái "Bản mới nhất" (xanh lá) hoặc "Cập nhật" (xanh dương click mở link).
- *    - Đơn giản hóa mục "Tặng quà & Ủng hộ" thành nút link mở trực tiếp VietQR MoMo.
- *    - Thiết kế lại badge phiên bản (version badge) theo phong cách bán trong suốt đỏ đồng bộ.
+ * 1. [Sửa lỗi] Khắc phục triệt để lỗi tua video nhảy cóc 20s (như bị kích đúp) khi bấm phím A/D hoặc Numpad 4/6:
+ *    - Loại bỏ khối fallback 60ms và lệnh seekBy thừa thãi gây kích tua lần 2.
+ *    - Chuẩn hóa dispatch phím duy nhất 1 lần và chặn repeat phím khi nhấn giữ.
+ * 2. [Tài liệu] Chuẩn hóa toàn bộ bộ tài liệu dự án:
+ *    - Bổ sung Chính sách bảo mật (SECURITY.md).
+ *    - Tái cấu trúc README.md chuyên nghiệp kèm bảng tra cứu tính năng & phím tắt.
  * ============================================================================
  */
 (() => {
@@ -42,7 +41,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.3.8";
+      APP_VERSION = "3.4.0";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -3506,7 +3505,7 @@
     if (!player) return false;
     return isPlayerFullscreen(player) || player.matches(":hover");
   }
-  function dispatchYtSeek(key, delta) {
+  function dispatchYtSeek(key) {
     const keyCode = key === "j" ? 74 : key === "l" ? 76 : key === "k" ? 75 : 0;
     const code = key === "j" ? "KeyJ" : key === "l" ? "KeyL" : key === "k" ? "KeyK" : "";
     const evDown = new KeyboardEvent("keydown", {
@@ -3532,25 +3531,9 @@
     });
     evUp._ytcDispatched = true;
     const player = document.querySelector("#movie_player:not(#inline-preview-player)");
-    const target = player || document.body || document;
+    const target = player || window;
     target.dispatchEvent(evDown);
-    window.dispatchEvent(evDown);
     target.dispatchEvent(evUp);
-    window.dispatchEvent(evUp);
-    if (player && delta) {
-      const tBefore = player.getCurrentTime ? player.getCurrentTime() : 0;
-      setTimeout(() => {
-        const tAfter = player.getCurrentTime ? player.getCurrentTime() : 0;
-        if (Math.abs(tAfter - tBefore) < 1) {
-          if (typeof player.seekBy === "function") {
-            player.seekBy(delta);
-          } else {
-            const video = getPlayerVideo(player);
-            if (video) video.currentTime += delta;
-          }
-        }
-      }, 60);
-    }
   }
   var keysBound = false;
   function bindGlobalKeys() {
@@ -3566,6 +3549,10 @@
       }
       const code = e.code || "";
       const isNumpad = e.location === 3 || code.startsWith("Numpad") || e.keyCode >= 96 && e.keyCode <= 111 || e.keyCode === 12;
+      const isVolumeAction = isNumpad && (code === "Numpad8" || e.key === "8" || e.key === "ArrowUp" || e.keyCode === 104 || e.keyCode === 38 || code === "Numpad2" || e.key === "2" || e.key === "ArrowDown" || e.keyCode === 98 || e.keyCode === 40);
+      if (e.repeat && !isVolumeAction) {
+        return;
+      }
       const player = document.querySelector("#movie_player");
       const asdAllowed = canUseAsdKeys(player);
       let captured = false;
@@ -3577,24 +3564,24 @@
         } else if (code === "Numpad2" || e.key === "2" || e.key === "ArrowDown" || e.keyCode === 98 || e.keyCode === 40) {
           if (player) changeVolume(player, -5);
         } else if (code === "Numpad4" || e.key === "4" || e.key === "ArrowLeft" || e.keyCode === 100 || e.keyCode === 37) {
-          dispatchYtSeek("j", -10);
+          dispatchYtSeek("j");
           isSeekAction = true;
         } else if (code === "Numpad6" || e.key === "6" || e.key === "ArrowRight" || e.keyCode === 102 || e.keyCode === 39) {
-          dispatchYtSeek("l", 10);
+          dispatchYtSeek("l");
           isSeekAction = true;
         } else if (code === "Numpad5" || e.key === "5" || e.key === "Clear" || e.keyCode === 101 || e.keyCode === 12) {
           dispatchYtSeek("k");
         }
       } else if (asdAllowed && code === "KeyA") {
         captured = true;
-        dispatchYtSeek("j", -10);
+        dispatchYtSeek("j");
         isSeekAction = true;
       } else if (asdAllowed && code === "KeyS") {
         captured = true;
         dispatchYtSeek("k");
       } else if (asdAllowed && code === "KeyD") {
         captured = true;
-        dispatchYtSeek("l", 10);
+        dispatchYtSeek("l");
         isSeekAction = true;
       } else if (!e.ctrlKey && !e.altKey && !e.metaKey && (code === "KeyF" || e.key === "f" || e.key === "F")) {
         if (isWatchLoading) {
@@ -3629,9 +3616,7 @@
       }
     };
     window.addEventListener("keydown", handleKeyDown, true);
-    document.addEventListener("keydown", handleKeyDown, true);
     window.addEventListener("keyup", handleKeyUp, true);
-    document.addEventListener("keyup", handleKeyUp, true);
   }
 
   // src/player/liveDvr.js

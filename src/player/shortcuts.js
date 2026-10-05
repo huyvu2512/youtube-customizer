@@ -60,7 +60,7 @@ function canUseAsdKeys(player) {
     return isPlayerFullscreen(player) || player.matches(':hover');
 }
 
-function dispatchYtSeek(key, delta) {
+function dispatchYtSeek(key) {
     const keyCode = key === 'j' ? 74 : (key === 'l' ? 76 : (key === 'k' ? 75 : 0));
     const code = key === 'j' ? 'KeyJ' : (key === 'l' ? 'KeyL' : (key === 'k' ? 'KeyK' : ''));
     
@@ -89,28 +89,10 @@ function dispatchYtSeek(key, delta) {
     evUp._ytcDispatched = true;
 
     const player = document.querySelector('#movie_player:not(#inline-preview-player)');
-    const target = player || document.body || document;
+    const target = player || window;
 
     target.dispatchEvent(evDown);
-    window.dispatchEvent(evDown);
     target.dispatchEvent(evUp);
-    window.dispatchEvent(evUp);
-
-    // Dự phòng nếu trình duyệt chặn synthetic event sau 60ms
-    if (player && delta) {
-        const tBefore = player.getCurrentTime ? player.getCurrentTime() : 0;
-        setTimeout(() => {
-            const tAfter = player.getCurrentTime ? player.getCurrentTime() : 0;
-            if (Math.abs(tAfter - tBefore) < 1) {
-                if (typeof player.seekBy === 'function') {
-                    player.seekBy(delta);
-                } else {
-                    const video = getPlayerVideo(player);
-                    if (video) video.currentTime += delta;
-                }
-            }
-        }, 60);
-    }
 }
 
 let keysBound = false;
@@ -134,6 +116,15 @@ export function bindGlobalKeys() {
                          (e.keyCode >= 96 && e.keyCode <= 111) || 
                          (e.keyCode === 12);
 
+        // Bỏ qua sự kiện lặp phím khi giữ phím (chống spam/kích đúp seek & pause)
+        const isVolumeAction = isNumpad && (
+            code === 'Numpad8' || e.key === '8' || e.key === 'ArrowUp' || e.keyCode === 104 || e.keyCode === 38 ||
+            code === 'Numpad2' || e.key === '2' || e.key === 'ArrowDown' || e.keyCode === 98 || e.keyCode === 40
+        );
+        if (e.repeat && !isVolumeAction) {
+            return;
+        }
+
         const player = document.querySelector('#movie_player');
         const asdAllowed = canUseAsdKeys(player);
 
@@ -154,12 +145,12 @@ export function bindGlobalKeys() {
             }
             // Numpad 4: Tua lùi 10 giây (J)
             else if (code === 'Numpad4' || e.key === '4' || e.key === 'ArrowLeft' || e.keyCode === 100 || e.keyCode === 37) {
-                dispatchYtSeek('j', -10);
+                dispatchYtSeek('j');
                 isSeekAction = true;
             }
             // Numpad 6: Tua tiến 10 giây (L)
             else if (code === 'Numpad6' || e.key === '6' || e.key === 'ArrowRight' || e.keyCode === 102 || e.keyCode === 39) {
-                dispatchYtSeek('l', 10);
+                dispatchYtSeek('l');
                 isSeekAction = true;
             }
             // Numpad 5: Tạm dừng / phát tiếp (K)
@@ -170,14 +161,14 @@ export function bindGlobalKeys() {
         // --- ĐIỀU KHIỂN BẰNG A / S / D ---
         else if (asdAllowed && code === 'KeyA') {
             captured = true;
-            dispatchYtSeek('j', -10);
+            dispatchYtSeek('j');
             isSeekAction = true;
         } else if (asdAllowed && code === 'KeyS') {
             captured = true;
             dispatchYtSeek('k');
         } else if (asdAllowed && code === 'KeyD') {
             captured = true;
-            dispatchYtSeek('l', 10);
+            dispatchYtSeek('l');
             isSeekAction = true;
         } else if (!e.ctrlKey && !e.altKey && !e.metaKey && (code === 'KeyF' || e.key === 'f' || e.key === 'F')) {
             if (isWatchLoading) {
@@ -219,7 +210,5 @@ export function bindGlobalKeys() {
     };
 
     window.addEventListener('keydown', handleKeyDown, true);
-    document.addEventListener('keydown', handleKeyDown, true);
     window.addEventListener('keyup', handleKeyUp, true);
-    document.addEventListener('keyup', handleKeyUp, true);
 }
