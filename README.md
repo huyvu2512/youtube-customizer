@@ -152,18 +152,41 @@ youtube-customizer/
 
 ## Hướng dẫn cài đặt Userscript
 
-### Yêu cầu tiên quyết
-Cài đặt tiện ích quản lý Userscript trên trình duyệt của bạn:
-- [Tampermonkey](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) (Khuyên dùng cho Chrome, Edge, Cốc Cốc, Brave, Firefox, Opera)
-- Hoặc [Violentmonkey](https://violentmonkey.github.io/)
+### Bước 1: Cài đặt tiện ích Tampermonkey
 
-### Cách 1: Cài đặt trực tiếp từ GitHub (Khuyên dùng)
+Cài đặt tiện ích mở rộng Tampermonkey tương thích với trình duyệt của bạn:
 
-1. Nhấp vào liên kết: [**Cài đặt YouTube Customizer**](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js).
+[![Tải Tampermonkey](https://img.shields.io/badge/TẢI%20TIỆN%20ÍCH-TAMPERMONKEY-black?style=for-the-badge&logo=tampermonkey)](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+
+> Hỗ trợ: Google Chrome, Microsoft Edge, Cốc Cốc, Brave, Mozilla Firefox, Opera.
+
+---
+
+### Bước 2: Bật "Cho phép tập lệnh của người dùng" (Bắt buộc trên Chrome / Chromium)
+
+Trên các trình duyệt nhân Chromium phiên bản mới chạy chuẩn Manifest V3, bạn **bắt buộc** phải kích hoạt quyền chạy Userscript cho Tampermonkey:
+
+[![Bật Tập Lệnh Người Dùng](https://img.shields.io/badge/BẬT%20TẬP%20LỆNH-NGƯỜI%20DÙNG-1a73e8?style=for-the-badge&logo=googlechrome&logoColor=white)](chrome://extensions/?id=dhdgffkkebhmkfjojejmpbldmpobfkfo)
+
+1. Nhấp vào nút trên hoặc sao chép đường dẫn sau dán vào thanh địa chỉ trình duyệt:
+   ```text
+   chrome://extensions/?id=dhdgffkkebhmkfjojejmpbldmpobfkfo
+   ```
+2. Tìm và gạt bật công tắc: **"Cho phép tập lệnh của người dùng"** (*"Allow user scripts"*).
+
+---
+
+### Bước 3: Cài đặt YouTube Customizer
+
+#### Cách 1: Cài đặt trực tiếp từ GitHub (Khuyên dùng)
+
+[![Cài đặt Script](https://img.shields.io/badge/CÀI%20ĐẶT-SCRIPT-2ea44f?style=for-the-badge&logo=tampermonkey)](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)
+
+1. Nhấp vào nút **CÀI ĐẶT SCRIPT** ở trên (hoặc mở [liên kết tệp script trực tiếp](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)).
 2. Tiện ích Tampermonkey sẽ tự động mở giao diện cài đặt, chọn **Install** (hoặc **Update** nếu đã cài bản cũ).
-3. Mở YouTube hoặc tải lại trang (F5) để bắt đầu sử dụng.
+3. Mở YouTube hoặc tải lại trang (`F5`) để bắt đầu sử dụng.
 
-### Cách 2: Cài đặt thủ công bằng mã nguồn cục bộ
+#### Cách 2: Cài đặt thủ công bằng mã nguồn cục bộ
 
 1. Mở bảng điều khiển Tampermonkey trên trình duyệt, chọn **Tạo script mới** (`+`).
 2. Xóa toàn bộ nội dung mẫu có sẵn.
