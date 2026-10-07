@@ -320,8 +320,8 @@ export function setupAutoCloseObserver() {
         return;
     }
 
-    // Chuỗi retry nhanh để bắt kịp tiến trình hydrate của YouTube Polymer
-    const retryDelays = [80, 200, 450, 900, 1600, 2800];
+    // Chuỗi retry ngắn để bắt kịp tiến trình hydrate của YouTube Polymer
+    const retryDelays = [150, 500, 1200];
     retryDelays.forEach(delay => {
         setTimeout(() => {
             if (!hasAutoCollapsedChatForCurrentVideo && !userManuallyOpenedChat && currentConfig.hideNativeLiveChat) {
@@ -330,6 +330,7 @@ export function setupAutoCloseObserver() {
         }, delay);
     });
 
+    let autoCloseDebounceTimer = null;
     chatAutoCloseObserver = new MutationObserver(() => {
         if (hasAutoCollapsedChatForCurrentVideo || userManuallyOpenedChat || !currentConfig.hideNativeLiveChat) {
             if (chatAutoCloseObserver) {
@@ -339,12 +340,16 @@ export function setupAutoCloseObserver() {
             return;
         }
 
-        if (autoCollapseNativeChatIfOpen()) {
-            if (chatAutoCloseObserver) {
-                chatAutoCloseObserver.disconnect();
-                chatAutoCloseObserver = null;
+        if (autoCloseDebounceTimer) return;
+        autoCloseDebounceTimer = setTimeout(() => {
+            autoCloseDebounceTimer = null;
+            if (autoCollapseNativeChatIfOpen()) {
+                if (chatAutoCloseObserver) {
+                    chatAutoCloseObserver.disconnect();
+                    chatAutoCloseObserver = null;
+                }
             }
-        }
+        }, 100);
     });
 
     const target = document.querySelector('#panels-full-bleed-container, #panels, ytd-watch-flexy, #chat-container') || document.body || document.documentElement;
@@ -360,7 +365,7 @@ export function setupAutoCloseObserver() {
             chatAutoCloseObserver.disconnect();
             chatAutoCloseObserver = null;
         }
-    }, 12000);
+    }, 8000);
 }
 
 export function isNativeChatOpenInFullscreen() {

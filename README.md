@@ -7,7 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.4.0-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.5.0-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -32,24 +32,25 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.4.0** khắc phục triệt để lỗi tua video nhảy cóc 20s trên các phím tắt A-D & Numpad 4-6, bổ sung cơ chế chống repeat khi nhấn giữ phím, chuẩn hóa toàn diện tài liệu dự án và nâng cấp hiệu năng điều khiển trình phát.
+Phiên bản **v3.5.0** mang đến cuộc đại tu hiệu năng **Zero-Lag**, sửa triệt để lỗi mất hitbox hover và click trượt trên lưới video, loại bỏ style recalculation storms khi di chuột, tối ưu cơ chế kích hoạt chất lượng video chống nghẽn buffer, và bổ sung bộ lọc feed quét lũy tiến (incremental scan) siêu mượt.
 
 ---
 
 ## Tính năng chính
 
 - **Menu cài đặt 5 Tab trực quan** - Phân chia khoa học thành Giao diện, Lọc nội dung, Trình phát, Tối Ưu và Thông tin tiện ích với giao diện Dark Mode bán trong suốt tinh tế.
+- **Tối ưu hiệu năng Zero-Lag & Bố cục lưới mượt mà** - Khắc phục triệt để lỗi click trượt do mất hitbox, loại bỏ hoàn toàn các bộ chọn `:has()` gây recalculate style khi hover, giải phóng áp lực CPU trên Main Thread.
 - **Ẩn sản phẩm gắn thẻ (YouTube Shopping)** - Tự động đóng và ẩn thanh trượt Sản phẩm bên phải (`engagement-panel-shopping-panel`), nút túi xách mua sắm trên video player và các kệ hàng tiếp thị liên kết Shopee.
-- **Ưu tiên độ phân giải video** - Cung cấp thanh chọn 5 chế độ: Tự động (YouTube mặc định), Cao nhất (Max / 4K / 8K), 2K (1440p), 1080p (Full HD) và 720p (HD), tự động áp đặt ngay khi mở hoặc chuyển tiếp video.
+- **Ưu tiên độ phân giải video (Buffer-Safe)** - Cung cấp thanh chọn 5 chế độ: Tự động, Cao nhất (Max / 4K / 8K), 2K (1440p), 1080p (Full HD) và 720p (HD). Áp dụng thông minh duy nhất 1 lần khi manifest video sẵn sàng, chống giật buffer.
 - **Live Chat Overlay trên Video** - Hiển thị bình luận trực tiếp ngay trên khung video với 2 chế độ: Chạy ngang màn hình (Danmaku) hoặc Khung nổi Streamer trong suốt có thể kéo thả, hỗ trợ cả Luồng trực tiếp và Xem lại trò chuyện (Live Replay).
-- **Mở khóa tua Live Stream (Force Live DVR)** - Phục hồi thanh tua thời gian cho các buổi phát trực tiếp bị chủ kênh khóa tua lùi, cho phép xem lại các diễn biến vừa diễn ra mà không bị gò bó ở mốc thời gian thực.
+- **Mở khóa tua Live Stream (Force Live DVR)** - Phục hồi thanh tua thời gian cho các buổi phát trực tiếp bị chủ kênh khóa tua lùi, can thiệp luồng dữ liệu an toàn và mượt mà.
 - **Tự động giữ mốc trực tiếp (Auto Live Sync)** - Duy trì thời gian thực trên các luồng phát Live Stream YouTube, tự động bù trễ nhẹ hoặc snap về Live Head khi chuyển tab nền.
 - **Tối ưu RAM & Giải phóng bộ nhớ Live Chat** - Tự động dọn dẹp DOM tin nhắn Live Chat định kỳ chống tràn RAM và giật lag trình duyệt khi xem stream kéo dài.
 - **Chặn AV1 / Ép Codec phần cứng** - Chặn codec AV1 tốn tài nguyên trên các máy tính không hỗ trợ giải mã phần cứng, ép YouTube sử dụng H.264 hoặc VP9 tiết kiệm pin và mát máy.
-- **Chặn tự dừng video** - Tự động phát hiện và đóng hộp thoại xác nhận *"Bạn vẫn đang xem chứ? / Video đã tạm dừng"* để phát nhạc nền hoặc danh sách phát liên tục.
+- **Chặn tự dừng video** - Tự động phát hiện và đóng hộp thoại xác nhận *"Bạn vẫn đang xem chứ? / Video đã tạm dừng"* với MutationObserver được debounce chống nghẽn luồng.
 - **Chế độ Radio (Chỉ phát âm thanh)** - Ngắt kết xuất hình ảnh video, chỉ duy trì luồng âm thanh giúp tiết kiệm tối đa CPU, GPU và tiêu thụ điện năng khi nghe podcast hoặc nhạc.
 - **Điều khiển phím tắt thông minh** - Tua lùi/tiến 10s bằng phím A / D hoặc Numpad 4 / 6 chuẩn xác, tạm dừng bằng S hoặc Numpad 5, tăng giảm âm lượng bằng Numpad 8 / 2.
-- **Lọc sạch nội dung rác trên Feed** - Ẩn triệt để Shorts, Chơi game (Playables), video dành cho Hội viên, bài đăng cộng đồng và video quảng cáo tài trợ trên kết quả tìm kiếm (Clean Search).
+- **Lọc sạch nội dung rác trên Feed (Quét lũy tiến)** - Ẩn triệt để Shorts, Chơi game (Playables), video dành cho Hội viên, bài đăng cộng đồng và video quảng cáo tài trợ (Clean Search) với cơ chế quét lũy tiến không gây giật lag trang.
 - **Ẩn hình mờ & Thẻ kết thúc** - Tự động loại bỏ logo watermark kênh ở góc dưới bên phải video, vô hiệu hóa thẻ kết thúc Outro (Endscreen Cards) và thẻ chú thích (Info Cards) che khuất nội dung.
 - **Tự động đóng banner phiền toái** - Tự động đóng các banner mời dùng thử Premium, khảo sát và thông báo gián đoạn gây phiền toái.
 - **Tùy biến lưới video trang chủ** - Cố định linh hoạt số cột hiển thị video trang chủ và kênh (3 cột, 4 cột hoặc 5 cột), không bị hoàn tác khi tải lại trang.

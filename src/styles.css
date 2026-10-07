@@ -57,10 +57,16 @@
         --ytd-rich-grid-item-max-width: none !important;
     }
 
-    /* Làm phẳng cấu trúc dòng ytd-rich-grid-row để thẻ video chảy đều như trang kênh và chuẩn hitbox hover */
-    #contents > ytd-rich-grid-row,
+    /* Làm phẳng cấu trúc dòng ytd-rich-grid-row — dùng flex-wrap thay display:contents để GIỮ NGUYÊN hitbox hover */
+    #contents > ytd-rich-grid-row {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        width: 100% !important;
+    }
     #contents > ytd-rich-grid-row > #contents {
-        display: contents !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        width: 100% !important;
     }
 
     #contents.ytd-rich-grid-row ytd-rich-item-renderer,
@@ -96,8 +102,8 @@
     overflow: visible !important;
 }
 
-#page-manager ytd-rich-grid-row:hover,
-#page-manager ytd-rich-grid-row:has(ytd-video-preview, [is-hovered], [has-preview]) {
+/* Dùng :hover đơn giản, KHÔNG dùng :has() để tránh style recalc storm mỗi khi di chuột */
+#page-manager ytd-rich-grid-row:hover {
     z-index: 10 !important;
     position: relative !important;
     overflow: visible !important;
@@ -108,7 +114,6 @@
 }
 
 #page-manager ytd-rich-item-renderer:hover,
-#page-manager ytd-rich-item-renderer:has(ytd-video-preview, [is-hovered], [has-preview]),
 #page-manager ytd-rich-item-renderer[is-hovered],
 #page-manager ytd-rich-item-renderer[has-preview] {
     z-index: 20 !important;
@@ -116,21 +121,21 @@
     overflow: visible !important;
 }
 
-/* Đặt z-index của #preview và ytd-video-preview lên 1000 !important để luôn nổi lên trên thẻ video khi hover */
+/* z-index vừa đủ để preview nổi lên trên thẻ video khi hover, KHÔNG dùng pointer-events: auto toàn cục */
 #preview,
 #preview.ytd-rich-grid-renderer,
 ytd-rich-grid-renderer #preview,
 #page-manager #preview,
 ytd-video-preview,
-#video-preview,
-#media-container.ytd-video-preview,
+#video-preview {
+    z-index: 60 !important;
+    overflow: visible !important;
+}
 ytd-video-preview #media-container,
 ytd-video-preview #player-container,
 ytd-moving-thumbnail-renderer,
 #inline-preview-player {
-    z-index: 1000 !important;
-    overflow: visible !important;
-    pointer-events: auto !important;
+    z-index: 60 !important;
 }
 
 ytd-comment-thread-renderer {

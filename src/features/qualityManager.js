@@ -87,7 +87,8 @@ export function applyPreferredQuality() {
 }
 
 /**
- * Lên lịch kích hoạt đặt chất lượng sau các khoảng trễ để đảm bảo manifest luồng đã nạp
+ * Lên lịch kích hoạt đặt chất lượng — CHỈ thử 1 lần duy nhất khi manifest đã sẵn sàng.
+ * Tránh gọi dồn dập 4 lần gây buffer flush / ngắt tải video.
  */
 export function scheduleApplyQuality() {
     if (!currentConfig.preferredQuality || currentConfig.preferredQuality === 'auto') return;
@@ -96,13 +97,28 @@ export function scheduleApplyQuality() {
     applyTimeoutIds.forEach(id => clearTimeout(id));
     applyTimeoutIds = [];
 
-    const delays = [200, 600, 1400, 2800];
-    delays.forEach((delay) => {
-        const id = setTimeout(() => {
-            applyPreferredQuality();
-        }, delay);
-        applyTimeoutIds.push(id);
-    });
+    // Chờ manifest sẵn sàng rồi áp dụng 1 lần duy nhất (không dội lệnh liên tục)
+    let attempts = 0;
+    const maxAttempts = 8;
+    const tryApply = () => {
+        attempts++;
+        const player = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
+        if (player && typeof player.getAvailableQualityLevels === 'function') {
+            const levels = player.getAvailableQualityLevels();
+            if (Array.isArray(levels) && levels.filter(q => q && q !== 'auto').length > 0) {
+                applyPreferredQuality();
+                return; // Manifest đã sẵn sàng, áp dụng xong, DỪNG
+            }
+        }
+        // Manifest chưa sẵn sàng, thử lại với backoff tăng dần
+        if (attempts < maxAttempts) {
+            const id = setTimeout(tryApply, Math.min(400 * attempts, 2000));
+            applyTimeoutIds.push(id);
+        }
+    };
+    // Bắt đầu sau 600ms — đủ thời gian cho YouTube khởi tạo player
+    const id = setTimeout(tryApply, 600);
+    applyTimeoutIds.push(id);
 }
 
 /**

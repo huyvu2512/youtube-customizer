@@ -58,15 +58,20 @@ export function initPreventAutoPause() {
     }, 5 * 60 * 1000);
     refreshLact();
 
-    // 2. Observer theo dõi dialog xuất hiện
+    // 2. Observer theo dõi dialog xuất hiện — có debounce 500ms tránh nghẽn Main Thread
+    let debounceTimer = null;
     dialogObserver = new MutationObserver(() => {
-        if (currentConfig.preventAutoPause) {
+        if (!currentConfig.preventAutoPause) return;
+        if (debounceTimer) return; // Đã có lịch chờ, bỏ qua
+        debounceTimer = setTimeout(() => {
+            debounceTimer = null;
             checkAndDismissPauseDialog();
-        }
+        }, 500);
     });
 
-    const target = document.querySelector('ytd-app') || document.body || document.documentElement;
-    dialogObserver.observe(target, { childList: true, subtree: true });
+    // Thu hẹp phạm vi observe: chỉ theo dõi popup container thay vì toàn bộ ytd-app
+    const popupTarget = document.querySelector('ytd-popup-container') || document.querySelector('ytd-app') || document.body || document.documentElement;
+    dialogObserver.observe(popupTarget, { childList: true, subtree: true });
 }
 
 export function stopPreventAutoPause() {

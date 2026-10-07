@@ -173,6 +173,7 @@ function checkLiveSync() {
 
 let initialSnapTimer = null;
 export function checkInitialLiveSnap() {
+    if (!currentConfig.autoLiveSync) return;
     if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
     if (initialSnapTimer) {
         clearInterval(initialSnapTimer);

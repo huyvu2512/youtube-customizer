@@ -125,12 +125,6 @@ if (window.self !== window.top) {
         initOptimization();
         if (currentConfig.hideNativeLiveChat) {
             setupAutoCloseObserver();
-            autoCollapseNativeChatIfOpen();
-            setTimeout(autoCollapseNativeChatIfOpen, 300);
-            setTimeout(autoCollapseNativeChatIfOpen, 800);
-            setTimeout(autoCollapseNativeChatIfOpen, 1500);
-            setTimeout(autoCollapseNativeChatIfOpen, 2500);
-            setTimeout(autoCollapseNativeChatIfOpen, 4000);
         }
         initAutoLiveSync();
         resetAutoLiveState();
@@ -200,7 +194,7 @@ if (window.self !== window.top) {
         const gridRetryInterval = setInterval(() => {
             gridRetryCount++;
             applyHomeGridColumns();
-            if (gridRetryCount >= 10 && document.querySelector('ytd-rich-grid-renderer ytd-rich-item-renderer')) {
+            if (document.querySelector('ytd-rich-grid-renderer ytd-rich-item-renderer') || gridRetryCount >= 10) {
                 clearInterval(gridRetryInterval);
             }
         }, 250);

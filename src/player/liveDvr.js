@@ -50,15 +50,17 @@ export function initLiveDvrHook() {
         }
     } catch (e) {}
 
-    // 3. Can thiệp JSON.parse khi chuyển video (chỉ áp dụng khi có chuỗi isLiveDvrEnabled)
+    // 3. Can thiệp JSON.parse khi chuyển video (chỉ áp dụng khi bật unlockLiveDvr VÀ chuỗi chứa isLiveDvrEnabled)
     try {
         const origParse = JSON.parse;
         JSON.parse = function(text, reviver) {
             const res = origParse.apply(this, arguments);
+            // Kiểm tra config TRƯỚC — nếu tắt thì không tốn chi phí kiểm tra chuỗi
             if (
                 currentConfig.unlockLiveDvr &&
                 typeof text === 'string' &&
-                text.includes('isLiveDvrEnabled') &&
+                text.length > 100 && // Bỏ qua JSON nhỏ (config, metadata nhỏ)
+                text.indexOf('isLiveDvrEnabled') !== -1 &&
                 res &&
                 typeof res === 'object' &&
                 res.videoDetails &&
