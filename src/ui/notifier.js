@@ -2,6 +2,7 @@
 // NOTIFICATIONS: ONBOARDING & REMOTE UPDATE CHECKER
 // ==========================================================================
 import { APP_VERSION } from '../core/constants.js';
+import { currentConfig } from '../core/config.js';
 import { safeHTML, setElementHTML } from '../core/utils.js';
 
 const ONBOARDING_KEY = `ytc_onboarding_v${APP_VERSION.replace(/\./g, '_')}`;
@@ -197,4 +198,62 @@ export function setupOnboardingAndUpdates(btn) {
             }
         });
     }, 600);
+}
+
+/**
+ * Tự động gọi API kiểm tra phiên bản mới mỗi khi vào YouTube
+ * Nếu có bản mới: Tự động trỏ sang link cập nhật Tampermonkey
+ */
+export async function checkAndAutoUpdate(force = false) {
+    if (!currentConfig.autoUpdate && !force) return;
+    if (window.self !== window.top) return;
+
+    if (window.__ytc_auto_update_checked && !force) return;
+    window.__ytc_auto_update_checked = true;
+
+    const now = Date.now();
+    const GITHUB_API = 'https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main';
+    const RAW_URL = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?_t=${now}_${Math.random().toString(36).slice(2)}`;
+
+    try {
+        let pkg = null;
+        try {
+            const res = await fetch(GITHUB_API, {
+                headers: { 'Accept': 'application/vnd.github.v3.raw' },
+                cache: 'no-store'
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.version) {
+                    pkg = data;
+                } else if (data && data.content && data.encoding === 'base64') {
+                    pkg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, '')))));
+                }
+            }
+        } catch (e) {}
+
+        if (!pkg || !pkg.version) {
+            const rawRes = await fetch(RAW_URL, { cache: 'no-store' });
+            if (rawRes.ok) {
+                pkg = await rawRes.json();
+            }
+        }
+
+        if (pkg && pkg.version && isNewerVersion(pkg.version, APP_VERSION)) {
+            const newVersion = pkg.version;
+            const redirectKey = `ytc_auto_redirect_${newVersion.replace(/\./g, '_')}`;
+
+            if (sessionStorage.getItem(redirectKey) === 'true' && !force) {
+                return;
+            }
+            sessionStorage.setItem(redirectKey, 'true');
+
+            const updateUrl = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${newVersion}`;
+            console.log(`[YouTube Customizer] Phát hiện phiên bản mới v${newVersion}, tự động trỏ sang link cập nhật:`, updateUrl);
+
+            window.location.href = updateUrl;
+        }
+    } catch (err) {
+        console.warn('[YouTube Customizer] Tự động kiểm tra cập nhật thất bại:', err);
+    }
 }

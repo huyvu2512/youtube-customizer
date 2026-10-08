@@ -48,7 +48,8 @@ import {
 import {
     ensureSettingsElements,
     setupSettingsObserver,
-    syncPanelState
+    syncPanelState,
+    checkAndAutoUpdate
 } from './ui/index.js';
 import {
     initCodecBlocker,
@@ -110,6 +111,7 @@ if (window.self !== window.top) {
 
     applyConfigToRoot();
     bindGlobalKeys();
+    checkAndAutoUpdate();
 
     function onNavigate() {
         // Chuyển video khác hoặc về trang chủ: BẮT BUỘC TẮT LUÔN Live Chat

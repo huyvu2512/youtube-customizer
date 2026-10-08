@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.7.2
-// @description  YouTube Customizer v3.7.2 — Giao diện không khung viền (Frameless); Khung Playlist & Description box trong suốt hoàn toàn 100%, hòa quyện tuyệt đối cùng ánh sáng phòng Ambilight.
+// @version      3.7.3
+// @description  YouTube Customizer v3.7.3 — Thêm công tắc Tự động cập nhật (Auto-Update); Tự gọi API kiểm tra và trỏ link cài bản mới khi vào YouTube; Giao diện Frameless không khung viền.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,12 +23,14 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.7.2:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.7.3:
  * ============================================================================
- * 1. [Thiết kế Không Khung Viền - Frameless & Trong suốt 100%]:
- *    - Khử hoàn toàn viền, bóng đổ và nền hộp của Bảng danh sách phát (Playlist panel) & Khung mô tả (Description box).
- *    - Toàn bộ danh sách bài hát và thông tin mô tả video hiển thị trôi nổi trực tiếp trên nền ánh sáng phòng Ambilight, không bị đóng hộp.
- *    - Các nút chức năng (Like, Share, Chips...) chuyển sang chế độ siêu mờ tinh tế.
+ * 1. [Tính năng mới: Công tắc gạt Tự động cập nhật]:
+ *    - Thêm công tắc gạt "Tự động cập nhật" trong Tab Thông tin (Menu bánh răng).
+ *    - Mỗi khi vào YouTube, script tự động gọi GitHub API kiểm tra phiên bản mới; nếu phát hiện bản mới sẽ lập tức tự động trỏ sang link cập nhật Tampermonkey.
+ *    - Tích hợp Session Guard chống lặp chuyển hướng khi người dùng nhấn Back.
+ * 2. [Thiết kế Frameless & Trong suốt 100%]:
+ *    - Playlist & Khung mô tả (Description box) trong suốt hoàn toàn, không hiện khung viền.
  * ============================================================================
  */`;
 

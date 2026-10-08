@@ -479,6 +479,21 @@ export function createSettingsPanel() {
                         <span id="ytc-update-btn-text">Kiểm tra</span>
                     </button>
                 </div>
+
+                <!-- Công tắc gạt Tự động cập nhật -->
+                <div class="ytc-item" data-toggle="autoUpdate" title="Tự động gọi API kiểm tra phiên bản mới mỗi khi vào YouTube và tự trỏ sang link cập nhật">
+                    <div class="ytc-item-left">
+                        ${UPDATE_SVG}
+                        <div class="ytc-item-text-group">
+                            <span class="ytc-item-main-text">Tự động cập nhật</span>
+                            <span class="ytc-item-sub-text">Tự gọi API và trỏ sang link cài bản mới khi vào YouTube</span>
+                        </div>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-autoupdate">
+                        <input type="checkbox" id="ytc-chk-autoupdate" name="autoUpdate" aria-label="Tự động cập nhật" ${currentConfig.autoUpdate ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
             </div>
         `);
         (document.body || document.documentElement).appendChild(panel);
@@ -668,6 +683,13 @@ export function createSettingsPanel() {
                             location.reload();
                         }, 250);
                     }
+                }
+                if (key === 'autoUpdate' && checkbox.checked) {
+                    import('./notifier.js').then(m => {
+                        if (m && typeof m.checkAndAutoUpdate === 'function') {
+                            m.checkAndAutoUpdate(true);
+                        }
+                    }).catch(() => {});
                 }
             });
 
