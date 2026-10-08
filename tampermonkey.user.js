@@ -1,26 +1,25 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.7.1
-// @description  YouTube Customizer v3.7.1 — Kính mờ xuyên thấu tuyệt đối khung Tìm kiếm (Searchbox) & Playlist panel; Ánh sáng phòng Ambilight rực rỡ không bị che khuất; Sửa lỗi giật video Live.
+// @version      3.7.2
+// @description  YouTube Customizer v3.7.2 — Giao diện không khung viền (Frameless); Khung Playlist & Description box trong suốt hoàn toàn 100%, hòa quyện tuyệt đối cùng ánh sáng phòng Ambilight.
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.7.1
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.7.2
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.7.1
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.7.1
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.7.2
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.7.2
 // ==/UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.7.1:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.7.2:
  * ============================================================================
- * 1. [Khung tìm kiếm & Playlist xuyên thấu tuyệt đối (Crystal Transparency)]:
- *    - Triệt tiêu hoàn toàn các khối nền xám đục hình chữ nhật xếp chồng trên thanh Searchbox; biến khung tìm kiếm và nút micro thành kính xuyên thấu 100%.
- *    - Khử hoàn toàn nền đen đặc của cột thứ hai (#secondary), khung danh sách phát (Playlist panel) và từng thẻ video con, để quầng sáng phòng Ambilight tỏa sáng lộng lẫy xuyên qua.
- * 2. [Sửa triệt để lỗi giật video & tự chuyển luồng xem Live]:
- *    - Tăng ngưỡng snap lên 30s và bỏ double-seek, đồng bộ thời gian thực siêu mượt.
+ * 1. [Thiết kế Không Khung Viền - Frameless & Trong suốt 100%]:
+ *    - Khử hoàn toàn viền, bóng đổ và nền hộp của Bảng danh sách phát (Playlist panel) & Khung mô tả (Description box).
+ *    - Toàn bộ danh sách bài hát và thông tin mô tả video hiển thị trôi nổi trực tiếp trên nền ánh sáng phòng Ambilight, không bị đóng hộp.
+ *    - Các nút chức năng (Like, Share, Chips...) chuyển sang chế độ siêu mờ tinh tế.
  * ============================================================================
  */

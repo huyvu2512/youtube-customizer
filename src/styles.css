@@ -2011,7 +2011,7 @@ html.ytc-ambient-lighting:not(.ytc-masthead-scrolled) .ytSearchboxComponentInput
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    border-color: rgba(255, 255, 255, 0.22) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 /* Nút kính lúp tìm kiếm (Search button) trong suốt */
@@ -2023,7 +2023,7 @@ html.ytc-ambient-lighting:not(.ytc-masthead-scrolled) .ytSearchboxComponentSearc
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    border-color: rgba(255, 255, 255, 0.22) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 /* Chữ gõ trong thanh tìm kiếm */
@@ -2042,7 +2042,7 @@ html.ytc-ambient-lighting:not(.ytc-masthead-scrolled) #voice-search-button yt-bu
 html.ytc-ambient-lighting:not(.ytc-masthead-scrolled) #voice-search-button button {
     background: transparent !important;
     background-color: transparent !important;
-    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
 
 /* Khi cuộn xuống qua khung video: Masthead tự động trở lại nền đen bình thường */
@@ -2082,31 +2082,34 @@ html.ytc-ambient-lighting ytd-watch-flexy #player-theater-container {
     z-index: 1 !important;
 }
 
-/* 3. Bảng Playlist / Danh sách kết hợp: Kính mờ siêu mỏng xuyên thấu ánh sáng phòng */
+/* 3. Bảng Playlist / Danh sách kết hợp: TRONG SUỐT HOÀN TOÀN, KHÔNG HIỆN KHUNG */
 html.ytc-ambient-lighting ytd-playlist-panel-renderer {
     --yt-spec-base-background: transparent !important;
     --yt-spec-raised-background: transparent !important;
-    --yt-spec-menu-background: rgba(0, 0, 0, 0.2) !important;
+    --yt-spec-menu-background: transparent !important;
+    --yt-spec-additive-background: transparent !important;
     background: transparent !important;
     background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 html.ytc-ambient-lighting ytd-playlist-panel-renderer #container,
 html.ytc-ambient-lighting ytd-playlist-panel-renderer #container.ytd-playlist-panel-renderer {
-    background: rgba(0, 0, 0, 0.15) !important;
-    background-color: rgba(0, 0, 0, 0.15) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 12px !important;
-    overflow: hidden !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25) !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 html.ytc-ambient-lighting ytd-playlist-panel-renderer #header,
 html.ytc-ambient-lighting ytd-playlist-panel-renderer .header.ytd-playlist-panel-renderer,
 html.ytc-ambient-lighting ytd-playlist-panel-renderer #header.ytd-playlist-panel-renderer {
-    background: rgba(255, 255, 255, 0.04) !important;
-    background-color: rgba(255, 255, 255, 0.04) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
 }
 html.ytc-ambient-lighting ytd-playlist-panel-renderer #items,
 html.ytc-ambient-lighting ytd-playlist-panel-renderer .playlist-items,
@@ -2117,6 +2120,8 @@ html.ytc-ambient-lighting ytd-playlist-panel-renderer #contents,
 html.ytc-ambient-lighting ytd-playlist-panel-renderer #playlist-actions {
     background: transparent !important;
     background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 html.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer,
 html.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer #content,
@@ -2125,20 +2130,24 @@ html.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-r
 html.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer .yt-lockup-view-model-wiz {
     background: transparent !important;
     background-color: transparent !important;
-    border-radius: 8px !important;
-    transition: background-color 0.2s ease !important;
+    border: none !important;
+    box-shadow: none !important;
+    transition: background-color 0.15s ease !important;
 }
+/* Hiệu ứng khi rê chuột hoặc bài đang phát: Siêu mờ dịu mắt */
 html.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer:hover,
 html.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer:hover #content,
 html.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer:hover a#wc-endpoint {
-    background: rgba(255, 255, 255, 0.08) !important;
-    background-color: rgba(255, 255, 255, 0.08) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    border-radius: 8px !important;
 }
 html.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer[selected],
 html.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer[selected] #content,
 html.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer[selected] a#wc-endpoint {
-    background: rgba(255, 255, 255, 0.15) !important;
-    background-color: rgba(255, 255, 255, 0.15) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
 }
 
 /* 4. Dải Filter Chips (Tất cả, Trong loạt video, v.v.) */
@@ -2153,18 +2162,19 @@ html.ytc-ambient-lighting #chips.iron-selector {
 }
 
 html.ytc-ambient-lighting yt-chip-cloud-chip-renderer:not([selected]) {
-    background: rgba(255, 255, 255, 0.08) !important;
-    background-color: rgba(255, 255, 255, 0.08) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     border-radius: 8px !important;
     transition: background-color 0.2s ease !important;
 }
 
 html.ytc-ambient-lighting yt-chip-cloud-chip-renderer:not([selected]):hover {
-    background: rgba(255, 255, 255, 0.16) !important;
-    background-color: rgba(255, 255, 255, 0.16) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    background-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 /* 4. Khung video sắc nét, viền bo tròn & bóng đổ — Tuyệt đối không can thiệp position để giữ vững bố cục player */
@@ -2191,29 +2201,38 @@ html.ytc-ambient-lighting #related ytd-thumbnail:hover {
     filter: brightness(1) contrast(1);
 }
 
-/* Description box kính mờ tinh tế */
-html.ytc-ambient-ready ytd-watch-metadata #description.ytd-watch-metadata,
-html.ytc-ambient-ready #description-inner,
-html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-metadata #description.ytd-watch-metadata,
-html.ytc-ambient-lighting.ytc-ambient-ready #description-inner {
-    background: rgba(255, 255, 255, 0.04) !important;
-    backdrop-filter: blur(14px) !important;
-    -webkit-backdrop-filter: blur(14px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+/* Description box: TRONG SUỐT HOÀN TOÀN, KHÔNG HIỆN KHUNG */
+html.ytc-ambient-lighting ytd-watch-metadata #description,
+html.ytc-ambient-lighting ytd-watch-metadata #description.ytd-watch-metadata,
+html.ytc-ambient-lighting #description-inner,
+html.ytc-ambient-lighting ytd-expandable-metadata-renderer,
+html.ytc-ambient-lighting #description-and-actions,
+html.ytc-ambient-lighting ytd-text-inline-expander {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+html.ytc-ambient-lighting ytd-watch-metadata #description:hover,
+html.ytc-ambient-lighting ytd-watch-metadata #description.ytd-watch-metadata:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+    background-color: rgba(255, 255, 255, 0.03) !important;
     border-radius: 12px !important;
 }
 
-/* Các nút Like, Share, Download, v.v. dạng kính tối cao cấp */
-html.ytc-ambient-ready #actions ytd-button-renderer yt-button-shape button,
-html.ytc-ambient-ready #actions ytd-menu-renderer yt-button-shape button,
-html.ytc-ambient-ready #top-level-buttons-computed yt-button-shape button,
-html.ytc-ambient-lighting.ytc-ambient-ready #actions ytd-button-renderer yt-button-shape button,
-html.ytc-ambient-lighting.ytc-ambient-ready #actions ytd-menu-renderer yt-button-shape button,
-html.ytc-ambient-lighting.ytc-ambient-ready #top-level-buttons-computed yt-button-shape button {
-    background: rgba(255, 255, 255, 0.07) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+/* Các nút Like, Share, Download, v.v.: Siêu mờ, hòa quyện nền */
+html.ytc-ambient-lighting #actions ytd-button-renderer yt-button-shape button,
+html.ytc-ambient-lighting #actions ytd-menu-renderer yt-button-shape button,
+html.ytc-ambient-lighting #top-level-buttons-computed yt-button-shape button {
+    background: rgba(255, 255, 255, 0.05) !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 /* Tiêu đề video có bóng chữ nhẹ tạo độ tương phản cao */
