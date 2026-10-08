@@ -1,29 +1,27 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.5.9
-// @description  YouTube Customizer v3.5.9 — Nâng cấp Ánh sáng phòng (Ambilight) Full-Screen 360 độ, xóa bỏ viền cắt video, tự động chống trùng lặp và xóa bỏ tính năng cũ thừa.
+// @version      3.6.0
+// @description  YouTube Customizer v3.6.0 — Chuyển tính năng Ẩn sản phẩm gắn thẻ sang Tab Lọc nội dung, tối ưu bộ giải mã cập nhật Base64 thời gian thực.
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.5.9
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.6.0
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.5.9
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.5.9
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.6.0
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.6.0
 // ==/UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.9:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.6.0:
  * ============================================================================
- * 1. [Nâng cấp Ánh sáng phòng (Ambilight) Full-Screen]:
- *    - Tỏa sáng đều 360 độ quanh video, hắt sáng xuyên qua Masthead và Playlist panel.
- *    - Nâng cấp độ mờ quang học blur 85px & scale 1.4x xóa sổ hoàn toàn viền cắt sắc nhọn.
- *    - Tự động tắt ánh sáng gốc YouTube khi bật, khôi phục theo setting YouTube khi tắt.
- * 2. [Dọn dẹp tính năng thừa]:
- *    - Xóa bỏ triệt để tính năng cũ "Tắt ánh sáng video" (disableAmbient) khỏi source code.
- * 3. [Tối ưu kiểm tra cập nhật]:
- *    - Kiểm tra cập nhật qua GitHub REST API thời gian thực, chống kẹt cache CDN Fastly.
+ * 1. [Tối ưu bố cục cài đặt]:
+ *    - Chuyển tính năng "Ẩn sản phẩm gắn thẻ" (hideShopping) sang Tab 2 (Lọc nội dung sạch).
+ *    - Giữ Tab 1 (Giao diện) tinh gọn, tập trung hoàn toàn vào bố cục và hiệu ứng video.
+ * 2. [Kiểm tra cập nhật siêu bền bỉ]:
+ *    - Tích hợp tự động giải mã Base64 cho GitHub Contents REST API.
+ *    - Cơ chế Multi-Tier: Trực tiếp API thô -> Giải mã Base64 -> Fallback CDN khi quá tải IP.
  * ============================================================================
  */

@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.5.9
-// @description  YouTube Customizer v3.5.9 — Nâng cấp Ánh sáng phòng (Ambilight) Full-Screen 360 độ, xóa bỏ viền cắt video, tự động chống trùng lặp và xóa bỏ tính năng cũ thừa.
+// @version      3.6.0
+// @description  YouTube Customizer v3.6.0 — Chuyển tính năng Ẩn sản phẩm gắn thẻ sang Tab Lọc nội dung, tối ưu bộ giải mã cập nhật Base64 thời gian thực.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -11,16 +11,14 @@
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.9:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.6.0:
  * ============================================================================
- * 1. [Nâng cấp Ánh sáng phòng (Ambilight) Full-Screen]:
- *    - Tỏa sáng đều 360 độ quanh video, hắt sáng xuyên qua Masthead và Playlist panel.
- *    - Nâng cấp độ mờ quang học blur 85px & scale 1.4x xóa sổ hoàn toàn viền cắt sắc nhọn.
- *    - Tự động tắt ánh sáng gốc YouTube khi bật, khôi phục theo setting YouTube khi tắt.
- * 2. [Dọn dẹp tính năng thừa]:
- *    - Xóa bỏ triệt để tính năng cũ "Tắt ánh sáng video" (disableAmbient) khỏi source code.
- * 3. [Tối ưu kiểm tra cập nhật]:
- *    - Kiểm tra cập nhật qua GitHub REST API thời gian thực, chống kẹt cache CDN Fastly.
+ * 1. [Tối ưu bố cục cài đặt]:
+ *    - Chuyển tính năng "Ẩn sản phẩm gắn thẻ" (hideShopping) sang Tab 2 (Lọc nội dung sạch).
+ *    - Giữ Tab 1 (Giao diện) tinh gọn, tập trung hoàn toàn vào bố cục và hiệu ứng video.
+ * 2. [Kiểm tra cập nhật siêu bền bỉ]:
+ *    - Tích hợp tự động giải mã Base64 cho GitHub Contents REST API.
+ *    - Cơ chế Multi-Tier: Trực tiếp API thô -> Giải mã Base64 -> Fallback CDN khi quá tải IP.
  * ============================================================================
  */
 (() => {
@@ -43,7 +41,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.5.9";
+      APP_VERSION = "3.6.0";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -4272,16 +4270,6 @@
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hideShopping" title="Ẩn bảng Sản phẩm (Shopping), nút túi xách mua sắm trên video và kệ sản phẩm gắn thẻ">
-                    <div class="ytc-item-left">
-                        ${SHOPPING_SVG}
-                        <span>Ẩn sản phẩm gắn thẻ</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-shopping">
-                        <input type="checkbox" id="ytc-chk-shopping" name="hideShopping" aria-label="Ẩn sản phẩm gắn thẻ" ${currentConfig.hideShopping ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
 
                 <div class="ytc-item" data-toggle="ambientLighting" title="Hiệu ứng ánh sáng phòng (Ambilight) phản chiếu theo màu video cực đẹp, tự động tối ưu phần cứng siêu nhẹ">
                     <div class="ytc-item-left">
@@ -4382,6 +4370,17 @@
                     </div>
                     <label class="ytc-switch" for="ytc-chk-mixes">
                         <input type="checkbox" id="ytc-chk-mixes" name="hideMixes" aria-label="Ẩn Danh sách phát & Mix" ${currentConfig.hideMixes ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hideShopping" title="Ẩn bảng Sản phẩm (Shopping), nút túi xách mua sắm trên video và kệ sản phẩm gắn thẻ">
+                    <div class="ytc-item-left">
+                        ${SHOPPING_SVG}
+                        <span>Ẩn sản phẩm gắn thẻ</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-shopping">
+                        <input type="checkbox" id="ytc-chk-shopping" name="hideShopping" aria-label="Ẩn sản phẩm gắn thẻ" ${currentConfig.hideShopping ? "checked" : ""}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -4819,7 +4818,15 @@
                 cache: "no-store"
               });
               if (apiRes.ok) {
-                pkg = await apiRes.json();
+                const data = await apiRes.json();
+                if (data && data.version) {
+                  pkg = data;
+                } else if (data && data.content && data.encoding === "base64") {
+                  try {
+                    pkg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, "")))));
+                  } catch (err) {
+                  }
+                }
               }
             } catch (e2) {
             }

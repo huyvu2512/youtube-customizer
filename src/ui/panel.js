@@ -162,16 +162,6 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hideShopping" title="Ẩn bảng Sản phẩm (Shopping), nút túi xách mua sắm trên video và kệ sản phẩm gắn thẻ">
-                    <div class="ytc-item-left">
-                        ${SHOPPING_SVG}
-                        <span>Ẩn sản phẩm gắn thẻ</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-shopping">
-                        <input type="checkbox" id="ytc-chk-shopping" name="hideShopping" aria-label="Ẩn sản phẩm gắn thẻ" ${currentConfig.hideShopping ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
 
                 <div class="ytc-item" data-toggle="ambientLighting" title="Hiệu ứng ánh sáng phòng (Ambilight) phản chiếu theo màu video cực đẹp, tự động tối ưu phần cứng siêu nhẹ">
                     <div class="ytc-item-left">
@@ -272,6 +262,17 @@ export function createSettingsPanel() {
                     </div>
                     <label class="ytc-switch" for="ytc-chk-mixes">
                         <input type="checkbox" id="ytc-chk-mixes" name="hideMixes" aria-label="Ẩn Danh sách phát & Mix" ${currentConfig.hideMixes ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hideShopping" title="Ẩn bảng Sản phẩm (Shopping), nút túi xách mua sắm trên video và kệ sản phẩm gắn thẻ">
+                    <div class="ytc-item-left">
+                        ${SHOPPING_SVG}
+                        <span>Ẩn sản phẩm gắn thẻ</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-shopping">
+                        <input type="checkbox" id="ytc-chk-shopping" name="hideShopping" aria-label="Ẩn sản phẩm gắn thẻ" ${currentConfig.hideShopping ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -732,7 +733,14 @@ export function createSettingsPanel() {
                             cache: 'no-store'
                         });
                         if (apiRes.ok) {
-                            pkg = await apiRes.json();
+                            const data = await apiRes.json();
+                            if (data && data.version) {
+                                pkg = data;
+                            } else if (data && data.content && data.encoding === 'base64') {
+                                try {
+                                    pkg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, '')))));
+                                } catch (err) {}
+                            }
                         }
                     } catch (e) {}
 
