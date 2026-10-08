@@ -7,7 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.6.6-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.6.7-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -32,7 +32,7 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.6.6** nâng cấp tính năng Ánh sáng phòng (Ambilight) Cinema: hiệu ứng các ô dải màu dóng dọc lan tỏa sâu xuống tận giữa trang; khung ánh sáng ăn khớp hình học 100% với khung video; Masthead và thanh tìm kiếm hoàn toàn trong suốt ở đỉnh trang (tự động trở lại nền đen khi cuộn xuống); đồng thời khắc phục triệt để lỗi xuất hiện thanh cuộn ngang.
+Phiên bản **v3.6.7** sửa triệt để lỗi nền trắng ở một bên trang; khóa chặt nền tảng `html`, `body`, `ytd-app` ở màu đen sâu OLED `#0f0f0f` chống lộ nền trắng trình duyệt; quầng sáng phòng Ambilight dải màu dóng dọc lan tỏa sâu và tan biến mượt mà; Masthead và thanh tìm kiếm trong suốt xuyên thấu ở đỉnh trang (tự động trở lại nền đen khi cuộn xuống).
 
 ---
 

@@ -2025,11 +2025,24 @@ html.ytc-ambient-lighting.ytc-ambient-ready.ytc-masthead-scrolled ytd-masthead {
     transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
-/* 2. Làm nền toàn trang xem video hoàn toàn trong suốt để ánh sáng xuyên thấu 100% (Zero White Flash) */
-html.ytc-ambient-ready,
-html.ytc-ambient-ready body,
-html.ytc-ambient-ready ytd-app,
-html.ytc-ambient-ready #page-manager,
+/* 2. Nền tảng toàn trang: KHÔNG BAO GIỜ để html/body/ytd-app bị trong suốt làm lộ nền trắng trình duyệt */
+html,
+body,
+ytd-app,
+#page-manager {
+    background: #0f0f0f !important;
+    background-color: #0f0f0f !important;
+}
+
+html:not([dark]),
+body:not([dark]),
+ytd-app:not([dark]),
+#page-manager:not([dark]) {
+    background: #f9f9f9 !important;
+    background-color: #f9f9f9 !important;
+}
+
+/* CHỈ làm trong suốt các khung chứa video bên trong ytd-watch-flexy để quầng sáng phòng hiển thị */
 html.ytc-ambient-ready ytd-watch-flexy,
 html.ytc-ambient-ready ytd-watch-flexy #columns,
 html.ytc-ambient-ready ytd-watch-flexy #primary,
@@ -2041,10 +2054,6 @@ html.ytc-ambient-ready ytd-watch-flexy #player-container,
 html.ytc-ambient-ready ytd-watch-flexy #player-container-outer,
 html.ytc-ambient-ready ytd-watch-flexy #player-container-inner,
 html.ytc-ambient-ready #below,
-html.ytc-ambient-lighting.ytc-ambient-ready,
-html.ytc-ambient-lighting.ytc-ambient-ready body,
-html.ytc-ambient-lighting.ytc-ambient-ready ytd-app,
-html.ytc-ambient-lighting.ytc-ambient-ready #page-manager,
 html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy,
 html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #columns,
 html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #primary,

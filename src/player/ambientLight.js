@@ -127,7 +127,7 @@ function ensureAmbientCanvas() {
         }
 
         ambientSpreadCtx = ambientSpreadCanvas.getContext('2d', {
-            alpha: false,
+            alpha: true,
             willReadFrequently: false
         });
         if (ambientSpreadCtx) {
@@ -136,7 +136,7 @@ function ensureAmbientCanvas() {
         }
 
         ambientAccentCtx = ambientAccentCanvas.getContext('2d', {
-            alpha: false,
+            alpha: true,
             willReadFrequently: false
         });
         if (ambientAccentCtx) {
