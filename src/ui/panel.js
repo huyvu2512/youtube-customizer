@@ -5,7 +5,6 @@ import { currentConfig, saveConfig, applyConfigToRoot } from '../core/config.js'
 import { safeHTML, setElementHTML, whenElement, rafThrottle, hasLiveOrChatSupport, showToast } from '../core/utils.js';
 import {
     APP_VERSION,
-    CLOCK_SVG,
     GEAR_SVG,
     GRID_SVG,
     SHORTS_SVG,
@@ -281,17 +280,6 @@ export function createSettingsPanel() {
 
             <!-- TAB 3: TRÌNH PHÁT & VIDEO -->
             <div class="ytc-tab-pane" id="ytc-pane-player">
-                <div class="ytc-item" data-toggle="lockElapsedTime" title="Cố định mốc thời gian đã phát (vd: 1:47 / 4:13), chống bị tự động đổi hoặc ghost click thành thời gian đếm ngược âm (vd: -3:13 / 4:13)">
-                    <div class="ytc-item-left">
-                        ${CLOCK_SVG}
-                        <span>Khóa thời gian đã phát</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-locktime">
-                        <input type="checkbox" id="ytc-chk-locktime" name="lockElapsedTime" aria-label="Khóa thời gian đã phát" ${currentConfig.lockElapsedTime ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
                 <div class="ytc-item" data-toggle="disableAmbient" title="Tắt ánh sáng viền xung quanh video (Ambient Mode) để giảm tải GPU">
                     <div class="ytc-item-left">
                         ${SPARKLE_SVG}
@@ -691,13 +679,6 @@ export function createSettingsPanel() {
                             location.reload();
                         }, 250);
                     }
-                }
-                if (key === 'lockElapsedTime' && checkbox.checked) {
-                    import('../player/timeLock.js').then(m => {
-                        if (typeof m.normalizeTimeDisplay === 'function') {
-                            m.normalizeTimeDisplay();
-                        }
-                    }).catch(() => {});
                 }
             });
 

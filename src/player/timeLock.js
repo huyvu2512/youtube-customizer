@@ -11,9 +11,9 @@ let lastCorrectionTime = 0;
 
 /**
  * Tự động kiểm tra và chuyển thời gian về dạng dương (Thời gian đã phát) nếu đang bị âm
+ * Luôn hoạt động mặc định ngầm trong script để khôi phục chuẩn YouTube gốc
  */
 export function normalizeTimeDisplay() {
-    if (!currentConfig.lockElapsedTime) return;
     if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
 
     const now = Date.now();
@@ -46,7 +46,7 @@ export function normalizeTimeDisplay() {
 }
 
 /**
- * Khởi tạo bộ bảo vệ cố định thời gian đã phát
+ * Khởi tạo bộ bảo vệ cố định thời gian đã phát (chạy ngầm mặc định)
  */
 export function initTimeLock() {
     if (timeLockInitialized) return;
@@ -54,8 +54,6 @@ export function initTimeLock() {
 
     // 1. Chặn click vô tình / ghost click vào thanh thời gian khi đang hiển thị thời gian dương
     document.addEventListener('click', (e) => {
-        if (!currentConfig.lockElapsedTime) return;
-
         const timeDisplay = e.target.closest && e.target.closest('.ytp-time-display');
         if (!timeDisplay) return;
 
@@ -79,7 +77,6 @@ export function initTimeLock() {
 
     // 2. Tự động kiểm tra và nắn về thời gian dương khi nạp / chuyển video
     document.addEventListener('yt-navigate-finish', () => {
-        if (!currentConfig.lockElapsedTime) return;
         setTimeout(normalizeTimeDisplay, 150);
         setTimeout(normalizeTimeDisplay, 500);
         setTimeout(normalizeTimeDisplay, 1200);
@@ -87,7 +84,6 @@ export function initTimeLock() {
 
     // 3. Kiểm tra thêm khi video bắt đầu phát lần đầu
     document.addEventListener('play', (e) => {
-        if (!currentConfig.lockElapsedTime) return;
         if (e.target && e.target.tagName === 'VIDEO') {
             setTimeout(normalizeTimeDisplay, 100);
         }

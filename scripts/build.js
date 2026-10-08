@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.5.7
-// @description  YouTube Customizer v3.5.7 — Bổ sung tính năng Ánh sáng phòng (Ambilight) siêu tối ưu phần cứng, mượt mà và không giật lag.
+// @version      3.5.8
+// @description  YouTube Customizer v3.5.8 — Chuyển cơ chế cố định thời gian đã phát thành mặc định ngầm 100%, bỏ toggle thừa khỏi menu cài đặt.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,14 +23,12 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.7:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.8:
  * ============================================================================
- * 1. [Tính năng mới: Ánh sáng phòng (Ambilight)]:
- *    - Tạo hiệu ứng ánh sáng viền phản chiếu màu sắc video cực đẹp ra không gian phòng.
- *    - Kiến trúc Micro Canvas 32x18px siêu nhẹ: Tiêu thụ cực ít RAM (< 50KB) và CPU (< 0.5%).
- *    - GPU Compositor Acceleration: Đẩy toàn bộ xử lý làm mờ và tỏa rộng sang GPU phần cứng.
- *    - Throttling 18 FPS & Deep Sleeping: Tự động ngắt hoàn toàn khi tạm dừng video, chuyển tab hoặc cuộn khỏi video.
- *    - Tích hợp công tắc duy nhất ngay trên Live Chat trong Tab 1 (Giao diện), chuẩn hóa cài đặt điện ảnh.
+ * 1. [Mặc định hóa cơ chế hiển thị Thời gian đã phát]:
+ *    - Tự động khóa và khôi phục mốc thời gian đã phát (vd: 1:47 / 4:13) thành cơ chế chạy ngầm mặc định 100%.
+ *    - Ngăn chặn triệt để tình trạng ghost-click hoặc nhảy sang thời gian đếm ngược âm (-3:13) mà không cần cấu hình.
+ *    - Loại bỏ công tắc thừa khỏi Tab 3 (Trình phát), trả lại giao diện gọn gàng và tinh tế.
  * ============================================================================
  */`;
 

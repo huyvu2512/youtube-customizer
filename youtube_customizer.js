@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.5.7
-// @description  YouTube Customizer v3.5.7 — Bổ sung tính năng Ánh sáng phòng (Ambilight) siêu tối ưu phần cứng, mượt mà và không giật lag.
+// @version      3.5.8
+// @description  YouTube Customizer v3.5.8 — Chuyển cơ chế cố định thời gian đã phát thành mặc định ngầm 100%, bỏ toggle thừa khỏi menu cài đặt.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -11,14 +11,12 @@
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.7:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.8:
  * ============================================================================
- * 1. [Tính năng mới: Ánh sáng phòng (Ambilight)]:
- *    - Tạo hiệu ứng ánh sáng viền phản chiếu màu sắc video cực đẹp ra không gian phòng.
- *    - Kiến trúc Micro Canvas 32x18px siêu nhẹ: Tiêu thụ cực ít RAM (< 50KB) và CPU (< 0.5%).
- *    - GPU Compositor Acceleration: Đẩy toàn bộ xử lý làm mờ và tỏa rộng sang GPU phần cứng.
- *    - Throttling 18 FPS & Deep Sleeping: Tự động ngắt hoàn toàn khi tạm dừng video, chuyển tab hoặc cuộn khỏi video.
- *    - Tích hợp công tắc duy nhất ngay trên Live Chat trong Tab 1 (Giao diện), chuẩn hóa cài đặt điện ảnh.
+ * 1. [Mặc định hóa cơ chế hiển thị Thời gian đã phát]:
+ *    - Tự động khóa và khôi phục mốc thời gian đã phát (vd: 1:47 / 4:13) thành cơ chế chạy ngầm mặc định 100%.
+ *    - Ngăn chặn triệt để tình trạng ghost-click hoặc nhảy sang thời gian đếm ngược âm (-3:13) mà không cần cấu hình.
+ *    - Loại bỏ công tắc thừa khỏi Tab 3 (Trình phát), trả lại giao diện gọn gàng và tinh tế.
  * ============================================================================
  */
 (() => {
@@ -38,12 +36,11 @@
   };
 
   // src/core/constants.js
-  var APP_VERSION, CONFIG_KEY, CLOCK_SVG, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
+  var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.5.7";
+      APP_VERSION = "3.5.8";
       CONFIG_KEY = "ytc_config";
-      CLOCK_SVG = `<svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`;
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
       GEAR_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>`;
@@ -954,77 +951,6 @@
       init_config();
       applyTimeoutIds = [];
       isQualityManagerInitialized = false;
-    }
-  });
-
-  // src/player/timeLock.js
-  var timeLock_exports = {};
-  __export(timeLock_exports, {
-    initTimeLock: () => initTimeLock,
-    normalizeTimeDisplay: () => normalizeTimeDisplay
-  });
-  function normalizeTimeDisplay() {
-    if (!currentConfig.lockElapsedTime) return;
-    if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
-    const now = Date.now();
-    if (now - lastCorrectionTime < 800) return;
-    const player = document.querySelector("#movie_player:not(#inline-preview-player)");
-    if (!player) return;
-    if (player.classList.contains("ytp-live")) return;
-    const currentEl = player.querySelector(".ytp-time-current");
-    if (!currentEl) return;
-    const text = (currentEl.textContent || "").trim();
-    if (text.startsWith("-") || text.startsWith("−")) {
-      lastCorrectionTime = now;
-      isProgrammaticFix = true;
-      const timeBtn = player.querySelector("button.ytp-time-display, .ytp-time-display button, .ytp-time-display") || currentEl;
-      try {
-        timeBtn.click();
-      } catch (e) {
-      }
-      setTimeout(() => {
-        isProgrammaticFix = false;
-      }, 60);
-    }
-  }
-  function initTimeLock() {
-    if (timeLockInitialized) return;
-    timeLockInitialized = true;
-    document.addEventListener("click", (e) => {
-      if (!currentConfig.lockElapsedTime) return;
-      const timeDisplay = e.target.closest && e.target.closest(".ytp-time-display");
-      if (!timeDisplay) return;
-      if (isProgrammaticFix) return;
-      const player = document.querySelector("#movie_player:not(#inline-preview-player)");
-      if (player && player.classList.contains("ytp-live")) return;
-      const currentEl = timeDisplay.querySelector(".ytp-time-current");
-      const text = currentEl ? (currentEl.textContent || "").trim() : "";
-      if (text && !text.startsWith("-") && !text.startsWith("−")) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-      }
-    }, true);
-    document.addEventListener("yt-navigate-finish", () => {
-      if (!currentConfig.lockElapsedTime) return;
-      setTimeout(normalizeTimeDisplay, 150);
-      setTimeout(normalizeTimeDisplay, 500);
-      setTimeout(normalizeTimeDisplay, 1200);
-    });
-    document.addEventListener("play", (e) => {
-      if (!currentConfig.lockElapsedTime) return;
-      if (e.target && e.target.tagName === "VIDEO") {
-        setTimeout(normalizeTimeDisplay, 100);
-      }
-    }, true);
-  }
-  var timeLockInitialized, isProgrammaticFix, lastCorrectionTime;
-  var init_timeLock = __esm({
-    "src/player/timeLock.js"() {
-      init_config();
-      timeLockInitialized = false;
-      isProgrammaticFix = false;
-      lastCorrectionTime = 0;
     }
   });
 
@@ -3929,8 +3855,64 @@
     }
   }
 
+  // src/player/timeLock.js
+  init_config();
+  var timeLockInitialized = false;
+  var isProgrammaticFix = false;
+  var lastCorrectionTime = 0;
+  function normalizeTimeDisplay() {
+    if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
+    const now = Date.now();
+    if (now - lastCorrectionTime < 800) return;
+    const player = document.querySelector("#movie_player:not(#inline-preview-player)");
+    if (!player) return;
+    if (player.classList.contains("ytp-live")) return;
+    const currentEl = player.querySelector(".ytp-time-current");
+    if (!currentEl) return;
+    const text = (currentEl.textContent || "").trim();
+    if (text.startsWith("-") || text.startsWith("−")) {
+      lastCorrectionTime = now;
+      isProgrammaticFix = true;
+      const timeBtn = player.querySelector("button.ytp-time-display, .ytp-time-display button, .ytp-time-display") || currentEl;
+      try {
+        timeBtn.click();
+      } catch (e) {
+      }
+      setTimeout(() => {
+        isProgrammaticFix = false;
+      }, 60);
+    }
+  }
+  function initTimeLock() {
+    if (timeLockInitialized) return;
+    timeLockInitialized = true;
+    document.addEventListener("click", (e) => {
+      const timeDisplay = e.target.closest && e.target.closest(".ytp-time-display");
+      if (!timeDisplay) return;
+      if (isProgrammaticFix) return;
+      const player = document.querySelector("#movie_player:not(#inline-preview-player)");
+      if (player && player.classList.contains("ytp-live")) return;
+      const currentEl = timeDisplay.querySelector(".ytp-time-current");
+      const text = currentEl ? (currentEl.textContent || "").trim() : "";
+      if (text && !text.startsWith("-") && !text.startsWith("−")) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+      }
+    }, true);
+    document.addEventListener("yt-navigate-finish", () => {
+      setTimeout(normalizeTimeDisplay, 150);
+      setTimeout(normalizeTimeDisplay, 500);
+      setTimeout(normalizeTimeDisplay, 1200);
+    });
+    document.addEventListener("play", (e) => {
+      if (e.target && e.target.tagName === "VIDEO") {
+        setTimeout(normalizeTimeDisplay, 100);
+      }
+    }, true);
+  }
+
   // src/player/index.js
-  init_timeLock();
   init_ambientLight();
 
   // src/index.js
@@ -4361,17 +4343,6 @@
 
             <!-- TAB 3: TRÌNH PHÁT & VIDEO -->
             <div class="ytc-tab-pane" id="ytc-pane-player">
-                <div class="ytc-item" data-toggle="lockElapsedTime" title="Cố định mốc thời gian đã phát (vd: 1:47 / 4:13), chống bị tự động đổi hoặc ghost click thành thời gian đếm ngược âm (vd: -3:13 / 4:13)">
-                    <div class="ytc-item-left">
-                        ${CLOCK_SVG}
-                        <span>Khóa thời gian đã phát</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-locktime">
-                        <input type="checkbox" id="ytc-chk-locktime" name="lockElapsedTime" aria-label="Khóa thời gian đã phát" ${currentConfig.lockElapsedTime ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
                 <div class="ytc-item" data-toggle="disableAmbient" title="Tắt ánh sáng viền xung quanh video (Ambient Mode) để giảm tải GPU">
                     <div class="ytc-item-left">
                         ${SPARKLE_SVG}
@@ -4760,14 +4731,6 @@
                 location.reload();
               }, 250);
             }
-          }
-          if (key === "lockElapsedTime" && checkbox.checked) {
-            Promise.resolve().then(() => (init_timeLock(), timeLock_exports)).then((m) => {
-              if (typeof m.normalizeTimeDisplay === "function") {
-                m.normalizeTimeDisplay();
-              }
-            }).catch(() => {
-            });
           }
         });
         item.addEventListener("click", (e) => {

@@ -7,7 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.5.7-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.5.8-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -32,7 +32,7 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.5.7** tích hợp tính năng **Ánh sáng phòng (Ambilight)**: hiệu ứng phản chiếu ánh sáng màu sắc viền video cực kỳ sống động và điện ảnh, áp dụng kiến trúc Micro Canvas $32 \times 18$ px siêu nhẹ, GPU Compositor và Adaptive Throttling (18 FPS, Deep Sleeping) đảm bảo tiêu tốn cực ít tài nguyên (RAM < 50KB, CPU < 0.5%), không giật lag và độc lập 100% với các tính năng hiện có.
+Phiên bản **v3.5.8** chuyển cơ chế **Cố định thời gian đã phát (Lock Elapsed Time)** thành tính năng sửa lỗi chạy ngầm mặc định 100%, bảo vệ thanh thời gian luôn ở dạng đã phát chuẩn YouTube (`1:47 / 4:13`), chống ghost-click và loại bỏ hoàn toàn công tắc thừa khỏi menu cài đặt, trả lại giao diện Tab 3 tinh gọn. Đồng thời tích hợp hoàn hảo cùng tính năng **Ánh sáng phòng (Ambilight)** siêu tối ưu phần cứng.
 
 ---
 
