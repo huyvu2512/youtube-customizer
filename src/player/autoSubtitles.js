@@ -84,14 +84,14 @@ export function applyAutoSubtitles() {
         // 4. Lấy danh sách track phụ đề
         const tracklist = (typeof player.getOption === 'function' && player.getOption('captions', 'tracklist')) || [];
         if (!tracklist || tracklist.length === 0) {
-            // Có thể tracklist chưa load xong, thử lại sau 800ms
+            // Có thể tracklist chưa load xong, thử lại sau 600ms và 1200ms
             setTimeout(() => {
                 const retryPlayer = getPlayer();
                 const retryTracks = retryPlayer && typeof retryPlayer.getOption === 'function' && retryPlayer.getOption('captions', 'tracklist');
                 if (retryTracks && retryTracks.length > 0) {
                     selectPreferredTrack(retryPlayer, retryTracks);
                 }
-            }, 800);
+            }, 600);
             return;
         }
 
@@ -113,16 +113,24 @@ function selectPreferredTrack(player, tracklist) {
     const exactTrack = tracklist.find(t => t.languageCode === targetLang);
     if (exactTrack) {
         player.setOption('captions', 'track', exactTrack);
+        try { player.setOption('captions', 'reload', true); } catch (e) {}
         return;
     }
 
     // 2. Nếu không có sẵn ngôn ngữ đích: Dùng tính năng Tự động dịch (Auto-Translate) của YouTube
     const baseTrack = tracklist.find(t => t.kind === 'asr') || tracklist[0];
     if (baseTrack) {
-        player.setOption('captions', 'track', {
-            languageCode: baseTrack.languageCode,
-            translationLanguage: { languageCode: targetLang }
-        });
+        try {
+            player.setOption('captions', 'track', baseTrack);
+            player.setOption('captions', 'translationLanguage', { languageCode: targetLang });
+            player.setOption('captions', 'reload', true);
+        } catch (e) {}
+        try {
+            player.setOption('captions', 'track', {
+                languageCode: baseTrack.languageCode,
+                translationLanguage: { languageCode: targetLang }
+            });
+        } catch (e) {}
     }
 }
 

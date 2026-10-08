@@ -4324,7 +4324,7 @@
           if (retryTracks && retryTracks.length > 0) {
             selectPreferredTrack(retryPlayer, retryTracks);
           }
-        }, 800);
+        }, 600);
         return;
       }
       selectPreferredTrack(player, tracklist);
@@ -4337,14 +4337,27 @@
     const exactTrack = tracklist.find((t) => t.languageCode === targetLang);
     if (exactTrack) {
       player.setOption("captions", "track", exactTrack);
+      try {
+        player.setOption("captions", "reload", true);
+      } catch (e) {
+      }
       return;
     }
     const baseTrack = tracklist.find((t) => t.kind === "asr") || tracklist[0];
     if (baseTrack) {
-      player.setOption("captions", "track", {
-        languageCode: baseTrack.languageCode,
-        translationLanguage: { languageCode: targetLang }
-      });
+      try {
+        player.setOption("captions", "track", baseTrack);
+        player.setOption("captions", "translationLanguage", { languageCode: targetLang });
+        player.setOption("captions", "reload", true);
+      } catch (e) {
+      }
+      try {
+        player.setOption("captions", "track", {
+          languageCode: baseTrack.languageCode,
+          translationLanguage: { languageCode: targetLang }
+        });
+      } catch (e) {
+      }
     }
   }
   function pinPreferredLanguageInMenu() {
