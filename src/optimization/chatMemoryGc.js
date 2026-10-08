@@ -21,6 +21,7 @@ function cleanChatContainer(itemsContainer) {
 
 export function performChatMemoryGc() {
     if (!currentConfig.chatMemoryGc) return;
+    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
 
     // 1. Quét container chat trên top window
     const topItems = document.querySelectorAll(

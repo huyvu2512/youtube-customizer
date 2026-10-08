@@ -1214,6 +1214,7 @@ function observeItemsElement(items) {
 }
 
 function findAndObserveItems() {
+    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
     const mainItems = document.querySelectorAll('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items');
     mainItems.forEach(items => observeItemsElement(items));
 
@@ -1355,6 +1356,7 @@ export function initChatOverlay() {
     setupTheaterModeObserver();
 
     setInterval(() => {
+        if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
         if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
             findAndObserveItems();
             ensureNativeLiveChatRunning();

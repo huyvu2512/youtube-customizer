@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.5.2
-// @description  YouTube Customizer v3.5.2 — Tối ưu hóa trang xem video Zero-Lag và khắc phục triệt để lỗi đen màn hình khi thoát chế độ toàn màn hình.
+// @version      3.5.3
+// @description  YouTube Customizer v3.5.3 — Tối ưu hóa chu kỳ nền (Idle Efficiency), On-Demand Danmaku Scheduler, cách ly Observer và triệt tiêu tiến trình chạy ngầm vô ích.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,17 +23,15 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.2:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.3:
  * ============================================================================
- * 1. [Sửa lỗi đen màn hình khi thoát toàn màn hình (Exit Fullscreen Fix)]:
- *    - Khắc phục triệt để lỗi mất hình ảnh (chỉ còn tiếng, phóng to lại mới có hình) khi thoát chế độ phóng to.
- *    - Áp dụng hàm applyVideoDimensions tính toán chuẩn xác tỷ lệ khung hình video theo kích thước player container.
- *    - Đồng bộ kích thước liên tục qua các mốc chuyển cảnh và gọi player.setInternalSize() để YouTube căn chỉnh hoàn hảo.
- * 2. [Zero-Lag Watch Page & Player Controls]:
- *    - Loại bỏ hoàn toàn bộ chọn html:not(:has(...)) triệt tiêu Style Recalculation Storms khi rê chuột và xem preview tooltip.
- *    - Bỏ ẩn controls/con trỏ chuột khi tua video, tua mượt mà không chớp tắt HUD.
- *    - Gỡ bỏ khóa cứng click player 1.5s, các nút điều khiển và phím tắt phản hồi tức thì.
- *    - Tối ưu bộ lắng nghe click toggle chat với bộ lọc vùng nhanh (inChatArea).
+ * 1. [Tối ưu tiến trình chạy ngầm & Tiết kiệm CPU (Idle Efficiency)]:
+ *    - Ngắt hoàn toàn polling interval Live Chat (2s) và Chat Memory GC (10s) khi ở ngoài trang xem video (/watch, /live).
+ *    - Chuyển Danmaku Scheduler (50ms) sang cơ chế On-Demand: chỉ thức dậy khi có tin nhắn trong hàng đợi và tự động ngủ khi hàng đợi trống.
+ * 2. [Tối ưu DOM MutationObservers & Settings Panel]:
+ *    - Masthead Observer trong panel.js: Bỏ qua việc re-sync settings panel khi nút bánh răng đã nằm đúng vị trí trong masthead.
+ *    - Thu hẹp phạm vi preventAutoPause: Quan sát trực tiếp ytd-popup-container, không còn quan sát toàn bộ cây DOM ytd-app.
+ *    - Dọn dẹp dead CSS keyframes (@keyframes ytcConfirmInserted).
  * ============================================================================
  */`;
 

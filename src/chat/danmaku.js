@@ -71,7 +71,13 @@ function spawnDanmakuItem(data, laneIndex) {
 
 function processDanmakuQueue() {
     if (document.hidden) return;
-    if (danmakuQueue.length === 0) return;
+    if (danmakuQueue.length === 0) {
+        if (danmakuSchedulerTimer) {
+            clearInterval(danmakuSchedulerTimer);
+            danmakuSchedulerTimer = null;
+        }
+        return;
+    }
 
     const now = Date.now();
     if (now - lastDanmakuSpawnTime < MIN_GLOBAL_INTERVAL) {

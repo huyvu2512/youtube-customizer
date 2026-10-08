@@ -774,6 +774,13 @@ export function ensureSettingsElements() {
     if (!endContainer) return;
 
     let btn = document.getElementById('ytc-settings-btn');
+    const isBtnInPlace = btn && btn.parentElement === endContainer && btn === endContainer.firstElementChild;
+    const isPanelExisting = !!document.getElementById('ytc-settings-panel');
+
+    if (isBtnInPlace && isPanelExisting) {
+        return;
+    }
+
     if (!btn) {
         btn = document.createElement('button');
         btn.id = 'ytc-settings-btn';

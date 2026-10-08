@@ -143,14 +143,6 @@ ytd-comment-thread-renderer {
     contain-intrinsic-size: auto 200px;
 }
 
-@keyframes ytcConfirmInserted {
-    from { clip-path: inset(0); }
-    to { clip-path: inset(0); }
-}
-yt-confirm-dialog-renderer {
-    animation: ytcConfirmInserted 0.001s;
-}
-
 /* Giữ thanh điều khiển và chat hiển thị mượt mà không can thiệp layout */
 iframe#chatframe {
     contain: paint !important;

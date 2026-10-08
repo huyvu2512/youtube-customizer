@@ -2,6 +2,7 @@
 // PREVENT AUTO-PAUSE ("VIDEO PAUSED. CONTINUE WATCHING?")
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
+import { whenElement } from '../core/utils.js';
 
 let lactInterval = null;
 let dialogObserver = null;
@@ -58,20 +59,21 @@ export function initPreventAutoPause() {
     }, 5 * 60 * 1000);
     refreshLact();
 
-    // 2. Observer theo dõi dialog xuất hiện — có debounce 500ms tránh nghẽn Main Thread
+    // 2. Observer theo dõi dialog xuất hiện — chỉ theo dõi trực tiếp ytd-popup-container
     let debounceTimer = null;
-    dialogObserver = new MutationObserver(() => {
-        if (!currentConfig.preventAutoPause) return;
-        if (debounceTimer) return; // Đã có lịch chờ, bỏ qua
-        debounceTimer = setTimeout(() => {
-            debounceTimer = null;
-            checkAndDismissPauseDialog();
-        }, 500);
+    whenElement('ytd-popup-container', (popupTarget) => {
+        if (!dialogObserver && currentConfig.preventAutoPause) {
+            dialogObserver = new MutationObserver(() => {
+                if (!currentConfig.preventAutoPause) return;
+                if (debounceTimer) return;
+                debounceTimer = setTimeout(() => {
+                    debounceTimer = null;
+                    checkAndDismissPauseDialog();
+                }, 500);
+            });
+            dialogObserver.observe(popupTarget, { childList: true, subtree: true });
+        }
     });
-
-    // Thu hẹp phạm vi observe: chỉ theo dõi popup container thay vì toàn bộ ytd-app
-    const popupTarget = document.querySelector('ytd-popup-container') || document.querySelector('ytd-app') || document.body || document.documentElement;
-    dialogObserver.observe(popupTarget, { childList: true, subtree: true });
 }
 
 export function stopPreventAutoPause() {
