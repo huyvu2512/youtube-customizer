@@ -4,6 +4,8 @@
 
 **Userscript tùy biến giao diện YouTube, tối ưu hiệu năng và điều khiển video thông minh**
 
+[🇻🇳 Tiếng Việt](README.md) · [🇺🇸 English](README_EN.md)
+
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
@@ -40,6 +42,7 @@ Phiên bản **v3.8.1** tập trung hoàn thiện trải nghiệm thị giác v�
 
 - **Ánh sáng phòng (Ambilight 2.0 Cinema) ⭐** - Tỏa sáng viền video theo màu sắc khung hình chuẩn rạp chiếu phim. Tự động nhận diện và bỏ qua viền đen (Cinematic Letterbox), mở rộng tràn viền phủ kín 100% bốn góc màn hình, dải màu dóng dọc chiếu rọi sâu 2200px xuống tận vùng bình luận. Tự động tối ưu GPU, ngắt khi tạm dừng video hoặc chuyển tab.
 - **Menu cài đặt 5 Tab trực quan** - Phân chia khoa học thành Giao diện, Lọc nội dung, Trình phát, Tối Ưu và Thông tin tiện ích với giao diện Dark Mode bán trong suốt tinh tế.
+- **Hỗ trợ đa ngôn ngữ quốc tế (20+ Quốc gia)** - Tùy chọn ngôn ngữ hiển thị giao diện với menu Dropdown sang trọng, tích hợp biểu tượng cờ quốc gia, bộ lọc tìm kiếm nhanh mượt mà và tự động nhận diện ngôn ngữ theo YouTube / hệ thống.
 - **Tối ưu hiệu năng Zero-Lag & Bố cục lưới mượt mà** - Khắc phục triệt để lỗi click trượt do mất hitbox, loại bỏ hoàn toàn các bộ chọn `:has()` gây recalculate style khi hover, giải phóng áp lực CPU trên Main Thread.
 - **Ẩn sản phẩm gắn thẻ (YouTube Shopping)** - Tự động đóng và ẩn thanh trượt Sản phẩm bên phải (`engagement-panel-shopping-panel`), nút túi xách mua sắm trên video player và các kệ hàng tiếp thị liên kết Shopee.
 - **Ưu tiên độ phân giải video (Buffer-Safe)** - Cung cấp thanh chọn 5 chế độ: Tự động, Cao nhất (Max / 4K / 8K), 2K (1440p), 1080p (Full HD) và 720p (HD). Áp dụng thông minh duy nhất 1 lần khi manifest video sẵn sàng, chống giật buffer.
@@ -90,6 +93,7 @@ youtube-customizer/
 │   ├── core/                     # Cấu hình cốt lõi, hằng số và tiện ích nền tảng
 │   │   ├── config.js             # Quản lý cấu hình, lưu trữ localStorage
 │   │   ├── constants.js          # Biểu tượng SVG, phiên bản và hằng số
+│   │   ├── i18n.js               # Đa ngôn ngữ, danh mục 20+ thứ tiếng
 │   │   └── utils.js              # Chuẩn hóa Trusted Types, bộ hỗ trợ DOM
 │   ├── features/                 # Các tính năng tùy biến nội dung và bộ lọc
 │   │   ├── feedFilter.js         # Lọc Shorts, Playables, Hội viên, Community
@@ -107,6 +111,7 @@ youtube-customizer/
 │   │   ├── index.js              # Điểm xuất khẩu module optimization
 │   │   └── preventAutoPause.js   # Chặn popup tự động tạm dừng video
 │   ├── player/                   # Điều khiển trình phát và tương tác video
+│   │   ├── ambientLight.js       # Ánh sáng phòng Ambilight 2.0 Cinema
 │   │   ├── autoLive.js           # Đồng bộ mốc phát trực tiếp (Auto Live)
 │   │   ├── fullscreenLock.js     # Xử lý khóa và mở rộng toàn màn hình
 │   │   ├── index.js              # Điểm xuất khẩu module player
@@ -125,7 +130,8 @@ youtube-customizer/
 ├── youtube_customizer.js         # Tệp bundle phân phối chính đã đóng gói
 ├── SECURITY.md                   # Chính sách bảo mật và quy trình báo lỗi
 ├── LICENSE                       # Giấy phép mã nguồn mở MIT
-└── README.md                     # Tài liệu hướng dẫn sử dụng dự án
+├── README.md                     # Tài liệu hướng dẫn sử dụng tiếng Việt
+└── README_EN.md                  # English documentation & user guide
 ```
 
 ### Đóng gói mã nguồn (Dành cho lập trình viên)

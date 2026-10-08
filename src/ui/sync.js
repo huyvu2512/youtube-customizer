@@ -3,6 +3,8 @@
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
 import { hasLiveOrChatSupport } from '../core/utils.js';
+import { getLanguageInfo } from '../core/i18n.js';
+import { CHECK_SVG } from '../core/constants.js';
 
 export function syncPanelState(targetPanel) {
     const panel = targetPanel || document.getElementById('ytc-settings-panel');
@@ -31,7 +33,6 @@ export function syncPanelState(targetPanel) {
             }
         });
     }
-
 
     const currentMode = currentConfig.chatOverlay || 'off';
     panel.querySelectorAll('.ytc-mode-btn').forEach(btn => {
@@ -69,5 +70,21 @@ export function syncPanelState(targetPanel) {
         };
         qualityBadge.textContent = labels[currentQuality] || currentQuality.toUpperCase();
     }
+
+    // 5. Đồng bộ ngôn ngữ giao diện (Custom Dropdown)
+    const currentLangCode = currentConfig.language || 'auto';
+    const langInfo = getLanguageInfo(currentLangCode);
+    const flagEl = panel.querySelector('#ytc-lang-current-flag');
+    const labelEl = panel.querySelector('#ytc-lang-current-label');
+    if (flagEl) flagEl.textContent = langInfo.flag;
+    if (labelEl) labelEl.textContent = langInfo.name;
+
+    panel.querySelectorAll('#ytc-lang-list .ytc-dropdown-item').forEach(item => {
+        const isMatch = item.getAttribute('data-code') === currentLangCode;
+        item.classList.toggle('active', isMatch);
+        item.setAttribute('aria-selected', isMatch ? 'true' : 'false');
+        const checkEl = item.querySelector('.ytc-lang-check');
+        if (checkEl) checkEl.innerHTML = isMatch ? CHECK_SVG : '';
+    });
 }
 

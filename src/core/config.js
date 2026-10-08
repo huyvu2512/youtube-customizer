@@ -32,6 +32,7 @@ export const DEFAULT_CONFIG = {
     preferredQuality: 'auto',  // Ưu tiên độ phân giải video: 'auto', 'max', '1440p', '1080p', '720p'
     lockElapsedTime: true,     // Cố định thời gian đã phát, chống tự nhảy sang thời gian còn lại (mặc định bật)
     ambientLighting: false,    // Hiệu ứng ánh sáng phòng (Ambilight) phản chiếu viền video (mặc định tắt)
+    language: 'auto',          // Ngôn ngữ hiển thị giao diện của Script (mặc định 'auto' theo YouTube/trình duyệt)
     autoUpdate: false,         // Tự động kiểm tra & trỏ đến bản cập nhật mới khi vào YouTube (mặc định tắt)
 };
 

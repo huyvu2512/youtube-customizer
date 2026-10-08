@@ -42,8 +42,12 @@ import {
     GIFT_SVG,
     EXTERNAL_LINK_SVG,
     SHOPPING_SVG,
-    AMBIENT_LIGHT_SVG
+    AMBIENT_LIGHT_SVG,
+    GLOBE_SVG,
+    CHEVRON_DOWN_SVG,
+    CHECK_SVG
 } from '../core/constants.js';
+import { SUPPORTED_LANGUAGES, getLanguageInfo } from '../core/i18n.js';
 import { syncPanelState } from './sync.js';
 import { setupOnboardingAndUpdates, isNewerVersion } from './notifier.js';
 
@@ -57,6 +61,15 @@ export function bindGlobalMenuDismiss() {
         if (panel && panel.classList.contains('open')) {
             if (!e.target.closest('#ytc-settings-panel') && !e.target.closest('#ytc-settings-btn')) {
                 panel.classList.remove('open');
+            }
+        }
+
+        const langDropdown = document.getElementById('ytc-lang-dropdown');
+        if (langDropdown && langDropdown.classList.contains('open')) {
+            if (!e.target.closest('#ytc-lang-dropdown')) {
+                langDropdown.classList.remove('open');
+                const trigger = document.getElementById('ytc-lang-trigger');
+                if (trigger) trigger.setAttribute('aria-expanded', 'false');
             }
         }
     });
@@ -172,6 +185,43 @@ export function createSettingsPanel() {
                         <input type="checkbox" id="ytc-chk-ambient-light" name="ambientLighting" aria-label="Ánh sáng phòng (Ambilight)" ${currentConfig.ambientLighting ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
+                </div>
+
+                <!-- CHỌN NGÔN NGỮ GIAO DIỆN SCRIPT (CUSTOM DROPDOWN) -->
+                <div class="ytc-item ytc-item-lang" id="ytc-row-language" title="Chọn ngôn ngữ hiển thị giao diện bảng điều khiển của script">
+                    <div class="ytc-item-left">
+                        ${GLOBE_SVG}
+                        <span>Ngôn ngữ giao diện</span>
+                    </div>
+                    <div class="ytc-dropdown" id="ytc-lang-dropdown">
+                        <button type="button" class="ytc-dropdown-trigger" id="ytc-lang-trigger" aria-haspopup="listbox" aria-expanded="false" title="Nhấp để thay đổi ngôn ngữ">
+                            <span class="ytc-dropdown-current">
+                                <span class="ytc-lang-flag" id="ytc-lang-current-flag">${(getLanguageInfo(currentConfig.language || 'auto') || {}).flag || '🌐'}</span>
+                                <span class="ytc-lang-name" id="ytc-lang-current-label">${(getLanguageInfo(currentConfig.language || 'auto') || {}).name || 'Tự động'}</span>
+                            </span>
+                            ${CHEVRON_DOWN_SVG}
+                        </button>
+                        <div class="ytc-dropdown-menu" id="ytc-lang-menu" role="listbox">
+                            <div class="ytc-dropdown-search-wrap">
+                                <input type="text" class="ytc-dropdown-search" id="ytc-lang-search" placeholder="🔍 Tìm kiếm ngôn ngữ..." autocomplete="off" spellcheck="false">
+                            </div>
+                            <div class="ytc-dropdown-list" id="ytc-lang-list">
+                                ${SUPPORTED_LANGUAGES.map(lang => {
+                                    const isSelected = (currentConfig.language || 'auto') === lang.code;
+                                    return `
+                                    <div class="ytc-dropdown-item ${isSelected ? 'active' : ''}" data-code="${lang.code}" role="option" aria-selected="${isSelected ? 'true' : 'false'}">
+                                        <span class="ytc-lang-flag">${lang.flag}</span>
+                                        <div class="ytc-lang-texts">
+                                            <span class="ytc-lang-name">${lang.name}</span>
+                                            <span class="ytc-lang-native">${lang.nativeName}</span>
+                                        </div>
+                                        <span class="ytc-lang-check">${isSelected ? CHECK_SVG : ''}</span>
+                                    </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="ytc-item" id="ytc-row-chatoverlay" title="Hiển thị chat trực tiếp nổi trên màn hình video (tự động ẩn khi tua lùi video)">
@@ -526,6 +576,83 @@ export function createSettingsPanel() {
                 applyConfigToRoot();
             });
         });
+
+        // Xử lý Custom Dropdown Ngôn ngữ Giao diện
+        const langDropdown = panel.querySelector('#ytc-lang-dropdown');
+        const langTrigger = panel.querySelector('#ytc-lang-trigger');
+        const langSearch = panel.querySelector('#ytc-lang-search');
+        const langList = panel.querySelector('#ytc-lang-list');
+
+        function filterLangItems(query) {
+            const q = (query || '').toLowerCase().trim();
+            const items = langList ? langList.querySelectorAll('.ytc-dropdown-item') : [];
+            items.forEach(item => {
+                const name = (item.querySelector('.ytc-lang-name')?.textContent || '').toLowerCase();
+                const native = (item.querySelector('.ytc-lang-native')?.textContent || '').toLowerCase();
+                const code = (item.getAttribute('data-code') || '').toLowerCase();
+                const match = !q || name.includes(q) || native.includes(q) || code.includes(q);
+                item.style.display = match ? 'flex' : 'none';
+            });
+        }
+
+        if (langTrigger && langDropdown) {
+            langTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = langDropdown.classList.toggle('open');
+                langTrigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                if (isOpen && langSearch) {
+                    langSearch.value = '';
+                    filterLangItems('');
+                    setTimeout(() => langSearch.focus(), 60);
+                }
+            });
+        }
+
+        if (langSearch) {
+            langSearch.addEventListener('input', (e) => {
+                filterLangItems(e.target.value);
+            });
+            langSearch.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+            langSearch.addEventListener('keydown', (e) => {
+                e.stopPropagation();
+                if (e.key === 'Escape') {
+                    langDropdown?.classList.remove('open');
+                    langTrigger?.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+
+        if (langList) {
+            langList.querySelectorAll('.ytc-dropdown-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const code = item.getAttribute('data-code') || 'auto';
+                    currentConfig.language = code;
+                    saveConfig(currentConfig);
+
+                    const langInfo = getLanguageInfo(code);
+                    const currentFlag = panel.querySelector('#ytc-lang-current-flag');
+                    const currentLabel = panel.querySelector('#ytc-lang-current-label');
+                    if (currentFlag) currentFlag.textContent = langInfo.flag;
+                    if (currentLabel) currentLabel.textContent = langInfo.name;
+
+                    langList.querySelectorAll('.ytc-dropdown-item').forEach(it => {
+                        const isMatch = it.getAttribute('data-code') === code;
+                        it.classList.toggle('active', isMatch);
+                        it.setAttribute('aria-selected', isMatch ? 'true' : 'false');
+                        const check = it.querySelector('.ytc-lang-check');
+                        if (check) check.innerHTML = isMatch ? CHECK_SVG : '';
+                    });
+
+                    langDropdown?.classList.remove('open');
+                    langTrigger?.setAttribute('aria-expanded', 'false');
+
+                    showToast(`🌐 Đã chuyển ngôn ngữ: ${langInfo.flag} ${langInfo.name}`);
+                });
+            });
+        }
 
         // Chọn chế độ Chat Overlay (Tắt / Ngang / Nổi)
         panel.querySelectorAll('#ytc-row-chatoverlay .ytc-mode-btn').forEach((modeBtn) => {
