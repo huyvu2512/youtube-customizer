@@ -2195,10 +2195,10 @@ html[dark].ytc-ambient-lighting ytd-watch-metadata #title h1 {
    2. QUY TẮC RIÊNG CHO GIAO DIỆN SÁNG (LIGHT THEME)
    ========================================================================== */
 
-/* Tinh chỉnh độ đậm của Canvas Ambilight trên nền trắng */
+/* Tinh chỉnh màu sắc Ambilight trên nền trắng: Màu sắc rực rỡ, đậm đà ngang ngửa Dark Theme */
 html:not([dark]) #ytc-ambient-spread-canvas {
-    filter: blur(48px) saturate(125%) brightness(102%);
-    opacity: 0.65;
+    filter: blur(48px) saturate(220%) contrast(115%) brightness(96%);
+    opacity: 0.9;
 }
 
 /* Khi ở đỉnh trang: Masthead trong suốt */
@@ -2221,7 +2221,7 @@ html:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #
     -webkit-backdrop-filter: none !important;
 }
 
-/* Khung tìm kiếm Light theme ở đỉnh trang: Chữ tối màu, nền bán trong suốt thanh thoát */
+/* Khung tìm kiếm Light theme ở đỉnh trang: 100% trong suốt xuyên thấu */
 html:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox,
 html:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) yt-searchbox,
 html:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #search-form,
@@ -2238,29 +2238,41 @@ html:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox 
 html:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #search-form.ytd-searchbox #container,
 html:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #search-input,
 html:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) .ytSearchboxComponentInputBox {
-    background: rgba(255, 255, 255, 0.45) !important;
+    background: transparent !important;
+    background-color: transparent !important;
     box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
     border-color: rgba(0, 0, 0, 0.15) !important;
 }
 
 html:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox #search-icon-legacy,
 html:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) .ytSearchboxComponentSearchButton {
-    background: rgba(255, 255, 255, 0.45) !important;
+    background: transparent !important;
+    background-color: transparent !important;
     border-color: rgba(0, 0, 0, 0.15) !important;
     box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 html:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox input#search,
 html:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) input#search,
 html:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) input.ytSearchboxComponentInput {
     background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
     color: #0f0f0f !important;
 }
 
 html:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #voice-search-button button,
 html:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #voice-search-button yt-button-shape button {
-    background: rgba(255, 255, 255, 0.45) !important;
-    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 /* KHI CUỘN XUỐNG Ở LIGHT THEME: Masthead TRỞ VỀ MÀU TRẮNG #ffffff (CHUẨN XÁC) */

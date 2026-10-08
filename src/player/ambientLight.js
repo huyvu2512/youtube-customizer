@@ -142,26 +142,35 @@ function drawFrame(video) {
             sH = targetH;
         }
 
+        // Bỏ qua viền đen (Cinematic Letterbox 21:9 / 2.39:1 hoặc Pillarbox 4:3)
+        // Cắt an toàn 10% trên/dưới và 4% trái/phải để luôn bắt trọn màu sắc thật của khung hình
+        const padX = sW * 0.04;
+        const padY = sH * 0.10;
+        const cX = sX + padX;
+        const cY = sY + padY;
+        const cW = sW - (padX * 2);
+        const cH = sH - (padY * 2);
+
         // Xóa sạch canvas trước khi vẽ
         ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
         const rightW = Math.max(0, CANVAS_WIDTH - (cvX + cvW));
 
         // 1. Phủ toàn bộ canvas một lớp màu nền liên tục, mượt mà từ video (Zero seams, zero blocks)
-        ambientSpreadCtx.drawImage(video, sX, sY, sW, sH, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ambientSpreadCtx.drawImage(video, cX, cY, cW, cH, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
         // 2. MÉP TRÊN (Lan tỏa dải màu lên toàn bộ thanh Masthead phía trên):
         if (cvY > 0) {
-            ambientSpreadCtx.drawImage(video, sX, sY, sW, 8, 0, 0, CANVAS_WIDTH, cvY);
+            ambientSpreadCtx.drawImage(video, cX, cY, cW, 12, 0, 0, CANVAS_WIDTH, cvY);
         }
 
         // 3. HAI BÊN HÔNG (Trái & Phải khung video):
         if (cvH > 0) {
             if (cvX > 0) {
-                ambientSpreadCtx.drawImage(video, sX, sY, 8, sH, 0, cvY, cvX, cvH);
+                ambientSpreadCtx.drawImage(video, cX, cY, 12, cH, 0, cvY, cvX, cvH);
             }
             if (rightW > 0) {
-                ambientSpreadCtx.drawImage(video, sX + sW - 8, sY, 8, sH, cvX + cvW, cvY, rightW, cvH);
+                ambientSpreadCtx.drawImage(video, cX + cW - 12, cY, 12, cH, cvX + cvW, cvY, rightW, cvH);
             }
         }
 
@@ -169,12 +178,12 @@ function drawFrame(video) {
         const bottomY = cvY + cvH;
         const bottomH = Math.max(0, CANVAS_HEIGHT - bottomY);
         if (bottomH > 0) {
-            ambientSpreadCtx.drawImage(video, sX, sY + sH - 8, sW, 8, cvX, bottomY, cvW, bottomH);
+            ambientSpreadCtx.drawImage(video, cX, cY + cH - 12, cW, 12, cvX, bottomY, cvW, bottomH);
             if (cvX > 0) {
-                ambientSpreadCtx.drawImage(video, sX, sY + sH - 8, 8, 8, 0, bottomY, cvX, bottomH);
+                ambientSpreadCtx.drawImage(video, cX, cY + cH - 12, 12, 12, 0, bottomY, cvX, bottomH);
             }
             if (rightW > 0) {
-                ambientSpreadCtx.drawImage(video, sX + sW - 8, sY + sH - 8, 8, 8, cvX + cvW, bottomY, rightW, bottomH);
+                ambientSpreadCtx.drawImage(video, cX + cW - 12, cY + cH - 12, 12, 12, cvX + cvW, bottomY, rightW, bottomH);
             }
         }
 
