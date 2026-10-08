@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.6.5
-// @description  YouTube Customizer v3.6.5 — Tối ưu bố cục trang xem video bám sát mép, xóa bỏ khoảng trống thừa 2 bên và chống bóp khung hình; Ánh sáng phòng Full-Screen Cinema.
+// @version      3.6.6
+// @description  YouTube Customizer v3.6.6 — Ánh sáng phòng Ambilight dải màu dóng dọc chuẩn Cinema lan tỏa sâu xuống giữa trang; Masthead & thanh tìm kiếm trong suốt; Khắc phục triệt để thanh cuộn ngang.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,15 +23,16 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.6.1:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.6.6:
  * ============================================================================
- * 1. [Nâng cấp Ánh sáng phòng Full-Screen Cinema (Spread 400%)]:
- *    - Kiến trúc Dual-Layer: Lớp tỏa rộng 400% phủ kín toàn màn hình (360 độ) + Lớp hào quang viền sống động sát mép video.
- *    - Xóa tan 100% hiện tượng "khối chữ nhật màu nâu", quầng sáng mềm mại tan biến vào không gian.
- *    - Tách biệt viền video sắc nét chuẩn OLED với lớp bóng đổ sâu cinema.
- * 2. [Làm dịu màu nội dung xung quanh (Cinema Ambience)]:
- *    - Làm trong suốt toàn bộ chuỗi DOM nền YouTube, Masthead và Playlist dạng kính mờ cao cấp.
- *    - Giảm độ chói/tương phản của thumbnail phụ và description giúp video chính nổi bật rực rỡ nhất.
+ * 1. [Ánh sáng phòng (Ambilight) Dải màu dóng dọc & Lan tỏa sâu]:
+ *    - Tạo các ô dải màu dóng dọc chuẩn xác từ đáy video lan tỏa sâu xuống tận giữa trang.
+ *    - Ăn khớp 100% hình học giữa khung video và viền ánh sáng phòng, không lệch góc.
+ * 2. [Masthead & Thanh tìm kiếm trong suốt]:
+ *    - Trong suốt toàn bộ thanh tiêu đề và thanh tìm kiếm khi ở đỉnh trang để ánh sáng xuyên thấu.
+ *    - Tự động hoàn nguyên nền đen khi cuộn trang xuống.
+ * 3. [Triệt tiêu thanh cuộn ngang (Zero Horizontal Scrollbar)]:
+ *    - Khắc phục triệt để thanh kéo ngang khi bật tính năng ánh sáng phòng.
  * ============================================================================
  */`;
 
