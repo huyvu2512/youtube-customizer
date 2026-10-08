@@ -4388,17 +4388,6 @@
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hideMixes" title="Ẩn toàn bộ Danh sách kết hợp (Mixes/Radio) và Danh sách phát (Playlists) trên trang chủ, tìm kiếm, gợi ý và tự động chuyển tiếp video đề xuất khi xem">
-                    <div class="ytc-item-left">
-                        ${PLAYLIST_SVG}
-                        <span>Ẩn Danh sách phát & Mix</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-mixes">
-                        <input type="checkbox" id="ytc-chk-mixes" name="hideMixes" aria-label="Ẩn Danh sách phát & Mix" ${currentConfig.hideMixes ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
                 <div class="ytc-item" data-toggle="hideShopping" title="Ẩn bảng Sản phẩm (Shopping), nút túi xách mua sắm trên video và kệ sản phẩm gắn thẻ">
                     <div class="ytc-item-left">
                         ${SHOPPING_SVG}
@@ -4406,6 +4395,17 @@
                     </div>
                     <label class="ytc-switch" for="ytc-chk-shopping">
                         <input type="checkbox" id="ytc-chk-shopping" name="hideShopping" aria-label="Ẩn sản phẩm gắn thẻ" ${currentConfig.hideShopping ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hideMixes" title="Ẩn toàn bộ Danh sách kết hợp (Mixes/Radio) và Danh sách phát (Playlists) trên trang chủ, tìm kiếm, gợi ý và tự động chuyển tiếp video đề xuất khi xem">
+                    <div class="ytc-item-left">
+                        ${PLAYLIST_SVG}
+                        <span>Ẩn Danh sách phát & Mix</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-mixes">
+                        <input type="checkbox" id="ytc-chk-mixes" name="hideMixes" aria-label="Ẩn Danh sách phát & Mix" ${currentConfig.hideMixes ? "checked" : ""}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -4532,17 +4532,6 @@
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="blockAv1" title="Chặn codec AV1 ngốn CPU, ép dùng bộ giải mã phần cứng H.264 & VP9 mượt mà, mát máy">
-                    <div class="ytc-item-left">
-                        ${CPU_SVG}
-                        <span>Chặn AV1 / Ép Codec H.264</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-blockav1">
-                        <input type="checkbox" id="ytc-chk-blockav1" name="blockAv1" aria-label="Chặn AV1 / Ép Codec H.264" ${currentConfig.blockAv1 ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
                 <div class="ytc-item" data-toggle="audioOnlyMode" title="Chế độ Radio: Tắt hoàn toàn render hình ảnh video, hạ chất lượng tối thiểu để chỉ nghe tiếng, giảm tối đa RAM/GPU">
                     <div class="ytc-item-left">
                         ${HEADPHONES_SVG}
@@ -4550,6 +4539,17 @@
                     </div>
                     <label class="ytc-switch" for="ytc-chk-audioonly">
                         <input type="checkbox" id="ytc-chk-audioonly" name="audioOnlyMode" aria-label="Chỉ phát âm thanh" ${currentConfig.audioOnlyMode ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="blockAv1" title="Chặn codec AV1 ngốn CPU, ép dùng bộ giải mã phần cứng H.264 & VP9 mượt mà, mát máy">
+                    <div class="ytc-item-left">
+                        ${CPU_SVG}
+                        <span>Chặn AV1 / Ép Codec H.264</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-blockav1">
+                        <input type="checkbox" id="ytc-chk-blockav1" name="blockAv1" aria-label="Chặn AV1 / Ép Codec H.264" ${currentConfig.blockAv1 ? "checked" : ""}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
