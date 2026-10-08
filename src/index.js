@@ -31,7 +31,9 @@ import {
     initAutoLiveSync,
     resetAutoLiveState,
     checkInitialLiveSnap,
-    initLiveDvrHook
+    initLiveDvrHook,
+    initTimeLock,
+    normalizeTimeDisplay
 } from './player/index.js';
 import {
     initChatOverlay,
@@ -129,6 +131,7 @@ if (window.self !== window.top) {
         initAutoLiveSync();
         resetAutoLiveState();
         checkInitialLiveSnap();
+        normalizeTimeDisplay();
 
         if (location.pathname.startsWith('/watch')) {
             setWatchLoading(true);
@@ -182,6 +185,7 @@ if (window.self !== window.top) {
     initAutoLiveSync();
     initMixFilter();
     initQualityManager();
+    initTimeLock();
 
     if (location.pathname.startsWith('/watch')) {
         setWatchLoading(true);

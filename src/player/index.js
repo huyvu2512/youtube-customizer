@@ -5,3 +5,4 @@ export * from './fullscreenLock.js';
 export * from './shortcuts.js';
 export * from './autoLive.js';
 export * from './liveDvr.js';
+export * from './timeLock.js';

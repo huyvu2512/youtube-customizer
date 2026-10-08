@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.5.4
-// @description  YouTube Customizer v3.5.4 — Khắc phục triệt để tính năng Mở khóa tua Live Stream (Live DVR), gỡ bỏ Server-Driven ABR, tối ưu Zero-Lag và đồng bộ Auto Live.
+// @version      3.5.5
+// @description  YouTube Customizer v3.5.5 — Khóa cố định thời gian đã phát (chống tự đổi số âm), tự động F5 thông minh khi bật Live DVR và loại bỏ thông báo phiền toái.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,18 +23,15 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.4:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.5:
  * ============================================================================
- * 1. [Mở khóa tua Live Stream (Force Live DVR)]:
- *    - Khởi tạo hook ytInitialPlayerResponse và JSON.parse từ document-start, đảm bảo bắt trọn luồng phát ngay cả khi tính năng được bật sau đó.
- *    - Dỡ bỏ cơ chế Server-Driven ABR (useServerDrivenAbr, serverPlaybackStartConfig) và URL Server ABR độc quyền của YouTube trên các luồng live tắt DVR.
- *    - Xử lý tương thích cả hai cấu trúc dữ liệu data.videoDetails và data.playerResponse.videoDetails (SPA navigation).
- * 2. [Tối ưu hiệu năng Zero-Lag & Bảo vệ tính năng khác]:
- *    - Fast-path boolean check: khi tính năng tắt, JSON.parse trả kết quả tức thì không tốn CPU.
- *    - Không can thiệp Object.prototype, đảm bảo bình luận, feed, chat và uBlock Origin hoạt động 100% trơn tru.
- * 3. [UX & Tương tác Auto Live Sync]:
- *    - Hiển thị Toast thông báo tải lại trang (F5) khi người dùng bật công tắc Live DVR.
- *    - Đồng bộ mượt mà giữa tua lùi (Live DVR) và Tự động trực tiếp (Auto Live Sync): không tự ý giật ngược về mốc live khi người dùng đang chủ động tua xem lại.
+ * 1. [Khóa cố định thời gian đã phát (Lock Elapsed Time)]:
+ *    - Tự động nắn và cố định mốc thời gian trình phát luôn ở dạng thời gian đã phát (vd: 1:47 / 4:13).
+ *    - Chống ghost-click và ngăn chặn triệt để tình trạng tự nhảy sang thời gian đếm ngược âm (vd: -3:13 / 4:13) khi mở video.
+ * 2. [Tự động F5 thông minh cho Live DVR]:
+ *    - Bỏ hoàn toàn thông báo Toast phiền toái.
+ *    - Tự động tải lại trang sau 250ms khi gạt công tắc nếu đang ở trong video Live (/watch hoặc /live).
+ *    - Giữ nguyên trang chủ/tìm kiếm không reload khi bật từ feed.
  * ============================================================================
  */`;
 

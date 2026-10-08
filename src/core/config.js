@@ -31,6 +31,7 @@ export const DEFAULT_CONFIG = {
     audioOnlyMode: false,      // Chế độ Radio / Chỉ phát âm thanh, ngắt render video (mặc định tắt)
     preventAutoPause: false,   // Chặn tự dừng video "Bạn vẫn đang xem chứ?" (mặc định tắt)
     preferredQuality: 'auto',  // Ưu tiên độ phân giải video: 'auto', 'max', '1440p', '1080p', '720p'
+    lockElapsedTime: true,     // Cố định thời gian đã phát, chống tự nhảy sang thời gian còn lại (mặc định bật)
 };
 
 export function loadConfig() {

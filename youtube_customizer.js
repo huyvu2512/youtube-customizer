@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.5.4
-// @description  YouTube Customizer v3.5.4 — Khắc phục triệt để tính năng Mở khóa tua Live Stream (Live DVR), gỡ bỏ Server-Driven ABR, tối ưu Zero-Lag và đồng bộ Auto Live.
+// @version      3.5.5
+// @description  YouTube Customizer v3.5.5 — Khóa cố định thời gian đã phát (chống tự đổi số âm), tự động F5 thông minh khi bật Live DVR và loại bỏ thông báo phiền toái.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -11,18 +11,15 @@
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.4:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.5:
  * ============================================================================
- * 1. [Mở khóa tua Live Stream (Force Live DVR)]:
- *    - Khởi tạo hook ytInitialPlayerResponse và JSON.parse từ document-start, đảm bảo bắt trọn luồng phát ngay cả khi tính năng được bật sau đó.
- *    - Dỡ bỏ cơ chế Server-Driven ABR (useServerDrivenAbr, serverPlaybackStartConfig) và URL Server ABR độc quyền của YouTube trên các luồng live tắt DVR.
- *    - Xử lý tương thích cả hai cấu trúc dữ liệu data.videoDetails và data.playerResponse.videoDetails (SPA navigation).
- * 2. [Tối ưu hiệu năng Zero-Lag & Bảo vệ tính năng khác]:
- *    - Fast-path boolean check: khi tính năng tắt, JSON.parse trả kết quả tức thì không tốn CPU.
- *    - Không can thiệp Object.prototype, đảm bảo bình luận, feed, chat và uBlock Origin hoạt động 100% trơn tru.
- * 3. [UX & Tương tác Auto Live Sync]:
- *    - Hiển thị Toast thông báo tải lại trang (F5) khi người dùng bật công tắc Live DVR.
- *    - Đồng bộ mượt mà giữa tua lùi (Live DVR) và Tự động trực tiếp (Auto Live Sync): không tự ý giật ngược về mốc live khi người dùng đang chủ động tua xem lại.
+ * 1. [Khóa cố định thời gian đã phát (Lock Elapsed Time)]:
+ *    - Tự động nắn và cố định mốc thời gian trình phát luôn ở dạng thời gian đã phát (vd: 1:47 / 4:13).
+ *    - Chống ghost-click và ngăn chặn triệt để tình trạng tự nhảy sang thời gian đếm ngược âm (vd: -3:13 / 4:13) khi mở video.
+ * 2. [Tự động F5 thông minh cho Live DVR]:
+ *    - Bỏ hoàn toàn thông báo Toast phiền toái.
+ *    - Tự động tải lại trang sau 250ms khi gạt công tắc nếu đang ở trong video Live (/watch hoặc /live).
+ *    - Giữ nguyên trang chủ/tìm kiếm không reload khi bật từ feed.
  * ============================================================================
  */
 (() => {
@@ -42,11 +39,12 @@
   };
 
   // src/core/constants.js
-  var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
+  var APP_VERSION, CONFIG_KEY, CLOCK_SVG, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.5.4";
+      APP_VERSION = "3.5.5";
       CONFIG_KEY = "ytc_config";
+      CLOCK_SVG = `<svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`;
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
       GEAR_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>`;
@@ -232,8 +230,10 @@
         // Chế độ Radio / Chỉ phát âm thanh, ngắt render video (mặc định tắt)
         preventAutoPause: false,
         // Chặn tự dừng video "Bạn vẫn đang xem chứ?" (mặc định tắt)
-        preferredQuality: "auto"
+        preferredQuality: "auto",
         // Ưu tiên độ phân giải video: 'auto', 'max', '1440p', '1080p', '720p'
+        lockElapsedTime: true
+        // Cố định thời gian đã phát, chống tự nhảy sang thời gian còn lại (mặc định bật)
       };
       currentConfig = loadConfig();
       configListeners = [];
@@ -953,101 +953,74 @@
     }
   });
 
-  // src/player/liveDvr.js
-  var liveDvr_exports = {};
-  __export(liveDvr_exports, {
-    initLiveDvrHook: () => initLiveDvrHook,
-    patchResponse: () => patchResponse
+  // src/player/timeLock.js
+  var timeLock_exports = {};
+  __export(timeLock_exports, {
+    initTimeLock: () => initTimeLock,
+    normalizeTimeDisplay: () => normalizeTimeDisplay
   });
-  function isStreamOver12h(microformat) {
-    const live = microformat?.playerMicroformatRenderer?.liveBroadcastDetails;
-    if (!live || !live.startTimestamp) return false;
-    const seconds = (Date.now() - new Date(live.startTimestamp).getTime()) / 1e3;
-    return seconds > 43200;
-  }
-  function modifyPlayerResponse(pr) {
-    if (!pr || typeof pr !== "object") return;
-    const { videoDetails, playerConfig, streamingData, microformat } = pr;
-    if (!videoDetails || !videoDetails.isLive) return;
-    videoDetails.isLiveDvrEnabled = true;
-    const mc = playerConfig?.mediaCommonConfig;
-    if (mc) {
-      mc.useServerDrivenAbr = false;
-      if (mc.serverPlaybackStartConfig) {
-        mc.serverPlaybackStartConfig.enable = false;
+  function normalizeTimeDisplay() {
+    if (!currentConfig.lockElapsedTime) return;
+    if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
+    const now = Date.now();
+    if (now - lastCorrectionTime < 800) return;
+    const player = document.querySelector("#movie_player:not(#inline-preview-player)");
+    if (!player) return;
+    if (player.classList.contains("ytp-live")) return;
+    const currentEl = player.querySelector(".ytp-time-current");
+    if (!currentEl) return;
+    const text = (currentEl.textContent || "").trim();
+    if (text.startsWith("-") || text.startsWith("−")) {
+      lastCorrectionTime = now;
+      isProgrammaticFix = true;
+      const timeBtn = player.querySelector("button.ytp-time-display, .ytp-time-display button, .ytp-time-display") || currentEl;
+      try {
+        timeBtn.click();
+      } catch (e) {
       }
-    }
-    if (streamingData) {
-      if (streamingData.serverAbrStreamingUrl && (streamingData.hlsManifestUrl || streamingData.dashManifestUrl)) {
-        delete streamingData.serverAbrStreamingUrl;
-      }
-      if (Array.isArray(streamingData.adaptiveFormats) && isStreamOver12h(microformat)) {
-        for (const format of streamingData.adaptiveFormats) {
-          format.maxDvrDurationSec = MAX_DVR_SECS;
-        }
-      }
+      setTimeout(() => {
+        isProgrammaticFix = false;
+      }, 60);
     }
   }
-  function patchResponse(data) {
-    if (!currentConfig.unlockLiveDvr || !data || typeof data !== "object") return false;
-    if (data.videoDetails) {
-      modifyPlayerResponse(data);
-      return true;
-    }
-    if (data.playerResponse && data.playerResponse.videoDetails) {
-      modifyPlayerResponse(data.playerResponse);
-      return true;
-    }
-    return false;
-  }
-  function initLiveDvrHook() {
-    if (liveDvrHooked) return;
-    liveDvrHooked = true;
-    try {
-      const existingDesc = Object.getOwnPropertyDescriptor(window, "ytInitialPlayerResponse");
-      let _val = window.ytInitialPlayerResponse;
-      if (_val) patchResponse(_val);
-      if (existingDesc && existingDesc.configurable === false) {
-        if (window.ytInitialPlayerResponse) patchResponse(window.ytInitialPlayerResponse);
-      } else {
-        Object.defineProperty(window, "ytInitialPlayerResponse", {
-          get() {
-            return existingDesc && existingDesc.get ? existingDesc.get.call(this) : _val;
-          },
-          set(newVal) {
-            if (existingDesc && existingDesc.set) {
-              existingDesc.set.call(this, newVal);
-            }
-            _val = newVal;
-            patchResponse(_val);
-          },
-          configurable: true,
-          enumerable: true
-        });
+  function initTimeLock() {
+    if (timeLockInitialized) return;
+    timeLockInitialized = true;
+    document.addEventListener("click", (e) => {
+      if (!currentConfig.lockElapsedTime) return;
+      const timeDisplay = e.target.closest && e.target.closest(".ytp-time-display");
+      if (!timeDisplay) return;
+      if (isProgrammaticFix) return;
+      const player = document.querySelector("#movie_player:not(#inline-preview-player)");
+      if (player && player.classList.contains("ytp-live")) return;
+      const currentEl = timeDisplay.querySelector(".ytp-time-current");
+      const text = currentEl ? (currentEl.textContent || "").trim() : "";
+      if (text && !text.startsWith("-") && !text.startsWith("−")) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
       }
-    } catch (e) {
-    }
-    try {
-      const origParse = JSON.parse;
-      JSON.parse = function(text, reviver) {
-        const res = origParse.call(this, text, reviver);
-        if (currentConfig.unlockLiveDvr && typeof text === "string" && text.length > 100 && text.indexOf("isLiveDvrEnabled") !== -1) {
-          try {
-            patchResponse(res);
-          } catch (e) {
-          }
-        }
-        return res;
-      };
-    } catch (e) {
-    }
+    }, true);
+    document.addEventListener("yt-navigate-finish", () => {
+      if (!currentConfig.lockElapsedTime) return;
+      setTimeout(normalizeTimeDisplay, 150);
+      setTimeout(normalizeTimeDisplay, 500);
+      setTimeout(normalizeTimeDisplay, 1200);
+    });
+    document.addEventListener("play", (e) => {
+      if (!currentConfig.lockElapsedTime) return;
+      if (e.target && e.target.tagName === "VIDEO") {
+        setTimeout(normalizeTimeDisplay, 100);
+      }
+    }, true);
   }
-  var liveDvrHooked, MAX_DVR_SECS;
-  var init_liveDvr = __esm({
-    "src/player/liveDvr.js"() {
+  var timeLockInitialized, isProgrammaticFix, lastCorrectionTime;
+  var init_timeLock = __esm({
+    "src/player/timeLock.js"() {
       init_config();
-      liveDvrHooked = false;
-      MAX_DVR_SECS = 43200 * 14;
+      timeLockInitialized = false;
+      isProgrammaticFix = false;
+      lastCorrectionTime = 0;
     }
   });
 
@@ -3671,8 +3644,96 @@
     window.addEventListener("keyup", handleKeyUp, true);
   }
 
+  // src/player/liveDvr.js
+  init_config();
+  var liveDvrHooked = false;
+  var MAX_DVR_SECS = 43200 * 14;
+  function isStreamOver12h(microformat) {
+    const live = microformat?.playerMicroformatRenderer?.liveBroadcastDetails;
+    if (!live || !live.startTimestamp) return false;
+    const seconds = (Date.now() - new Date(live.startTimestamp).getTime()) / 1e3;
+    return seconds > 43200;
+  }
+  function modifyPlayerResponse(pr) {
+    if (!pr || typeof pr !== "object") return;
+    const { videoDetails, playerConfig, streamingData, microformat } = pr;
+    if (!videoDetails || !videoDetails.isLive) return;
+    videoDetails.isLiveDvrEnabled = true;
+    const mc = playerConfig?.mediaCommonConfig;
+    if (mc) {
+      mc.useServerDrivenAbr = false;
+      if (mc.serverPlaybackStartConfig) {
+        mc.serverPlaybackStartConfig.enable = false;
+      }
+    }
+    if (streamingData) {
+      if (streamingData.serverAbrStreamingUrl && (streamingData.hlsManifestUrl || streamingData.dashManifestUrl)) {
+        delete streamingData.serverAbrStreamingUrl;
+      }
+      if (Array.isArray(streamingData.adaptiveFormats) && isStreamOver12h(microformat)) {
+        for (const format of streamingData.adaptiveFormats) {
+          format.maxDvrDurationSec = MAX_DVR_SECS;
+        }
+      }
+    }
+  }
+  function patchResponse(data) {
+    if (!currentConfig.unlockLiveDvr || !data || typeof data !== "object") return false;
+    if (data.videoDetails) {
+      modifyPlayerResponse(data);
+      return true;
+    }
+    if (data.playerResponse && data.playerResponse.videoDetails) {
+      modifyPlayerResponse(data.playerResponse);
+      return true;
+    }
+    return false;
+  }
+  function initLiveDvrHook() {
+    if (liveDvrHooked) return;
+    liveDvrHooked = true;
+    try {
+      const existingDesc = Object.getOwnPropertyDescriptor(window, "ytInitialPlayerResponse");
+      let _val = window.ytInitialPlayerResponse;
+      if (_val) patchResponse(_val);
+      if (existingDesc && existingDesc.configurable === false) {
+        if (window.ytInitialPlayerResponse) patchResponse(window.ytInitialPlayerResponse);
+      } else {
+        Object.defineProperty(window, "ytInitialPlayerResponse", {
+          get() {
+            return existingDesc && existingDesc.get ? existingDesc.get.call(this) : _val;
+          },
+          set(newVal) {
+            if (existingDesc && existingDesc.set) {
+              existingDesc.set.call(this, newVal);
+            }
+            _val = newVal;
+            patchResponse(_val);
+          },
+          configurable: true,
+          enumerable: true
+        });
+      }
+    } catch (e) {
+    }
+    try {
+      const origParse = JSON.parse;
+      JSON.parse = function(text, reviver) {
+        const res = origParse.call(this, text, reviver);
+        if (currentConfig.unlockLiveDvr && typeof text === "string" && text.length > 100 && text.indexOf("isLiveDvrEnabled") !== -1) {
+          try {
+            patchResponse(res);
+          } catch (e) {
+          }
+        }
+        return res;
+      };
+    } catch (e) {
+    }
+  }
+
   // src/player/index.js
-  init_liveDvr();
+  init_timeLock();
 
   // src/index.js
   init_chat();
@@ -4080,6 +4141,17 @@
 
             <!-- TAB 3: TRÌNH PHÁT & VIDEO -->
             <div class="ytc-tab-pane" id="ytc-pane-player">
+                <div class="ytc-item" data-toggle="lockElapsedTime" title="Cố định mốc thời gian đã phát (vd: 1:47 / 4:13), chống bị tự động đổi hoặc ghost click thành thời gian đếm ngược âm (vd: -3:13 / 4:13)">
+                    <div class="ytc-item-left">
+                        ${CLOCK_SVG}
+                        <span>Khóa thời gian đã phát</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-locktime">
+                        <input type="checkbox" id="ytc-chk-locktime" name="lockElapsedTime" aria-label="Khóa thời gian đã phát" ${currentConfig.lockElapsedTime ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
                 <div class="ytc-item" data-toggle="disableAmbient" title="Tắt ánh sáng viền xung quanh video (Ambient Mode) để giảm tải GPU">
                     <div class="ytc-item-left">
                         ${SPARKLE_SVG}
@@ -4449,19 +4521,19 @@
             });
           }
           if (key === "unlockLiveDvr") {
-            if (checkbox.checked) {
-              showToast("⚠️ Vui lòng tải lại trang (F5) để nạp lại luồng Live Stream có thanh tua!");
-              if (window.ytInitialPlayerResponse) {
-                Promise.resolve().then(() => (init_liveDvr(), liveDvr_exports)).then((m) => {
-                  if (typeof m.patchResponse === "function") {
-                    m.patchResponse(window.ytInitialPlayerResponse);
-                  }
-                }).catch(() => {
-                });
-              }
-            } else {
-              showToast("Đã tắt mở khóa tua Live Stream (F5 để áp dụng)");
+            if (location.pathname.startsWith("/watch") || location.pathname.startsWith("/live")) {
+              setTimeout(() => {
+                location.reload();
+              }, 250);
             }
+          }
+          if (key === "lockElapsedTime" && checkbox.checked) {
+            Promise.resolve().then(() => (init_timeLock(), timeLock_exports)).then((m) => {
+              if (typeof m.normalizeTimeDisplay === "function") {
+                m.normalizeTimeDisplay();
+              }
+            }).catch(() => {
+            });
           }
         });
         item.addEventListener("click", (e) => {
@@ -4793,6 +4865,7 @@
       initAutoLiveSync();
       resetAutoLiveState();
       checkInitialLiveSnap();
+      normalizeTimeDisplay();
       if (location.pathname.startsWith("/watch")) {
         setWatchLoading(true);
       } else if (isHomeFeedPath()) {
@@ -4847,6 +4920,7 @@
     initAutoLiveSync();
     initMixFilter();
     initQualityManager();
+    initTimeLock();
     if (location.pathname.startsWith("/watch")) {
       setWatchLoading(true);
     }

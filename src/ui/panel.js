@@ -5,6 +5,7 @@ import { currentConfig, saveConfig, applyConfigToRoot } from '../core/config.js'
 import { safeHTML, setElementHTML, whenElement, rafThrottle, hasLiveOrChatSupport, showToast } from '../core/utils.js';
 import {
     APP_VERSION,
+    CLOCK_SVG,
     GEAR_SVG,
     GRID_SVG,
     SHORTS_SVG,
@@ -268,6 +269,17 @@ export function createSettingsPanel() {
 
             <!-- TAB 3: TRÌNH PHÁT & VIDEO -->
             <div class="ytc-tab-pane" id="ytc-pane-player">
+                <div class="ytc-item" data-toggle="lockElapsedTime" title="Cố định mốc thời gian đã phát (vd: 1:47 / 4:13), chống bị tự động đổi hoặc ghost click thành thời gian đếm ngược âm (vd: -3:13 / 4:13)">
+                    <div class="ytc-item-left">
+                        ${CLOCK_SVG}
+                        <span>Khóa thời gian đã phát</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-locktime">
+                        <input type="checkbox" id="ytc-chk-locktime" name="lockElapsedTime" aria-label="Khóa thời gian đã phát" ${currentConfig.lockElapsedTime ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
                 <div class="ytc-item" data-toggle="disableAmbient" title="Tắt ánh sáng viền xung quanh video (Ambient Mode) để giảm tải GPU">
                     <div class="ytc-item-left">
                         ${SPARKLE_SVG}
@@ -649,18 +661,19 @@ export function createSettingsPanel() {
                     }).catch(() => {});
                 }
                 if (key === 'unlockLiveDvr') {
-                    if (checkbox.checked) {
-                        showToast('⚠️ Vui lòng tải lại trang (F5) để nạp lại luồng Live Stream có thanh tua!');
-                        if (window.ytInitialPlayerResponse) {
-                            import('../player/liveDvr.js').then(m => {
-                                if (typeof m.patchResponse === 'function') {
-                                    m.patchResponse(window.ytInitialPlayerResponse);
-                                }
-                            }).catch(() => {});
-                        }
-                    } else {
-                        showToast('Đã tắt mở khóa tua Live Stream (F5 để áp dụng)');
+                    // Tự động F5 hộ người dùng nếu đang ở trang xem video (/watch hoặc /live)
+                    if (location.pathname.startsWith('/watch') || location.pathname.startsWith('/live')) {
+                        setTimeout(() => {
+                            location.reload();
+                        }, 250);
                     }
+                }
+                if (key === 'lockElapsedTime' && checkbox.checked) {
+                    import('../player/timeLock.js').then(m => {
+                        if (typeof m.normalizeTimeDisplay === 'function') {
+                            m.normalizeTimeDisplay();
+                        }
+                    }).catch(() => {});
                 }
             });
 
