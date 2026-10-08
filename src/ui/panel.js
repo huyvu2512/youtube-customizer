@@ -11,7 +11,6 @@ import {
     GAMEPAD_SVG,
     YOUTUBE_SVG,
     SEARCH_SVG,
-    SPARKLE_SVG,
     KEYBOARD_SVG,
     CROWN_SVG,
     COMPASS_SVG,
@@ -280,17 +279,6 @@ export function createSettingsPanel() {
 
             <!-- TAB 3: TRÌNH PHÁT & VIDEO -->
             <div class="ytc-tab-pane" id="ytc-pane-player">
-                <div class="ytc-item" data-toggle="disableAmbient" title="Tắt ánh sáng viền xung quanh video (Ambient Mode) để giảm tải GPU">
-                    <div class="ytc-item-left">
-                        ${SPARKLE_SVG}
-                        <span>Tắt ánh sáng video</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-ambient">
-                        <input type="checkbox" id="ytc-chk-ambient" name="disableAmbient" aria-label="Tắt ánh sáng video" ${currentConfig.disableAmbient ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
                 <div class="ytc-item" data-toggle="hideEndscreen" title="Ẩn khung gợi ý video cuối clip và biểu tượng thẻ chữ (i) góc trên">
                     <div class="ytc-item-left">
                         ${ENDSCREEN_SVG}
@@ -737,10 +725,28 @@ export function createSettingsPanel() {
                 if (updateBtnText) updateBtnText.textContent = 'Đang kiểm tra...';
 
                 try {
-                    const res = await fetch(`https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?t=${Date.now()}`);
-                    if (res.ok) {
-                        const pkg = await res.json();
-                        if (pkg.version && isNewerVersion(pkg.version, APP_VERSION)) {
+                    let pkg = null;
+                    try {
+                        const apiRes = await fetch('https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main', {
+                            headers: { 'Accept': 'application/vnd.github.v3.raw' },
+                            cache: 'no-store'
+                        });
+                        if (apiRes.ok) {
+                            pkg = await apiRes.json();
+                        }
+                    } catch (e) {}
+
+                    if (!pkg || !pkg.version) {
+                        const rawRes = await fetch(`https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?t=${Date.now()}`, {
+                            cache: 'no-store'
+                        });
+                        if (rawRes.ok) {
+                            pkg = await rawRes.json();
+                        }
+                    }
+
+                    if (pkg && pkg.version) {
+                        if (isNewerVersion(pkg.version, APP_VERSION)) {
                             const newVersionUrl = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${pkg.version}`;
 
                             // 1. Tự động mở trang cài đặt bản mới Tampermonkey trong tab mới

@@ -1,8 +1,9 @@
 // ==========================================================================
 // TÍNH NĂNG ÁNH SÁNG PHÒNG (AMBIENT LIGHT / AMBILIGHT) SIÊU TỐI ƯU
+// - Full-Screen Cinema Ambilight: Tỏa đều 360 độ quanh video, xóa bỏ viền cắt
 // - Micro Canvas 32x18px: Tiêu thụ cực ít RAM (< 50KB) và CPU (< 0.5%)
-// - GPU Hardware Acceleration: CSS Blur & Scale được xử lý trên GPU Compositor
-// - Adaptive FPS Throttling: Giới hạn 18 FPS chuyển động mềm mại, giảm 70% tải
+// - GPU Hardware Acceleration: CSS Blur 85px & Scale 1.4x xử lý trên GPU Compositor
+// - Tự động tắt ánh sáng gốc YouTube khi bật, khôi phục khi tắt
 // - Deep Sleeping: Tự động ngắt hoàn toàn khi pause, chuyển tab hoặc cuộn khỏi video
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
@@ -15,6 +16,7 @@ let isRunning = false;
 let lastDrawTime = 0;
 let currentVideo = null;
 let intersectionObserver = null;
+let resizeObserver = null;
 let isIntersecting = true;
 
 const CANVAS_WIDTH = 32;
@@ -22,28 +24,67 @@ const CANVAS_HEIGHT = 18;
 const TARGET_INTERVAL = 1000 / 18; // ~18 FPS (55.5ms)
 
 /**
- * Khởi tạo hoặc tìm phần tử canvas cho Ambient Light
+ * Cập nhật vị trí và kích thước canvas bám chuẩn xác theo Video Player
+ */
+export function updateAmbientPosition() {
+    if (!ambientCanvas || !ambientWrapper) return;
+    const moviePlayer = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
+    const watchFlexy = document.querySelector('ytd-watch-flexy');
+
+    if (!moviePlayer) return;
+
+    if (watchFlexy && ambientWrapper.parentElement === watchFlexy) {
+        const playerRect = moviePlayer.getBoundingClientRect();
+        const flexyRect = watchFlexy.getBoundingClientRect();
+
+        const top = Math.round(playerRect.top - flexyRect.top);
+        const left = Math.round(playerRect.left - flexyRect.left);
+        const width = Math.round(playerRect.width);
+        const height = Math.round(playerRect.height);
+
+        ambientCanvas.style.top = `${top}px`;
+        ambientCanvas.style.left = `${left}px`;
+        ambientCanvas.style.width = `${width}px`;
+        ambientCanvas.style.height = `${height}px`;
+    } else {
+        ambientCanvas.style.top = '0px';
+        ambientCanvas.style.left = '0px';
+        ambientCanvas.style.width = '100%';
+        ambientCanvas.style.height = '100%';
+    }
+}
+
+/**
+ * Khởi tạo hoặc gắn canvas vào tầng nền của trang xem video (ytd-watch-flexy)
  */
 function ensureAmbientCanvas() {
     const moviePlayer = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
-    if (!moviePlayer || !moviePlayer.parentElement) return null;
+    if (!moviePlayer) return null;
 
-    if (!ambientWrapper || !ambientWrapper.isConnected) {
+    const watchFlexy = document.querySelector('ytd-watch-flexy');
+    const targetParent = watchFlexy || moviePlayer.parentElement;
+    if (!targetParent) return null;
+
+    if (!ambientWrapper || !ambientWrapper.isConnected || ambientWrapper.parentElement !== targetParent) {
         let existing = document.getElementById('ytc-ambient-wrapper');
         if (existing) {
-            ambientWrapper = existing;
-            ambientCanvas = ambientWrapper.querySelector('#ytc-ambient-canvas');
+            existing.remove();
+        }
+
+        ambientWrapper = document.createElement('div');
+        ambientWrapper.id = 'ytc-ambient-wrapper';
+        ambientWrapper.setAttribute('aria-hidden', 'true');
+
+        ambientCanvas = document.createElement('canvas');
+        ambientCanvas.id = 'ytc-ambient-canvas';
+        ambientCanvas.width = CANVAS_WIDTH;
+        ambientCanvas.height = CANVAS_HEIGHT;
+
+        ambientWrapper.appendChild(ambientCanvas);
+
+        if (watchFlexy) {
+            watchFlexy.insertBefore(ambientWrapper, watchFlexy.firstChild);
         } else {
-            ambientWrapper = document.createElement('div');
-            ambientWrapper.id = 'ytc-ambient-wrapper';
-            ambientWrapper.setAttribute('aria-hidden', 'true');
-
-            ambientCanvas = document.createElement('canvas');
-            ambientCanvas.id = 'ytc-ambient-canvas';
-            ambientCanvas.width = CANVAS_WIDTH;
-            ambientCanvas.height = CANVAS_HEIGHT;
-
-            ambientWrapper.appendChild(ambientCanvas);
             moviePlayer.parentElement.insertBefore(ambientWrapper, moviePlayer);
         }
 
@@ -57,6 +98,18 @@ function ensureAmbientCanvas() {
                 ambientCtx.imageSmoothingQuality = 'low';
             }
         }
+    }
+
+    updateAmbientPosition();
+
+    // Theo dõi thay đổi kích thước của Player (Theater mode, resize) để cập nhật vị trí
+    if (!resizeObserver && moviePlayer) {
+        try {
+            resizeObserver = new ResizeObserver(() => {
+                updateAmbientPosition();
+            });
+            resizeObserver.observe(moviePlayer);
+        } catch (e) {}
     }
 
     // Thiết lập IntersectionObserver nếu chưa có
@@ -231,10 +284,16 @@ export function initAmbientLight() {
     ambientInitialized = true;
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('resize', updateAmbientPosition);
+    window.addEventListener('fullscreenchange', updateAmbientPosition);
 
     // Lắng nghe khi YouTube chuyển trang SPA (/watch, /live)
     window.addEventListener('yt-navigate-finish', () => {
-        setTimeout(applyAmbientLightingState, 300);
+        setTimeout(() => {
+            applyAmbientLightingState();
+            updateAmbientPosition();
+        }, 300);
+        setTimeout(updateAmbientPosition, 800);
     });
 
     // Quan sát xuất hiện video player
@@ -242,6 +301,7 @@ export function initAmbientLight() {
         const video = document.querySelector('video.html5-main-video') || document.querySelector('video');
         if (video && video !== currentVideo) {
             attachVideo(video);
+            updateAmbientPosition();
         }
     });
 

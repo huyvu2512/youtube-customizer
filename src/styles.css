@@ -309,12 +309,15 @@ yt-live-chat-membership-item-renderer {
 }
 
 /* --------------------------------------------------------------------------
-   4. TRÌNH PHÁT VIDEO: AMBIENT, THẺ KẾT THÚC, BANNER & LOGO PREMIUM
+   4. TRÌNH PHÁT VIDEO: THẺ KẾT THÚC, BANNER & LOGO PREMIUM
    -------------------------------------------------------------------------- */
-.ytc-disable-ambient #cinematics,
-.ytc-disable-ambient ytd-cinematics-renderer,
-.ytc-disable-ambient .ytp-ambient-mode-rendering-container {
+/* Tự động tắt ánh sáng gốc của YouTube khi BẬT Ánh sáng phòng (Ambilight) để chống trùng lặp */
+html.ytc-ambient-lighting #cinematics,
+html.ytc-ambient-lighting ytd-cinematics-renderer,
+html.ytc-ambient-lighting .ytp-ambient-mode-rendering-container {
     display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 .ytc-hide-endscreen .ytp-ce-element,
@@ -1875,19 +1878,21 @@ html:not([dark]) .ytc-update-btn:hover {
 /* ==========================================================================
    HIỆU ỨNG ÁNH SÁNG PHÒNG (AMBIENT LIGHT / AMBILIGHT) TỰ ĐỘNG TỐI ƯU
    ========================================================================== */
+/* ==========================================================================
+   HIỆU ỨNG ÁNH SÁNG PHÒNG (AMBIENT LIGHT / AMBILIGHT) TỰ ĐỘNG TỐI ƯU
+   - Full-Screen Cinema Ambilight: Tỏa đều 360 độ, không lộ viền video
+   ========================================================================== */
 #ytc-ambient-wrapper {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     pointer-events: none !important;
     z-index: 0 !important;
-    overflow: visible;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: visible !important;
     opacity: 0;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.5s ease;
 }
 
 #ytc-ambient-wrapper.ytc-ambient-active {
@@ -1896,30 +1901,45 @@ html:not([dark]) .ytc-update-btn:hover {
 
 #ytc-ambient-canvas {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    transform: scale(1.15, 1.22) translateZ(0);
-    filter: blur(48px) saturate(180%) brightness(120%);
+    transform: scale(1.4, 1.45) translateZ(0);
+    filter: blur(85px) saturate(190%) brightness(125%);
     pointer-events: none !important;
     will-change: filter, transform;
-    opacity: 0.85;
+    opacity: 0.88;
+    transition: opacity 0.3s ease;
 }
 
 html:not([dark]) #ytc-ambient-canvas {
-    filter: blur(42px) saturate(145%) brightness(105%);
-    opacity: 0.7;
+    filter: blur(75px) saturate(150%) brightness(108%);
+    opacity: 0.72;
 }
 
-/* Mở rộng không gian tỏa sáng xung quanh player */
-html.ytc-ambient-lighting #player-container,
-html.ytc-ambient-lighting #player-container-inner,
-html.ytc-ambient-lighting #player-container-outer,
-html.ytc-ambient-lighting #ytd-player,
-html.ytc-ambient-lighting #full-bleed-container,
-html.ytc-ambient-lighting #player-full-bleed-container {
-    overflow: visible !important;
+/* 1. Thanh Masthead trên cùng: Kính mờ cao cấp để ánh sáng hắt lên đỉnh trình duyệt */
+html.ytc-ambient-lighting #masthead-container,
+html.ytc-ambient-lighting ytd-masthead {
+    background: rgba(15, 15, 15, 0.72) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
 }
 
+/* 2. Toàn trang watch-flexy và các cột: Trong suốt để ánh sáng xuyên qua */
+html.ytc-ambient-lighting ytd-watch-flexy {
+    background: transparent !important;
+}
+html.ytc-ambient-lighting ytd-watch-flexy #columns,
+html.ytc-ambient-lighting ytd-watch-flexy #primary,
+html.ytc-ambient-lighting ytd-watch-flexy #secondary {
+    background: transparent !important;
+}
+
+/* 3. Nền playlist panel: Kính mờ để ánh sáng lan tỏa xuyên qua bên phải */
+html.ytc-ambient-lighting ytd-playlist-panel-renderer {
+    background: rgba(24, 24, 24, 0.78) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+}
+
+/* Đảm bảo movie player nằm ở lớp trên ánh sáng */
 html.ytc-ambient-lighting #movie_player {
     z-index: 1 !important;
     position: relative;
