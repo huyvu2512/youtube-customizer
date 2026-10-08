@@ -42,10 +42,8 @@ import {
     GIFT_SVG,
     EXTERNAL_LINK_SVG,
     SHOPPING_SVG,
-    AMBIENT_LIGHT_SVG,
-    SUBTITLES_SVG
+    AMBIENT_LIGHT_SVG
 } from '../core/constants.js';
-import { applyAutoSubtitles } from '../player/autoSubtitles.js';
 import { syncPanelState } from './sync.js';
 import { setupOnboardingAndUpdates, isNewerVersion } from './notifier.js';
 
@@ -174,36 +172,6 @@ export function createSettingsPanel() {
                         <input type="checkbox" id="ytc-chk-ambient-light" name="ambientLighting" aria-label="Ánh sáng phòng (Ambilight)" ${currentConfig.ambientLighting ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="autoSubtitles" title="Tự động kích hoạt phụ đề cho video và Live Stream, dùng font chữ & khung nền người dùng cài đặt trên YouTube">
-                    <div class="ytc-item-left">
-                        ${SUBTITLES_SVG}
-                        <span>Phụ đề tự động (Auto Subtitles)</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-auto-subtitles">
-                        <input type="checkbox" id="ytc-chk-auto-subtitles" name="autoSubtitles" aria-label="Phụ đề tự động" ${currentConfig.autoSubtitles ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item ytc-sub-item" id="ytc-row-captionlang" style="display: ${currentConfig.autoSubtitles ? 'flex' : 'none'};" title="Ngôn ngữ ưu tiên ghim lên đầu menu phụ đề và tự động dịch">
-                    <div class="ytc-item-left">
-                        <span class="ytc-sub-bullet">└</span>
-                        <span class="ytc-sub-label">Ngôn ngữ ưu tiên</span>
-                    </div>
-                    <select id="ytc-select-captionlang" class="ytc-select" aria-label="Ngôn ngữ phụ đề ưu tiên">
-                        <option value="auto" ${currentConfig.captionLanguage === 'auto' ? 'selected' : ''}>Tự động (Theo YouTube)</option>
-                        <option value="vi" ${currentConfig.captionLanguage === 'vi' ? 'selected' : ''}>Tiếng Việt</option>
-                        <option value="en" ${currentConfig.captionLanguage === 'en' ? 'selected' : ''}>Tiếng Anh (English)</option>
-                        <option value="ja" ${currentConfig.captionLanguage === 'ja' ? 'selected' : ''}>Tiếng Nhật (日本語)</option>
-                        <option value="ko" ${currentConfig.captionLanguage === 'ko' ? 'selected' : ''}>Tiếng Hàn (한국어)</option>
-                        <option value="zh" ${currentConfig.captionLanguage === 'zh' ? 'selected' : ''}>Tiếng Trung (中文)</option>
-                        <option value="fr" ${currentConfig.captionLanguage === 'fr' ? 'selected' : ''}>Tiếng Pháp (Français)</option>
-                        <option value="es" ${currentConfig.captionLanguage === 'es' ? 'selected' : ''}>Tiếng Tây Ban Nha (Español)</option>
-                        <option value="de" ${currentConfig.captionLanguage === 'de' ? 'selected' : ''}>Tiếng Đức (Deutsch)</option>
-                        <option value="ru" ${currentConfig.captionLanguage === 'ru' ? 'selected' : ''}>Tiếng Nga (Русский)</option>
-                    </select>
                 </div>
 
                 <div class="ytc-item" id="ytc-row-chatoverlay" title="Hiển thị chat trực tiếp nổi trên màn hình video (tự động ẩn khi tua lùi video)">
@@ -669,15 +637,6 @@ export function createSettingsPanel() {
                         }
                     }).catch(() => {});
                 }
-                if (key === 'autoSubtitles') {
-                    const rowLang = panel.querySelector('#ytc-row-captionlang');
-                    if (rowLang) {
-                        rowLang.style.display = checkbox.checked ? 'flex' : 'none';
-                    }
-                    try {
-                        applyAutoSubtitles();
-                    } catch (e) {}
-                }
                 if (key === 'audioOnlyMode') {
                     import('../optimization/audioOnly.js').then(m => {
                         if (m && typeof m.applyAudioOnlyState === 'function') {
@@ -741,19 +700,6 @@ export function createSettingsPanel() {
                 }
             });
         });
-
-        // Lựa chọn ngôn ngữ phụ đề ưu tiên
-        const captionLangSelect = panel.querySelector('#ytc-select-captionlang');
-        if (captionLangSelect) {
-            captionLangSelect.addEventListener('change', (e) => {
-                e.stopPropagation();
-                currentConfig.captionLanguage = captionLangSelect.value;
-                saveConfig(currentConfig);
-                try {
-                    applyAutoSubtitles();
-                } catch (err) {}
-            });
-        }
 
         // Nút mở trang uBlock Origin
         const ublockBtn = panel.querySelector('#ytc-btn-ublock');

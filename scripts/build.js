@@ -14,7 +14,7 @@ const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
 // @version      3.8.1
-// @description  YouTube Customizer v3.8.1 — Tự động kích hoạt & dịch phụ đề Live Stream/VOD chuẩn YouTube gốc, ghim ngôn ngữ ưu tiên lên đầu menu và tối ưu huy hiệu tính năng nổi bật.
+// @description  YouTube Customizer v3.8.1 — Tinh chỉnh huy hiệu ngôi sao ⭐ cho Ánh sáng phòng (Ambilight 2.0 Cinema), kéo sát chữ và loại bỏ góc nghiêng, tối ưu độ ổn định.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

@@ -35,9 +35,7 @@ import {
     initTimeLock,
     normalizeTimeDisplay,
     initAmbientLight,
-    applyAmbientLightingState,
-    initAutoSubtitles,
-    applyAutoSubtitles
+    applyAmbientLightingState
 } from './player/index.js';
 import {
     initChatOverlay,
@@ -109,7 +107,6 @@ if (window.self !== window.top) {
         updateChatOverlayVisibility();
         applyAudioOnlyState();
         applyPreferredQuality();
-        applyAutoSubtitles();
     });
 
     applyConfigToRoot();
@@ -140,7 +137,6 @@ if (window.self !== window.top) {
         checkInitialLiveSnap();
         normalizeTimeDisplay();
         applyAmbientLightingState();
-        applyAutoSubtitles();
 
         if (location.pathname.startsWith('/watch')) {
             setWatchLoading(true);
@@ -196,7 +192,6 @@ if (window.self !== window.top) {
     initQualityManager();
     initTimeLock();
     initAmbientLight();
-    initAutoSubtitles();
 
     if (location.pathname.startsWith('/watch')) {
         setWatchLoading(true);

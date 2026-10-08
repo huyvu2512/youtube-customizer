@@ -2,7 +2,7 @@
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
 // @version      3.8.1
-// @description  YouTube Customizer v3.8.1 — Tự động kích hoạt & dịch phụ đề Live Stream/VOD chuẩn YouTube gốc, ghim ngôn ngữ ưu tiên lên đầu menu và tối ưu huy hiệu tính năng nổi bật.
+// @description  YouTube Customizer v3.8.1 — Tinh chỉnh huy hiệu ngôi sao ⭐ cho Ánh sáng phòng (Ambilight 2.0 Cinema), kéo sát chữ và loại bỏ góc nghiêng, tối ưu độ ổn định.
 // @author       Huy Vũ
 // @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.8.1
 // @match        https://www.youtube.com/*
@@ -17,12 +17,10 @@
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.8.1:
  * ============================================================================
- * 1. [Phụ đề tự động (Auto Subtitles & Live Subtitles)]:
- *    - Thêm công tắc trong Tab Giao diện cho phép tự động bật phụ đề video & Live Stream.
- *    - Mở khóa nút phụ đề trên các luồng Live Stream đang bị tắt nút.
- *    - Sử dụng chuẩn font chữ, cỡ chữ, viền và nền gốc của YouTube (người dùng tự setup).
- *    - Ghim ngôn ngữ ưu tiên (mặc định theo YouTube/hệ thống hoặc chọn qua menu) lên ngay đầu danh sách phụ đề.
- * 2. [Tinh chỉnh giao diện & Huy hiệu ⭐ nổi bật]:
- *    - Điều chỉnh khoảng cách ngôi sao ⭐ nằm sát chữ "(Ambilight)", loại bỏ độ nghiêng lỏ.
+ * 1. [Tinh chỉnh giao diện & Huy hiệu ⭐ nổi bật]:
+ *    - Điều chỉnh khoảng cách ngôi sao ⭐ nằm sát chữ "(Ambilight)", loại bỏ flex gap thừa.
+ *    - Loại bỏ góc nghiêng rotate(10deg), thay bằng hiệu ứng scale ánh vàng dịu dàng, sang trọng.
+ * 2. [Tối ưu độ ổn định]:
+ *    - Tối ưu hóa cấu trúc mã nguồn, đảm bảo khởi động an toàn mượt mà ở document-start.
  * ============================================================================
  */

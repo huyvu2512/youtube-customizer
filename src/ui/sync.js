@@ -69,15 +69,5 @@ export function syncPanelState(targetPanel) {
         };
         qualityBadge.textContent = labels[currentQuality] || currentQuality.toUpperCase();
     }
-
-    // 5. Đồng bộ hàng chọn ngôn ngữ phụ đề
-    const rowCaptionLang = panel.querySelector('#ytc-row-captionlang');
-    if (rowCaptionLang) {
-        rowCaptionLang.style.display = currentConfig.autoSubtitles ? 'flex' : 'none';
-    }
-    const selectCaptionLang = panel.querySelector('#ytc-select-captionlang');
-    if (selectCaptionLang) {
-        selectCaptionLang.value = currentConfig.captionLanguage || 'auto';
-    }
 }
 
