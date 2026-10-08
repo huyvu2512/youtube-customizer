@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.5.3
-// @description  YouTube Customizer v3.5.3 — Tối ưu hóa chu kỳ nền (Idle Efficiency), On-Demand Danmaku Scheduler, cách ly Observer và triệt tiêu tiến trình chạy ngầm vô ích.
+// @version      3.5.4
+// @description  YouTube Customizer v3.5.4 — Khắc phục triệt để tính năng Mở khóa tua Live Stream (Live DVR), gỡ bỏ Server-Driven ABR, tối ưu Zero-Lag và đồng bộ Auto Live.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,15 +23,18 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.3:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.4:
  * ============================================================================
- * 1. [Tối ưu tiến trình chạy ngầm & Tiết kiệm CPU (Idle Efficiency)]:
- *    - Ngắt hoàn toàn polling interval Live Chat (2s) và Chat Memory GC (10s) khi ở ngoài trang xem video (/watch, /live).
- *    - Chuyển Danmaku Scheduler (50ms) sang cơ chế On-Demand: chỉ thức dậy khi có tin nhắn trong hàng đợi và tự động ngủ khi hàng đợi trống.
- * 2. [Tối ưu DOM MutationObservers & Settings Panel]:
- *    - Masthead Observer trong panel.js: Bỏ qua việc re-sync settings panel khi nút bánh răng đã nằm đúng vị trí trong masthead.
- *    - Thu hẹp phạm vi preventAutoPause: Quan sát trực tiếp ytd-popup-container, không còn quan sát toàn bộ cây DOM ytd-app.
- *    - Dọn dẹp dead CSS keyframes (@keyframes ytcConfirmInserted).
+ * 1. [Mở khóa tua Live Stream (Force Live DVR)]:
+ *    - Khởi tạo hook ytInitialPlayerResponse và JSON.parse từ document-start, đảm bảo bắt trọn luồng phát ngay cả khi tính năng được bật sau đó.
+ *    - Dỡ bỏ cơ chế Server-Driven ABR (useServerDrivenAbr, serverPlaybackStartConfig) và URL Server ABR độc quyền của YouTube trên các luồng live tắt DVR.
+ *    - Xử lý tương thích cả hai cấu trúc dữ liệu data.videoDetails và data.playerResponse.videoDetails (SPA navigation).
+ * 2. [Tối ưu hiệu năng Zero-Lag & Bảo vệ tính năng khác]:
+ *    - Fast-path boolean check: khi tính năng tắt, JSON.parse trả kết quả tức thì không tốn CPU.
+ *    - Không can thiệp Object.prototype, đảm bảo bình luận, feed, chat và uBlock Origin hoạt động 100% trơn tru.
+ * 3. [UX & Tương tác Auto Live Sync]:
+ *    - Hiển thị Toast thông báo tải lại trang (F5) khi người dùng bật công tắc Live DVR.
+ *    - Đồng bộ mượt mà giữa tua lùi (Live DVR) và Tự động trực tiếp (Auto Live Sync): không tự ý giật ngược về mốc live khi người dùng đang chủ động tua xem lại.
  * ============================================================================
  */`;
 

@@ -648,6 +648,20 @@ export function createSettingsPanel() {
                         }
                     }).catch(() => {});
                 }
+                if (key === 'unlockLiveDvr') {
+                    if (checkbox.checked) {
+                        showToast('⚠️ Vui lòng tải lại trang (F5) để nạp lại luồng Live Stream có thanh tua!');
+                        if (window.ytInitialPlayerResponse) {
+                            import('../player/liveDvr.js').then(m => {
+                                if (typeof m.patchResponse === 'function') {
+                                    m.patchResponse(window.ytInitialPlayerResponse);
+                                }
+                            }).catch(() => {});
+                        }
+                    } else {
+                        showToast('Đã tắt mở khóa tua Live Stream (F5 để áp dụng)');
+                    }
+                }
             });
 
             item.addEventListener('click', (e) => {

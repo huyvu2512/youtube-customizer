@@ -16,7 +16,17 @@ export function resetAutoLiveState() {
 
 export function recordUserSeek() {
     lastUserSeekTime = Date.now();
-    userIsRewound = true;
+    setTimeout(() => {
+        const p = document.querySelector('#movie_player:not(#inline-preview-player)');
+        if (!p || !isCurrentlyActiveLive(p)) return;
+        const video = p.querySelector('video');
+        const delay = getLiveDelay(p, video);
+        if (delay > 8.0) {
+            userIsRewound = true;
+        } else {
+            userIsRewound = false;
+        }
+    }, 300);
 }
 
 export function snapToLive(player) {
@@ -252,18 +262,7 @@ export function initAutoLiveSync() {
             const player = document.querySelector('#movie_player:not(#inline-preview-player)');
             if (!player || !isCurrentlyActiveLive(player)) return;
 
-            lastUserSeekTime = Date.now();
-            setTimeout(() => {
-                const p = document.querySelector('#movie_player:not(#inline-preview-player)');
-                if (!p || !isCurrentlyActiveLive(p)) return;
-                const video = p.querySelector('video');
-                const delay = getLiveDelay(p, video);
-                if (delay > 15.0) {
-                    userIsRewound = true;
-                } else {
-                    userIsRewound = false;
-                }
-            }, 300);
+            recordUserSeek();
         }
     }, true);
 

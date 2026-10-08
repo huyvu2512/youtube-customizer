@@ -32,7 +32,7 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.5.3** tối ưu hóa chu kỳ nền (**Idle Efficiency**): chuyển bộ điều phối Danmaku sang cơ chế kích hoạt theo nhu cầu (On-Demand Scheduler), ngắt hoàn toàn các polling timer chạy ngầm khi không xem video, cách ly MutationObserver và loại bỏ triệt để các tác vụ lặp vô ích. Toàn bộ tính năng hiện có được bảo toàn nguyên vẹn 100%.
+Phiên bản **v3.5.4** hoàn thiện triệt để tính năng **Mở khóa tua Live Stream (Force Live DVR)**: can thiệp an toàn ngay từ `document-start`, dỡ bỏ cơ chế ép mốc trực tiếp Server-Driven ABR của YouTube trên các luồng live tắt tua, bảo toàn 100% hiệu năng Zero-Lag và phối hợp nhịp nhàng với tính năng Auto Live Sync. Toàn bộ tính năng hiện có được bảo toàn nguyên vẹn 100%.
 
 ---
 
