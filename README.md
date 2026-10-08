@@ -7,7 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.6.0-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.6.1-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -32,7 +32,7 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.6.0** tối ưu hóa bố cục cài đặt: chuyển tính năng **Ẩn sản phẩm gắn thẻ (YouTube Shopping)** sang Tab 2 (Lọc nội dung sạch) giúp phân loại tính năng chuẩn xác và khoa học; đồng thời hoàn thiện cơ chế kiểm tra cập nhật đa tầng (Multi-Tier) tự động giải mã Base64 cho GitHub Contents REST API kết hợp fallback CDN, mang lại phản hồi cập nhật thời gian thực không lo kẹt cache hay nghẽn giới hạn lượt gọi.
+Phiên bản **v3.6.1** nâng cấp đột phá tính năng **Ánh sáng phòng (Ambilight) Full-Screen Cinema (Spread 400%)**: sở hữu cấu trúc Dual-Layer kết hợp giữa lớp tỏa rộng không gian 400% bao phủ toàn bộ màn hình 360 độ và lớp hào quang viền sống động rực rỡ; xóa sổ hoàn toàn hiện tượng lộ viền hoặc khối chữ nhật màu đục; tích hợp cơ chế làm dịu màu nội dung phụ (Cinema Ambience) và bóng đổ chiều sâu OLED giúp video chính nổi bật rực rỡ và đắm chìm tuyệt đối.
 
 ---
 

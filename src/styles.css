@@ -1879,8 +1879,11 @@ html:not([dark]) .ytc-update-btn:hover {
    HIỆU ỨNG ÁNH SÁNG PHÒNG (AMBIENT LIGHT / AMBILIGHT) TỰ ĐỘNG TỐI ƯU
    ========================================================================== */
 /* ==========================================================================
-   HIỆU ỨNG ÁNH SÁNG PHÒNG (AMBIENT LIGHT / AMBILIGHT) TỰ ĐỘNG TỐI ƯU
-   - Full-Screen Cinema Ambilight: Tỏa đều 360 độ, không lộ viền video
+   HIỆU ỨNG ÁNH SÁNG PHÒNG (AMBIENT LIGHT / AMBILIGHT) FULL-SCREEN CINEMA
+   - True 400% Spread: Tỏa đều 360 độ khắp màn hình, xóa tan 100% mép viền video
+   - Dual-Layer Cinema Glow: Lớp tỏa rộng không gian + Lớp hào quang viền sống động
+   - Dim Surrounding Content: Làm dịu màu các phần phụ giúp video chính nổi bật rực rỡ
+   - OLED Depth Shadow: Tách biệt video sắc nét như màn hình rạp chiếu phim
    ========================================================================== */
 #ytc-ambient-wrapper {
     position: absolute;
@@ -1892,57 +1895,134 @@ html:not([dark]) .ytc-update-btn:hover {
     z-index: 0 !important;
     overflow: visible !important;
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #ytc-ambient-wrapper.ytc-ambient-active {
     opacity: 1;
 }
 
-#ytc-ambient-canvas {
+/* Lớp 1: Tỏa rộng Full Màn hình (Spread 400%) - Lan tỏa ra tận mép trên, dưới, trái, phải */
+#ytc-ambient-spread-canvas {
     position: absolute;
-    transform: scale(1.4, 1.45) translateZ(0);
-    filter: blur(85px) saturate(190%) brightness(125%);
+    transform: scale(3.8, 4.0) translateZ(0);
+    transform-origin: center center;
+    filter: blur(120px) saturate(210%) brightness(120%);
     pointer-events: none !important;
     will-change: filter, transform;
-    opacity: 0.88;
-    transition: opacity 0.3s ease;
+    opacity: 0.78;
+    transition: opacity 0.4s ease;
 }
 
-html:not([dark]) #ytc-ambient-canvas {
-    filter: blur(75px) saturate(150%) brightness(108%);
-    opacity: 0.72;
+/* Lớp 2: Hào quang viền sống động sát mép video (Accent Glow) - Tạo độ rực rỡ và chiều sâu */
+#ytc-ambient-accent-canvas {
+    position: absolute;
+    transform: scale(1.75, 1.85) translateZ(0);
+    transform-origin: center center;
+    filter: blur(55px) saturate(240%) brightness(130%);
+    pointer-events: none !important;
+    will-change: filter, transform;
+    opacity: 0.82;
+    transition: opacity 0.4s ease;
 }
 
-/* 1. Thanh Masthead trên cùng: Kính mờ cao cấp để ánh sáng hắt lên đỉnh trình duyệt */
+html:not([dark]) #ytc-ambient-spread-canvas {
+    filter: blur(100px) saturate(160%) brightness(110%);
+    opacity: 0.55;
+}
+html:not([dark]) #ytc-ambient-accent-canvas {
+    filter: blur(48px) saturate(180%) brightness(115%);
+    opacity: 0.65;
+}
+
+/* 1. Thanh Masthead trên cùng: Kính mờ siêu sang để ánh sáng hắt lên đỉnh trình duyệt */
 html.ytc-ambient-lighting #masthead-container,
 html.ytc-ambient-lighting ytd-masthead {
-    background: rgba(15, 15, 15, 0.72) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
+    background: rgba(11, 11, 11, 0.65) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
-/* 2. Toàn trang watch-flexy và các cột: Trong suốt để ánh sáng xuyên qua */
-html.ytc-ambient-lighting ytd-watch-flexy {
-    background: transparent !important;
-}
+/* 2. Làm nền toàn trang xem video hoàn toàn trong suốt để ánh sáng xuyên thấu 100% */
+html.ytc-ambient-lighting,
+html.ytc-ambient-lighting body,
+html.ytc-ambient-lighting ytd-app,
+html.ytc-ambient-lighting #page-manager,
+html.ytc-ambient-lighting ytd-watch-flexy,
 html.ytc-ambient-lighting ytd-watch-flexy #columns,
 html.ytc-ambient-lighting ytd-watch-flexy #primary,
-html.ytc-ambient-lighting ytd-watch-flexy #secondary {
+html.ytc-ambient-lighting ytd-watch-flexy #primary-inner,
+html.ytc-ambient-lighting ytd-watch-flexy #secondary,
+html.ytc-ambient-lighting ytd-watch-flexy #secondary-inner,
+html.ytc-ambient-lighting ytd-watch-flexy #player,
+html.ytc-ambient-lighting ytd-watch-flexy #player-container,
+html.ytc-ambient-lighting ytd-watch-flexy #player-container-outer,
+html.ytc-ambient-lighting ytd-watch-flexy #player-container-inner {
     background: transparent !important;
 }
 
-/* 3. Nền playlist panel: Kính mờ để ánh sáng lan tỏa xuyên qua bên phải */
-html.ytc-ambient-lighting ytd-playlist-panel-renderer {
-    background: rgba(24, 24, 24, 0.78) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
+/* 3. Nền playlist panel: Kính mờ sang trọng hòa quyện cùng ánh sáng bên phải */
+html.ytc-ambient-lighting ytd-playlist-panel-renderer,
+html.ytc-ambient-lighting ytd-playlist-panel-renderer #container,
+html.ytc-ambient-lighting ytd-playlist-panel-renderer #header,
+html.ytc-ambient-lighting ytd-playlist-panel-renderer .header.ytd-playlist-panel-renderer {
+    background: rgba(18, 18, 18, 0.68) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+}
+html.ytc-ambient-lighting ytd-playlist-panel-video-renderer {
+    background: transparent !important;
+}
+html.ytc-ambient-lighting ytd-playlist-panel-video-renderer[selected] {
+    background: rgba(255, 255, 255, 0.08) !important;
 }
 
-/* Đảm bảo movie player nằm ở lớp trên ánh sáng */
+/* 4. Tách biệt viền video sắc nét như màn hình OLED, xóa tan 100% hiện tượng lộ viền */
 html.ytc-ambient-lighting #movie_player {
-    z-index: 1 !important;
+    z-index: 2 !important;
     position: relative;
+    box-shadow: 0 12px 42px rgba(0, 0, 0, 0.85), 0 0 2px rgba(0, 0, 0, 0.95) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+
+/* 5. Giảm màu và dịu nội dung phụ xung quanh để video chính nổi bật rực rỡ */
+html.ytc-ambient-lighting #secondary ytd-thumbnail,
+html.ytc-ambient-lighting #related ytd-thumbnail {
+    filter: brightness(0.88) contrast(0.95);
+    transition: filter 0.25s ease;
+}
+html.ytc-ambient-lighting #secondary ytd-thumbnail:hover,
+html.ytc-ambient-lighting #related ytd-thumbnail:hover {
+    filter: brightness(1) contrast(1);
+}
+
+/* Description box kính mờ tinh tế */
+html.ytc-ambient-lighting ytd-watch-metadata #description.ytd-watch-metadata,
+html.ytc-ambient-lighting #description-inner {
+    background: rgba(255, 255, 255, 0.04) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 12px !important;
+}
+
+/* Các nút Like, Share, Download, v.v. dạng kính tối cao cấp */
+html.ytc-ambient-lighting #actions ytd-button-renderer yt-button-shape button,
+html.ytc-ambient-lighting #actions ytd-menu-renderer yt-button-shape button,
+html.ytc-ambient-lighting #top-level-buttons-computed yt-button-shape button {
+    background: rgba(255, 255, 255, 0.07) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Tiêu đề video có bóng chữ nhẹ tạo độ tương phản cao */
+html.ytc-ambient-lighting ytd-watch-metadata #title h1 {
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
 }
 
 /* Tự động ẩn khi fullscreen hoàn toàn để tiết kiệm 100% GPU */

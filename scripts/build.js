@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.6.0
-// @description  YouTube Customizer v3.6.0 — Chuyển tính năng Ẩn sản phẩm gắn thẻ sang Tab Lọc nội dung, tối ưu bộ giải mã cập nhật Base64 thời gian thực.
+// @version      3.6.1
+// @description  YouTube Customizer v3.6.1 — Nâng cấp Ánh sáng phòng Full-Screen Cinema (Spread 400%), Dual-Layer Glow, làm dịu nền và xóa bỏ hoàn toàn lộ viền video.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,14 +23,15 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.6.0:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.6.1:
  * ============================================================================
- * 1. [Tối ưu bố cục cài đặt]:
- *    - Chuyển tính năng "Ẩn sản phẩm gắn thẻ" (hideShopping) sang Tab 2 (Lọc nội dung sạch).
- *    - Giữ Tab 1 (Giao diện) tinh gọn, tập trung hoàn toàn vào bố cục và hiệu ứng video.
- * 2. [Kiểm tra cập nhật siêu bền bỉ]:
- *    - Tích hợp tự động giải mã Base64 cho GitHub Contents REST API.
- *    - Cơ chế Multi-Tier: Trực tiếp API thô -> Giải mã Base64 -> Fallback CDN khi quá tải IP.
+ * 1. [Nâng cấp Ánh sáng phòng Full-Screen Cinema (Spread 400%)]:
+ *    - Kiến trúc Dual-Layer: Lớp tỏa rộng 400% phủ kín toàn màn hình (360 độ) + Lớp hào quang viền sống động sát mép video.
+ *    - Xóa tan 100% hiện tượng "khối chữ nhật màu nâu", quầng sáng mềm mại tan biến vào không gian.
+ *    - Tách biệt viền video sắc nét chuẩn OLED với lớp bóng đổ sâu cinema.
+ * 2. [Làm dịu màu nội dung xung quanh (Cinema Ambience)]:
+ *    - Làm trong suốt toàn bộ chuỗi DOM nền YouTube, Masthead và Playlist dạng kính mờ cao cấp.
+ *    - Giảm độ chói/tương phản của thumbnail phụ và description giúp video chính nổi bật rực rỡ nhất.
  * ============================================================================
  */`;
 

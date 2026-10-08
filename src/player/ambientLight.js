@@ -9,8 +9,10 @@
 import { currentConfig } from '../core/config.js';
 
 let ambientWrapper = null;
-let ambientCanvas = null;
-let ambientCtx = null;
+let ambientSpreadCanvas = null;
+let ambientAccentCanvas = null;
+let ambientSpreadCtx = null;
+let ambientAccentCtx = null;
 let animFrameId = null;
 let isRunning = false;
 let lastDrawTime = 0;
@@ -27,7 +29,7 @@ const TARGET_INTERVAL = 1000 / 18; // ~18 FPS (55.5ms)
  * Cập nhật vị trí và kích thước canvas bám chuẩn xác theo Video Player
  */
 export function updateAmbientPosition() {
-    if (!ambientCanvas || !ambientWrapper) return;
+    if (!ambientSpreadCanvas || !ambientWrapper) return;
     const moviePlayer = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
     const watchFlexy = document.querySelector('ytd-watch-flexy');
 
@@ -42,15 +44,25 @@ export function updateAmbientPosition() {
         const width = Math.round(playerRect.width);
         const height = Math.round(playerRect.height);
 
-        ambientCanvas.style.top = `${top}px`;
-        ambientCanvas.style.left = `${left}px`;
-        ambientCanvas.style.width = `${width}px`;
-        ambientCanvas.style.height = `${height}px`;
+        const setPos = (c) => {
+            if (!c) return;
+            c.style.top = `${top}px`;
+            c.style.left = `${left}px`;
+            c.style.width = `${width}px`;
+            c.style.height = `${height}px`;
+        };
+        setPos(ambientSpreadCanvas);
+        setPos(ambientAccentCanvas);
     } else {
-        ambientCanvas.style.top = '0px';
-        ambientCanvas.style.left = '0px';
-        ambientCanvas.style.width = '100%';
-        ambientCanvas.style.height = '100%';
+        const setFull = (c) => {
+            if (!c) return;
+            c.style.top = '0px';
+            c.style.left = '0px';
+            c.style.width = '100%';
+            c.style.height = '100%';
+        };
+        setFull(ambientSpreadCanvas);
+        setFull(ambientAccentCanvas);
     }
 }
 
@@ -75,12 +87,20 @@ function ensureAmbientCanvas() {
         ambientWrapper.id = 'ytc-ambient-wrapper';
         ambientWrapper.setAttribute('aria-hidden', 'true');
 
-        ambientCanvas = document.createElement('canvas');
-        ambientCanvas.id = 'ytc-ambient-canvas';
-        ambientCanvas.width = CANVAS_WIDTH;
-        ambientCanvas.height = CANVAS_HEIGHT;
+        // Lớp 1: Tỏa rộng Full-Screen (Spread 400%)
+        ambientSpreadCanvas = document.createElement('canvas');
+        ambientSpreadCanvas.id = 'ytc-ambient-spread-canvas';
+        ambientSpreadCanvas.width = CANVAS_WIDTH;
+        ambientSpreadCanvas.height = CANVAS_HEIGHT;
 
-        ambientWrapper.appendChild(ambientCanvas);
+        // Lớp 2: Hào quang viền sống động sát mép video (Accent Halo)
+        ambientAccentCanvas = document.createElement('canvas');
+        ambientAccentCanvas.id = 'ytc-ambient-accent-canvas';
+        ambientAccentCanvas.width = CANVAS_WIDTH;
+        ambientAccentCanvas.height = CANVAS_HEIGHT;
+
+        ambientWrapper.appendChild(ambientSpreadCanvas);
+        ambientWrapper.appendChild(ambientAccentCanvas);
 
         if (watchFlexy) {
             watchFlexy.insertBefore(ambientWrapper, watchFlexy.firstChild);
@@ -88,15 +108,22 @@ function ensureAmbientCanvas() {
             moviePlayer.parentElement.insertBefore(ambientWrapper, moviePlayer);
         }
 
-        if (ambientCanvas) {
-            ambientCtx = ambientCanvas.getContext('2d', {
-                alpha: false,
-                willReadFrequently: false
-            });
-            if (ambientCtx) {
-                ambientCtx.imageSmoothingEnabled = true;
-                ambientCtx.imageSmoothingQuality = 'low';
-            }
+        ambientSpreadCtx = ambientSpreadCanvas.getContext('2d', {
+            alpha: false,
+            willReadFrequently: false
+        });
+        if (ambientSpreadCtx) {
+            ambientSpreadCtx.imageSmoothingEnabled = true;
+            ambientSpreadCtx.imageSmoothingQuality = 'low';
+        }
+
+        ambientAccentCtx = ambientAccentCanvas.getContext('2d', {
+            alpha: false,
+            willReadFrequently: false
+        });
+        if (ambientAccentCtx) {
+            ambientAccentCtx.imageSmoothingEnabled = true;
+            ambientAccentCtx.imageSmoothingQuality = 'low';
         }
     }
 
@@ -128,7 +155,7 @@ function ensureAmbientCanvas() {
         } catch (e) {}
     }
 
-    return ambientCanvas;
+    return ambientSpreadCanvas;
 }
 
 /**
@@ -144,7 +171,7 @@ function shouldBeActive() {
 }
 
 /**
- * Vòng lặp render siêu nhẹ (18 FPS)
+ * Vòng lặp render siêu nhẹ (18 FPS) cho cả 2 lớp ánh sáng
  */
 function renderLoop(timestamp) {
     if (!isRunning) return;
@@ -159,9 +186,10 @@ function renderLoop(timestamp) {
         return;
     }
 
-    if (ambientCtx) {
+    if (ambientSpreadCtx && ambientAccentCtx) {
         try {
-            ambientCtx.drawImage(currentVideo, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            ambientSpreadCtx.drawImage(currentVideo, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            ambientAccentCtx.drawImage(ambientSpreadCanvas, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         } catch (e) {}
     }
 }
