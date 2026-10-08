@@ -2064,4 +2064,67 @@ html:not(.ytc-ambient-lighting) #ytc-ambient-wrapper {
     display: none !important;
 }
 
+/* ==========================================================================
+   TỐI ƯU BỐ CỤC TRANG XEM VIDEO (WATCH PAGE FULL-WIDTH ALIGNMENT)
+   - Khắc phục triệt để lỗi khung video bị bóp ép vào trong, thừa 2 khoảng trống 2 bên
+   - Ép layout trải rộng 100% màn hình, cách đều 2 mép 24px chuẩn như giao diện gốc
+   - Video player và sidebar gợi ý tự động co dãn linh hoạt, không vệt đen
+   ========================================================================== */
+@media (min-width: 1000px) {
+    ytd-watch-flexy:not([theater]):not([fullscreen]) #columns.ytd-watch-flexy {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+        padding-left: var(--ytd-margin-6x, 24px) !important;
+        padding-right: var(--ytd-margin-6x, 24px) !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        justify-content: space-between !important;
+    }
+
+    ytd-watch-flexy:not([theater]):not([fullscreen]) #primary.ytd-watch-flexy {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        max-width: calc(100% - var(--ytd-watch-flexy-sidebar-width, 380px) - 24px) !important;
+        width: auto !important;
+        margin-right: 24px !important;
+    }
+
+    ytd-watch-flexy:not([theater]):not([fullscreen]) #primary.ytd-watch-flexy #primary-inner {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    ytd-watch-flexy:not([theater]):not([fullscreen]) #player.ytd-watch-flexy,
+    ytd-watch-flexy:not([theater]):not([fullscreen]) #player-container-outer.ytd-watch-flexy,
+    ytd-watch-flexy:not([theater]):not([fullscreen]) #player-container-inner.ytd-watch-flexy,
+    ytd-watch-flexy:not([theater]):not([fullscreen]) #player-container.ytd-watch-flexy {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    ytd-watch-flexy:not([theater]):not([fullscreen]) #movie_player {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    ytd-watch-flexy:not([theater]):not([fullscreen]) #secondary.ytd-watch-flexy {
+        width: var(--ytd-watch-flexy-sidebar-width, 380px) !important;
+        min-width: 300px !important;
+        max-width: 420px !important;
+        flex-shrink: 0 !important;
+        margin-right: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    ytd-watch-flexy:not([theater]):not([fullscreen]) #secondary.ytd-watch-flexy #secondary-inner,
+    ytd-watch-flexy:not([theater]):not([fullscreen]) #secondary.ytd-watch-flexy ytd-playlist-panel-renderer,
+    ytd-watch-flexy:not([theater]):not([fullscreen]) #secondary.ytd-watch-flexy #related {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+}
+
+
 

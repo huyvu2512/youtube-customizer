@@ -1,28 +1,27 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.6.1
-// @description  YouTube Customizer v3.6.1 — Nâng cấp Ánh sáng phòng Full-Screen Cinema (Spread 400%), Dual-Layer Glow, làm dịu nền và xóa bỏ hoàn toàn lộ viền video.
+// @version      3.6.2
+// @description  YouTube Customizer v3.6.2 — Tối ưu bố cục trang xem video bám sát mép, xóa bỏ khoảng trống thừa 2 bên và chống bóp khung hình; Ánh sáng phòng Full-Screen Cinema.
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.6.1
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.6.2
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.6.1
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.6.1
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.6.2
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.6.2
 // ==/UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.6.1:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.6.2:
  * ============================================================================
- * 1. [Nâng cấp Ánh sáng phòng Full-Screen Cinema (Spread 400%)]:
- *    - Kiến trúc Dual-Layer: Lớp tỏa rộng 400% phủ kín toàn màn hình (360 độ) + Lớp hào quang viền sống động sát mép video.
- *    - Xóa tan 100% hiện tượng "khối chữ nhật màu nâu", quầng sáng mềm mại tan biến vào không gian.
- *    - Tách biệt viền video sắc nét chuẩn OLED với lớp bóng đổ sâu cinema.
- * 2. [Làm dịu màu nội dung xung quanh (Cinema Ambience)]:
- *    - Làm trong suốt toàn bộ chuỗi DOM nền YouTube, Masthead và Playlist dạng kính mờ cao cấp.
- *    - Giảm độ chói/tương phản của thumbnail phụ và description giúp video chính nổi bật rực rỡ nhất.
+ * 1. [Tối ưu bố cục trang xem video (Full-Width Watch Page Alignment)]:
+ *    - Khắc phục triệt để lỗi khung video bị bóp hẹp và thừa 2 dải đen trống 2 bên.
+ *    - Trải rộng layout 100%, canh lề 2 mép 24px chuẩn xác như giao diện gốc.
+ *    - Video player và sidebar gợi ý / playlist co dãn linh hoạt, bám sát mép phải.
+ * 2. [Ánh sáng phòng Full-Screen Cinema (Spread 400%)]:
+ *    - Tự động tương thích và co giãn hoàn hảo theo kích thước player mới.
  * ============================================================================
  */

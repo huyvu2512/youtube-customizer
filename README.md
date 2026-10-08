@@ -7,7 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.6.1-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.6.2-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -32,7 +32,7 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.6.1** nâng cấp đột phá tính năng **Ánh sáng phòng (Ambilight) Full-Screen Cinema (Spread 400%)**: sở hữu cấu trúc Dual-Layer kết hợp giữa lớp tỏa rộng không gian 400% bao phủ toàn bộ màn hình 360 độ và lớp hào quang viền sống động rực rỡ; xóa sổ hoàn toàn hiện tượng lộ viền hoặc khối chữ nhật màu đục; tích hợp cơ chế làm dịu màu nội dung phụ (Cinema Ambience) và bóng đổ chiều sâu OLED giúp video chính nổi bật rực rỡ và đắm chìm tuyệt đối.
+Phiên bản **v3.6.2** tối ưu hóa bố cục trang xem video (`/watch`): khắc phục triệt để lỗi khung video bị bóp hẹp và thừa 2 khoảng trống 2 bên; mở rộng layout 100% tràn đều sang 2 mép với lề chuẩn 24px như giao diện gốc; video player và danh sách phát/gợi ý co dãn linh hoạt, bám sát mép phải. Cùng với tính năng Ánh sáng phòng (Ambilight) Full-Screen Cinema (Spread 400%) mang lại trải nghiệm xem phim chân thực, đắm chìm nhất.
 
 ---
 

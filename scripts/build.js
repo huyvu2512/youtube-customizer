@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.6.1
-// @description  YouTube Customizer v3.6.1 — Nâng cấp Ánh sáng phòng Full-Screen Cinema (Spread 400%), Dual-Layer Glow, làm dịu nền và xóa bỏ hoàn toàn lộ viền video.
+// @version      3.6.2
+// @description  YouTube Customizer v3.6.2 — Tối ưu bố cục trang xem video bám sát mép, xóa bỏ khoảng trống thừa 2 bên và chống bóp khung hình; Ánh sáng phòng Full-Screen Cinema.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
