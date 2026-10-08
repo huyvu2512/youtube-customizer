@@ -7,7 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.7.7-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.8.0-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -32,13 +32,13 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.6.7** sửa triệt để lỗi nền trắng ở một bên trang; khóa chặt nền tảng `html`, `body`, `ytd-app` ở màu đen sâu OLED `#0f0f0f` chống lộ nền trắng trình duyệt; quầng sáng phòng Ambilight dải màu dóng dọc lan tỏa sâu và tan biến mượt mà; Masthead và thanh tìm kiếm trong suốt xuyên thấu ở đỉnh trang (tự động trở lại nền đen khi cuộn xuống).
+Phiên bản **v3.8.0** là bản nâng cấp lớn: Siêu nâng cấp **Ánh sáng phòng (Ambilight 2.0 Cinema ⭐)** tràn viền phủ kín 100% các góc màn hình, dải màu kéo dài sâu xuống giữa trang (2200px) chiếu rọi xuyên suốt bình luận; Tách biệt hoàn hảo CSS cho cả **Dark Mode** và **Light Mode**; Thanh tìm kiếm và Playlist trong suốt 100% Frameless; Tích hợp công tắc **Tự động cập nhật (Auto-Update)** gọi GitHub API tiện lợi.
 
 ---
 
 ## Tính năng chính
 
-- **Ánh sáng phòng (Ambilight) Siêu tối ưu** - Tỏa sáng viền video theo màu sắc khung hình cực đẹp mắt. Chỉ 1 công tắc duy nhất, cân chỉnh chuẩn điện ảnh, tự động ngắt hoàn toàn khi tạm dừng video, chuyển tab hoặc cuộn trang.
+- **Ánh sáng phòng (Ambilight 2.0 Cinema) ⭐** - Tỏa sáng viền video theo màu sắc khung hình chuẩn rạp chiếu phim. Tự động nhận diện và bỏ qua viền đen (Cinematic Letterbox), mở rộng tràn viền phủ kín 100% bốn góc màn hình, dải màu dóng dọc chiếu rọi sâu 2200px xuống tận vùng bình luận. Tự động tối ưu GPU, ngắt khi tạm dừng video hoặc chuyển tab.
 - **Menu cài đặt 5 Tab trực quan** - Phân chia khoa học thành Giao diện, Lọc nội dung, Trình phát, Tối Ưu và Thông tin tiện ích với giao diện Dark Mode bán trong suốt tinh tế.
 - **Tối ưu hiệu năng Zero-Lag & Bố cục lưới mượt mà** - Khắc phục triệt để lỗi click trượt do mất hitbox, loại bỏ hoàn toàn các bộ chọn `:has()` gây recalculate style khi hover, giải phóng áp lực CPU trên Main Thread.
 - **Ẩn sản phẩm gắn thẻ (YouTube Shopping)** - Tự động đóng và ẩn thanh trượt Sản phẩm bên phải (`engagement-panel-shopping-panel`), nút túi xách mua sắm trên video player và các kệ hàng tiếp thị liên kết Shopee.

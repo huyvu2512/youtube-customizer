@@ -583,6 +583,27 @@ html:not([dark]) .ytc-header-badge {
     border-color: rgba(204, 0, 0, 0.25);
 }
 
+.ytc-star-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 13px;
+    margin-left: 6px;
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.7));
+    animation: ytc-star-pulse 2.4s infinite ease-in-out;
+    cursor: default;
+    user-select: none;
+}
+@keyframes ytc-star-pulse {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+        filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.5));
+    }
+    50% {
+        transform: scale(1.22) rotate(10deg);
+        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.9));
+    }
+}
+
 .ytc-tabs {
     display: flex;
     align-items: center;

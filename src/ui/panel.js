@@ -167,6 +167,7 @@ export function createSettingsPanel() {
                     <div class="ytc-item-left">
                         ${AMBIENT_LIGHT_SVG}
                         <span>Ánh sáng phòng (Ambilight)</span>
+                        <span class="ytc-star-badge" title="Tính năng đặc biệt nổi bật">⭐</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-ambient-light">
                         <input type="checkbox" id="ytc-chk-ambient-light" name="ambientLighting" aria-label="Ánh sáng phòng (Ambilight)" ${currentConfig.ambientLighting ? 'checked' : ''}>
