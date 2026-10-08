@@ -3,12 +3,15 @@
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
 import { hasLiveOrChatSupport } from '../core/utils.js';
-import { getLanguageInfo } from '../core/i18n.js';
-import { CHECK_SVG } from '../core/constants.js';
+import { getLanguageInfo, t } from '../core/i18n.js';
+import { updatePanelLanguage } from './panel.js';
 
 export function syncPanelState(targetPanel) {
     const panel = targetPanel || document.getElementById('ytc-settings-panel');
     if (!panel) return;
+
+    // 0. Đồng bộ toàn bộ ngôn ngữ giao diện của panel
+    updatePanelLanguage(panel);
 
     // 1. Đồng bộ chế độ Live Chat và kiểm tra tính khả dụng của video hiện tại
     const hasChat = hasLiveOrChatSupport();
@@ -19,16 +22,16 @@ export function syncPanelState(targetPanel) {
         allBtns.forEach(btn => {
             if (!hasChat) {
                 btn.setAttribute('disabled', 'disabled');
-                btn.setAttribute('title', 'Chỉ khả dụng khi xem Live Stream hoặc video có khung trò chuyện');
+                btn.setAttribute('title', t('chat_tip_disabled'));
             } else {
                 btn.removeAttribute('disabled');
                 const overlayMode = btn.getAttribute('data-overlay');
                 if (overlayMode === 'off') {
-                    btn.setAttribute('title', 'Tắt chat trên video');
+                    btn.setAttribute('title', t('chat_tip_off'));
                 } else if (overlayMode === 'danmaku') {
-                    btn.setAttribute('title', 'Chữ chạy ngang màn hình dạng Danmaku');
+                    btn.setAttribute('title', t('chat_tip_danmaku'));
                 } else if (overlayMode === 'streamer') {
-                    btn.setAttribute('title', 'Khung chat nổi của streamer, kéo thả và co giãn tự do');
+                    btn.setAttribute('title', t('chat_tip_streamer'));
                 }
             }
         });
@@ -61,30 +64,23 @@ export function syncPanelState(targetPanel) {
     });
     const qualityBadge = panel.querySelector('.ytc-quality-badge');
     if (qualityBadge) {
-        const labels = {
-            auto: 'TỰ ĐỘNG',
-            max: 'CAO NHẤT',
-            '1440p': '2K',
-            '1080p': '1080P',
-            '720p': '720P'
-        };
-        qualityBadge.textContent = labels[currentQuality] || currentQuality.toUpperCase();
+        if (currentQuality === 'auto') qualityBadge.textContent = t('quality_auto').toUpperCase();
+        else if (currentQuality === 'max') qualityBadge.textContent = t('quality_max').toUpperCase();
+        else qualityBadge.textContent = currentQuality.toUpperCase();
     }
 
-    // 5. Đồng bộ ngôn ngữ giao diện (Custom Dropdown)
+    // 5. Đồng bộ ngôn ngữ giao diện (Floating Dropdown)
     const currentLangCode = currentConfig.language || 'auto';
     const langInfo = getLanguageInfo(currentLangCode);
-    const flagEl = panel.querySelector('#ytc-lang-current-flag');
-    const labelEl = panel.querySelector('#ytc-lang-current-label');
-    if (flagEl) flagEl.textContent = langInfo.flag;
+    const labelEl = document.getElementById('ytc-lang-current-label');
     if (labelEl) labelEl.textContent = langInfo.name;
 
-    panel.querySelectorAll('#ytc-lang-list .ytc-dropdown-item').forEach(item => {
-        const isMatch = item.getAttribute('data-code') === currentLangCode;
-        item.classList.toggle('active', isMatch);
-        item.setAttribute('aria-selected', isMatch ? 'true' : 'false');
-        const checkEl = item.querySelector('.ytc-lang-check');
-        if (checkEl) checkEl.innerHTML = isMatch ? CHECK_SVG : '';
-    });
+    const langMenu = document.getElementById('ytc-lang-menu');
+    if (langMenu) {
+        langMenu.querySelectorAll('.ytc-dropdown-item').forEach(item => {
+            const isMatch = item.getAttribute('data-code') === currentLangCode;
+            item.classList.toggle('active', isMatch);
+            item.setAttribute('aria-selected', isMatch ? 'true' : 'false');
+        });
+    }
 }
-

@@ -42,14 +42,44 @@ import {
     GIFT_SVG,
     EXTERNAL_LINK_SVG,
     SHOPPING_SVG,
-    AMBIENT_LIGHT_SVG,
-    GLOBE_SVG,
-    CHEVRON_DOWN_SVG,
-    CHECK_SVG
+    AMBIENT_LIGHT_SVG
 } from '../core/constants.js';
-import { SUPPORTED_LANGUAGES, getLanguageInfo } from '../core/i18n.js';
+import { SUPPORTED_LANGUAGES, getLanguageInfo, t } from '../core/i18n.js';
 import { syncPanelState } from './sync.js';
 import { setupOnboardingAndUpdates, isNewerVersion } from './notifier.js';
+
+export function updatePanelLanguage(targetPanel) {
+    const panel = targetPanel || document.getElementById('ytc-settings-panel');
+    if (!panel) return;
+
+    panel.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n');
+        if (!key) return;
+        const translated = t(key);
+        if (key === 'ambient_lighting' || el.querySelector('.ytc-star-badge')) {
+            el.innerHTML = `${translated}<span class="ytc-star-badge" title="${t('special_feature')}">⭐</span>`;
+        } else {
+            el.textContent = translated;
+        }
+    });
+
+    panel.querySelectorAll('[data-i18n-title]').forEach((el) => {
+        const key = el.getAttribute('data-i18n-title');
+        if (key) el.setAttribute('title', t(key));
+    });
+
+    const labelEl = document.getElementById('ytc-lang-current-label');
+    const langInfo = getLanguageInfo(currentConfig.language || 'auto');
+    if (labelEl) labelEl.textContent = langInfo.name;
+
+    const qualityBadge = panel.querySelector('.ytc-quality-badge');
+    if (qualityBadge) {
+        const q = currentConfig.preferredQuality || 'auto';
+        if (q === 'auto') qualityBadge.textContent = t('quality_auto').toUpperCase();
+        else if (q === 'max') qualityBadge.textContent = t('quality_max').toUpperCase();
+        else qualityBadge.textContent = q.toUpperCase();
+    }
+}
 
 let menuDismissBound = false;
 export function bindGlobalMenuDismiss() {
@@ -64,12 +94,12 @@ export function bindGlobalMenuDismiss() {
             }
         }
 
-        const langDropdown = document.getElementById('ytc-lang-dropdown');
-        if (langDropdown && langDropdown.classList.contains('open')) {
-            if (!e.target.closest('#ytc-lang-dropdown')) {
-                langDropdown.classList.remove('open');
-                const trigger = document.getElementById('ytc-lang-trigger');
-                if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        const langMenu = document.getElementById('ytc-lang-menu');
+        const langTrigger = document.getElementById('ytc-lang-trigger');
+        if (langMenu && langMenu.classList.contains('open')) {
+            if (!e.target.closest('#ytc-lang-menu') && !e.target.closest('#ytc-lang-trigger')) {
+                langMenu.classList.remove('open');
+                if (langTrigger) langTrigger.setAttribute('aria-expanded', 'false');
             }
         }
     });
@@ -79,6 +109,12 @@ export function bindGlobalMenuDismiss() {
             const panel = document.getElementById('ytc-settings-panel');
             if (panel && panel.classList.contains('open')) {
                 panel.classList.remove('open');
+            }
+            const langMenu = document.getElementById('ytc-lang-menu');
+            if (langMenu && langMenu.classList.contains('open')) {
+                langMenu.classList.remove('open');
+                const trigger = document.getElementById('ytc-lang-trigger');
+                if (trigger) trigger.setAttribute('aria-expanded', 'false');
             }
         }
     });
@@ -90,6 +126,12 @@ export function bindGlobalMenuDismiss() {
             const rect = btn.getBoundingClientRect();
             panel.style.top = (rect.bottom + 8) + 'px';
             panel.style.right = Math.max(12, window.innerWidth - rect.right - 10) + 'px';
+        }
+        const langMenu = document.getElementById('ytc-lang-menu');
+        if (langMenu && langMenu.classList.contains('open')) {
+            langMenu.classList.remove('open');
+            const trigger = document.getElementById('ytc-lang-trigger');
+            if (trigger) trigger.setAttribute('aria-expanded', 'false');
         }
     }, { passive: true });
 }
@@ -106,46 +148,46 @@ export function createSettingsPanel() {
             </div>
 
             <div class="ytc-tabs">
-                <button class="ytc-tab-btn active" data-tab="layout" title="Bố cục & Giao diện">
+                <button class="ytc-tab-btn active" data-tab="layout" data-i18n-title="tab_layout">
                     ${LAYOUT_TAB_SVG}
-                    <span>Giao diện</span>
+                    <span data-i18n="tab_layout">Giao diện</span>
                 </button>
-                <button class="ytc-tab-btn" data-tab="filter" title="Lọc nội dung sạch">
+                <button class="ytc-tab-btn" data-tab="filter" data-i18n-title="tab_filter">
                     ${SHIELD_TAB_SVG}
-                    <span>Lọc</span>
+                    <span data-i18n="tab_filter">Lọc</span>
                 </button>
-                <button class="ytc-tab-btn" data-tab="player" title="Trình phát & Video">
+                <button class="ytc-tab-btn" data-tab="player" data-i18n-title="tab_player">
                     ${PLAYER_TAB_SVG}
-                    <span>Trình phát</span>
+                    <span data-i18n="tab_player">Trình phát</span>
                 </button>
-                <button class="ytc-tab-btn" data-tab="optimize" title="Tối ưu hiệu năng, RAM & GPU">
+                <button class="ytc-tab-btn" data-tab="optimize" data-i18n-title="tab_optimize">
                     ${OPTIMIZE_TAB_SVG}
-                    <span>Tối Ưu</span>
+                    <span data-i18n="tab_optimize">Tối Ưu</span>
                 </button>
-                <button class="ytc-tab-btn" data-tab="info" title="Thông tin tiện ích & Tác giả">
+                <button class="ytc-tab-btn" data-tab="info" data-i18n-title="tab_info">
                     ${INFO_TAB_SVG}
-                    <span>Thông tin</span>
+                    <span data-i18n="tab_info">Thông tin</span>
                 </button>
             </div>
 
             <!-- TAB 1: GIAO DIỆN & BỐ CỤC -->
             <div class="ytc-tab-pane active" id="ytc-pane-layout">
-                <div class="ytc-item" id="ytc-row-cols" title="Tùy chỉnh số cột video hiển thị trên trang chủ và kênh">
+                <div class="ytc-item" id="ytc-row-cols" data-i18n-title="home_cols">
                     <div class="ytc-item-left">
                         ${GRID_SVG}
-                        <span>Số cột trang chủ</span>
+                        <span data-i18n="home_cols">Số cột trang chủ</span>
                     </div>
                     <div class="ytc-cols-group">
-                        <button class="ytc-col-btn ${currentConfig.columns === 3 ? 'active' : ''}" data-cols="3" title="Hiển thị 3 cột">3</button>
-                        <button class="ytc-col-btn ${currentConfig.columns === 4 ? 'active' : ''}" data-cols="4" title="Hiển thị 4 cột">4</button>
-                        <button class="ytc-col-btn ${currentConfig.columns === 5 ? 'active' : ''}" data-cols="5" title="Hiển thị 5 cột">5</button>
+                        <button class="ytc-col-btn ${currentConfig.columns === 3 ? 'active' : ''}" data-cols="3" title="3">3</button>
+                        <button class="ytc-col-btn ${currentConfig.columns === 4 ? 'active' : ''}" data-cols="4" title="4">4</button>
+                        <button class="ytc-col-btn ${currentConfig.columns === 5 ? 'active' : ''}" data-cols="5" title="5">5</button>
                     </div>
                 </div>
 
-                <div class="ytc-item" data-toggle="premiumLogo" title="Thay thế logo YouTube thường bằng logo YouTube Premium kèm mã quốc gia">
+                <div class="ytc-item" data-toggle="premiumLogo" data-i18n-title="premium_logo">
                     <div class="ytc-item-left">
                         ${YOUTUBE_SVG}
-                        <span>Logo Premium</span>
+                        <span data-i18n="premium_logo">Logo Premium</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-logo">
                         <input type="checkbox" id="ytc-chk-logo" name="premiumLogo" aria-label="Logo Premium" ${currentConfig.premiumLogo ? 'checked' : ''}>
@@ -153,10 +195,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="unlockLiveDvr" title="Mở khóa tua lùi thời gian trên các luồng Live Stream bị chủ kênh cấm tua">
+                <div class="ytc-item" data-toggle="unlockLiveDvr" data-i18n-title="unlock_live_dvr">
                     <div class="ytc-item-left">
                         ${REWIND_SVG}
-                        <span>Mở khóa tua Live Stream</span>
+                        <span data-i18n="unlock_live_dvr">Mở khóa tua Live Stream</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-livedvr">
                         <input type="checkbox" id="ytc-chk-livedvr" name="unlockLiveDvr" aria-label="Mở khóa tua Live Stream" ${currentConfig.unlockLiveDvr ? 'checked' : ''}>
@@ -164,10 +206,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="autoLiveSync" title="Tự động giữ mốc trực tiếp khi xem Live Stream, chống trễ hình khi mạng lag hoặc chuyển tab">
+                <div class="ytc-item" data-toggle="autoLiveSync" data-i18n-title="auto_live_sync">
                     <div class="ytc-item-left">
                         ${RADIO_SVG}
-                        <span>Tự động trực tiếp (Auto Live)</span>
+                        <span data-i18n="auto_live_sync">Tự động trực tiếp (Auto Live)</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-autolive">
                         <input type="checkbox" id="ytc-chk-autolive" name="autoLiveSync" aria-label="Tự động trực tiếp (Auto Live)" ${currentConfig.autoLiveSync ? 'checked' : ''}>
@@ -175,11 +217,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-
-                <div class="ytc-item" data-toggle="ambientLighting" title="Hiệu ứng ánh sáng phòng (Ambilight) phản chiếu theo màu video cực đẹp, tự động tối ưu phần cứng siêu nhẹ">
+                <div class="ytc-item" data-toggle="ambientLighting" data-i18n-title="ambient_lighting">
                     <div class="ytc-item-left">
                         ${AMBIENT_LIGHT_SVG}
-                        <span>Ánh sáng phòng (Ambilight)<span class="ytc-star-badge" title="Tính năng đặc biệt nổi bật">⭐</span></span>
+                        <span data-i18n="ambient_lighting">Ánh sáng phòng (Ambilight)<span class="ytc-star-badge" title="Tính năng đặc biệt nổi bật">⭐</span></span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-ambient-light">
                         <input type="checkbox" id="ytc-chk-ambient-light" name="ambientLighting" aria-label="Ánh sáng phòng (Ambilight)" ${currentConfig.ambientLighting ? 'checked' : ''}>
@@ -187,62 +228,38 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <!-- CHỌN NGÔN NGỮ GIAO DIỆN SCRIPT (CUSTOM DROPDOWN) -->
-                <div class="ytc-item ytc-item-lang" id="ytc-row-language" title="Chọn ngôn ngữ hiển thị giao diện bảng điều khiển của script">
+                <!-- CHỌN NGÔN NGỮ GIAO DIỆN SCRIPT (KHÔNG ICON, GIAO DIỆN NỔI ĐỘC LẬP) -->
+                <div class="ytc-item ytc-item-lang" id="ytc-row-language" data-i18n-title="script_language">
                     <div class="ytc-item-left">
-                        ${GLOBE_SVG}
-                        <span>Ngôn ngữ giao diện</span>
+                        <span data-i18n="script_language">${t('script_language')}</span>
                     </div>
                     <div class="ytc-dropdown" id="ytc-lang-dropdown">
-                        <button type="button" class="ytc-dropdown-trigger" id="ytc-lang-trigger" aria-haspopup="listbox" aria-expanded="false" title="Nhấp để thay đổi ngôn ngữ">
-                            <span class="ytc-dropdown-current">
-                                <span class="ytc-lang-flag" id="ytc-lang-current-flag">${(getLanguageInfo(currentConfig.language || 'auto') || {}).flag || '🌐'}</span>
-                                <span class="ytc-lang-name" id="ytc-lang-current-label">${(getLanguageInfo(currentConfig.language || 'auto') || {}).name || 'Tự động'}</span>
-                            </span>
-                            ${CHEVRON_DOWN_SVG}
+                        <button type="button" class="ytc-dropdown-trigger" id="ytc-lang-trigger" aria-haspopup="listbox" aria-expanded="false" data-i18n-title="script_language">
+                            <span id="ytc-lang-current-label">${(getLanguageInfo(currentConfig.language || 'auto') || {}).name || 'Tự động'}</span>
+                            <span class="ytc-dropdown-arrow">▾</span>
                         </button>
-                        <div class="ytc-dropdown-menu" id="ytc-lang-menu" role="listbox">
-                            <div class="ytc-dropdown-search-wrap">
-                                <input type="text" class="ytc-dropdown-search" id="ytc-lang-search" placeholder="🔍 Tìm kiếm ngôn ngữ..." autocomplete="off" spellcheck="false">
-                            </div>
-                            <div class="ytc-dropdown-list" id="ytc-lang-list">
-                                ${SUPPORTED_LANGUAGES.map(lang => {
-                                    const isSelected = (currentConfig.language || 'auto') === lang.code;
-                                    return `
-                                    <div class="ytc-dropdown-item ${isSelected ? 'active' : ''}" data-code="${lang.code}" role="option" aria-selected="${isSelected ? 'true' : 'false'}">
-                                        <span class="ytc-lang-flag">${lang.flag}</span>
-                                        <div class="ytc-lang-texts">
-                                            <span class="ytc-lang-name">${lang.name}</span>
-                                            <span class="ytc-lang-native">${lang.nativeName}</span>
-                                        </div>
-                                        <span class="ytc-lang-check">${isSelected ? CHECK_SVG : ''}</span>
-                                    </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
                     </div>
                 </div>
 
-                <div class="ytc-item" id="ytc-row-chatoverlay" title="Hiển thị chat trực tiếp nổi trên màn hình video (tự động ẩn khi tua lùi video)">
+                <div class="ytc-item" id="ytc-row-chatoverlay" data-i18n-title="live_chat">
                     <div class="ytc-item-left">
                         ${MESSAGE_SVG}
-                        <span>Live Chat</span>
+                        <span data-i18n="live_chat">Live Chat</span>
                     </div>
                     <div class="ytc-mode-group">
-                        <button class="ytc-mode-btn ${(!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') ? 'active' : ''}" data-overlay="off" title="Tắt chat trên video">Tắt</button>
-                        <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'danmaku' ? 'active' : ''}" data-overlay="danmaku" title="Chữ chạy ngang màn hình dạng Danmaku">Ngang</button>
-                        <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'streamer' ? 'active' : ''}" data-overlay="streamer" title="Khung chat nổi của streamer, kéo thả và co giãn tự do">Nổi</button>
+                        <button class="ytc-mode-btn ${(!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') ? 'active' : ''}" data-overlay="off" data-i18n="chat_off">Tắt</button>
+                        <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'danmaku' ? 'active' : ''}" data-overlay="danmaku" data-i18n="chat_danmaku">Ngang</button>
+                        <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'streamer' ? 'active' : ''}" data-overlay="streamer" data-i18n="chat_streamer">Nổi</button>
                     </div>
                 </div>
             </div>
 
             <!-- TAB 2: LỌC NỘI DUNG SẠCH -->
             <div class="ytc-tab-pane" id="ytc-pane-filter">
-                <div class="ytc-item" data-toggle="hideShorts" title="Ẩn toàn bộ video ngắn Shorts trên trang chủ, đăng ký và thanh menu">
+                <div class="ytc-item" data-toggle="hideShorts" data-i18n-title="hide_shorts">
                     <div class="ytc-item-left">
                         ${SHORTS_SVG}
-                        <span>Ẩn mục Shorts</span>
+                        <span data-i18n="hide_shorts">Ẩn mục Shorts</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-shorts">
                         <input type="checkbox" id="ytc-chk-shorts" name="hideShorts" aria-label="Ẩn mục Shorts" ${currentConfig.hideShorts ? 'checked' : ''}>
@@ -250,10 +267,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hidePlayables" title="Ẩn mục trò chơi Playables trên trang chủ và thanh menu">
+                <div class="ytc-item" data-toggle="hidePlayables" data-i18n-title="hide_playables">
                     <div class="ytc-item-left">
                         ${GAMEPAD_SVG}
-                        <span>Ẩn mục Chơi game</span>
+                        <span data-i18n="hide_playables">Ẩn mục Chơi game</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-playables">
                         <input type="checkbox" id="ytc-chk-playables" name="hidePlayables" aria-label="Ẩn mục Chơi game" ${currentConfig.hidePlayables ? 'checked' : ''}>
@@ -261,10 +278,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hideMembersOnly" title="Ẩn video dành riêng cho hội viên và video ưu tiên xem trước">
+                <div class="ytc-item" data-toggle="hideMembersOnly" data-i18n-title="hide_members">
                     <div class="ytc-item-left">
                         ${CROWN_SVG}
-                        <span>Ẩn video Hội viên</span>
+                        <span data-i18n="hide_members">Ẩn video Hội viên</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-members">
                         <input type="checkbox" id="ytc-chk-members" name="hideMembersOnly" aria-label="Ẩn video Hội viên" ${currentConfig.hideMembersOnly ? 'checked' : ''}>
@@ -272,10 +289,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hideCommunity" title="Ẩn bài viết, khảo sát và hình ảnh bài đăng cộng đồng trên feed">
+                <div class="ytc-item" data-toggle="hideCommunity" data-i18n-title="hide_community">
                     <div class="ytc-item-left">
                         ${POST_SVG}
-                        <span>Ẩn bài đăng cộng đồng</span>
+                        <span data-i18n="hide_community">Ẩn bài đăng cộng đồng</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-community">
                         <input type="checkbox" id="ytc-chk-community" name="hideCommunity" aria-label="Ẩn bài đăng cộng đồng" ${currentConfig.hideCommunity ? 'checked' : ''}>
@@ -283,10 +300,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="cleanSearch" title="Ẩn video được tài trợ và quảng cáo khi tìm kiếm trên YouTube">
+                <div class="ytc-item" data-toggle="cleanSearch" data-i18n-title="clean_search">
                     <div class="ytc-item-left">
                         ${SEARCH_SVG}
-                        <span>Lọc tìm kiếm sạch</span>
+                        <span data-i18n="clean_search">Lọc tìm kiếm sạch</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-search">
                         <input type="checkbox" id="ytc-chk-search" name="cleanSearch" aria-label="Lọc tìm kiếm sạch" ${currentConfig.cleanSearch ? 'checked' : ''}>
@@ -294,10 +311,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hideExploreTopics" title="Ẩn kệ Khám phá các chủ đề khác chen giữa video trang chủ">
+                <div class="ytc-item" data-toggle="hideExploreTopics" data-i18n-title="hide_explore">
                     <div class="ytc-item-left">
                         ${COMPASS_SVG}
-                        <span>Ẩn Khám phá chủ đề</span>
+                        <span data-i18n="hide_explore">Ẩn Khám phá chủ đề</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-explore">
                         <input type="checkbox" id="ytc-chk-explore" name="hideExploreTopics" aria-label="Ẩn Khám phá chủ đề" ${currentConfig.hideExploreTopics ? 'checked' : ''}>
@@ -305,10 +322,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hideShopping" title="Ẩn bảng Sản phẩm (Shopping), nút túi xách mua sắm trên video và kệ sản phẩm gắn thẻ">
+                <div class="ytc-item" data-toggle="hideShopping" data-i18n-title="hide_shopping">
                     <div class="ytc-item-left">
                         ${SHOPPING_SVG}
-                        <span>Ẩn sản phẩm gắn thẻ</span>
+                        <span data-i18n="hide_shopping">Ẩn sản phẩm gắn thẻ</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-shopping">
                         <input type="checkbox" id="ytc-chk-shopping" name="hideShopping" aria-label="Ẩn sản phẩm gắn thẻ" ${currentConfig.hideShopping ? 'checked' : ''}>
@@ -316,10 +333,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hideMixes" title="Ẩn toàn bộ Danh sách kết hợp (Mixes/Radio) và Danh sách phát (Playlists) trên trang chủ, tìm kiếm, gợi ý và tự động chuyển tiếp video đề xuất khi xem">
+                <div class="ytc-item" data-toggle="hideMixes" data-i18n-title="hide_mixes">
                     <div class="ytc-item-left">
                         ${PLAYLIST_SVG}
-                        <span>Ẩn Danh sách phát & Mix</span>
+                        <span data-i18n="hide_mixes">Ẩn Danh sách phát & Mix</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-mixes">
                         <input type="checkbox" id="ytc-chk-mixes" name="hideMixes" aria-label="Ẩn Danh sách phát & Mix" ${currentConfig.hideMixes ? 'checked' : ''}>
@@ -330,10 +347,10 @@ export function createSettingsPanel() {
 
             <!-- TAB 3: TRÌNH PHÁT & VIDEO -->
             <div class="ytc-tab-pane" id="ytc-pane-player">
-                <div class="ytc-item" data-toggle="hideEndscreen" title="Ẩn khung gợi ý video cuối clip và biểu tượng thẻ chữ (i) góc trên">
+                <div class="ytc-item" data-toggle="hideEndscreen" data-i18n-title="hide_endscreen">
                     <div class="ytc-item-left">
                         ${ENDSCREEN_SVG}
-                        <span>Ẩn thẻ kết thúc/chú thích</span>
+                        <span data-i18n="hide_endscreen">Ẩn thẻ kết thúc/chú thích</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-endscreen">
                         <input type="checkbox" id="ytc-chk-endscreen" name="hideEndscreen" aria-label="Ẩn thẻ kết thúc/chú thích" ${currentConfig.hideEndscreen ? 'checked' : ''}>
@@ -341,10 +358,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hideWatermark" title="Ẩn logo hình mờ hoặc avatar kênh ở góc dưới cùng bên phải video">
+                <div class="ytc-item" data-toggle="hideWatermark" data-i18n-title="hide_watermark">
                     <div class="ytc-item-left">
                         ${WATERMARK_SVG}
-                        <span>Ẩn logo góc video</span>
+                        <span data-i18n="hide_watermark">Ẩn logo góc video</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-watermark">
                         <input type="checkbox" id="ytc-chk-watermark" name="hideWatermark" aria-label="Ẩn logo góc video" ${currentConfig.hideWatermark ? 'checked' : ''}>
@@ -352,10 +369,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="autoDismissPromos" title="Tự động tắt banner Premium, khảo sát và thông báo sự cố gián đoạn phiền toái">
+                <div class="ytc-item" data-toggle="autoDismissPromos" data-i18n-title="auto_dismiss">
                     <div class="ytc-item-left">
                         ${BELL_OFF_SVG}
-                        <span>Tự đóng banner & thông báo</span>
+                        <span data-i18n="auto_dismiss">Tự đóng banner & thông báo</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-promos">
                         <input type="checkbox" id="ytc-chk-promos" name="autoDismissPromos" aria-label="Tự đóng banner & thông báo" ${currentConfig.autoDismissPromos ? 'checked' : ''}>
@@ -363,10 +380,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hideNativeLiveChat" title="Tự động tắt khung trò chuyện khi mới mở video (người dùng vẫn có thể bấm mở lại bình thường, Live Chat Overlay vẫn chạy ngầm nếu bật)">
+                <div class="ytc-item" data-toggle="hideNativeLiveChat" data-i18n-title="hide_native_chat">
                     <div class="ytc-item-left">
                         ${CHAT_OFF_SVG}
-                        <span>Tắt trò chuyện trực tiếp</span>
+                        <span data-i18n="hide_native_chat">Tắt trò chuyện trực tiếp</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-hidenativechat">
                         <input type="checkbox" id="ytc-chk-hidenativechat" name="hideNativeLiveChat" aria-label="Tắt trò chuyện trực tiếp" ${currentConfig.hideNativeLiveChat ? 'checked' : ''}>
@@ -374,10 +391,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="hideChatEmojis" title="Ẩn biểu tượng cảm xúc (emoji/sticker) trong Live Chat: cmt chỉ có icon sẽ ẩn hẳn, cmt có chữ sẽ chỉ hiện chữ">
+                <div class="ytc-item" data-toggle="hideChatEmojis" data-i18n-title="hide_chat_emojis">
                     <div class="ytc-item-left">
                         ${EMOJI_OFF_SVG}
-                        <span>Ẩn biểu tượng trong Live Chat</span>
+                        <span data-i18n="hide_chat_emojis">Ẩn biểu tượng trong Live Chat</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-hidechatemojis">
                         <input type="checkbox" id="ytc-chk-hidechatemojis" name="hideChatEmojis" aria-label="Ẩn biểu tượng trong Live Chat" ${currentConfig.hideChatEmojis ? 'checked' : ''}>
@@ -385,13 +402,13 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item ytc-item-link" id="ytc-btn-ublock" title="Mở trang tiện ích uBlock Origin — trình chặn quảng cáo số 1 thế giới, sạch sẽ, an toàn và không gây giật lag">
+                <div class="ytc-item ytc-item-link" id="ytc-btn-ublock" data-i18n-title="ublock_title">
                     <div class="ytc-item-left">
                         ${SHIELD_CHECK_SVG}
-                        <span>Chặn quảng cáo (uBlock)</span>
+                        <span data-i18n="ublock_name">Chặn quảng cáo (uBlock)</span>
                     </div>
                     <div class="ytc-link-badge">
-                        <span>Mở trang</span>
+                        <span data-i18n="ublock_badge">Mở trang</span>
                         <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
                     </div>
                 </div>
@@ -399,27 +416,27 @@ export function createSettingsPanel() {
 
             <!-- TAB 4: TỐI ƯU HIỆU NĂNG & TIỆN ÍCH -->
             <div class="ytc-tab-pane" id="ytc-pane-optimize">
-                <div class="ytc-item ytc-item-vertical" id="ytc-row-quality" title="Ưu tiên tự động chọn độ phân giải theo ý muốn (Mặc định: Tự động của YouTube)">
+                <div class="ytc-item ytc-item-vertical" id="ytc-row-quality" data-i18n-title="video_quality">
                     <div class="ytc-item-header">
                         <div class="ytc-item-left">
                             ${QUALITY_SVG}
-                            <span>Độ phân giải video</span>
+                            <span data-i18n="video_quality">Độ phân giải video</span>
                         </div>
                         <span class="ytc-quality-badge">${currentConfig.preferredQuality === 'auto' ? 'TỰ ĐỘNG' : (currentConfig.preferredQuality === 'max' ? 'CAO NHẤT' : currentConfig.preferredQuality.toUpperCase())}</span>
                     </div>
                     <div class="ytc-mode-group ytc-quality-group">
-                        <button class="ytc-quality-btn ${(!currentConfig.preferredQuality || currentConfig.preferredQuality === 'auto') ? 'active' : ''}" data-quality="auto" title="Để YouTube tự động quyết định">Tự động</button>
-                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === 'max' ? 'active' : ''}" data-quality="max" title="Ưu tiên độ phân giải cao nhất khả dụng (4K, 2K...)">Cao nhất</button>
-                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === '1440p' ? 'active' : ''}" data-quality="1440p" title="Ưu tiên 2K (1440p)">2K</button>
-                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === '1080p' ? 'active' : ''}" data-quality="1080p" title="Ưu tiên Full HD (1080p)">1080p</button>
-                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === '720p' ? 'active' : ''}" data-quality="720p" title="Ưu tiên HD (720p)">720p</button>
+                        <button class="ytc-quality-btn ${(!currentConfig.preferredQuality || currentConfig.preferredQuality === 'auto') ? 'active' : ''}" data-quality="auto" data-i18n="quality_auto">Tự động</button>
+                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === 'max' ? 'active' : ''}" data-quality="max" data-i18n="quality_max">Cao nhất</button>
+                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === '1440p' ? 'active' : ''}" data-quality="1440p">2K</button>
+                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === '1080p' ? 'active' : ''}" data-quality="1080p">1080p</button>
+                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === '720p' ? 'active' : ''}" data-quality="720p">720p</button>
                     </div>
                 </div>
 
-                <div class="ytc-item" data-toggle="preventAutoPause" title="Tự động xác nhận hộp thoại 'Video đã tạm dừng. Bạn vẫn đang xem chứ?' và duy trì trạng thái hoạt động để phát nhạc/video liên tục">
+                <div class="ytc-item" data-toggle="preventAutoPause" data-i18n-title="prevent_auto_pause">
                     <div class="ytc-item-left">
                         ${INFINITY_SVG}
-                        <span>Chặn tự dừng video</span>
+                        <span data-i18n="prevent_auto_pause">Chặn tự dừng video</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-autopause">
                         <input type="checkbox" id="ytc-chk-autopause" name="preventAutoPause" aria-label="Chặn tự dừng video" ${currentConfig.preventAutoPause ? 'checked' : ''}>
@@ -427,10 +444,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="chatMemoryGc" title="Giới hạn tối đa 100 tin nhắn trong DOM Live Chat, dọn dẹp bộ nhớ định kỳ chống đầy tràn RAM khi xem stream lâu">
+                <div class="ytc-item" data-toggle="chatMemoryGc" data-i18n-title="chat_memory_gc">
                     <div class="ytc-item-left">
                         ${BROOM_SVG}
-                        <span>Dọn rác bộ nhớ Live Chat</span>
+                        <span data-i18n="chat_memory_gc">Dọn rác bộ nhớ Live Chat</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-chatgc">
                         <input type="checkbox" id="ytc-chk-chatgc" name="chatMemoryGc" aria-label="Dọn rác bộ nhớ Live Chat" ${currentConfig.chatMemoryGc ? 'checked' : ''}>
@@ -438,10 +455,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="keyboardControls" title="Phím tắt: A/D hoặc 4/6 tua 10s, S hoặc 5 dừng/phát, 8/2 âm lượng (chặn nhảy % khi bật NumLock)">
+                <div class="ytc-item" data-toggle="keyboardControls" data-i18n-title="keyboard_controls">
                     <div class="ytc-item-left">
                         ${KEYBOARD_SVG}
-                        <span>Phím tắt (A-S-D, Numpad)</span>
+                        <span data-i18n="keyboard_controls">Phím tắt (A-S-D, Numpad)</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-keys">
                         <input type="checkbox" id="ytc-chk-keys" name="keyboardControls" aria-label="Phím tắt điều khiển" ${currentConfig.keyboardControls ? 'checked' : ''}>
@@ -449,10 +466,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="audioOnlyMode" title="Chế độ Radio: Tắt hoàn toàn render hình ảnh video, hạ chất lượng tối thiểu để chỉ nghe tiếng, giảm tối đa RAM/GPU">
+                <div class="ytc-item" data-toggle="audioOnlyMode" data-i18n-title="audio_only">
                     <div class="ytc-item-left">
                         ${HEADPHONES_SVG}
-                        <span>Chỉ phát âm thanh (Radio)</span>
+                        <span data-i18n="audio_only">Chỉ phát âm thanh (Radio)</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-audioonly">
                         <input type="checkbox" id="ytc-chk-audioonly" name="audioOnlyMode" aria-label="Chỉ phát âm thanh" ${currentConfig.audioOnlyMode ? 'checked' : ''}>
@@ -460,10 +477,10 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="blockAv1" title="Chặn codec AV1 ngốn CPU, ép dùng bộ giải mã phần cứng H.264 & VP9 mượt mà, mát máy">
+                <div class="ytc-item" data-toggle="blockAv1" data-i18n-title="block_av1">
                     <div class="ytc-item-left">
                         ${CPU_SVG}
-                        <span>Chặn AV1 / Ép Codec H.264</span>
+                        <span data-i18n="block_av1">Chặn AV1 / Ép Codec H.264</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-blockav1">
                         <input type="checkbox" id="ytc-chk-blockav1" name="blockAv1" aria-label="Chặn AV1 / Ép Codec H.264" ${currentConfig.blockAv1 ? 'checked' : ''}>
@@ -480,7 +497,7 @@ export function createSettingsPanel() {
                         ${USER_SVG}
                         <div class="ytc-item-text-group">
                             <span class="ytc-item-main-text">Huy Vũ</span>
-                            <span class="ytc-item-sub-text">huyvu2512.io.vn • Tác giả</span>
+                            <span class="ytc-item-sub-text">huyvu2512.io.vn • <span data-i18n="author">Tác giả</span></span>
                         </div>
                     </div>
                     <div class="ytc-link-badge">
@@ -490,31 +507,31 @@ export function createSettingsPanel() {
                 </div>
 
                 <!-- Báo cáo sự cố / Góp ý -->
-                <div class="ytc-item ytc-item-link" id="ytc-btn-report" title="Báo lỗi hoặc đề xuất tính năng mới trên GitHub Issues">
+                <div class="ytc-item ytc-item-link" id="ytc-btn-report" data-i18n-title="report_bug">
                     <div class="ytc-item-left">
                         ${BUG_SVG}
                         <div class="ytc-item-text-group">
-                            <span class="ytc-item-main-text">Báo cáo & Góp ý</span>
-                            <span class="ytc-item-sub-text">Báo lỗi hoặc đề xuất ý tưởng</span>
+                            <span class="ytc-item-main-text" data-i18n="report_bug">Báo cáo & Góp ý</span>
+                            <span class="ytc-item-sub-text" data-i18n="sub_report">Báo lỗi hoặc đề xuất ý tưởng</span>
                         </div>
                     </div>
                     <div class="ytc-link-badge">
-                        <span>Báo cáo</span>
+                        <span data-i18n="btn_report">Báo cáo</span>
                         ${EXTERNAL_LINK_SVG}
                     </div>
                 </div>
 
                 <!-- Tặng quà / Ủng hộ -->
-                <div class="ytc-item ytc-item-link" id="ytc-btn-donate" title="Ủng hộ tác giả 1 ly cà phê tiếp thêm động lực">
+                <div class="ytc-item ytc-item-link" id="ytc-btn-donate" data-i18n-title="donate">
                     <div class="ytc-item-left">
                         ${GIFT_SVG}
                         <div class="ytc-item-text-group">
-                            <span class="ytc-item-main-text">Tặng quà & Ủng hộ</span>
-                            <span class="ytc-item-sub-text">Ủng hộ 1 ly cà phê tiếp thêm động lực</span>
+                            <span class="ytc-item-main-text" data-i18n="donate">Tặng quà & Ủng hộ</span>
+                            <span class="ytc-item-sub-text" data-i18n="sub_donate">Ủng hộ 1 ly cà phê tiếp thêm động lực</span>
                         </div>
                     </div>
                     <div class="ytc-link-badge">
-                        <span>Ủng hộ</span>
+                        <span data-i18n="donate">Ủng hộ</span>
                         ${EXTERNAL_LINK_SVG}
                     </div>
                 </div>
@@ -522,21 +539,21 @@ export function createSettingsPanel() {
                 <!-- Thẻ kiểm tra cập nhật tinh gọn -->
                 <div class="ytc-info-card">
                     <div class="ytc-info-title-wrap">
-                        <span class="ytc-info-title">Kiểm tra cập nhật</span>
+                        <span class="ytc-info-title" data-i18n="check_update">Kiểm tra cập nhật</span>
                     </div>
-                    <button class="ytc-update-btn" id="ytc-btn-update" title="Kiểm tra bản cập nhật mới nhất từ GitHub">
+                    <button class="ytc-update-btn" id="ytc-btn-update" data-i18n-title="check_update">
                         ${UPDATE_SVG}
-                        <span id="ytc-update-btn-text">Kiểm tra</span>
+                        <span id="ytc-update-btn-text" data-i18n="btn_check">Kiểm tra</span>
                     </button>
                 </div>
 
                 <!-- Công tắc gạt Tự động cập nhật -->
-                <div class="ytc-item" data-toggle="autoUpdate" title="Tự động gọi API kiểm tra phiên bản mới mỗi khi vào YouTube và tự trỏ sang link cập nhật">
+                <div class="ytc-item" data-toggle="autoUpdate" data-i18n-title="auto_update">
                     <div class="ytc-item-left">
                         ${UPDATE_SVG}
                         <div class="ytc-item-text-group">
-                            <span class="ytc-item-main-text">Tự động cập nhật</span>
-                            <span class="ytc-item-sub-text">Tự gọi API và trỏ sang link cài bản mới khi vào YouTube</span>
+                            <span class="ytc-item-main-text" data-i18n="auto_update">Tự động cập nhật</span>
+                            <span class="ytc-item-sub-text" data-i18n="sub_autoupdate">Tự gọi API và trỏ sang link cài bản mới khi vào YouTube</span>
                         </div>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-autoupdate">
@@ -547,6 +564,7 @@ export function createSettingsPanel() {
             </div>
         `);
         (document.body || document.documentElement).appendChild(panel);
+        updatePanelLanguage(panel);
 
         // Chuyển Tab trong Menu
         panel.querySelectorAll('.ytc-tab-btn').forEach((tabBtn) => {
@@ -577,81 +595,70 @@ export function createSettingsPanel() {
             });
         });
 
-        // Xử lý Custom Dropdown Ngôn ngữ Giao diện
-        const langDropdown = panel.querySelector('#ytc-lang-dropdown');
-        const langTrigger = panel.querySelector('#ytc-lang-trigger');
-        const langSearch = panel.querySelector('#ytc-lang-search');
-        const langList = panel.querySelector('#ytc-lang-list');
-
-        function filterLangItems(query) {
-            const q = (query || '').toLowerCase().trim();
-            const items = langList ? langList.querySelectorAll('.ytc-dropdown-item') : [];
-            items.forEach(item => {
-                const name = (item.querySelector('.ytc-lang-name')?.textContent || '').toLowerCase();
-                const native = (item.querySelector('.ytc-lang-native')?.textContent || '').toLowerCase();
-                const code = (item.getAttribute('data-code') || '').toLowerCase();
-                const match = !q || name.includes(q) || native.includes(q) || code.includes(q);
-                item.style.display = match ? 'flex' : 'none';
-            });
+        // Xử lý Floating Dropdown Ngôn ngữ Giao diện (Nổi tự do ngoài khung, không bị cắt)
+        let langMenu = document.getElementById('ytc-lang-menu');
+        if (!langMenu) {
+            langMenu = document.createElement('div');
+            langMenu.id = 'ytc-lang-menu';
+            langMenu.setAttribute('role', 'listbox');
+            langMenu.innerHTML = SUPPORTED_LANGUAGES.map(lang => {
+                const isSelected = (currentConfig.language || 'auto') === lang.code;
+                return `<div class="ytc-dropdown-item ${isSelected ? 'active' : ''}" data-code="${lang.code}" role="option">${lang.name}</div>`;
+            }).join('');
+            (document.body || document.documentElement).appendChild(langMenu);
         }
 
-        if (langTrigger && langDropdown) {
+        const langTrigger = panel.querySelector('#ytc-lang-trigger');
+        if (langTrigger && langMenu) {
             langTrigger.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const isOpen = langDropdown.classList.toggle('open');
+                const isOpen = langMenu.classList.toggle('open');
                 langTrigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-                if (isOpen && langSearch) {
-                    langSearch.value = '';
-                    filterLangItems('');
-                    setTimeout(() => langSearch.focus(), 60);
+                if (isOpen) {
+                    const rect = langTrigger.getBoundingClientRect();
+                    langMenu.style.position = 'fixed';
+                    langMenu.style.zIndex = '10000000';
+                    langMenu.style.right = `${Math.max(12, window.innerWidth - rect.right)}px`;
+                    langMenu.style.left = 'auto';
+
+                    const spaceBelow = window.innerHeight - rect.bottom;
+                    if (spaceBelow < 250 && rect.top > 250) {
+                        langMenu.style.top = 'auto';
+                        langMenu.style.bottom = `${window.innerHeight - rect.top + 4}px`;
+                    } else {
+                        langMenu.style.top = `${rect.bottom + 4}px`;
+                        langMenu.style.bottom = 'auto';
+                    }
                 }
             });
-        }
 
-        if (langSearch) {
-            langSearch.addEventListener('input', (e) => {
-                filterLangItems(e.target.value);
-            });
-            langSearch.addEventListener('click', (e) => {
-                e.stopPropagation();
-            });
-            langSearch.addEventListener('keydown', (e) => {
-                e.stopPropagation();
-                if (e.key === 'Escape') {
-                    langDropdown?.classList.remove('open');
-                    langTrigger?.setAttribute('aria-expanded', 'false');
-                }
-            });
-        }
-
-        if (langList) {
-            langList.querySelectorAll('.ytc-dropdown-item').forEach(item => {
+            langMenu.querySelectorAll('.ytc-dropdown-item').forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const code = item.getAttribute('data-code') || 'auto';
                     currentConfig.language = code;
                     saveConfig(currentConfig);
 
-                    const langInfo = getLanguageInfo(code);
-                    const currentFlag = panel.querySelector('#ytc-lang-current-flag');
-                    const currentLabel = panel.querySelector('#ytc-lang-current-label');
-                    if (currentFlag) currentFlag.textContent = langInfo.flag;
-                    if (currentLabel) currentLabel.textContent = langInfo.name;
-
-                    langList.querySelectorAll('.ytc-dropdown-item').forEach(it => {
-                        const isMatch = it.getAttribute('data-code') === code;
-                        it.classList.toggle('active', isMatch);
-                        it.setAttribute('aria-selected', isMatch ? 'true' : 'false');
-                        const check = it.querySelector('.ytc-lang-check');
-                        if (check) check.innerHTML = isMatch ? CHECK_SVG : '';
+                    langMenu.querySelectorAll('.ytc-dropdown-item').forEach(it => {
+                        it.classList.toggle('active', it.getAttribute('data-code') === code);
                     });
 
-                    langDropdown?.classList.remove('open');
-                    langTrigger?.setAttribute('aria-expanded', 'false');
+                    updatePanelLanguage(panel);
 
-                    showToast(`🌐 Đã chuyển ngôn ngữ: ${langInfo.flag} ${langInfo.name}`);
+                    langMenu.classList.remove('open');
+                    langTrigger.setAttribute('aria-expanded', 'false');
+
+                    const langInfo = getLanguageInfo(code);
+                    showToast((t('toast_lang') || 'Đã đổi ngôn ngữ: ') + langInfo.name);
                 });
             });
+
+            panel.addEventListener('scroll', () => {
+                if (langMenu.classList.contains('open')) {
+                    langMenu.classList.remove('open');
+                    langTrigger.setAttribute('aria-expanded', 'false');
+                }
+            }, { passive: true });
         }
 
         // Chọn chế độ Chat Overlay (Tắt / Ngang / Nổi)

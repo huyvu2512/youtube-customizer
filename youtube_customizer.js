@@ -38,7 +38,7 @@
   };
 
   // src/core/constants.js
-  var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG, GLOBE_SVG, CHEVRON_DOWN_SVG, CHECK_SVG;
+  var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
       APP_VERSION = "3.8.1";
@@ -80,9 +80,6 @@
       GIFT_SVG = `<svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.65-.5-.65C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1h-2.22l.8-1.07C13.86 4.38 14.4 4 15 4zM9 4c.6 0 1.14.38 1.42.93L11.22 6H9c-.55 0-1-.45-1-1s.45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76V14h2V8.76L15.38 12 17 10.83 14.92 8H20v6z"/></svg>`;
       EXTERNAL_LINK_SVG = `<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>`;
       SHOPPING_SVG = `<svg viewBox="0 0 24 24"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 17H5V8h14v12zm-7-8c-1.66 0-3-1.34-3-3H7c0 2.76 2.24 5 5 5s5-2.24 5-5h-2c0 1.66-1.34 3-3 3z"/></svg>`;
-      GLOBE_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>`;
-      CHEVRON_DOWN_SVG = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
-      CHECK_SVG = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
     }
   });
 
@@ -1688,8 +1685,8 @@
   });
 
   // src/chat/danmaku.js
-  function setLastDanmakuSpawnTime(t) {
-    lastDanmakuSpawnTime = t;
+  function setLastDanmakuSpawnTime(t2) {
+    lastDanmakuSpawnTime = t2;
   }
   function setLastSpawnedLane(l) {
     lastSpawnedLane = l;
@@ -1992,36 +1989,2597 @@
   });
 
   // src/core/i18n.js
+  function getActiveLanguage() {
+    const cfg = currentConfig.language || "auto";
+    if (cfg !== "auto") return cfg;
+    if (typeof document === "undefined") return "vi";
+    const navLang = (document.documentElement?.lang || (typeof navigator !== "undefined" ? navigator.language : "") || "vi").toLowerCase();
+    if (navLang.startsWith("vi")) return "vi";
+    if (navLang.startsWith("ja")) return "ja";
+    if (navLang.startsWith("ko")) return "ko";
+    if (navLang.startsWith("zh-tw") || navLang.startsWith("zh-hk")) return "zh-TW";
+    if (navLang.startsWith("zh")) return "zh-CN";
+    if (navLang.startsWith("es")) return "es";
+    if (navLang.startsWith("fr")) return "fr";
+    if (navLang.startsWith("de")) return "de";
+    if (navLang.startsWith("ru")) return "ru";
+    if (navLang.startsWith("pt")) return "pt";
+    if (navLang.startsWith("it")) return "it";
+    if (navLang.startsWith("id")) return "id";
+    if (navLang.startsWith("th")) return "th";
+    if (navLang.startsWith("hi")) return "hi";
+    if (navLang.startsWith("ar")) return "ar";
+    if (navLang.startsWith("tr")) return "tr";
+    if (navLang.startsWith("pl")) return "pl";
+    if (navLang.startsWith("nl")) return "nl";
+    if (navLang.startsWith("fil")) return "fil";
+    if (navLang.startsWith("en")) return "en";
+    return "vi";
+  }
+  function t(key) {
+    const lang = getActiveLanguage();
+    if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) {
+      return TRANSLATIONS[lang][key];
+    }
+    if (TRANSLATIONS["en"] && TRANSLATIONS["en"][key]) {
+      return TRANSLATIONS["en"][key];
+    }
+    if (TRANSLATIONS["vi"] && TRANSLATIONS["vi"][key]) {
+      return TRANSLATIONS["vi"][key];
+    }
+    return key;
+  }
   function getLanguageInfo(code) {
     return SUPPORTED_LANGUAGES.find((l) => l.code === code) || SUPPORTED_LANGUAGES[0];
   }
-  var SUPPORTED_LANGUAGES;
+  var SUPPORTED_LANGUAGES, TRANSLATIONS;
   var init_i18n = __esm({
     "src/core/i18n.js"() {
       init_config();
       SUPPORTED_LANGUAGES = [
-        { code: "auto", name: "Tự động (Theo YouTube)", nativeName: "Auto (System / YouTube)", flag: "🌐" },
-        { code: "vi", name: "Tiếng Việt", nativeName: "Tiếng Việt", flag: "🇻🇳" },
-        { code: "en", name: "English", nativeName: "English (US)", flag: "🇺🇸" },
-        { code: "ja", name: "Tiếng Nhật", nativeName: "日本語", flag: "🇯🇵" },
-        { code: "ko", name: "Tiếng Hàn", nativeName: "한국어", flag: "🇰🇷" },
-        { code: "zh-CN", name: "Tiếng Trung (Giản thể)", nativeName: "简体中文", flag: "🇨🇳" },
-        { code: "zh-TW", name: "Tiếng Trung (Phồn thể)", nativeName: "繁體中文", flag: "🇹🇼" },
-        { code: "es", name: "Tiếng Tây Ban Nha", nativeName: "Español", flag: "🇪🇸" },
-        { code: "fr", name: "Tiếng Pháp", nativeName: "Français", flag: "🇫🇷" },
-        { code: "de", name: "Tiếng Đức", nativeName: "Deutsch", flag: "🇩🇪" },
-        { code: "ru", name: "Tiếng Nga", nativeName: "Русский", flag: "🇷🇺" },
-        { code: "pt", name: "Tiếng Bồ Đào Nha", nativeName: "Português", flag: "🇧🇷" },
-        { code: "it", name: "Tiếng Ý", nativeName: "Italiano", flag: "🇮🇹" },
-        { code: "id", name: "Tiếng Indonesia", nativeName: "Bahasa Indonesia", flag: "🇮🇩" },
-        { code: "th", name: "Tiếng Thái", nativeName: "ภาษาไทย", flag: "🇹🇭" },
-        { code: "hi", name: "Tiếng Hindi", nativeName: "हिन्दी", flag: "🇮🇳" },
-        { code: "ar", name: "Tiếng Ả Rập", nativeName: "العربية", flag: "🇸🇦" },
-        { code: "tr", name: "Tiếng Thổ Nhĩ Kỳ", nativeName: "Türkçe", flag: "🇹🇷" },
-        { code: "pl", name: "Tiếng Ba Lan", nativeName: "Polski", flag: "🇵🇱" },
-        { code: "nl", name: "Tiếng Hà Lan", nativeName: "Nederlands", flag: "🇳🇱" },
-        { code: "fil", name: "Tiếng Philippines", nativeName: "Filipino", flag: "🇵🇭" }
+        { code: "auto", name: "Tự động" },
+        { code: "vi", name: "Tiếng Việt" },
+        { code: "en", name: "English" },
+        { code: "ja", name: "日本語" },
+        { code: "ko", name: "한국어" },
+        { code: "zh-CN", name: "简体中文" },
+        { code: "zh-TW", name: "繁體中文" },
+        { code: "es", name: "Español" },
+        { code: "fr", name: "Français" },
+        { code: "de", name: "Deutsch" },
+        { code: "ru", name: "Русский" },
+        { code: "pt", name: "Português" },
+        { code: "it", name: "Italiano" },
+        { code: "id", name: "Bahasa Indonesia" },
+        { code: "th", name: "ไทย" },
+        { code: "hi", name: "हिन्दी" },
+        { code: "ar", name: "العربية" },
+        { code: "tr", name: "Türkçe" },
+        { code: "pl", name: "Polski" },
+        { code: "nl", name: "Nederlands" },
+        { code: "fil", name: "Filipino" }
       ];
+      TRANSLATIONS = {
+        vi: {
+          tab_layout: "Giao diện",
+          tab_filter: "Lọc",
+          tab_player: "Trình phát",
+          tab_optimize: "Tối Ưu",
+          tab_info: "Thông tin",
+          home_cols: "Số cột trang chủ",
+          premium_logo: "Logo Premium",
+          unlock_live_dvr: "Mở khóa tua Live Stream",
+          auto_live_sync: "Tự động trực tiếp (Auto Live)",
+          ambient_lighting: "Ánh sáng phòng (Ambilight)",
+          script_language: "Ngôn ngữ giao diện",
+          live_chat: "Live Chat",
+          chat_off: "Tắt",
+          chat_danmaku: "Ngang",
+          chat_streamer: "Nổi",
+          hide_shorts: "Ẩn mục Shorts",
+          hide_playables: "Ẩn mục Chơi game",
+          hide_members: "Ẩn video Hội viên",
+          hide_community: "Ẩn bài đăng cộng đồng",
+          clean_search: "Lọc tìm kiếm sạch",
+          hide_explore: "Ẩn Khám phá chủ đề",
+          hide_shopping: "Ẩn sản phẩm gắn thẻ",
+          hide_mixes: "Ẩn Danh sách phát & Mix",
+          hide_endscreen: "Ẩn thẻ kết thúc/chú thích",
+          hide_watermark: "Ẩn logo góc video",
+          auto_dismiss: "Tự đóng banner & thông báo",
+          hide_native_chat: "Tắt trò chuyện trực tiếp",
+          hide_chat_emojis: "Ẩn biểu tượng trong Live Chat",
+          ublock_name: "Chặn quảng cáo (uBlock)",
+          ublock_title: "Mở trang uBlock Origin — Trình chặn quảng cáo số 1",
+          ublock_badge: "Mở trang",
+          video_quality: "Độ phân giải video",
+          quality_auto: "Tự động",
+          quality_max: "Cao nhất",
+          prevent_auto_pause: "Chặn tự dừng video",
+          chat_memory_gc: "Dọn rác bộ nhớ Live Chat",
+          keyboard_controls: "Phím tắt (A-S-D, Numpad)",
+          block_av1: "Chặn AV1 / Ép Codec H.264",
+          audio_only: "Chỉ phát âm thanh (Radio)",
+          lock_elapsed_time: "Cố định hiển thị thời gian đã phát",
+          auto_update: "Tự động cập nhật",
+          sub_autoupdate: "Tự gọi API và trỏ sang link cài bản mới khi vào YouTube",
+          check_update: "Kiểm tra cập nhật",
+          btn_check: "Kiểm tra",
+          author: "Tác giả",
+          report_bug: "Báo cáo & Góp ý",
+          sub_report: "Báo lỗi hoặc đề xuất ý tưởng",
+          btn_report: "Báo cáo",
+          donate: "Tặng quà & Ủng hộ",
+          sub_donate: "Ủng hộ 1 ly cà phê tiếp thêm động lực",
+          special_feature: "Tính năng đặc biệt nổi bật",
+          toast_lang: "Đã đổi ngôn ngữ: ",
+          chat_tip_disabled: "Chỉ khả dụng khi xem Live Stream hoặc video có khung trò chuyện",
+          chat_tip_off: "Tắt chat trên video",
+          chat_tip_danmaku: "Chữ chạy ngang màn hình dạng Danmaku",
+          chat_tip_streamer: "Khung chat nổi của streamer, kéo thả và co giãn tự do"
+        },
+        en: {
+          tab_layout: "Interface",
+          tab_filter: "Filter",
+          tab_player: "Player",
+          tab_optimize: "Optimize",
+          tab_info: "About",
+          home_cols: "Home Grid Columns",
+          premium_logo: "Premium Logo",
+          unlock_live_dvr: "Unlock Live DVR",
+          auto_live_sync: "Auto Live Sync",
+          ambient_lighting: "Ambient Light (Cinema)",
+          script_language: "Interface Language",
+          live_chat: "Live Chat",
+          chat_off: "Off",
+          chat_danmaku: "Danmaku",
+          chat_streamer: "Float",
+          hide_shorts: "Hide Shorts",
+          hide_playables: "Hide Playables",
+          hide_members: "Hide Members-Only",
+          hide_community: "Hide Community Posts",
+          clean_search: "Clean Search Ads",
+          hide_explore: "Hide Explore Shelves",
+          hide_shopping: "Hide YouTube Shopping",
+          hide_mixes: "Hide Mixes & Playlists",
+          hide_endscreen: "Hide Endscreen Cards",
+          hide_watermark: "Hide Channel Watermark",
+          auto_dismiss: "Dismiss Promo Banners",
+          hide_native_chat: "Auto-collapse Live Chat",
+          hide_chat_emojis: "Hide Emojis in Live Chat",
+          ublock_name: "Adblocker (uBlock)",
+          ublock_title: "Get uBlock Origin — Best Adblocker in the World",
+          ublock_badge: "Open Page",
+          video_quality: "Preferred Video Quality",
+          quality_auto: "Auto",
+          quality_max: "Max Quality",
+          prevent_auto_pause: "Prevent Auto-Pause",
+          chat_memory_gc: "Live Chat Memory GC",
+          keyboard_controls: "Shortcuts (A-S-D, Numpad)",
+          block_av1: "Block AV1 / Force H.264 & VP9",
+          audio_only: "Audio-Only Mode (Radio)",
+          lock_elapsed_time: "Lock Elapsed Time Display",
+          auto_update: "Auto Update",
+          sub_autoupdate: "Automatically checks for updates on YouTube",
+          check_update: "Check for Updates",
+          btn_check: "Check",
+          author: "Developer",
+          report_bug: "Report Bug / Feedback",
+          sub_report: "Report issues or suggest features",
+          btn_report: "Report",
+          donate: "Donate / Support",
+          sub_donate: "Buy me a coffee to support development",
+          special_feature: "Featured special capability",
+          toast_lang: "Language changed: ",
+          chat_tip_disabled: "Only available during Live Streams or videos with chat",
+          chat_tip_off: "Turn off chat overlay",
+          chat_tip_danmaku: "Horizontal flying Danmaku comments",
+          chat_tip_streamer: "Floating streamer chat window, resizable and draggable"
+        },
+        ja: {
+          tab_layout: "画面",
+          tab_filter: "フィルター",
+          tab_player: "プレーヤー",
+          tab_optimize: "最適化",
+          tab_info: "情報",
+          home_cols: "ホームグリッド列数",
+          premium_logo: "Premiumロゴ",
+          unlock_live_dvr: "ライブ巻き戻し解除",
+          auto_live_sync: "自動リアルタイム同期",
+          ambient_lighting: "アンビエントライト (Cinema)",
+          script_language: "言語設定",
+          live_chat: "チャット表示",
+          chat_off: "オフ",
+          chat_danmaku: "弾幕",
+          chat_streamer: "フロート",
+          hide_shorts: "Shortsを非表示",
+          hide_playables: "プレイアブルを非表示",
+          hide_members: "メンバー限定を非表示",
+          hide_community: "コミュニティを非表示",
+          clean_search: "検索広告を除去",
+          hide_explore: "おすすめ枠を非表示",
+          hide_shopping: "ショッピング枠を非表示",
+          hide_mixes: "ミックス・再生リスト非表示",
+          hide_endscreen: "終了画面カードを非表示",
+          hide_watermark: "透かしロゴを非表示",
+          auto_dismiss: "プロモ通知を自動閉じる",
+          hide_native_chat: "チャット枠を自動格納",
+          hide_chat_emojis: "チャット絵文字を非表示",
+          ublock_name: "広告ブロック (uBlock)",
+          ublock_title: "uBlock Originを開く",
+          ublock_badge: "開く",
+          video_quality: "画質設定",
+          quality_auto: "自動",
+          quality_max: "最高画質",
+          prevent_auto_pause: "自動停止を防止",
+          chat_memory_gc: "チャットメモリ解放",
+          keyboard_controls: "ショートカット (A-S-D)",
+          block_av1: "AV1無効 / H.264強制",
+          audio_only: "ラジオモード (音声のみ)",
+          lock_elapsed_time: "経過時間を固定表示",
+          auto_update: "自動アップデート",
+          sub_autoupdate: "YouTube読み込み時に最新版を自動確認",
+          check_update: "更新を確認",
+          btn_check: "確認",
+          author: "開発者",
+          report_bug: "不具合報告・フィードバック",
+          sub_report: "バグ報告や機能提案はこちら",
+          btn_report: "報告",
+          donate: "開発者を応援",
+          sub_donate: "コーヒー1杯で開発を応援",
+          special_feature: "注目の特別機能",
+          toast_lang: "言語を変更しました: ",
+          chat_tip_disabled: "ライブ配信またはチャット欄がある動画でのみ利用可能",
+          chat_tip_off: "チャットオーバーレイをオフ",
+          chat_tip_danmaku: "弾幕コメント（画面を横切る文字）",
+          chat_tip_streamer: "配信者風フローティングチャット"
+        },
+        ko: {
+          tab_layout: "화면",
+          tab_filter: "필터",
+          tab_player: "플레이어",
+          tab_optimize: "최적화",
+          tab_info: "정보",
+          home_cols: "홈 그리드 열 수",
+          premium_logo: "프리미엄 로고",
+          unlock_live_dvr: "라이브 되감기 잠금해제",
+          auto_live_sync: "실시간 자동 동기화",
+          ambient_lighting: "앰비언트 라이트 (Cinema)",
+          script_language: "언어 설정",
+          live_chat: "라이브 채팅",
+          chat_off: "끄기",
+          chat_danmaku: "흘림",
+          chat_streamer: "플로팅",
+          hide_shorts: "Shorts 숨기기",
+          hide_playables: "플레이어블 숨기기",
+          hide_members: "멤버십 전용 숨기기",
+          hide_community: "커뮤니티 글 숨기기",
+          clean_search: "검색 광고 숨기기",
+          hide_explore: "탐색 선반 숨기기",
+          hide_shopping: "쇼핑 선반 숨기기",
+          hide_mixes: "믹스/재생목록 숨기기",
+          hide_endscreen: "최종 화면 카드 숨기기",
+          hide_watermark: "워터마크 숨기기",
+          auto_dismiss: "프로모션 배너 자동 닫기",
+          hide_native_chat: "기본 채팅창 자동 숨김",
+          hide_chat_emojis: "채팅 이모지 숨기기",
+          ublock_name: "광고 차단 (uBlock)",
+          ublock_title: "uBlock Origin 열기",
+          ublock_badge: "열기",
+          video_quality: "화질 우선 설정",
+          quality_auto: "자동",
+          quality_max: "최고 화질",
+          prevent_auto_pause: "자동 일시정지 방지",
+          chat_memory_gc: "채팅 메모리 최적화",
+          keyboard_controls: "단축키 제어 (A-S-D)",
+          block_av1: "AV1 차단 / 하드웨어 코덱",
+          audio_only: "오디오 전용 모드",
+          lock_elapsed_time: "재생 시간 고정 표시",
+          auto_update: "자동 업데이트",
+          sub_autoupdate: "접속 시 최신 버전 자동 감지",
+          check_update: "업데이트 확인",
+          btn_check: "확인",
+          author: "개발자",
+          report_bug: "버그 제보 & 피드백",
+          sub_report: "버그 제보 또는 아이디어 제안",
+          btn_report: "제보",
+          donate: "개발자 후원",
+          sub_donate: "커피 한 잔으로 개발 후원하기",
+          special_feature: "주목할 만한 특별 기능",
+          toast_lang: "언어가 변경되었습니다: ",
+          chat_tip_disabled: "라이브 스트리밍 또는 채팅이 있는 영상에서만 가능",
+          chat_tip_off: "화면 채팅 끄기",
+          chat_tip_danmaku: "가로 탄막 자막",
+          chat_tip_streamer: "스트리머 플로팅 채팅창"
+        },
+        "zh-CN": {
+          tab_layout: "界面",
+          tab_filter: "过滤",
+          tab_player: "播放",
+          tab_optimize: "优化",
+          tab_info: "关于",
+          home_cols: "首页网格列数",
+          premium_logo: "Premium 标志",
+          unlock_live_dvr: "解锁直播倒带",
+          auto_live_sync: "自动同步直播",
+          ambient_lighting: "流光溢彩 (Cinema)",
+          script_language: "界面语言",
+          live_chat: "弹幕/聊天",
+          chat_off: "关闭",
+          chat_danmaku: "横向",
+          chat_streamer: "浮窗",
+          hide_shorts: "隐藏 Shorts 短视频",
+          hide_playables: "隐藏小游戏",
+          hide_members: "隐藏会员专享",
+          hide_community: "隐藏社区动态",
+          clean_search: "净化搜索广告",
+          hide_explore: "隐藏探索栏",
+          hide_shopping: "隐藏购物推荐",
+          hide_mixes: "隐藏合辑/播放列表",
+          hide_endscreen: "隐藏片尾推荐卡片",
+          hide_watermark: "隐藏频道水印",
+          auto_dismiss: "自动关闭弹窗",
+          hide_native_chat: "自动收起原生聊天",
+          hide_chat_emojis: "隐藏聊天表情",
+          ublock_name: "广告拦截 (uBlock)",
+          ublock_title: "获取 uBlock Origin",
+          ublock_badge: "打开",
+          video_quality: "首选画质",
+          quality_auto: "自动",
+          quality_max: "最高画质",
+          prevent_auto_pause: "防止自动暂停",
+          chat_memory_gc: "聊天内存清理",
+          keyboard_controls: "键盘快捷键 (A-S-D)",
+          block_av1: "禁用 AV1 / 强制硬件解码",
+          audio_only: "纯音频模式 (广播)",
+          lock_elapsed_time: "锁定已播放时间",
+          auto_update: "自动更新",
+          sub_autoupdate: "进入 YouTube 时自动检测最新版本",
+          check_update: "检查更新",
+          btn_check: "检查",
+          author: "开发者",
+          report_bug: "反馈问题 & 建议",
+          sub_report: "提交 Bug 或新功能建议",
+          btn_report: "反馈",
+          donate: "赞助开发者",
+          sub_donate: "请作者喝杯咖啡支持后续开发",
+          special_feature: "重点特色功能",
+          toast_lang: "已更改语言：",
+          chat_tip_disabled: "仅在直播或有聊天室的视频中可用",
+          chat_tip_off: "关闭弹幕与浮窗",
+          chat_tip_danmaku: "横向滚动弹幕",
+          chat_tip_streamer: "主播风格悬浮聊天框"
+        },
+        "zh-TW": {
+          tab_layout: "介面",
+          tab_filter: "過濾",
+          tab_player: "播放器",
+          tab_optimize: "最佳化",
+          tab_info: "資訊",
+          home_cols: "首頁格線欄數",
+          premium_logo: "Premium 標誌",
+          unlock_live_dvr: "解鎖直播倒帶",
+          auto_live_sync: "自動同步直播",
+          ambient_lighting: "劇院環形光 (Ambilight)",
+          script_language: "介面語言",
+          live_chat: "即時聊天",
+          chat_off: "關閉",
+          chat_danmaku: "橫向彈幕",
+          chat_streamer: "浮動視窗",
+          hide_shorts: "隱藏 Shorts 短影片",
+          hide_playables: "隱藏小遊戲",
+          hide_members: "隱藏會員專屬",
+          hide_community: "隱藏社群動態",
+          clean_search: "清除搜尋廣告",
+          hide_explore: "隱藏探索專區",
+          hide_shopping: "隱藏購物推薦",
+          hide_mixes: "隱藏合輯/播放清單",
+          hide_endscreen: "隱藏片尾推薦卡片",
+          hide_watermark: "隱藏頻道浮水印",
+          auto_dismiss: "自動關閉橫幅",
+          hide_native_chat: "自動收起原生聊天",
+          hide_chat_emojis: "隱藏聊天表情符號",
+          ublock_name: "廣告攔截 (uBlock)",
+          ublock_title: "取得 uBlock Origin",
+          ublock_badge: "開啟",
+          video_quality: "偏好畫質",
+          quality_auto: "自動",
+          quality_max: "最高畫質",
+          prevent_auto_pause: "防止自動暫停",
+          chat_memory_gc: "釋放聊天記憶體",
+          keyboard_controls: "鍵盤快速鍵 (A-S-D)",
+          block_av1: "禁用 AV1 / 強制硬體解碼",
+          audio_only: "純音訊模式 (廣播)",
+          lock_elapsed_time: "固定播放時間",
+          auto_update: "自動更新",
+          sub_autoupdate: "進入 YouTube 時自動檢查最新版本",
+          check_update: "檢查更新",
+          btn_check: "檢查",
+          author: "開發者",
+          report_bug: "回報問題 & 建議",
+          sub_report: "回報錯誤或提出新點子",
+          btn_report: "回報",
+          donate: "贊助作者",
+          sub_donate: "請作者喝杯咖啡支持開發",
+          special_feature: "精選特別功能",
+          toast_lang: "已更改語言：",
+          chat_tip_disabled: "僅在直播或有聊天室的影片中可用",
+          chat_tip_off: "關閉彈幕",
+          chat_tip_danmaku: "橫向飛過彈幕",
+          chat_tip_streamer: "實況主風格浮動聊天窗"
+        },
+        es: {
+          tab_layout: "Interfaz",
+          tab_filter: "Filtros",
+          tab_player: "Reproductor",
+          tab_optimize: "Optimizar",
+          tab_info: "Información",
+          home_cols: "Columnas de inicio",
+          premium_logo: "Logo Premium",
+          unlock_live_dvr: "Desbloquear retroceso en vivo",
+          auto_live_sync: "Sincronizar en vivo",
+          ambient_lighting: "Luz ambiental (Ambilight)",
+          script_language: "Idioma de interfaz",
+          live_chat: "Chat en vivo",
+          chat_off: "Desactivado",
+          chat_danmaku: "Danmaku",
+          chat_streamer: "Flotante",
+          hide_shorts: "Ocultar Shorts",
+          hide_playables: "Ocultar Juegos",
+          hide_members: "Ocultar Miembros",
+          hide_community: "Ocultar Comunidad",
+          clean_search: "Limpiar anuncios de búsqueda",
+          hide_explore: "Ocultar Explorar",
+          hide_shopping: "Ocultar Compras",
+          hide_mixes: "Ocultar Mixes y Listas",
+          hide_endscreen: "Ocultar pantallas finales",
+          hide_watermark: "Ocultar marca de agua",
+          auto_dismiss: "Cerrar avisos molestos",
+          hide_native_chat: "Colapsar chat nativo",
+          hide_chat_emojis: "Ocultar emojis de chat",
+          ublock_name: "Bloqueador (uBlock)",
+          ublock_title: "Abrir uBlock Origin",
+          ublock_badge: "Abrir",
+          video_quality: "Calidad de video preferida",
+          quality_auto: "Automático",
+          quality_max: "Máxima",
+          prevent_auto_pause: "Evitar pausa automática",
+          chat_memory_gc: "Limpiar memoria de chat",
+          keyboard_controls: "Atajos (A-S-D, teclado numérico)",
+          block_av1: "Bloquear AV1 / Forzar H.264",
+          audio_only: "Solo audio (Radio)",
+          lock_elapsed_time: "Fijar tiempo reproducido",
+          auto_update: "Actualización automática",
+          sub_autoupdate: "Comprueba actualizaciones automáticamente en YouTube",
+          check_update: "Buscar actualizaciones",
+          btn_check: "Buscar",
+          author: "Autor",
+          report_bug: "Reportar error / Sugerencias",
+          sub_report: "Informar de fallos o proponer ideas",
+          btn_report: "Reportar",
+          donate: "Apoyar al creador",
+          sub_donate: "Invítame a un café para apoyar el desarrollo",
+          special_feature: "Característica destacada",
+          toast_lang: "Idioma cambiado: ",
+          chat_tip_disabled: "Solo disponible en transmisiones en vivo con chat",
+          chat_tip_off: "Desactivar chat",
+          chat_tip_danmaku: "Comentarios voladores horizontales Danmaku",
+          chat_tip_streamer: "Ventana flotante de streamer"
+        },
+        fr: {
+          tab_layout: "Interface",
+          tab_filter: "Filtres",
+          tab_player: "Lecteur",
+          tab_optimize: "Optimiser",
+          tab_info: "Infos",
+          home_cols: "Colonnes accueil",
+          premium_logo: "Logo Premium",
+          unlock_live_dvr: "Débloquer retour en direct",
+          auto_live_sync: "Synchro directe automatique",
+          ambient_lighting: "Lumière ambiante (Ambilight)",
+          script_language: "Langue de l'interface",
+          live_chat: "Chat en direct",
+          chat_off: "Désactivé",
+          chat_danmaku: "Danmaku",
+          chat_streamer: "Flottant",
+          hide_shorts: "Masquer Shorts",
+          hide_playables: "Masquer Jeux",
+          hide_members: "Masquer Membres",
+          hide_community: "Masquer Communauté",
+          clean_search: "Nettoyer pubs recherche",
+          hide_explore: "Masquer Explorer",
+          hide_shopping: "Masquer Shopping",
+          hide_mixes: "Masquer Mix et Playlists",
+          hide_endscreen: "Masquer fiches de fin",
+          hide_watermark: "Masquer filigrane chaîne",
+          auto_dismiss: "Fermer bannières promos",
+          hide_native_chat: "Réduire chat natif",
+          hide_chat_emojis: "Masquer émojis du chat",
+          ublock_name: "Bloqueur (uBlock)",
+          ublock_title: "Ouvrir uBlock Origin",
+          ublock_badge: "Ouvrir",
+          video_quality: "Qualité vidéo préférée",
+          quality_auto: "Auto",
+          quality_max: "Maximale",
+          prevent_auto_pause: "Empêcher pause automatique",
+          chat_memory_gc: "Nettoyage mémoire chat",
+          keyboard_controls: "Raccourcis (A-S-D, Pavé num.)",
+          block_av1: "Bloquer AV1 / Forcer H.264",
+          audio_only: "Audio uniquement (Radio)",
+          lock_elapsed_time: "Verrouiller temps écoulé",
+          auto_update: "Mise à jour auto",
+          sub_autoupdate: "Vérification automatique des mises à jour sur YouTube",
+          check_update: "Vérifier mise à jour",
+          btn_check: "Vérifier",
+          author: "Auteur",
+          report_bug: "Signaler bug / Retours",
+          sub_report: "Signaler un problème ou suggérer une idée",
+          btn_report: "Signaler",
+          donate: "Soutenir l'auteur",
+          sub_donate: "Offrez-moi un café pour encourager le projet",
+          special_feature: "Fonctionnalité spéciale",
+          toast_lang: "Langue changée : ",
+          chat_tip_disabled: "Disponible uniquement pendant les streams avec chat",
+          chat_tip_off: "Désactiver le chat",
+          chat_tip_danmaku: "Commentaires défilants Danmaku",
+          chat_tip_streamer: "Fenêtre flottante de streamer"
+        },
+        de: {
+          tab_layout: "Layout",
+          tab_filter: "Filter",
+          tab_player: "Player",
+          tab_optimize: "Optimieren",
+          tab_info: "Info",
+          home_cols: "Spalten auf Startseite",
+          premium_logo: "Premium Logo",
+          unlock_live_dvr: "Live-Zurückspulen entsperren",
+          auto_live_sync: "Automatisch Live bleiben",
+          ambient_lighting: "Umgebungslicht (Ambilight)",
+          script_language: "Oberflächensprache",
+          live_chat: "Live-Chat",
+          chat_off: "Aus",
+          chat_danmaku: "Danmaku",
+          chat_streamer: "Schwebend",
+          hide_shorts: "Shorts ausblenden",
+          hide_playables: "Spiele ausblenden",
+          hide_members: "Mitglieder-Inhalte ausblenden",
+          hide_community: "Community-Beiträge ausblenden",
+          clean_search: "Suchwerbung entfernen",
+          hide_explore: "Entdecken ausblenden",
+          hide_shopping: "Shopping ausblenden",
+          hide_mixes: "Mixe & Playlists ausblenden",
+          hide_endscreen: "Abspannkarten ausblenden",
+          hide_watermark: "Wasserzeichen ausblenden",
+          auto_dismiss: "Promo-Banner schließen",
+          hide_native_chat: "Natives Chatfenster einklappen",
+          hide_chat_emojis: "Chat-Emojis ausblenden",
+          ublock_name: "Werbeblocker (uBlock)",
+          ublock_title: "uBlock Origin öffnen",
+          ublock_badge: "Öffnen",
+          video_quality: "Bevorzugte Videoqualität",
+          quality_auto: "Automatisch",
+          quality_max: "Maximal",
+          prevent_auto_pause: "Auto-Pause verhindern",
+          chat_memory_gc: "Chat-Speicher bereinigen",
+          keyboard_controls: "Tastenkürzel (A-S-D, Ziffernblock)",
+          block_av1: "AV1 blockieren / H.264 erzwingen",
+          audio_only: "Nur Audio (Radio)",
+          lock_elapsed_time: "Verstrichene Zeit fixieren",
+          auto_update: "Automatische Updates",
+          sub_autoupdate: "Prüft automatisch auf Updates beim Laden von YouTube",
+          check_update: "Auf Updates prüfen",
+          btn_check: "Prüfen",
+          author: "Entwickler",
+          report_bug: "Fehler melden / Feedback",
+          sub_report: "Probleme melden oder Ideen vorschlagen",
+          btn_report: "Melden",
+          donate: "Entwickler unterstützen",
+          sub_donate: "Spende einen Kaffee zur Unterstützung",
+          special_feature: "Besonderes Feature",
+          toast_lang: "Sprache geändert: ",
+          chat_tip_disabled: "Nur bei Livestreams mit Chat verfügbar",
+          chat_tip_off: "Chat ausschalten",
+          chat_tip_danmaku: "Horizontal fliegende Danmaku-Nachrichten",
+          chat_tip_streamer: "Schwebendes Streamer-Chatfenster"
+        },
+        ru: {
+          tab_layout: "Интерфейс",
+          tab_filter: "Фильтр",
+          tab_player: "Плеер",
+          tab_optimize: "Оптимизация",
+          tab_info: "О скрипте",
+          home_cols: "Колонки на главной",
+          premium_logo: "Логотип Premium",
+          unlock_live_dvr: "Разблокировать перемотку стрима",
+          auto_live_sync: "Автосинхронизация прямого эфира",
+          ambient_lighting: "Подсветка видео (Ambilight)",
+          script_language: "Язык интерфейса",
+          live_chat: "Чат трансляции",
+          chat_off: "Выкл",
+          chat_danmaku: "Бегущая строка",
+          chat_streamer: "Плавающий",
+          hide_shorts: "Скрыть Shorts",
+          hide_playables: "Скрыть Игры",
+          hide_members: "Скрыть видео для спонсоров",
+          hide_community: "Скрыть записи сообщества",
+          clean_search: "Очистить рекламу в поиске",
+          hide_explore: "Скрыть Навигатор",
+          hide_shopping: "Скрыть Покупки",
+          hide_mixes: "Скрыть Миксы и плейлисты",
+          hide_endscreen: "Скрыть конечные заставки",
+          hide_watermark: "Скрыть водяной знак канала",
+          auto_dismiss: "Закрывать промо-баннеры",
+          hide_native_chat: "Сворачивать стандартный чат",
+          hide_chat_emojis: "Скрыть эмодзи в чате",
+          ublock_name: "Блокировщик (uBlock)",
+          ublock_title: "Открыть uBlock Origin",
+          ublock_badge: "Открыть",
+          video_quality: "Предпочитаемое качество",
+          quality_auto: "Авто",
+          quality_max: "Максимальное",
+          prevent_auto_pause: "Блокировать автопаузу",
+          chat_memory_gc: "Очистка памяти чата",
+          keyboard_controls: "Горячие клавиши (A-S-D, Numpad)",
+          block_av1: "Блокировать AV1 / Аппаратный H.264",
+          audio_only: "Только звук (Радио)",
+          lock_elapsed_time: "Фиксировать время просмотра",
+          auto_update: "Автообновление",
+          sub_autoupdate: "Автоматическая проверка обновлений при открытии YouTube",
+          check_update: "Проверить обновления",
+          btn_check: "Проверить",
+          author: "Разработчик",
+          report_bug: "Сообщить об ошибке / Отзыв",
+          sub_report: "Сообщить о баге или предложить идею",
+          btn_report: "Отчет",
+          donate: "Поддержать автора",
+          sub_donate: "Угостите автора кофе для поддержки проекта",
+          special_feature: "Особая функция",
+          toast_lang: "Язык изменен: ",
+          chat_tip_disabled: "Доступно только во время стримов с чатом",
+          chat_tip_off: "Отключить чат",
+          chat_tip_danmaku: "Бегущие комментарии Данмаку",
+          chat_tip_streamer: "Плавающее окно чата стримера"
+        },
+        pt: {
+          tab_layout: "Interface",
+          tab_filter: "Filtros",
+          tab_player: "Reprodutor",
+          tab_optimize: "Otimizar",
+          tab_info: "Sobre",
+          home_cols: "Colunas da página inicial",
+          premium_logo: "Logo Premium",
+          unlock_live_dvr: "Desbloquear retrocesso ao vivo",
+          auto_live_sync: "Sincronizar ao vivo",
+          ambient_lighting: "Luz ambiente (Ambilight)",
+          script_language: "Idioma da interface",
+          live_chat: "Chat ao vivo",
+          chat_off: "Desligado",
+          chat_danmaku: "Danmaku",
+          chat_streamer: "Flutuante",
+          hide_shorts: "Ocultar Shorts",
+          hide_playables: "Ocultar Jogos",
+          hide_members: "Ocultar Membros",
+          hide_community: "Ocultar Comunidade",
+          clean_search: "Limpar anúncios de pesquisa",
+          hide_explore: "Ocultar Explorar",
+          hide_shopping: "Ocultar Compras",
+          hide_mixes: "Ocultar Mixes e Playlists",
+          hide_endscreen: "Ocultar telas finais",
+          hide_watermark: "Ocultar marca d'água",
+          auto_dismiss: "Fechar avisos promocionais",
+          hide_native_chat: "Recolher chat padrão",
+          hide_chat_emojis: "Ocultar emojis do chat",
+          ublock_name: "Bloqueador (uBlock)",
+          ublock_title: "Abrir uBlock Origin",
+          ublock_badge: "Abrir",
+          video_quality: "Qualidade de vídeo preferida",
+          quality_auto: "Automático",
+          quality_max: "Máxima",
+          prevent_auto_pause: "Evitar pausa automática",
+          chat_memory_gc: "Limpeza de memória do chat",
+          keyboard_controls: "Atalhos (A-S-D, Teclado numérico)",
+          block_av1: "Bloquear AV1 / Forçar H.264",
+          audio_only: "Apenas áudio (Rádio)",
+          lock_elapsed_time: "Fixar tempo decorrido",
+          auto_update: "Atualização automática",
+          sub_autoupdate: "Verifica atualizações automaticamente no YouTube",
+          check_update: "Verificar atualizações",
+          btn_check: "Verificar",
+          author: "Autor",
+          report_bug: "Relatar erro / Sugestões",
+          sub_report: "Reportar problemas ou sugerir melhorias",
+          btn_report: "Relatar",
+          donate: "Apoiar o criador",
+          sub_donate: "Pague-me um café para apoiar o desenvolvimento",
+          special_feature: "Recurso especial em destaque",
+          toast_lang: "Idioma alterado: ",
+          chat_tip_disabled: "Disponível apenas em transmissões com chat",
+          chat_tip_off: "Desativar chat",
+          chat_tip_danmaku: "Comentários horizontais Danmaku",
+          chat_tip_streamer: "Janela flutuante de streamer"
+        },
+        it: {
+          tab_layout: "Interfaccia",
+          tab_filter: "Filtri",
+          tab_player: "Player",
+          tab_optimize: "Ottimizza",
+          tab_info: "Informazioni",
+          home_cols: "Colonne home page",
+          premium_logo: "Logo Premium",
+          unlock_live_dvr: "Sblocca riavvolgimento live",
+          auto_live_sync: "Sincronizzazione live automatica",
+          ambient_lighting: "Luce ambientale (Ambilight)",
+          script_language: "Lingua interfaccia",
+          live_chat: "Live Chat",
+          chat_off: "Off",
+          chat_danmaku: "Danmaku",
+          chat_streamer: "Fluttuante",
+          hide_shorts: "Nascondi Shorts",
+          hide_playables: "Nascondi Giochi",
+          hide_members: "Nascondi Abbonati",
+          hide_community: "Nascondi Post Community",
+          clean_search: "Pulisci annunci di ricerca",
+          hide_explore: "Nascondi Esplora",
+          hide_shopping: "Nascondi Shopping",
+          hide_mixes: "Nascondi Mix e Playlist",
+          hide_endscreen: "Nascondi schermate finali",
+          hide_watermark: "Nascondi filigrana canale",
+          auto_dismiss: "Chiudi banner promozionali",
+          hide_native_chat: "Riduci chat nativa",
+          hide_chat_emojis: "Nascondi emoji della chat",
+          ublock_name: "Blocco annunci (uBlock)",
+          ublock_title: "Apri uBlock Origin",
+          ublock_badge: "Apri",
+          video_quality: "Qualità video preferita",
+          quality_auto: "Automatico",
+          quality_max: "Massima",
+          prevent_auto_pause: "Previeni pausa automatica",
+          chat_memory_gc: "Pulizia memoria chat",
+          keyboard_controls: "Scorciatoie (A-S-D, Tastierino)",
+          block_av1: "Blocca AV1 / Forza H.264",
+          audio_only: "Solo audio (Radio)",
+          lock_elapsed_time: "Blocca tempo trascorso",
+          auto_update: "Aggiornamento automatico",
+          sub_autoupdate: "Verifica aggiornamenti automaticamente all'avvio",
+          check_update: "Verifica aggiornamenti",
+          btn_check: "Verifica",
+          author: "Sviluppatore",
+          report_bug: "Segnala bug / Suggerimenti",
+          sub_report: "Segnala problemi o suggerisci idee",
+          btn_report: "Segnala",
+          donate: "Supporta l'autore",
+          sub_donate: "Offrimi un caffè per sostenere lo sviluppo",
+          special_feature: "Funzionalità speciale in primo piano",
+          toast_lang: "Lingua modificata: ",
+          chat_tip_disabled: "Disponibile solo durante live stream con chat",
+          chat_tip_off: "Disattiva overlay chat",
+          chat_tip_danmaku: "Messaggi Danmaku scorrevoli",
+          chat_tip_streamer: "Finestra chat fluttuante"
+        },
+        id: {
+          tab_layout: "Tampilan",
+          tab_filter: "Filter",
+          tab_player: "Pemutar",
+          tab_optimize: "Optimasi",
+          tab_info: "Tentang",
+          home_cols: "Kolom beranda",
+          premium_logo: "Logo Premium",
+          unlock_live_dvr: "Buka mundur siaran langsung",
+          auto_live_sync: "Sinkronisasi siaran langsung",
+          ambient_lighting: "Pencahayaan sekitar (Ambilight)",
+          script_language: "Bahasa antarmuka",
+          live_chat: "Live Chat",
+          chat_off: "Mati",
+          chat_danmaku: "Danmaku",
+          chat_streamer: "Melayang",
+          hide_shorts: "Sembunyikan Shorts",
+          hide_playables: "Sembunyikan Game",
+          hide_members: "Sembunyikan Khusus Member",
+          hide_community: "Sembunyikan Postingan",
+          clean_search: "Bersihkan iklan pencarian",
+          hide_explore: "Sembunyikan Jelajahi",
+          hide_shopping: "Sembunyikan Belanja",
+          hide_mixes: "Sembunyikan Campuran & Playlist",
+          hide_endscreen: "Sembunyikan kartu akhir",
+          hide_watermark: "Sembunyikan watermark channel",
+          auto_dismiss: "Tutup banner promo otomatis",
+          hide_native_chat: "Tutup chat bawaan",
+          hide_chat_emojis: "Sembunyikan emoji chat",
+          ublock_name: "Pemblokir iklan (uBlock)",
+          ublock_title: "Buka uBlock Origin",
+          ublock_badge: "Buka",
+          video_quality: "Kualitas video pilihan",
+          quality_auto: "Otomatis",
+          quality_max: "Tertinggi",
+          prevent_auto_pause: "Cegah jeda otomatis",
+          chat_memory_gc: "Bersihkan RAM live chat",
+          keyboard_controls: "Pintasan (A-S-D, Numpad)",
+          block_av1: "Blokir AV1 / Paksa H.264",
+          audio_only: "Mode audio saja (Radio)",
+          lock_elapsed_time: "Kunci tampilan durasi",
+          auto_update: "Pembaruan otomatis",
+          sub_autoupdate: "Cek pembaruan otomatis saat membuka YouTube",
+          check_update: "Cek pembaruan",
+          btn_check: "Cek",
+          author: "Pengembang",
+          report_bug: "Laporkan bug / Masukan",
+          sub_report: "Laporkan kendala atau ajukan ide",
+          btn_report: "Lapor",
+          donate: "Dukung pengembang",
+          sub_donate: "Beri kopi untuk mendukung pengembangan",
+          special_feature: "Fitur unggulan istimewa",
+          toast_lang: "Bahasa diubah: ",
+          chat_tip_disabled: "Hanya tersedia saat siaran langsung dengan chat",
+          chat_tip_off: "Matikan tampilan chat",
+          chat_tip_danmaku: "Komentar melayang horizontal Danmaku",
+          chat_tip_streamer: "Jendela chat melayang gaya streamer"
+        },
+        th: {
+          tab_layout: "หน้าตา",
+          tab_filter: "ตัวกรอง",
+          tab_player: "เครื่องเล่น",
+          tab_optimize: "เพิ่มประสิทธิภาพ",
+          tab_info: "เกี่ยวกับ",
+          home_cols: "จำนวนคอลัมน์หน้าแรก",
+          premium_logo: "โลโก้ Premium",
+          unlock_live_dvr: "ปลดล็อกกรอไลฟ์สตรีม",
+          auto_live_sync: "ซิงค์สดอัตโนมัติ",
+          ambient_lighting: "แสงรอบข้าง (Ambilight)",
+          script_language: "ภาษาของสคริปต์",
+          live_chat: "แชทสด",
+          chat_off: "ปิด",
+          chat_danmaku: "วิ่งผ่านจอ",
+          chat_streamer: "ลอยตัว",
+          hide_shorts: "ซ่อน Shorts",
+          hide_playables: "ซ่อนเกม",
+          hide_members: "ซ่อนเฉพาะสมาชิก",
+          hide_community: "ซ่อนโพสต์ชุมชน",
+          clean_search: "ล้างโฆษณาการค้นหา",
+          hide_explore: "ซ่อนแถบสำรวจ",
+          hide_shopping: "ซ่อนแถบช้อปปิ้ง",
+          hide_mixes: "ซ่อนมิกซ์และเพลย์ลิสต์",
+          hide_endscreen: "ซ่อนการ์ดตอนท้าย",
+          hide_watermark: "ซ่อนลายน้ำช่อง",
+          auto_dismiss: "ปิดแบนเนอร์โปรโมชันอัตโนมัติ",
+          hide_native_chat: "ย่อแชทเริ่มต้นอัตโนมัติ",
+          hide_chat_emojis: "ซ่อนอิโมจิในแชท",
+          ublock_name: "ตัวบล็อกโฆษณา (uBlock)",
+          ublock_title: "เปิดหน้า uBlock Origin",
+          ublock_badge: "เปิด",
+          video_quality: "คุณภาพวิดีโอที่ต้องการ",
+          quality_auto: "อัตโนมัติ",
+          quality_max: "สูงสุด",
+          prevent_auto_pause: "ป้องกันการหยุดวิดีโออัตโนมัติ",
+          chat_memory_gc: "ล้างแรมประวัติแชท",
+          keyboard_controls: "ปุ่มลัด (A-S-D, แป้นตัวเลข)",
+          block_av1: "บล็อก AV1 / บังคับใช้ H.264",
+          audio_only: "โหมดฟังเสียงเท่านั้น (วิทยุ)",
+          lock_elapsed_time: "ตรึงเวลาที่เล่นไปแล้ว",
+          auto_update: "อัปเดตอัตโนมัติ",
+          sub_autoupdate: "ตรวจสอบเวอร์ชันใหม่อัตโนมัติเมื่อเข้า YouTube",
+          check_update: "ตรวจหาอัปเดต",
+          btn_check: "ตรวจหา",
+          author: "ผู้พัฒนา",
+          report_bug: "รายงานปัญหา / ข้อเสนอแนะ",
+          sub_report: "แจ้งข้อผิดพลาดหรือเสนอแนะฟีเจอร์",
+          btn_report: "รายงาน",
+          donate: "สนับสนุนผู้พัฒนา",
+          sub_donate: "เลี้ยงกาแฟเพื่อสนับสนุนการพัฒนา",
+          special_feature: "ฟีเจอร์พิเศษโดดเด่น",
+          toast_lang: "เปลี่ยนภาษาแล้ว: ",
+          chat_tip_disabled: "ใช้ได้เฉพาะไลฟ์สตรีมที่มีแชทเท่านั้น",
+          chat_tip_off: "ปิดการแสดงผลแชท",
+          chat_tip_danmaku: "ข้อความวิ่งข้ามหน้าจอแบบดันมาคุ",
+          chat_tip_streamer: "หน้าต่างแชทลอยสไตล์สตรีมเมอร์"
+        },
+        hi: {
+          tab_layout: "इंटरफ़ेस",
+          tab_filter: "फ़िल्टर",
+          tab_player: "प्लेयर",
+          tab_optimize: "अनुकूलन",
+          tab_info: "जानकारी",
+          home_cols: "होम ग्रिड कॉलम",
+          premium_logo: "प्रीमियम लोगो",
+          unlock_live_dvr: "लाइव रिवाइंड अनलॉक करें",
+          auto_live_sync: "ऑटो लाइव सिंक",
+          ambient_lighting: "एम्बिएंट लाइट (Ambilight)",
+          script_language: "इंटरफ़ेस भाषा",
+          live_chat: "लाइव चैट",
+          chat_off: "बंद",
+          chat_danmaku: "दानमाकू",
+          chat_streamer: "फ़्लोटिंग",
+          hide_shorts: "Shorts छुपाएं",
+          hide_playables: "गेम्स छुपाएं",
+          hide_members: "केवल सदस्य वीडियो छुपाएं",
+          hide_community: "कम्युनिटी पोस्ट छुपाएं",
+          clean_search: "खोज विज्ञापन साफ़ करें",
+          hide_explore: "एक्सप्लोर छुपाएं",
+          hide_shopping: "शॉपिंग छुपाएं",
+          hide_mixes: "मिक्स और प्लेलिस्ट छुपाएं",
+          hide_endscreen: "एंडस्क्रीन कार्ड छुपाएं",
+          hide_watermark: "वॉटरमार्क छुपाएं",
+          auto_dismiss: "प्रोमो बैनर स्वतः बंद करें",
+          hide_native_chat: "मूल चैट स्वतः बंद करें",
+          hide_chat_emojis: "चैट इमोजी छुपाएं",
+          ublock_name: "विज्ञापन अवरोधक (uBlock)",
+          ublock_title: "uBlock Origin खोलें",
+          ublock_badge: "खोलें",
+          video_quality: "पसंदीदा वीडियो गुणवत्ता",
+          quality_auto: "स्वतः",
+          quality_max: "सर्वोच्च",
+          prevent_auto_pause: "स्वतः पॉज़ रोकें",
+          chat_memory_gc: "चैट मेमोरी साफ़ करें",
+          keyboard_controls: "शॉर्टकट (A-S-D, नम्पैड)",
+          block_av1: "AV1 ब्लॉक करें / H.264 लागू करें",
+          audio_only: "केवल ऑडियो मोड (रेडियो)",
+          lock_elapsed_time: "बीता हुआ समय स्थिर रखें",
+          auto_update: "स्वतः अपडेट",
+          sub_autoupdate: "YouTube पर स्वतः नए संस्करण की जांच करें",
+          check_update: "अपडेट जांचें",
+          btn_check: "जांचें",
+          author: "डेवलपर",
+          report_bug: "बग रिपोर्ट / प्रतिक्रिया",
+          sub_report: "समस्या की रिपोर्ट करें या विचार साझा करें",
+          btn_report: "रिपोर्ट",
+          donate: "सपोर्ट करें",
+          sub_donate: "विकास में सहयोग के लिए कॉफी भेंट करें",
+          special_feature: "विशेष चुनिंदा सुविधा",
+          toast_lang: "भाषा बदल दी गई: ",
+          chat_tip_disabled: "केवल लाइव स्ट्रीम या चैट वाले वीडियो में उपलब्ध",
+          chat_tip_off: "चैट ओवरले बंद करें",
+          chat_tip_danmaku: "क्षैतिज उड़ती हुई टिप्पणियाँ",
+          chat_tip_streamer: "स्ट्रीमर फ्लोटिंग चैट विंडो"
+        },
+        ar: {
+          tab_layout: "الواجهة",
+          tab_filter: "التصفية",
+          tab_player: "المشغل",
+          tab_optimize: "التحسين",
+          tab_info: "حول",
+          home_cols: "أعمدة الصفحة الرئيسية",
+          premium_logo: "شعار Premium",
+          unlock_live_dvr: "فتح ترجيع البث المباشر",
+          auto_live_sync: "مزامنة البث المباشر تلقائياً",
+          ambient_lighting: "الإضاءة المحيطية (Ambilight)",
+          script_language: "لغة الواجهة",
+          live_chat: "الدردشة المباشرة",
+          chat_off: "إيقاف",
+          chat_danmaku: "دانماكو",
+          chat_streamer: "عائم",
+          hide_shorts: "إخفاء Shorts",
+          hide_playables: "إخفاء الألعاب",
+          hide_members: "إخفاء فيديوهات الأعضاء فقط",
+          hide_community: "إخفاء منشورات المنتدى",
+          clean_search: "تنظيف إعلانات البحث",
+          hide_explore: "إخفاء الاستكشاف",
+          hide_shopping: "إخفاء التسوق",
+          hide_mixes: "إخفاء الخلطات وقوائم التشغيل",
+          hide_endscreen: "إخفاء بطاقات النهاية",
+          hide_watermark: "إخفاء العلامة المائية للقناة",
+          auto_dismiss: "إغلاق الإعلانات الترويجية تلقائياً",
+          hide_native_chat: "طي الدردشة الأصلية تلقائياً",
+          hide_chat_emojis: "إخفاء الرموز التعبيرية في الدردشة",
+          ublock_name: "مانع الإعلانات (uBlock)",
+          ublock_title: "فتح uBlock Origin",
+          ublock_badge: "فتح",
+          video_quality: "جودة الفيديو المفضلة",
+          quality_auto: "تلقائي",
+          quality_max: "الأعلى",
+          prevent_auto_pause: "منع الإيقاف التلقائي",
+          chat_memory_gc: "تنظيف ذاكرة الدردشة",
+          keyboard_controls: "اختصارات (A-S-D، لوحة الأرقام)",
+          block_av1: "حظر AV1 / فرض H.264",
+          audio_only: "وضع الصوت فقط (راديو)",
+          lock_elapsed_time: "تثبيت عرض الوقت المنقضي",
+          auto_update: "تحديث تلقائي",
+          sub_autoupdate: "فحص التحديثات تلقائياً عند فتح YouTube",
+          check_update: "التحقق من التحديثات",
+          btn_check: "فحص",
+          author: "المطور",
+          report_bug: "الإبلاغ عن خطأ / اقتراحات",
+          sub_report: "أبلغ عن خطأ أو اقترح ميزة جديدة",
+          btn_report: "إبلاغ",
+          donate: "دعم المطور",
+          sub_donate: "تبرع بكوب قهوة لدعم استمرار التطوير",
+          special_feature: "ميزة خاصة ومميزة",
+          toast_lang: "تم تغيير اللغة: ",
+          chat_tip_disabled: "متاح فقط أثناء البث المباشر الذي يحتوي على دردشة",
+          chat_tip_off: "إيقاف الدردشة",
+          chat_tip_danmaku: "تعليقات طائرة أفقية دانماكو",
+          chat_tip_streamer: "نافذة دردشة عائمة للمذيعين"
+        },
+        tr: {
+          tab_layout: "Arayüz",
+          tab_filter: "Filtre",
+          tab_player: "Oynatıcı",
+          tab_optimize: "Optimizasyon",
+          tab_info: "Hakkında",
+          home_cols: "Ana Sayfa Sütunları",
+          premium_logo: "Premium Logosu",
+          unlock_live_dvr: "Canlı Yayını Geri Sarmayı Aç",
+          auto_live_sync: "Otomatik Canlı Senkronizasyon",
+          ambient_lighting: "Ortam Işığı (Ambilight)",
+          script_language: "Arayüz Dili",
+          live_chat: "Canlı Sohbet",
+          chat_off: "Kapalı",
+          chat_danmaku: "Kayan Yazı",
+          chat_streamer: "Kayan Pencere",
+          hide_shorts: "Shorts'ları Gizle",
+          hide_playables: "Oyunları Gizle",
+          hide_members: "Üyelere Özel İçerikleri Gizle",
+          hide_community: "Topluluk Gönderilerini Gizle",
+          clean_search: "Arama Reklamlarını Temizle",
+          hide_explore: "Keşfet Raflarını Gizle",
+          hide_shopping: "Alışveriş Raflarını Gizle",
+          hide_mixes: "Karışımları ve Oynatma Listelerini Gizle",
+          hide_endscreen: "Bitiş Kartlarını Gizle",
+          hide_watermark: "Kanal Filigranını Gizle",
+          auto_dismiss: "Promosyon Bildirimlerini Kapat",
+          hide_native_chat: "Yerel Sohbeti Daralt",
+          hide_chat_emojis: "Sohbet Emojilerini Gizle",
+          ublock_name: "Reklam Engelleyici (uBlock)",
+          ublock_title: "uBlock Origin'i Aç",
+          ublock_badge: "Aç",
+          video_quality: "Tercih Edilen Kalite",
+          quality_auto: "Otomatik",
+          quality_max: "En Yüksek",
+          prevent_auto_pause: "Otomatik Duraklatmayı Engelle",
+          chat_memory_gc: "Sohbet Belleğini Temizle",
+          keyboard_controls: "Kısayollar (A-S-D, Numpad)",
+          block_av1: "AV1 Engelle / H.264 Zorla",
+          audio_only: "Yalnızca Ses Modu (Radyo)",
+          lock_elapsed_time: "Geçen Süreyi Sabitle",
+          auto_update: "Otomatik Güncelleme",
+          sub_autoupdate: "YouTube açıldığında güncellemeleri otomatik kontrol et",
+          check_update: "Güncellemeleri Denetle",
+          btn_check: "Denetle",
+          author: "Geliştirici",
+          report_bug: "Hata Bildir / Geri Bildirim",
+          sub_report: "Hata bildirin veya yeni fikirler önerin",
+          btn_report: "Bildir",
+          donate: "Geliştiriciye Destek Ol",
+          sub_donate: "Geliştirmeyi desteklemek için bir kahve ısmarla",
+          special_feature: "Öne çıkan özel yetenek",
+          toast_lang: "Dil değiştirildi: ",
+          chat_tip_disabled: "Yalnızca sohbet içeren canlı yayınlarda kullanılabilir",
+          chat_tip_off: "Sohbet katmanını kapat",
+          chat_tip_danmaku: "Ekranda kayan Danmaku yorumları",
+          chat_tip_streamer: "Yayıncı tarzı kayan sohbet penceresi"
+        },
+        pl: {
+          tab_layout: "Interfejs",
+          tab_filter: "Filtry",
+          tab_player: "Odtwarzacz",
+          tab_optimize: "Optymalizacja",
+          tab_info: "O skrypcie",
+          home_cols: "Kolumny na stronie głównej",
+          premium_logo: "Logo Premium",
+          unlock_live_dvr: "Odblokuj przewijanie transmisji",
+          auto_live_sync: "Automatyczna synchronizacja live",
+          ambient_lighting: "Światło otoczenia (Ambilight)",
+          script_language: "Język interfejsu",
+          live_chat: "Czat na żywo",
+          chat_off: "Wyłączony",
+          chat_danmaku: "Danmaku",
+          chat_streamer: "Pływający",
+          hide_shorts: "Ukryj Shorts",
+          hide_playables: "Ukryj Gry",
+          hide_members: "Ukryj filmy dla wspierających",
+          hide_community: "Ukryj posty społeczności",
+          clean_search: "Usuń reklamy z wyszukiwania",
+          hide_explore: "Ukryj Odkrywaj",
+          hide_shopping: "Ukryj Zakupy",
+          hide_mixes: "Ukryj Miksy i playlisty",
+          hide_endscreen: "Ukryj ekrany końcowe",
+          hide_watermark: "Ukryj znak wodny kanału",
+          auto_dismiss: "Zamykaj banery promocyjne",
+          hide_native_chat: "Zwiń domyślny czat",
+          hide_chat_emojis: "Ukryj emoji na czacie",
+          ublock_name: "Bloker reklam (uBlock)",
+          ublock_title: "Otwórz uBlock Origin",
+          ublock_badge: "Otwórz",
+          video_quality: "Preferowana jakość wideo",
+          quality_auto: "Automatyczna",
+          quality_max: "Najwyższa",
+          prevent_auto_pause: "Blokuj automatyczne zatrzymywanie",
+          chat_memory_gc: "Czyszczenie pamięci RAM czatu",
+          keyboard_controls: "Skróty (A-S-D, klawiatura numeryczna)",
+          block_av1: "Blokuj AV1 / Wymuś H.264",
+          audio_only: "Tylko dźwięk (Radio)",
+          lock_elapsed_time: "Zablokuj wyświetlanie czasu",
+          auto_update: "Automatyczna aktualizacja",
+          sub_autoupdate: "Automatycznie sprawdza aktualizacje na YouTube",
+          check_update: "Sprawdź aktualizacje",
+          btn_check: "Sprawdź",
+          author: "Autor",
+          report_bug: "Zgłoś błąd / Opinie",
+          sub_report: "Zgłoś problem lub zaproponuj pomysł",
+          btn_report: "Zgłoś",
+          donate: "Wesprzyj autora",
+          sub_donate: "Postaw kawę, aby wesprzeć rozwój projektu",
+          special_feature: "Wyróżniona funkcja specjalna",
+          toast_lang: "Zmieniono język: ",
+          chat_tip_disabled: "Dostępne tylko podczas transmisji z czatem",
+          chat_tip_off: "Wyłącz czat na wideo",
+          chat_tip_danmaku: "Latające komentarze Danmaku",
+          chat_tip_streamer: "Pływające okno czatu streamera"
+        },
+        nl: {
+          tab_layout: "Interface",
+          tab_filter: "Filters",
+          tab_player: "Speler",
+          tab_optimize: "Optimalisatie",
+          tab_info: "Over",
+          home_cols: "Kolommen startpagina",
+          premium_logo: "Premium Logo",
+          unlock_live_dvr: "Live terugspoelen ontgrendelen",
+          auto_live_sync: "Automatisch live synchroniseren",
+          ambient_lighting: "Omgevingsverlichting (Ambilight)",
+          script_language: "Interfacetaal",
+          live_chat: "Live Chat",
+          chat_off: "Uit",
+          chat_danmaku: "Danmaku",
+          chat_streamer: "Zwevend",
+          hide_shorts: "Shorts verbergen",
+          hide_playables: "Games verbergen",
+          hide_members: "Alleen voor leden verbergen",
+          hide_community: "Community-berichten verbergen",
+          clean_search: "Zoekadvertenties opschonen",
+          hide_explore: "Verkennen verbergen",
+          hide_shopping: "Shopping verbergen",
+          hide_mixes: "Mixen & afspeellijsten verbergen",
+          hide_endscreen: "Eindschermen verbergen",
+          hide_watermark: "Kanaalwatermerk verbergen",
+          auto_dismiss: "Promotiebanners sluiten",
+          hide_native_chat: "Standaardchat inklappen",
+          hide_chat_emojis: "Chat-emoji's verbergen",
+          ublock_name: "Advertentieblokkering (uBlock)",
+          ublock_title: "Open uBlock Origin",
+          ublock_badge: "Openen",
+          video_quality: "Voorkeurskwaliteit",
+          quality_auto: "Automatisch",
+          quality_max: "Hoogste",
+          prevent_auto_pause: "Automatisch pauzeren voorkomen",
+          chat_memory_gc: "Chatgeheugen opschonen",
+          keyboard_controls: "Sneltoetsen (A-S-D, numeriek blok)",
+          block_av1: "AV1 blokkeren / H.264 forceren",
+          audio_only: "Alleen audio (Radio)",
+          lock_elapsed_time: "Verstreken tijd vastzetten",
+          auto_update: "Automatisch bijwerken",
+          sub_autoupdate: "Controleert automatisch op updates bij openen",
+          check_update: "Controleren op updates",
+          btn_check: "Controleren",
+          author: "Ontwikkelaar",
+          report_bug: "Bug melden / Feedback",
+          sub_report: "Meld een probleem of stel een idee voor",
+          btn_report: "Melden",
+          donate: "Ondersteun ontwikkelaar",
+          sub_donate: "Koop een koffie om de ontwikkeling te steunen",
+          special_feature: "Uitgelichte speciale functie",
+          toast_lang: "Taal gewijzigd: ",
+          chat_tip_disabled: "Alleen beschikbaar tijdens livestreams met chat",
+          chat_tip_off: "Chatoverlay uitschakelen",
+          chat_tip_danmaku: "Horizontaal vliegende Danmaku-opmerkingen",
+          chat_tip_streamer: "Zwevend streamervenster"
+        },
+        fil: {
+          tab_layout: "Hitsura",
+          tab_filter: "Filter",
+          tab_player: "Player",
+          tab_optimize: "Optimize",
+          tab_info: "Tungkol",
+          home_cols: "Mga Kolum sa Home",
+          premium_logo: "Logo ng Premium",
+          unlock_live_dvr: "I-unlock ang Live Rewind",
+          auto_live_sync: "Auto Live Sync",
+          ambient_lighting: "Ambient Light (Ambilight)",
+          script_language: "Wika ng Interface",
+          live_chat: "Live Chat",
+          chat_off: "Patay",
+          chat_danmaku: "Danmaku",
+          chat_streamer: "Lumulutang",
+          hide_shorts: "Itago ang Shorts",
+          hide_playables: "Itago ang Mga Laro",
+          hide_members: "Itago ang Para sa Miyembro Lamang",
+          hide_community: "Itago ang Mga Post sa Komunidad",
+          clean_search: "Linisin ang Ads sa Paghahanap",
+          hide_explore: "Itago ang Explore",
+          hide_shopping: "Itago ang Shopping",
+          hide_mixes: "Itago ang Mga Mix at Playlist",
+          hide_endscreen: "Itago ang Endscreen Cards",
+          hide_watermark: "Itago ang Watermark ng Channel",
+          auto_dismiss: "Isara ang Promo Banners",
+          hide_native_chat: "I-collapse ang Default Chat",
+          hide_chat_emojis: "Itago ang Emojis sa Chat",
+          ublock_name: "Adblocker (uBlock)",
+          ublock_title: "Buksan ang uBlock Origin",
+          ublock_badge: "Buksan",
+          video_quality: "Gustong Kalidad ng Video",
+          quality_auto: "Awtomatiko",
+          quality_max: "Pinakamataas",
+          prevent_auto_pause: "Pigilan ang Auto-Pause",
+          chat_memory_gc: "Linisin ang RAM ng Chat",
+          keyboard_controls: "Mga Shortcut (A-S-D, Numpad)",
+          block_av1: "I-block ang AV1 / Pilitin ang H.264",
+          audio_only: "Audio Lamang (Radyo)",
+          lock_elapsed_time: "I-lock ang Lumipas na Oras",
+          auto_update: "Awtomatikong Update",
+          sub_autoupdate: "Awtomatikong sumusuri ng updates pagbukas ng YouTube",
+          check_update: "Suriin ang Updates",
+          btn_check: "Suriin",
+          author: "May-akda",
+          report_bug: "Mag-ulat ng Bug / Feedback",
+          sub_report: "I-ulat ang problema o magmungkahi ng ideya",
+          btn_report: "I-ulat",
+          donate: "Suportahan ang May-akda",
+          sub_donate: "Bumili ng kape para suportahan ang pag-develop",
+          special_feature: "Espesyal na itinatampok na feature",
+          toast_lang: "Pinalitan ang wika: ",
+          chat_tip_disabled: "Magagamit lamang sa mga Live Stream na may chat",
+          chat_tip_off: "I-off ang chat overlay",
+          chat_tip_danmaku: "Pahalang na lumilipad na komento (Danmaku)",
+          chat_tip_streamer: "Lumulutang na window ng chat"
+        }
+      };
+    }
+  });
+
+  // src/ui/notifier.js
+  var notifier_exports = {};
+  __export(notifier_exports, {
+    checkAndAutoUpdate: () => checkAndAutoUpdate,
+    checkForUpdates: () => checkForUpdates,
+    isNewerVersion: () => isNewerVersion,
+    setupOnboardingAndUpdates: () => setupOnboardingAndUpdates,
+    showTipCard: () => showTipCard
+  });
+  function isNewerVersion(remote, current) {
+    if (!remote || !current) return false;
+    const r = remote.split(".").map((x) => parseInt(x, 10) || 0);
+    const c = current.split(".").map((x) => parseInt(x, 10) || 0);
+    for (let i = 0; i < Math.max(r.length, c.length); i++) {
+      const rPart = r[i] || 0;
+      const cPart = c[i] || 0;
+      if (rPart > cPart) return true;
+      if (rPart < cPart) return false;
+    }
+    return false;
+  }
+  function showTipCard(btn, { badge, badgeBg, title, desc, btnText, onAction, onClose, tipId = "ytc-onboarding-tip" }) {
+    if (!btn || document.getElementById(tipId)) return;
+    const tip = document.createElement("div");
+    tip.id = tipId;
+    setElementHTML(tip, `
+        <div class="ytc-onboarding-arrow"></div>
+        <div class="ytc-onboarding-header">
+            <span class="ytc-onboarding-badge"${badgeBg ? ` style="background:${badgeBg};"` : ""}>${badge}</span>
+            <button class="ytc-onboarding-close" title="Đóng">✕</button>
+        </div>
+        <div class="ytc-onboarding-content">
+            <div class="ytc-onboarding-title">${title}</div>
+            <div class="ytc-onboarding-desc">${desc}</div>
+        </div>
+        <div class="ytc-onboarding-footer">
+            <button class="ytc-onboarding-btn">${btnText}</button>
+        </div>
+    `);
+    document.body.appendChild(tip);
+    const updateTipPos = () => {
+      const targetBtn = document.getElementById("ytc-settings-btn") || btn;
+      if (!targetBtn || !targetBtn.isConnected || !tip.isConnected) return;
+      const rect = targetBtn.getBoundingClientRect();
+      if (rect.width === 0 || rect.bottom === 0) return;
+      tip.style.top = `${rect.bottom + 12}px`;
+      tip.style.right = `${Math.max(10, window.innerWidth - rect.right - 10)}px`;
+    };
+    updateTipPos();
+    window.addEventListener("resize", updateTipPos);
+    setTimeout(updateTipPos, 200);
+    setTimeout(updateTipPos, 600);
+    setTimeout(updateTipPos, 1500);
+    const dismissTip = () => {
+      window.removeEventListener("resize", updateTipPos);
+      tip.remove();
+    };
+    const actionBtn = tip.querySelector(".ytc-onboarding-btn");
+    if (actionBtn) {
+      actionBtn.addEventListener("click", () => {
+        if (onAction) onAction();
+        dismissTip();
+      });
+    }
+    const closeBtn = tip.querySelector(".ytc-onboarding-close");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => {
+        if (onClose) onClose();
+        dismissTip();
+      });
+    }
+    btn.addEventListener("click", dismissTip, { once: true });
+  }
+  function checkForUpdates(btn) {
+    if (updateCheckInitiated) return;
+    const targetBtn = document.getElementById("ytc-settings-btn") || btn;
+    if (!targetBtn) return;
+    updateCheckInitiated = true;
+    const CHECK_URL = "https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json";
+    const CACHE_KEY = "ytc_remote_ver_cache";
+    const now = Date.now();
+    const renderUpdateNotification = (remoteVer) => {
+      if (!remoteVer || !isNewerVersion(remoteVer, APP_VERSION)) return false;
+      const dismissedKey = `ytc_dismiss_ver_${remoteVer.replace(/\./g, "_")}`;
+      try {
+        if (localStorage.getItem(dismissedKey) === "true") return false;
+      } catch (e) {
+      }
+      const oldTip = document.getElementById("ytc-onboarding-tip");
+      if (oldTip) oldTip.remove();
+      const currentBtn = document.getElementById("ytc-settings-btn") || btn;
+      showTipCard(currentBtn, {
+        badge: "BẢN MỚI",
+        title: `Đã có bản cập nhật mới v${remoteVer}`,
+        desc: `YouTube Customizer v${remoteVer} đã sẵn sàng trên GitHub với các tính năng mới và bản sửa lỗi tối ưu.`,
+        btnText: "Cập nhật ngay",
+        onAction: () => {
+          window.open("https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js", "_blank");
+          try {
+            localStorage.setItem(dismissedKey, "true");
+          } catch (e) {
+          }
+          const openTime = Date.now();
+          const reloadOnReturn = () => {
+            if (Date.now() - openTime >= 1200) {
+              location.reload();
+            }
+          };
+          window.addEventListener("focus", reloadOnReturn, { once: true });
+          document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") reloadOnReturn();
+          });
+          setTimeout(() => location.reload(), 1e4);
+        },
+        onClose: () => {
+          try {
+            localStorage.setItem(dismissedKey, "true");
+          } catch (e) {
+          }
+        }
+      });
+      return true;
+    };
+    try {
+      const cachedRaw = localStorage.getItem(CACHE_KEY);
+      if (cachedRaw) {
+        const cached = JSON.parse(cachedRaw);
+        if (cached && cached.version && isNewerVersion(cached.version, APP_VERSION)) {
+          if (now - cached.time < 15 * 60 * 1e3) {
+            renderUpdateNotification(cached.version);
+            return;
+          }
+        }
+      }
+    } catch (e) {
+    }
+    fetch(`${CHECK_URL}?_t=${now}_${Math.random().toString(36).slice(2)}`, {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache", "Pragma": "no-cache" }
+    }).then((res) => res.json()).then((data) => {
+      if (data && data.version) {
+        try {
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ version: data.version, time: Date.now() }));
+        } catch (e) {
+        }
+        renderUpdateNotification(data.version);
+      }
+    }).catch(() => {
+      updateCheckInitiated = false;
+    });
+  }
+  function setupOnboardingAndUpdates(btn) {
+    if (!btn) return;
+    if (document.getElementById("ytc-onboarding-tip")) {
+      const existingTip = document.getElementById("ytc-onboarding-tip");
+      if (existingTip && btn.isConnected) {
+        const rect = btn.getBoundingClientRect();
+        if (rect.width > 0 && rect.bottom > 0) {
+          existingTip.style.top = `${rect.bottom + 12}px`;
+          existingTip.style.right = `${Math.max(10, window.innerWidth - rect.right - 10)}px`;
+        }
+      }
+      return;
+    }
+    checkForUpdates(btn);
+    setTimeout(() => {
+      if (document.getElementById("ytc-onboarding-tip")) return;
+      try {
+        if (localStorage.getItem(ONBOARDING_KEY) === "true") return;
+      } catch (e) {
+        return;
+      }
+      showTipCard(btn, {
+        badge: `PHIÊN BẢN v${APP_VERSION}`,
+        title: "Cài đặt YouTube Customizer ở đây",
+        desc: "Nhấp vào biểu tượng bánh răng này để bật/tắt các tính năng tùy biến theo nhu cầu của bạn.",
+        btnText: "Đã hiểu",
+        onAction: () => {
+          try {
+            localStorage.setItem(ONBOARDING_KEY, "true");
+          } catch (e) {
+          }
+        },
+        onClose: () => {
+          try {
+            localStorage.setItem(ONBOARDING_KEY, "true");
+          } catch (e) {
+          }
+        }
+      });
+    }, 600);
+  }
+  async function checkAndAutoUpdate(force = false) {
+    if (!currentConfig.autoUpdate && !force) return;
+    if (window.self !== window.top) return;
+    if (window.__ytc_auto_update_checked && !force) return;
+    window.__ytc_auto_update_checked = true;
+    const now = Date.now();
+    const GITHUB_API = "https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main";
+    const RAW_URL = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?_t=${now}_${Math.random().toString(36).slice(2)}`;
+    try {
+      let pkg = null;
+      try {
+        const res = await fetch(GITHUB_API, {
+          headers: { "Accept": "application/vnd.github.v3.raw" },
+          cache: "no-store"
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.version) {
+            pkg = data;
+          } else if (data && data.content && data.encoding === "base64") {
+            pkg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, "")))));
+          }
+        }
+      } catch (e) {
+      }
+      if (!pkg || !pkg.version) {
+        const rawRes = await fetch(RAW_URL, { cache: "no-store" });
+        if (rawRes.ok) {
+          pkg = await rawRes.json();
+        }
+      }
+      if (pkg && pkg.version && isNewerVersion(pkg.version, APP_VERSION)) {
+        const newVersion = pkg.version;
+        const redirectKey = `ytc_auto_redirect_${newVersion.replace(/\./g, "_")}`;
+        if (sessionStorage.getItem(redirectKey) === "true" && !force) {
+          return;
+        }
+        sessionStorage.setItem(redirectKey, "true");
+        const updateUrl = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${newVersion}`;
+        console.log(`[YouTube Customizer] Phát hiện phiên bản mới v${newVersion}, tự động trỏ sang link cập nhật:`, updateUrl);
+        window.location.href = updateUrl;
+      }
+    } catch (err) {
+      console.warn("[YouTube Customizer] Tự động kiểm tra cập nhật thất bại:", err);
+    }
+  }
+  var ONBOARDING_KEY, updateCheckInitiated;
+  var init_notifier = __esm({
+    "src/ui/notifier.js"() {
+      init_constants();
+      init_config();
+      init_utils();
+      ONBOARDING_KEY = `ytc_onboarding_v${APP_VERSION.replace(/\./g, "_")}`;
+      updateCheckInitiated = false;
+    }
+  });
+
+  // src/optimization/audioOnly.js
+  var audioOnly_exports = {};
+  __export(audioOnly_exports, {
+    applyAudioOnlyState: () => applyAudioOnlyState,
+    initAudioOnly: () => initAudioOnly
+  });
+  function getPlayer() {
+    return document.querySelector("#movie_player:not(#inline-preview-player)");
+  }
+  function ensureAudioBadge(player) {
+    if (!player) return;
+    if (document.getElementById("ytc-audio-only-badge")) return;
+    audioBadgeElement = document.createElement("div");
+    audioBadgeElement.id = "ytc-audio-only-badge";
+    audioBadgeElement.innerHTML = `
+        <div class="ytc-audio-badge-title">Đang phát ở Chế độ Chỉ Âm Thanh</div>
+        <div class="ytc-audio-badge-sub">Đã tắt video để tiết kiệm tài nguyên</div>
+    `;
+    player.appendChild(audioBadgeElement);
+  }
+  function applyAudioOnlyState() {
+    const isAudioOnly = !!currentConfig.audioOnlyMode;
+    const root = document.documentElement;
+    const body = document.body;
+    root.classList.toggle("ytc-audio-only", isAudioOnly);
+    if (body) body.classList.toggle("ytc-audio-only", isAudioOnly);
+    const player = getPlayer();
+    if (isAudioOnly) {
+      if (player) {
+        ensureAudioBadge(player);
+        try {
+          if (typeof player.setPlaybackQualityRange === "function") {
+            player.setPlaybackQualityRange("tiny", "tiny");
+          }
+          if (typeof player.setPlaybackQuality === "function") {
+            player.setPlaybackQuality("tiny");
+          }
+        } catch (e) {
+        }
+      }
+    } else {
+      const badge = document.getElementById("ytc-audio-only-badge");
+      if (badge) badge.remove();
+      audioBadgeElement = null;
+      if (player) {
+        try {
+          if (typeof player.setPlaybackQualityRange === "function") {
+            player.setPlaybackQualityRange("auto", "default");
+          }
+          if (typeof player.setPlaybackQuality === "function") {
+            player.setPlaybackQuality("auto");
+          }
+        } catch (e) {
+        }
+      }
+    }
+  }
+  function initAudioOnly() {
+    applyAudioOnlyState();
+  }
+  var audioBadgeElement;
+  var init_audioOnly = __esm({
+    "src/optimization/audioOnly.js"() {
+      init_config();
+      audioBadgeElement = null;
+    }
+  });
+
+  // src/optimization/chatMemoryGc.js
+  var chatMemoryGc_exports = {};
+  __export(chatMemoryGc_exports, {
+    initChatMemoryGc: () => initChatMemoryGc,
+    performChatMemoryGc: () => performChatMemoryGc,
+    stopChatMemoryGc: () => stopChatMemoryGc
+  });
+  function cleanChatContainer(itemsContainer) {
+    if (!itemsContainer || !itemsContainer.children) return;
+    const count = itemsContainer.children.length;
+    if (count <= 120) return;
+    const toRemove = count - MAX_CHAT_ITEMS;
+    for (let i = 0; i < toRemove; i++) {
+      if (itemsContainer.firstElementChild) {
+        itemsContainer.firstElementChild.remove();
+      }
+    }
+  }
+  function performChatMemoryGc() {
+    if (!currentConfig.chatMemoryGc) return;
+    if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
+    const topItems = document.querySelectorAll(
+      "yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items"
+    );
+    topItems.forEach(cleanChatContainer);
+    const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]');
+    frames.forEach((frame) => {
+      try {
+        const doc = frame.contentDocument || frame.contentWindow?.document;
+        if (doc) {
+          const iframeItems = doc.querySelectorAll(
+            "yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items"
+          );
+          iframeItems.forEach(cleanChatContainer);
+        }
+      } catch (e) {
+      }
+    });
+  }
+  function initChatMemoryGc() {
+    if (gcInterval) return;
+    gcInterval = setInterval(() => {
+      if (currentConfig.chatMemoryGc) {
+        performChatMemoryGc();
+      }
+    }, 1e4);
+  }
+  function stopChatMemoryGc() {
+    if (gcInterval) {
+      clearInterval(gcInterval);
+      gcInterval = null;
+    }
+  }
+  var gcInterval, MAX_CHAT_ITEMS;
+  var init_chatMemoryGc = __esm({
+    "src/optimization/chatMemoryGc.js"() {
+      init_config();
+      gcInterval = null;
+      MAX_CHAT_ITEMS = 100;
+    }
+  });
+
+  // src/ui/panel.js
+  function updatePanelLanguage(targetPanel) {
+    const panel = targetPanel || document.getElementById("ytc-settings-panel");
+    if (!panel) return;
+    panel.querySelectorAll("[data-i18n]").forEach((el) => {
+      const key = el.getAttribute("data-i18n");
+      if (!key) return;
+      const translated = t(key);
+      if (key === "ambient_lighting" || el.querySelector(".ytc-star-badge")) {
+        el.innerHTML = `${translated}<span class="ytc-star-badge" title="${t("special_feature")}">⭐</span>`;
+      } else {
+        el.textContent = translated;
+      }
+    });
+    panel.querySelectorAll("[data-i18n-title]").forEach((el) => {
+      const key = el.getAttribute("data-i18n-title");
+      if (key) el.setAttribute("title", t(key));
+    });
+    const labelEl = document.getElementById("ytc-lang-current-label");
+    const langInfo = getLanguageInfo(currentConfig.language || "auto");
+    if (labelEl) labelEl.textContent = langInfo.name;
+    const qualityBadge = panel.querySelector(".ytc-quality-badge");
+    if (qualityBadge) {
+      const q = currentConfig.preferredQuality || "auto";
+      if (q === "auto") qualityBadge.textContent = t("quality_auto").toUpperCase();
+      else if (q === "max") qualityBadge.textContent = t("quality_max").toUpperCase();
+      else qualityBadge.textContent = q.toUpperCase();
+    }
+  }
+  function bindGlobalMenuDismiss() {
+    if (menuDismissBound) return;
+    menuDismissBound = true;
+    document.addEventListener("click", (e) => {
+      const panel = document.getElementById("ytc-settings-panel");
+      if (panel && panel.classList.contains("open")) {
+        if (!e.target.closest("#ytc-settings-panel") && !e.target.closest("#ytc-settings-btn")) {
+          panel.classList.remove("open");
+        }
+      }
+      const langMenu = document.getElementById("ytc-lang-menu");
+      const langTrigger = document.getElementById("ytc-lang-trigger");
+      if (langMenu && langMenu.classList.contains("open")) {
+        if (!e.target.closest("#ytc-lang-menu") && !e.target.closest("#ytc-lang-trigger")) {
+          langMenu.classList.remove("open");
+          if (langTrigger) langTrigger.setAttribute("aria-expanded", "false");
+        }
+      }
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        const panel = document.getElementById("ytc-settings-panel");
+        if (panel && panel.classList.contains("open")) {
+          panel.classList.remove("open");
+        }
+        const langMenu = document.getElementById("ytc-lang-menu");
+        if (langMenu && langMenu.classList.contains("open")) {
+          langMenu.classList.remove("open");
+          const trigger = document.getElementById("ytc-lang-trigger");
+          if (trigger) trigger.setAttribute("aria-expanded", "false");
+        }
+      }
+    });
+    window.addEventListener("resize", () => {
+      const panel = document.getElementById("ytc-settings-panel");
+      const btn = document.getElementById("ytc-settings-btn");
+      if (panel && panel.classList.contains("open") && btn) {
+        const rect = btn.getBoundingClientRect();
+        panel.style.top = rect.bottom + 8 + "px";
+        panel.style.right = Math.max(12, window.innerWidth - rect.right - 10) + "px";
+      }
+      const langMenu = document.getElementById("ytc-lang-menu");
+      if (langMenu && langMenu.classList.contains("open")) {
+        langMenu.classList.remove("open");
+        const trigger = document.getElementById("ytc-lang-trigger");
+        if (trigger) trigger.setAttribute("aria-expanded", "false");
+      }
+    }, { passive: true });
+  }
+  function createSettingsPanel() {
+    let panel = document.getElementById("ytc-settings-panel");
+    if (!panel) {
+      panel = document.createElement("div");
+      panel.id = "ytc-settings-panel";
+      setElementHTML(panel, `
+            <div class="ytc-header">
+                <span>YouTube Customizer</span>
+                <span class="ytc-header-badge">v${APP_VERSION}</span>
+            </div>
+
+            <div class="ytc-tabs">
+                <button class="ytc-tab-btn active" data-tab="layout" data-i18n-title="tab_layout">
+                    ${LAYOUT_TAB_SVG}
+                    <span data-i18n="tab_layout">Giao diện</span>
+                </button>
+                <button class="ytc-tab-btn" data-tab="filter" data-i18n-title="tab_filter">
+                    ${SHIELD_TAB_SVG}
+                    <span data-i18n="tab_filter">Lọc</span>
+                </button>
+                <button class="ytc-tab-btn" data-tab="player" data-i18n-title="tab_player">
+                    ${PLAYER_TAB_SVG}
+                    <span data-i18n="tab_player">Trình phát</span>
+                </button>
+                <button class="ytc-tab-btn" data-tab="optimize" data-i18n-title="tab_optimize">
+                    ${OPTIMIZE_TAB_SVG}
+                    <span data-i18n="tab_optimize">Tối Ưu</span>
+                </button>
+                <button class="ytc-tab-btn" data-tab="info" data-i18n-title="tab_info">
+                    ${INFO_TAB_SVG}
+                    <span data-i18n="tab_info">Thông tin</span>
+                </button>
+            </div>
+
+            <!-- TAB 1: GIAO DIỆN & BỐ CỤC -->
+            <div class="ytc-tab-pane active" id="ytc-pane-layout">
+                <div class="ytc-item" id="ytc-row-cols" data-i18n-title="home_cols">
+                    <div class="ytc-item-left">
+                        ${GRID_SVG}
+                        <span data-i18n="home_cols">Số cột trang chủ</span>
+                    </div>
+                    <div class="ytc-cols-group">
+                        <button class="ytc-col-btn ${currentConfig.columns === 3 ? "active" : ""}" data-cols="3" title="3">3</button>
+                        <button class="ytc-col-btn ${currentConfig.columns === 4 ? "active" : ""}" data-cols="4" title="4">4</button>
+                        <button class="ytc-col-btn ${currentConfig.columns === 5 ? "active" : ""}" data-cols="5" title="5">5</button>
+                    </div>
+                </div>
+
+                <div class="ytc-item" data-toggle="premiumLogo" data-i18n-title="premium_logo">
+                    <div class="ytc-item-left">
+                        ${YOUTUBE_SVG}
+                        <span data-i18n="premium_logo">Logo Premium</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-logo">
+                        <input type="checkbox" id="ytc-chk-logo" name="premiumLogo" aria-label="Logo Premium" ${currentConfig.premiumLogo ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="unlockLiveDvr" data-i18n-title="unlock_live_dvr">
+                    <div class="ytc-item-left">
+                        ${REWIND_SVG}
+                        <span data-i18n="unlock_live_dvr">Mở khóa tua Live Stream</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-livedvr">
+                        <input type="checkbox" id="ytc-chk-livedvr" name="unlockLiveDvr" aria-label="Mở khóa tua Live Stream" ${currentConfig.unlockLiveDvr ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="autoLiveSync" data-i18n-title="auto_live_sync">
+                    <div class="ytc-item-left">
+                        ${RADIO_SVG}
+                        <span data-i18n="auto_live_sync">Tự động trực tiếp (Auto Live)</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-autolive">
+                        <input type="checkbox" id="ytc-chk-autolive" name="autoLiveSync" aria-label="Tự động trực tiếp (Auto Live)" ${currentConfig.autoLiveSync ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="ambientLighting" data-i18n-title="ambient_lighting">
+                    <div class="ytc-item-left">
+                        ${AMBIENT_LIGHT_SVG}
+                        <span data-i18n="ambient_lighting">Ánh sáng phòng (Ambilight)<span class="ytc-star-badge" title="Tính năng đặc biệt nổi bật">⭐</span></span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-ambient-light">
+                        <input type="checkbox" id="ytc-chk-ambient-light" name="ambientLighting" aria-label="Ánh sáng phòng (Ambilight)" ${currentConfig.ambientLighting ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <!-- CHỌN NGÔN NGỮ GIAO DIỆN SCRIPT (KHÔNG ICON, GIAO DIỆN NỔI ĐỘC LẬP) -->
+                <div class="ytc-item ytc-item-lang" id="ytc-row-language" data-i18n-title="script_language">
+                    <div class="ytc-item-left">
+                        <span data-i18n="script_language">${t("script_language")}</span>
+                    </div>
+                    <div class="ytc-dropdown" id="ytc-lang-dropdown">
+                        <button type="button" class="ytc-dropdown-trigger" id="ytc-lang-trigger" aria-haspopup="listbox" aria-expanded="false" data-i18n-title="script_language">
+                            <span id="ytc-lang-current-label">${(getLanguageInfo(currentConfig.language || "auto") || {}).name || "Tự động"}</span>
+                            <span class="ytc-dropdown-arrow">▾</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ytc-item" id="ytc-row-chatoverlay" data-i18n-title="live_chat">
+                    <div class="ytc-item-left">
+                        ${MESSAGE_SVG}
+                        <span data-i18n="live_chat">Live Chat</span>
+                    </div>
+                    <div class="ytc-mode-group">
+                        <button class="ytc-mode-btn ${!currentConfig.chatOverlay || currentConfig.chatOverlay === "off" ? "active" : ""}" data-overlay="off" data-i18n="chat_off">Tắt</button>
+                        <button class="ytc-mode-btn ${currentConfig.chatOverlay === "danmaku" ? "active" : ""}" data-overlay="danmaku" data-i18n="chat_danmaku">Ngang</button>
+                        <button class="ytc-mode-btn ${currentConfig.chatOverlay === "streamer" ? "active" : ""}" data-overlay="streamer" data-i18n="chat_streamer">Nổi</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: LỌC NỘI DUNG SẠCH -->
+            <div class="ytc-tab-pane" id="ytc-pane-filter">
+                <div class="ytc-item" data-toggle="hideShorts" data-i18n-title="hide_shorts">
+                    <div class="ytc-item-left">
+                        ${SHORTS_SVG}
+                        <span data-i18n="hide_shorts">Ẩn mục Shorts</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-shorts">
+                        <input type="checkbox" id="ytc-chk-shorts" name="hideShorts" aria-label="Ẩn mục Shorts" ${currentConfig.hideShorts ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hidePlayables" data-i18n-title="hide_playables">
+                    <div class="ytc-item-left">
+                        ${GAMEPAD_SVG}
+                        <span data-i18n="hide_playables">Ẩn mục Chơi game</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-playables">
+                        <input type="checkbox" id="ytc-chk-playables" name="hidePlayables" aria-label="Ẩn mục Chơi game" ${currentConfig.hidePlayables ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hideMembersOnly" data-i18n-title="hide_members">
+                    <div class="ytc-item-left">
+                        ${CROWN_SVG}
+                        <span data-i18n="hide_members">Ẩn video Hội viên</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-members">
+                        <input type="checkbox" id="ytc-chk-members" name="hideMembersOnly" aria-label="Ẩn video Hội viên" ${currentConfig.hideMembersOnly ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hideCommunity" data-i18n-title="hide_community">
+                    <div class="ytc-item-left">
+                        ${POST_SVG}
+                        <span data-i18n="hide_community">Ẩn bài đăng cộng đồng</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-community">
+                        <input type="checkbox" id="ytc-chk-community" name="hideCommunity" aria-label="Ẩn bài đăng cộng đồng" ${currentConfig.hideCommunity ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="cleanSearch" data-i18n-title="clean_search">
+                    <div class="ytc-item-left">
+                        ${SEARCH_SVG}
+                        <span data-i18n="clean_search">Lọc tìm kiếm sạch</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-search">
+                        <input type="checkbox" id="ytc-chk-search" name="cleanSearch" aria-label="Lọc tìm kiếm sạch" ${currentConfig.cleanSearch ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hideExploreTopics" data-i18n-title="hide_explore">
+                    <div class="ytc-item-left">
+                        ${COMPASS_SVG}
+                        <span data-i18n="hide_explore">Ẩn Khám phá chủ đề</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-explore">
+                        <input type="checkbox" id="ytc-chk-explore" name="hideExploreTopics" aria-label="Ẩn Khám phá chủ đề" ${currentConfig.hideExploreTopics ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hideShopping" data-i18n-title="hide_shopping">
+                    <div class="ytc-item-left">
+                        ${SHOPPING_SVG}
+                        <span data-i18n="hide_shopping">Ẩn sản phẩm gắn thẻ</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-shopping">
+                        <input type="checkbox" id="ytc-chk-shopping" name="hideShopping" aria-label="Ẩn sản phẩm gắn thẻ" ${currentConfig.hideShopping ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hideMixes" data-i18n-title="hide_mixes">
+                    <div class="ytc-item-left">
+                        ${PLAYLIST_SVG}
+                        <span data-i18n="hide_mixes">Ẩn Danh sách phát & Mix</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-mixes">
+                        <input type="checkbox" id="ytc-chk-mixes" name="hideMixes" aria-label="Ẩn Danh sách phát & Mix" ${currentConfig.hideMixes ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- TAB 3: TRÌNH PHÁT & VIDEO -->
+            <div class="ytc-tab-pane" id="ytc-pane-player">
+                <div class="ytc-item" data-toggle="hideEndscreen" data-i18n-title="hide_endscreen">
+                    <div class="ytc-item-left">
+                        ${ENDSCREEN_SVG}
+                        <span data-i18n="hide_endscreen">Ẩn thẻ kết thúc/chú thích</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-endscreen">
+                        <input type="checkbox" id="ytc-chk-endscreen" name="hideEndscreen" aria-label="Ẩn thẻ kết thúc/chú thích" ${currentConfig.hideEndscreen ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hideWatermark" data-i18n-title="hide_watermark">
+                    <div class="ytc-item-left">
+                        ${WATERMARK_SVG}
+                        <span data-i18n="hide_watermark">Ẩn logo góc video</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-watermark">
+                        <input type="checkbox" id="ytc-chk-watermark" name="hideWatermark" aria-label="Ẩn logo góc video" ${currentConfig.hideWatermark ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="autoDismissPromos" data-i18n-title="auto_dismiss">
+                    <div class="ytc-item-left">
+                        ${BELL_OFF_SVG}
+                        <span data-i18n="auto_dismiss">Tự đóng banner & thông báo</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-promos">
+                        <input type="checkbox" id="ytc-chk-promos" name="autoDismissPromos" aria-label="Tự đóng banner & thông báo" ${currentConfig.autoDismissPromos ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hideNativeLiveChat" data-i18n-title="hide_native_chat">
+                    <div class="ytc-item-left">
+                        ${CHAT_OFF_SVG}
+                        <span data-i18n="hide_native_chat">Tắt trò chuyện trực tiếp</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-hidenativechat">
+                        <input type="checkbox" id="ytc-chk-hidenativechat" name="hideNativeLiveChat" aria-label="Tắt trò chuyện trực tiếp" ${currentConfig.hideNativeLiveChat ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="hideChatEmojis" data-i18n-title="hide_chat_emojis">
+                    <div class="ytc-item-left">
+                        ${EMOJI_OFF_SVG}
+                        <span data-i18n="hide_chat_emojis">Ẩn biểu tượng trong Live Chat</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-hidechatemojis">
+                        <input type="checkbox" id="ytc-chk-hidechatemojis" name="hideChatEmojis" aria-label="Ẩn biểu tượng trong Live Chat" ${currentConfig.hideChatEmojis ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item ytc-item-link" id="ytc-btn-ublock" data-i18n-title="ublock_title">
+                    <div class="ytc-item-left">
+                        ${SHIELD_CHECK_SVG}
+                        <span data-i18n="ublock_name">Chặn quảng cáo (uBlock)</span>
+                    </div>
+                    <div class="ytc-link-badge">
+                        <span data-i18n="ublock_badge">Mở trang</span>
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: TỐI ƯU HIỆU NĂNG & TIỆN ÍCH -->
+            <div class="ytc-tab-pane" id="ytc-pane-optimize">
+                <div class="ytc-item ytc-item-vertical" id="ytc-row-quality" data-i18n-title="video_quality">
+                    <div class="ytc-item-header">
+                        <div class="ytc-item-left">
+                            ${QUALITY_SVG}
+                            <span data-i18n="video_quality">Độ phân giải video</span>
+                        </div>
+                        <span class="ytc-quality-badge">${currentConfig.preferredQuality === "auto" ? "TỰ ĐỘNG" : currentConfig.preferredQuality === "max" ? "CAO NHẤT" : currentConfig.preferredQuality.toUpperCase()}</span>
+                    </div>
+                    <div class="ytc-mode-group ytc-quality-group">
+                        <button class="ytc-quality-btn ${!currentConfig.preferredQuality || currentConfig.preferredQuality === "auto" ? "active" : ""}" data-quality="auto" data-i18n="quality_auto">Tự động</button>
+                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === "max" ? "active" : ""}" data-quality="max" data-i18n="quality_max">Cao nhất</button>
+                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === "1440p" ? "active" : ""}" data-quality="1440p">2K</button>
+                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === "1080p" ? "active" : ""}" data-quality="1080p">1080p</button>
+                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === "720p" ? "active" : ""}" data-quality="720p">720p</button>
+                    </div>
+                </div>
+
+                <div class="ytc-item" data-toggle="preventAutoPause" data-i18n-title="prevent_auto_pause">
+                    <div class="ytc-item-left">
+                        ${INFINITY_SVG}
+                        <span data-i18n="prevent_auto_pause">Chặn tự dừng video</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-autopause">
+                        <input type="checkbox" id="ytc-chk-autopause" name="preventAutoPause" aria-label="Chặn tự dừng video" ${currentConfig.preventAutoPause ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="chatMemoryGc" data-i18n-title="chat_memory_gc">
+                    <div class="ytc-item-left">
+                        ${BROOM_SVG}
+                        <span data-i18n="chat_memory_gc">Dọn rác bộ nhớ Live Chat</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-chatgc">
+                        <input type="checkbox" id="ytc-chk-chatgc" name="chatMemoryGc" aria-label="Dọn rác bộ nhớ Live Chat" ${currentConfig.chatMemoryGc ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="keyboardControls" data-i18n-title="keyboard_controls">
+                    <div class="ytc-item-left">
+                        ${KEYBOARD_SVG}
+                        <span data-i18n="keyboard_controls">Phím tắt (A-S-D, Numpad)</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-keys">
+                        <input type="checkbox" id="ytc-chk-keys" name="keyboardControls" aria-label="Phím tắt điều khiển" ${currentConfig.keyboardControls ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="audioOnlyMode" data-i18n-title="audio_only">
+                    <div class="ytc-item-left">
+                        ${HEADPHONES_SVG}
+                        <span data-i18n="audio_only">Chỉ phát âm thanh (Radio)</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-audioonly">
+                        <input type="checkbox" id="ytc-chk-audioonly" name="audioOnlyMode" aria-label="Chỉ phát âm thanh" ${currentConfig.audioOnlyMode ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="blockAv1" data-i18n-title="block_av1">
+                    <div class="ytc-item-left">
+                        ${CPU_SVG}
+                        <span data-i18n="block_av1">Chặn AV1 / Ép Codec H.264</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-blockav1">
+                        <input type="checkbox" id="ytc-chk-blockav1" name="blockAv1" aria-label="Chặn AV1 / Ép Codec H.264" ${currentConfig.blockAv1 ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- TAB 5: THÔNG TIN & HỖ TRỢ -->
+            <div class="ytc-tab-pane" id="ytc-pane-info">
+                <!-- Thông tin nhà phát triển -->
+                <div class="ytc-item ytc-item-link" id="ytc-btn-dev" title="Ghé thăm website cá nhân của Huy Vũ">
+                    <div class="ytc-item-left">
+                        ${USER_SVG}
+                        <div class="ytc-item-text-group">
+                            <span class="ytc-item-main-text">Huy Vũ</span>
+                            <span class="ytc-item-sub-text">huyvu2512.io.vn • <span data-i18n="author">Tác giả</span></span>
+                        </div>
+                    </div>
+                    <div class="ytc-link-badge">
+                        <span>Website</span>
+                        ${EXTERNAL_LINK_SVG}
+                    </div>
+                </div>
+
+                <!-- Báo cáo sự cố / Góp ý -->
+                <div class="ytc-item ytc-item-link" id="ytc-btn-report" data-i18n-title="report_bug">
+                    <div class="ytc-item-left">
+                        ${BUG_SVG}
+                        <div class="ytc-item-text-group">
+                            <span class="ytc-item-main-text" data-i18n="report_bug">Báo cáo & Góp ý</span>
+                            <span class="ytc-item-sub-text" data-i18n="sub_report">Báo lỗi hoặc đề xuất ý tưởng</span>
+                        </div>
+                    </div>
+                    <div class="ytc-link-badge">
+                        <span data-i18n="btn_report">Báo cáo</span>
+                        ${EXTERNAL_LINK_SVG}
+                    </div>
+                </div>
+
+                <!-- Tặng quà / Ủng hộ -->
+                <div class="ytc-item ytc-item-link" id="ytc-btn-donate" data-i18n-title="donate">
+                    <div class="ytc-item-left">
+                        ${GIFT_SVG}
+                        <div class="ytc-item-text-group">
+                            <span class="ytc-item-main-text" data-i18n="donate">Tặng quà & Ủng hộ</span>
+                            <span class="ytc-item-sub-text" data-i18n="sub_donate">Ủng hộ 1 ly cà phê tiếp thêm động lực</span>
+                        </div>
+                    </div>
+                    <div class="ytc-link-badge">
+                        <span data-i18n="donate">Ủng hộ</span>
+                        ${EXTERNAL_LINK_SVG}
+                    </div>
+                </div>
+
+                <!-- Thẻ kiểm tra cập nhật tinh gọn -->
+                <div class="ytc-info-card">
+                    <div class="ytc-info-title-wrap">
+                        <span class="ytc-info-title" data-i18n="check_update">Kiểm tra cập nhật</span>
+                    </div>
+                    <button class="ytc-update-btn" id="ytc-btn-update" data-i18n-title="check_update">
+                        ${UPDATE_SVG}
+                        <span id="ytc-update-btn-text" data-i18n="btn_check">Kiểm tra</span>
+                    </button>
+                </div>
+
+                <!-- Công tắc gạt Tự động cập nhật -->
+                <div class="ytc-item" data-toggle="autoUpdate" data-i18n-title="auto_update">
+                    <div class="ytc-item-left">
+                        ${UPDATE_SVG}
+                        <div class="ytc-item-text-group">
+                            <span class="ytc-item-main-text" data-i18n="auto_update">Tự động cập nhật</span>
+                            <span class="ytc-item-sub-text" data-i18n="sub_autoupdate">Tự gọi API và trỏ sang link cài bản mới khi vào YouTube</span>
+                        </div>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-autoupdate">
+                        <input type="checkbox" id="ytc-chk-autoupdate" name="autoUpdate" aria-label="Tự động cập nhật" ${currentConfig.autoUpdate ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+            </div>
+        `);
+      (document.body || document.documentElement).appendChild(panel);
+      updatePanelLanguage(panel);
+      panel.querySelectorAll(".ytc-tab-btn").forEach((tabBtn) => {
+        tabBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const tabKey = tabBtn.getAttribute("data-tab");
+          panel.querySelectorAll(".ytc-tab-btn").forEach((b) => b.classList.remove("active"));
+          panel.querySelectorAll(".ytc-tab-pane").forEach((p) => p.classList.remove("active"));
+          tabBtn.classList.add("active");
+          const targetPane = panel.querySelector(`#ytc-pane-${tabKey}`);
+          if (targetPane) targetPane.classList.add("active");
+        });
+      });
+      panel.querySelectorAll(".ytc-col-btn").forEach((colBtn) => {
+        colBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const cols = parseInt(colBtn.getAttribute("data-cols"), 10) || 4;
+          currentConfig.columns = cols;
+          saveConfig(currentConfig);
+          panel.querySelectorAll(".ytc-col-btn").forEach((b) => b.classList.remove("active"));
+          colBtn.classList.add("active");
+          applyConfigToRoot();
+        });
+      });
+      let langMenu = document.getElementById("ytc-lang-menu");
+      if (!langMenu) {
+        langMenu = document.createElement("div");
+        langMenu.id = "ytc-lang-menu";
+        langMenu.setAttribute("role", "listbox");
+        langMenu.innerHTML = SUPPORTED_LANGUAGES.map((lang) => {
+          const isSelected = (currentConfig.language || "auto") === lang.code;
+          return `<div class="ytc-dropdown-item ${isSelected ? "active" : ""}" data-code="${lang.code}" role="option">${lang.name}</div>`;
+        }).join("");
+        (document.body || document.documentElement).appendChild(langMenu);
+      }
+      const langTrigger = panel.querySelector("#ytc-lang-trigger");
+      if (langTrigger && langMenu) {
+        langTrigger.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isOpen = langMenu.classList.toggle("open");
+          langTrigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
+          if (isOpen) {
+            const rect = langTrigger.getBoundingClientRect();
+            langMenu.style.position = "fixed";
+            langMenu.style.zIndex = "10000000";
+            langMenu.style.right = `${Math.max(12, window.innerWidth - rect.right)}px`;
+            langMenu.style.left = "auto";
+            const spaceBelow = window.innerHeight - rect.bottom;
+            if (spaceBelow < 250 && rect.top > 250) {
+              langMenu.style.top = "auto";
+              langMenu.style.bottom = `${window.innerHeight - rect.top + 4}px`;
+            } else {
+              langMenu.style.top = `${rect.bottom + 4}px`;
+              langMenu.style.bottom = "auto";
+            }
+          }
+        });
+        langMenu.querySelectorAll(".ytc-dropdown-item").forEach((item) => {
+          item.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const code = item.getAttribute("data-code") || "auto";
+            currentConfig.language = code;
+            saveConfig(currentConfig);
+            langMenu.querySelectorAll(".ytc-dropdown-item").forEach((it) => {
+              it.classList.toggle("active", it.getAttribute("data-code") === code);
+            });
+            updatePanelLanguage(panel);
+            langMenu.classList.remove("open");
+            langTrigger.setAttribute("aria-expanded", "false");
+            const langInfo = getLanguageInfo(code);
+            showToast((t("toast_lang") || "Đã đổi ngôn ngữ: ") + langInfo.name);
+          });
+        });
+        panel.addEventListener("scroll", () => {
+          if (langMenu.classList.contains("open")) {
+            langMenu.classList.remove("open");
+            langTrigger.setAttribute("aria-expanded", "false");
+          }
+        }, { passive: true });
+      }
+      panel.querySelectorAll("#ytc-row-chatoverlay .ytc-mode-btn").forEach((modeBtn) => {
+        modeBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const mode = modeBtn.getAttribute("data-overlay") || "off";
+          if (mode !== "off" && !hasLiveOrChatSupport()) {
+            showToast("⚠️ Live Chat chỉ khả dụng khi xem Live Stream hoặc video có khung trò chuyện!");
+            return;
+          }
+          currentConfig.chatOverlay = mode;
+          saveConfig(currentConfig);
+          panel.querySelectorAll("#ytc-row-chatoverlay .ytc-mode-btn").forEach((b) => b.classList.remove("active"));
+          modeBtn.classList.add("active");
+          applyConfigToRoot();
+          Promise.resolve().then(() => (init_chat(), chat_exports)).then((m) => {
+            if (m && typeof m.updateChatOverlayVisibility === "function") {
+              m.updateChatOverlayVisibility();
+            }
+          }).catch(() => {
+          });
+        });
+      });
+      panel.querySelectorAll(".ytc-quality-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const quality = btn.getAttribute("data-quality") || "auto";
+          currentConfig.preferredQuality = quality;
+          saveConfig(currentConfig);
+          panel.querySelectorAll(".ytc-quality-btn").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          const labelBadge = panel.querySelector(".ytc-quality-badge");
+          if (labelBadge) {
+            const labels = {
+              auto: "TỰ ĐỘNG",
+              max: "CAO NHẤT",
+              "1440p": "2K",
+              "1080p": "1080P",
+              "720p": "720P"
+            };
+            labelBadge.textContent = labels[quality] || quality.toUpperCase();
+          }
+          Promise.resolve().then(() => (init_qualityManager(), qualityManager_exports)).then((m) => {
+            if (m && typeof m.applyPreferredQuality === "function") {
+              m.applyPreferredQuality();
+            }
+          }).catch(() => {
+          });
+        });
+      });
+      panel.querySelectorAll(".ytc-item[data-toggle]").forEach((item) => {
+        const key = item.getAttribute("data-toggle");
+        const checkbox = item.querySelector('input[type="checkbox"]');
+        if (!checkbox) return;
+        checkbox.addEventListener("change", () => {
+          currentConfig[key] = checkbox.checked;
+          saveConfig(currentConfig);
+          applyConfigToRoot();
+          if (key === "hideNativeLiveChat") {
+            Promise.resolve().then(() => (init_chat(), chat_exports)).then((m) => {
+              if (checkbox.checked) {
+                if (m && typeof m.resetChatCollapseState === "function") {
+                  m.resetChatCollapseState();
+                }
+                if (m && typeof m.autoCollapseNativeChatIfOpen === "function") {
+                  m.autoCollapseNativeChatIfOpen(true);
+                }
+                if (m && typeof m.setupAutoCloseObserver === "function") {
+                  m.setupAutoCloseObserver();
+                }
+                setTimeout(() => m.autoCollapseNativeChatIfOpen?.(true), 100);
+                setTimeout(() => m.autoCollapseNativeChatIfOpen?.(true), 300);
+                setTimeout(() => m.autoCollapseNativeChatIfOpen?.(true), 700);
+              } else {
+                if (m && typeof m.setUserManuallyOpenedChat === "function") {
+                  m.setUserManuallyOpenedChat(true);
+                }
+                if (m && typeof m.setNativeChatHiddenState === "function") {
+                  m.setNativeChatHiddenState(false);
+                }
+                const chatFrame = document.querySelector("ytd-live-chat-frame#chat, #chat.ytd-watch-flexy");
+                if (chatFrame && chatFrame.hasAttribute("collapsed")) {
+                  const showBtn = chatFrame.querySelector("#show-hide-button yt-button-shape button, #show-hide-button button, #show-hide-button");
+                  if (showBtn) showBtn.click();
+                }
+              }
+              if (m && typeof m.syncPlayerFullscreenSize === "function") {
+                m.syncPlayerFullscreenSize();
+              }
+              if (m && typeof m.updateChatOverlayVisibility === "function") {
+                m.updateChatOverlayVisibility();
+              }
+            }).catch(() => {
+            });
+            window.dispatchEvent(new Event("resize"));
+          }
+          if (key === "ambientLighting") {
+            Promise.resolve().then(() => (init_ambientLight(), ambientLight_exports)).then((m) => {
+              if (m && typeof m.applyAmbientLightingState === "function") {
+                m.applyAmbientLightingState();
+              }
+            }).catch(() => {
+            });
+          }
+          if (key === "audioOnlyMode") {
+            Promise.resolve().then(() => (init_audioOnly(), audioOnly_exports)).then((m) => {
+              if (m && typeof m.applyAudioOnlyState === "function") {
+                m.applyAudioOnlyState();
+              }
+            }).catch(() => {
+            });
+            Promise.resolve().then(() => (init_ambientLight(), ambientLight_exports)).then((m) => {
+              if (m && typeof m.applyAmbientLightingState === "function") {
+                m.applyAmbientLightingState();
+              }
+            }).catch(() => {
+            });
+          }
+          if (key === "chatMemoryGc" && checkbox.checked) {
+            Promise.resolve().then(() => (init_chatMemoryGc(), chatMemoryGc_exports)).then((m) => {
+              if (m && typeof m.performChatMemoryGc === "function") {
+                m.performChatMemoryGc();
+              }
+            }).catch(() => {
+            });
+          }
+          if (key === "hideMixes") {
+            Promise.resolve().then(() => (init_mixFilter(), mixFilter_exports)).then((m) => {
+              if (checkbox.checked) {
+                if (typeof m.cleanMixUrl === "function") m.cleanMixUrl();
+                if (typeof m.tagWatchMixPanel === "function") m.tagWatchMixPanel();
+              }
+            }).catch(() => {
+            });
+            Promise.resolve().then(() => (init_feedFilter(), feedFilter_exports)).then((m) => {
+              if (m && typeof m.scheduleFeedScan === "function") {
+                m.scheduleFeedScan(document);
+              }
+            }).catch(() => {
+            });
+          }
+          if (key === "hideShopping" && checkbox.checked) {
+            Promise.resolve().then(() => (init_shoppingFilter(), shoppingFilter_exports)).then((m) => {
+              if (m && typeof m.dismissShoppingPanels === "function") {
+                m.dismissShoppingPanels(document);
+              }
+            }).catch(() => {
+            });
+          }
+          if (key === "unlockLiveDvr") {
+            if (location.pathname.startsWith("/watch") || location.pathname.startsWith("/live")) {
+              setTimeout(() => {
+                location.reload();
+              }, 250);
+            }
+          }
+          if (key === "autoUpdate" && checkbox.checked) {
+            Promise.resolve().then(() => (init_notifier(), notifier_exports)).then((m) => {
+              if (m && typeof m.checkAndAutoUpdate === "function") {
+                m.checkAndAutoUpdate(true);
+              }
+            }).catch(() => {
+            });
+          }
+        });
+        item.addEventListener("click", (e) => {
+          if (!e.target.closest(".ytc-switch")) {
+            checkbox.checked = !checkbox.checked;
+            checkbox.dispatchEvent(new Event("change"));
+          }
+        });
+      });
+      const ublockBtn = panel.querySelector("#ytc-btn-ublock");
+      if (ublockBtn) {
+        ublockBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          window.open("https://ublockorigin.com/", "_blank", "noopener,noreferrer");
+        });
+      }
+      const updateBtn = panel.querySelector("#ytc-btn-update");
+      const updateBtnText = panel.querySelector("#ytc-update-btn-text");
+      if (updateBtn) {
+        let isChecking = false;
+        let isCountingDown = false;
+        let countdownInterval = null;
+        let reloadTriggered = false;
+        const triggerReload = () => {
+          if (reloadTriggered) return;
+          reloadTriggered = true;
+          if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+          }
+          if (updateBtnText) updateBtnText.textContent = "Đang tải lại...";
+          location.reload();
+        };
+        updateBtn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          if (isCountingDown) {
+            triggerReload();
+            return;
+          }
+          if (isChecking) return;
+          isChecking = true;
+          updateBtn.disabled = true;
+          updateBtn.classList.remove("ytc-btn-success", "ytc-btn-has-update");
+          updateBtn.classList.add("ytc-btn-loading");
+          if (updateBtnText) updateBtnText.textContent = "Đang kiểm tra...";
+          try {
+            let pkg = null;
+            try {
+              const apiRes = await fetch("https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main", {
+                headers: { "Accept": "application/vnd.github.v3.raw" },
+                cache: "no-store"
+              });
+              if (apiRes.ok) {
+                const data = await apiRes.json();
+                if (data && data.version) {
+                  pkg = data;
+                } else if (data && data.content && data.encoding === "base64") {
+                  try {
+                    pkg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, "")))));
+                  } catch (err) {
+                  }
+                }
+              }
+            } catch (e2) {
+            }
+            if (!pkg || !pkg.version) {
+              const rawRes = await fetch(`https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?t=${Date.now()}`, {
+                cache: "no-store"
+              });
+              if (rawRes.ok) {
+                pkg = await rawRes.json();
+              }
+            }
+            if (pkg && pkg.version) {
+              if (isNewerVersion(pkg.version, APP_VERSION)) {
+                const newVersionUrl = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${pkg.version}`;
+                window.open(newVersionUrl, "_blank");
+                isChecking = false;
+                isCountingDown = true;
+                updateBtn.disabled = false;
+                updateBtn.classList.remove("ytc-btn-loading");
+                updateBtn.classList.add("ytc-btn-has-update");
+                updateBtn.title = `Đã mở trang cập nhật v${pkg.version}. Bấm để tải lại trang ngay!`;
+                let countdown = 10;
+                if (updateBtnText) updateBtnText.textContent = "F5 sau 10s";
+                const openedTime = Date.now();
+                const onReturnToTab = () => {
+                  if (Date.now() - openedTime >= 1200) {
+                    window.removeEventListener("focus", onReturnToTab);
+                    document.removeEventListener("visibilitychange", handleVisibilityChange2);
+                    triggerReload();
+                  }
+                };
+                const handleVisibilityChange2 = () => {
+                  if (document.visibilityState === "visible") {
+                    onReturnToTab();
+                  }
+                };
+                window.addEventListener("focus", onReturnToTab);
+                document.addEventListener("visibilitychange", handleVisibilityChange2);
+                countdownInterval = setInterval(() => {
+                  countdown--;
+                  if (countdown <= 0) {
+                    window.removeEventListener("focus", onReturnToTab);
+                    document.removeEventListener("visibilitychange", handleVisibilityChange2);
+                    triggerReload();
+                  } else {
+                    if (updateBtnText) updateBtnText.textContent = `F5 sau ${countdown}s`;
+                  }
+                }, 1e3);
+                return;
+              } else {
+                updateBtn.classList.remove("ytc-btn-loading");
+                updateBtn.classList.add("ytc-btn-success");
+                if (updateBtnText) updateBtnText.textContent = "Đã cập nhật";
+                setTimeout(() => {
+                  updateBtn.classList.remove("ytc-btn-success");
+                  if (updateBtnText) updateBtnText.textContent = "Kiểm tra";
+                  updateBtn.disabled = false;
+                  isChecking = false;
+                }, 2500);
+                return;
+              }
+            } else {
+              window.open("https://github.com/huyvu2512/youtube-customizer/releases", "_blank");
+            }
+          } catch (err) {
+            window.open("https://github.com/huyvu2512/youtube-customizer/releases", "_blank");
+          }
+          setTimeout(() => {
+            updateBtn.classList.remove("ytc-btn-loading", "ytc-btn-has-update");
+            if (updateBtnText) updateBtnText.textContent = "Kiểm tra";
+            updateBtn.disabled = false;
+            isChecking = false;
+          }, 3e3);
+        });
+      }
+      const devBtn = panel.querySelector("#ytc-btn-dev");
+      if (devBtn) {
+        devBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          window.open("https://huyvu2512.io.vn", "_blank", "noopener,noreferrer");
+        });
+      }
+      const reportBtn = panel.querySelector("#ytc-btn-report");
+      if (reportBtn) {
+        reportBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          window.open("https://github.com/huyvu2512/youtube-customizer/issues", "_blank", "noopener,noreferrer");
+        });
+      }
+      const donateBtn = panel.querySelector("#ytc-btn-donate");
+      if (donateBtn) {
+        donateBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          window.open("https://vietqr.app/img?acc=0886308216&bank=MoMo&fullacc=true&holder=VU+QUANG+HUY&template=standee", "_blank", "noopener,noreferrer");
+        });
+      }
+      panel.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+    }
+    return panel;
+  }
+  function ensureSettingsElements() {
+    const endContainer = document.querySelector("ytd-masthead #end, #masthead #end, #end.ytd-masthead");
+    if (!endContainer) return;
+    let btn = document.getElementById("ytc-settings-btn");
+    const isBtnInPlace = btn && btn.parentElement === endContainer && btn === endContainer.firstElementChild;
+    const isPanelExisting = !!document.getElementById("ytc-settings-panel");
+    if (isBtnInPlace && isPanelExisting) {
+      return;
+    }
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.id = "ytc-settings-btn";
+      btn.title = "YouTube Customizer";
+      setElementHTML(btn, GEAR_SVG);
+    }
+    if (btn.parentElement !== endContainer || btn !== endContainer.firstElementChild) {
+      endContainer.insertBefore(btn, endContainer.firstElementChild);
+    }
+    const panel = createSettingsPanel();
+    syncPanelState(panel);
+    bindGlobalMenuDismiss();
+    setupOnboardingAndUpdates(btn);
+    if (!btn._ytcBound) {
+      btn._ytcBound = true;
+      const updatePosition = () => {
+        const rect = btn.getBoundingClientRect();
+        panel.style.top = rect.bottom + 8 + "px";
+        panel.style.right = Math.max(12, window.innerWidth - rect.right - 10) + "px";
+      };
+      btn.addEventListener("mouseenter", updatePosition, { passive: true });
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        syncPanelState(panel);
+        updatePosition();
+        panel.classList.toggle("open");
+      });
+    }
+  }
+  function setupSettingsObserver() {
+    ensureSettingsElements();
+    const throttledEnsure = rafThrottle(ensureSettingsElements);
+    const attach = (masthead2) => {
+      throttledEnsure();
+      new MutationObserver(throttledEnsure).observe(masthead2, { childList: true, subtree: true });
+    };
+    const masthead = document.querySelector("ytd-masthead");
+    if (masthead) attach(masthead);
+    else whenElement("ytd-masthead", attach);
+    let retryCount = 0;
+    const retryInterval = setInterval(() => {
+      retryCount++;
+      ensureSettingsElements();
+      if (retryCount >= 6 && document.getElementById("ytc-settings-btn")) {
+        clearInterval(retryInterval);
+      }
+    }, 500);
+  }
+  var menuDismissBound;
+  var init_panel = __esm({
+    "src/ui/panel.js"() {
+      init_config();
+      init_utils();
+      init_constants();
+      init_i18n();
+      init_sync();
+      init_notifier();
+      menuDismissBound = false;
     }
   });
 
@@ -2033,6 +4591,7 @@
   function syncPanelState(targetPanel) {
     const panel = targetPanel || document.getElementById("ytc-settings-panel");
     if (!panel) return;
+    updatePanelLanguage(panel);
     const hasChat = hasLiveOrChatSupport();
     const chatRow = panel.querySelector("#ytc-row-chatoverlay");
     if (chatRow) {
@@ -2041,16 +4600,16 @@
       allBtns.forEach((btn) => {
         if (!hasChat) {
           btn.setAttribute("disabled", "disabled");
-          btn.setAttribute("title", "Chỉ khả dụng khi xem Live Stream hoặc video có khung trò chuyện");
+          btn.setAttribute("title", t("chat_tip_disabled"));
         } else {
           btn.removeAttribute("disabled");
           const overlayMode = btn.getAttribute("data-overlay");
           if (overlayMode === "off") {
-            btn.setAttribute("title", "Tắt chat trên video");
+            btn.setAttribute("title", t("chat_tip_off"));
           } else if (overlayMode === "danmaku") {
-            btn.setAttribute("title", "Chữ chạy ngang màn hình dạng Danmaku");
+            btn.setAttribute("title", t("chat_tip_danmaku"));
           } else if (overlayMode === "streamer") {
-            btn.setAttribute("title", "Khung chat nổi của streamer, kéo thả và co giãn tự do");
+            btn.setAttribute("title", t("chat_tip_streamer"));
           }
         }
       });
@@ -2076,35 +4635,29 @@
     });
     const qualityBadge = panel.querySelector(".ytc-quality-badge");
     if (qualityBadge) {
-      const labels = {
-        auto: "TỰ ĐỘNG",
-        max: "CAO NHẤT",
-        "1440p": "2K",
-        "1080p": "1080P",
-        "720p": "720P"
-      };
-      qualityBadge.textContent = labels[currentQuality] || currentQuality.toUpperCase();
+      if (currentQuality === "auto") qualityBadge.textContent = t("quality_auto").toUpperCase();
+      else if (currentQuality === "max") qualityBadge.textContent = t("quality_max").toUpperCase();
+      else qualityBadge.textContent = currentQuality.toUpperCase();
     }
     const currentLangCode = currentConfig.language || "auto";
     const langInfo = getLanguageInfo(currentLangCode);
-    const flagEl = panel.querySelector("#ytc-lang-current-flag");
-    const labelEl = panel.querySelector("#ytc-lang-current-label");
-    if (flagEl) flagEl.textContent = langInfo.flag;
+    const labelEl = document.getElementById("ytc-lang-current-label");
     if (labelEl) labelEl.textContent = langInfo.name;
-    panel.querySelectorAll("#ytc-lang-list .ytc-dropdown-item").forEach((item) => {
-      const isMatch = item.getAttribute("data-code") === currentLangCode;
-      item.classList.toggle("active", isMatch);
-      item.setAttribute("aria-selected", isMatch ? "true" : "false");
-      const checkEl = item.querySelector(".ytc-lang-check");
-      if (checkEl) checkEl.innerHTML = isMatch ? CHECK_SVG : "";
-    });
+    const langMenu = document.getElementById("ytc-lang-menu");
+    if (langMenu) {
+      langMenu.querySelectorAll(".ytc-dropdown-item").forEach((item) => {
+        const isMatch = item.getAttribute("data-code") === currentLangCode;
+        item.classList.toggle("active", isMatch);
+        item.setAttribute("aria-selected", isMatch ? "true" : "false");
+      });
+    }
   }
   var init_sync = __esm({
     "src/ui/sync.js"() {
       init_config();
       init_utils();
       init_i18n();
-      init_constants();
+      init_panel();
     }
   });
 
@@ -2813,9 +5366,9 @@
       }
       if (node.querySelectorAll) {
         const targets = node.querySelectorAll(selector);
-        targets.forEach((t) => {
-          filterSingleMessageNode(t, !!iframeConfig.hideChatEmojis);
-          const data = extractMessageData(t);
+        targets.forEach((t2) => {
+          filterSingleMessageNode(t2, !!iframeConfig.hideChatEmojis);
+          const data = extractMessageData(t2);
           if (data) {
             try {
               window.top.postMessage({ type: "YTC_LIVE_CHAT_MSG", payload: data }, "*");
@@ -2857,9 +5410,9 @@
               newNodes.push(node);
             } else if (node.querySelectorAll) {
               const targets = node.querySelectorAll(selector);
-              targets.forEach((t) => {
-                filterSingleMessageNode(t, !!iframeConfig.hideChatEmojis);
-                newNodes.push(t);
+              targets.forEach((t2) => {
+                filterSingleMessageNode(t2, !!iframeConfig.hideChatEmojis);
+                newNodes.push(t2);
               });
             }
           }
@@ -3013,7 +5566,7 @@
             newNodes.push(node);
           } else if (node.querySelectorAll) {
             const targets = node.querySelectorAll(selector);
-            targets.forEach((t) => newNodes.push(t));
+            targets.forEach((t2) => newNodes.push(t2));
           }
         }
       }
@@ -3298,387 +5851,8 @@
     }
   });
 
-  // src/ui/notifier.js
-  var notifier_exports = {};
-  __export(notifier_exports, {
-    checkAndAutoUpdate: () => checkAndAutoUpdate,
-    checkForUpdates: () => checkForUpdates,
-    isNewerVersion: () => isNewerVersion,
-    setupOnboardingAndUpdates: () => setupOnboardingAndUpdates,
-    showTipCard: () => showTipCard
-  });
-  function isNewerVersion(remote, current) {
-    if (!remote || !current) return false;
-    const r = remote.split(".").map((x) => parseInt(x, 10) || 0);
-    const c = current.split(".").map((x) => parseInt(x, 10) || 0);
-    for (let i = 0; i < Math.max(r.length, c.length); i++) {
-      const rPart = r[i] || 0;
-      const cPart = c[i] || 0;
-      if (rPart > cPart) return true;
-      if (rPart < cPart) return false;
-    }
-    return false;
-  }
-  function showTipCard(btn, { badge, badgeBg, title, desc, btnText, onAction, onClose, tipId = "ytc-onboarding-tip" }) {
-    if (!btn || document.getElementById(tipId)) return;
-    const tip = document.createElement("div");
-    tip.id = tipId;
-    setElementHTML(tip, `
-        <div class="ytc-onboarding-arrow"></div>
-        <div class="ytc-onboarding-header">
-            <span class="ytc-onboarding-badge"${badgeBg ? ` style="background:${badgeBg};"` : ""}>${badge}</span>
-            <button class="ytc-onboarding-close" title="Đóng">✕</button>
-        </div>
-        <div class="ytc-onboarding-content">
-            <div class="ytc-onboarding-title">${title}</div>
-            <div class="ytc-onboarding-desc">${desc}</div>
-        </div>
-        <div class="ytc-onboarding-footer">
-            <button class="ytc-onboarding-btn">${btnText}</button>
-        </div>
-    `);
-    document.body.appendChild(tip);
-    const updateTipPos = () => {
-      const targetBtn = document.getElementById("ytc-settings-btn") || btn;
-      if (!targetBtn || !targetBtn.isConnected || !tip.isConnected) return;
-      const rect = targetBtn.getBoundingClientRect();
-      if (rect.width === 0 || rect.bottom === 0) return;
-      tip.style.top = `${rect.bottom + 12}px`;
-      tip.style.right = `${Math.max(10, window.innerWidth - rect.right - 10)}px`;
-    };
-    updateTipPos();
-    window.addEventListener("resize", updateTipPos);
-    setTimeout(updateTipPos, 200);
-    setTimeout(updateTipPos, 600);
-    setTimeout(updateTipPos, 1500);
-    const dismissTip = () => {
-      window.removeEventListener("resize", updateTipPos);
-      tip.remove();
-    };
-    const actionBtn = tip.querySelector(".ytc-onboarding-btn");
-    if (actionBtn) {
-      actionBtn.addEventListener("click", () => {
-        if (onAction) onAction();
-        dismissTip();
-      });
-    }
-    const closeBtn = tip.querySelector(".ytc-onboarding-close");
-    if (closeBtn) {
-      closeBtn.addEventListener("click", () => {
-        if (onClose) onClose();
-        dismissTip();
-      });
-    }
-    btn.addEventListener("click", dismissTip, { once: true });
-  }
-  function checkForUpdates(btn) {
-    if (updateCheckInitiated) return;
-    const targetBtn = document.getElementById("ytc-settings-btn") || btn;
-    if (!targetBtn) return;
-    updateCheckInitiated = true;
-    const CHECK_URL = "https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json";
-    const CACHE_KEY = "ytc_remote_ver_cache";
-    const now = Date.now();
-    const renderUpdateNotification = (remoteVer) => {
-      if (!remoteVer || !isNewerVersion(remoteVer, APP_VERSION)) return false;
-      const dismissedKey = `ytc_dismiss_ver_${remoteVer.replace(/\./g, "_")}`;
-      try {
-        if (localStorage.getItem(dismissedKey) === "true") return false;
-      } catch (e) {
-      }
-      const oldTip = document.getElementById("ytc-onboarding-tip");
-      if (oldTip) oldTip.remove();
-      const currentBtn = document.getElementById("ytc-settings-btn") || btn;
-      showTipCard(currentBtn, {
-        badge: "BẢN MỚI",
-        title: `Đã có bản cập nhật mới v${remoteVer}`,
-        desc: `YouTube Customizer v${remoteVer} đã sẵn sàng trên GitHub với các tính năng mới và bản sửa lỗi tối ưu.`,
-        btnText: "Cập nhật ngay",
-        onAction: () => {
-          window.open("https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js", "_blank");
-          try {
-            localStorage.setItem(dismissedKey, "true");
-          } catch (e) {
-          }
-          const openTime = Date.now();
-          const reloadOnReturn = () => {
-            if (Date.now() - openTime >= 1200) {
-              location.reload();
-            }
-          };
-          window.addEventListener("focus", reloadOnReturn, { once: true });
-          document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === "visible") reloadOnReturn();
-          });
-          setTimeout(() => location.reload(), 1e4);
-        },
-        onClose: () => {
-          try {
-            localStorage.setItem(dismissedKey, "true");
-          } catch (e) {
-          }
-        }
-      });
-      return true;
-    };
-    try {
-      const cachedRaw = localStorage.getItem(CACHE_KEY);
-      if (cachedRaw) {
-        const cached = JSON.parse(cachedRaw);
-        if (cached && cached.version && isNewerVersion(cached.version, APP_VERSION)) {
-          if (now - cached.time < 15 * 60 * 1e3) {
-            renderUpdateNotification(cached.version);
-            return;
-          }
-        }
-      }
-    } catch (e) {
-    }
-    fetch(`${CHECK_URL}?_t=${now}_${Math.random().toString(36).slice(2)}`, {
-      cache: "no-store",
-      headers: { "Cache-Control": "no-cache", "Pragma": "no-cache" }
-    }).then((res) => res.json()).then((data) => {
-      if (data && data.version) {
-        try {
-          localStorage.setItem(CACHE_KEY, JSON.stringify({ version: data.version, time: Date.now() }));
-        } catch (e) {
-        }
-        renderUpdateNotification(data.version);
-      }
-    }).catch(() => {
-      updateCheckInitiated = false;
-    });
-  }
-  function setupOnboardingAndUpdates(btn) {
-    if (!btn) return;
-    if (document.getElementById("ytc-onboarding-tip")) {
-      const existingTip = document.getElementById("ytc-onboarding-tip");
-      if (existingTip && btn.isConnected) {
-        const rect = btn.getBoundingClientRect();
-        if (rect.width > 0 && rect.bottom > 0) {
-          existingTip.style.top = `${rect.bottom + 12}px`;
-          existingTip.style.right = `${Math.max(10, window.innerWidth - rect.right - 10)}px`;
-        }
-      }
-      return;
-    }
-    checkForUpdates(btn);
-    setTimeout(() => {
-      if (document.getElementById("ytc-onboarding-tip")) return;
-      try {
-        if (localStorage.getItem(ONBOARDING_KEY) === "true") return;
-      } catch (e) {
-        return;
-      }
-      showTipCard(btn, {
-        badge: `PHIÊN BẢN v${APP_VERSION}`,
-        title: "Cài đặt YouTube Customizer ở đây",
-        desc: "Nhấp vào biểu tượng bánh răng này để bật/tắt các tính năng tùy biến theo nhu cầu của bạn.",
-        btnText: "Đã hiểu",
-        onAction: () => {
-          try {
-            localStorage.setItem(ONBOARDING_KEY, "true");
-          } catch (e) {
-          }
-        },
-        onClose: () => {
-          try {
-            localStorage.setItem(ONBOARDING_KEY, "true");
-          } catch (e) {
-          }
-        }
-      });
-    }, 600);
-  }
-  async function checkAndAutoUpdate(force = false) {
-    if (!currentConfig.autoUpdate && !force) return;
-    if (window.self !== window.top) return;
-    if (window.__ytc_auto_update_checked && !force) return;
-    window.__ytc_auto_update_checked = true;
-    const now = Date.now();
-    const GITHUB_API = "https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main";
-    const RAW_URL = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?_t=${now}_${Math.random().toString(36).slice(2)}`;
-    try {
-      let pkg = null;
-      try {
-        const res = await fetch(GITHUB_API, {
-          headers: { "Accept": "application/vnd.github.v3.raw" },
-          cache: "no-store"
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.version) {
-            pkg = data;
-          } else if (data && data.content && data.encoding === "base64") {
-            pkg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, "")))));
-          }
-        }
-      } catch (e) {
-      }
-      if (!pkg || !pkg.version) {
-        const rawRes = await fetch(RAW_URL, { cache: "no-store" });
-        if (rawRes.ok) {
-          pkg = await rawRes.json();
-        }
-      }
-      if (pkg && pkg.version && isNewerVersion(pkg.version, APP_VERSION)) {
-        const newVersion = pkg.version;
-        const redirectKey = `ytc_auto_redirect_${newVersion.replace(/\./g, "_")}`;
-        if (sessionStorage.getItem(redirectKey) === "true" && !force) {
-          return;
-        }
-        sessionStorage.setItem(redirectKey, "true");
-        const updateUrl = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${newVersion}`;
-        console.log(`[YouTube Customizer] Phát hiện phiên bản mới v${newVersion}, tự động trỏ sang link cập nhật:`, updateUrl);
-        window.location.href = updateUrl;
-      }
-    } catch (err) {
-      console.warn("[YouTube Customizer] Tự động kiểm tra cập nhật thất bại:", err);
-    }
-  }
-  var ONBOARDING_KEY, updateCheckInitiated;
-  var init_notifier = __esm({
-    "src/ui/notifier.js"() {
-      init_constants();
-      init_config();
-      init_utils();
-      ONBOARDING_KEY = `ytc_onboarding_v${APP_VERSION.replace(/\./g, "_")}`;
-      updateCheckInitiated = false;
-    }
-  });
-
-  // src/optimization/audioOnly.js
-  var audioOnly_exports = {};
-  __export(audioOnly_exports, {
-    applyAudioOnlyState: () => applyAudioOnlyState,
-    initAudioOnly: () => initAudioOnly
-  });
-  function getPlayer() {
-    return document.querySelector("#movie_player:not(#inline-preview-player)");
-  }
-  function ensureAudioBadge(player) {
-    if (!player) return;
-    if (document.getElementById("ytc-audio-only-badge")) return;
-    audioBadgeElement = document.createElement("div");
-    audioBadgeElement.id = "ytc-audio-only-badge";
-    audioBadgeElement.innerHTML = `
-        <div class="ytc-audio-badge-title">Đang phát ở Chế độ Chỉ Âm Thanh</div>
-        <div class="ytc-audio-badge-sub">Đã tắt video để tiết kiệm tài nguyên</div>
-    `;
-    player.appendChild(audioBadgeElement);
-  }
-  function applyAudioOnlyState() {
-    const isAudioOnly = !!currentConfig.audioOnlyMode;
-    const root = document.documentElement;
-    const body = document.body;
-    root.classList.toggle("ytc-audio-only", isAudioOnly);
-    if (body) body.classList.toggle("ytc-audio-only", isAudioOnly);
-    const player = getPlayer();
-    if (isAudioOnly) {
-      if (player) {
-        ensureAudioBadge(player);
-        try {
-          if (typeof player.setPlaybackQualityRange === "function") {
-            player.setPlaybackQualityRange("tiny", "tiny");
-          }
-          if (typeof player.setPlaybackQuality === "function") {
-            player.setPlaybackQuality("tiny");
-          }
-        } catch (e) {
-        }
-      }
-    } else {
-      const badge = document.getElementById("ytc-audio-only-badge");
-      if (badge) badge.remove();
-      audioBadgeElement = null;
-      if (player) {
-        try {
-          if (typeof player.setPlaybackQualityRange === "function") {
-            player.setPlaybackQualityRange("auto", "default");
-          }
-          if (typeof player.setPlaybackQuality === "function") {
-            player.setPlaybackQuality("auto");
-          }
-        } catch (e) {
-        }
-      }
-    }
-  }
-  function initAudioOnly() {
-    applyAudioOnlyState();
-  }
-  var audioBadgeElement;
-  var init_audioOnly = __esm({
-    "src/optimization/audioOnly.js"() {
-      init_config();
-      audioBadgeElement = null;
-    }
-  });
-
-  // src/optimization/chatMemoryGc.js
-  var chatMemoryGc_exports = {};
-  __export(chatMemoryGc_exports, {
-    initChatMemoryGc: () => initChatMemoryGc,
-    performChatMemoryGc: () => performChatMemoryGc,
-    stopChatMemoryGc: () => stopChatMemoryGc
-  });
-  function cleanChatContainer(itemsContainer) {
-    if (!itemsContainer || !itemsContainer.children) return;
-    const count = itemsContainer.children.length;
-    if (count <= 120) return;
-    const toRemove = count - MAX_CHAT_ITEMS;
-    for (let i = 0; i < toRemove; i++) {
-      if (itemsContainer.firstElementChild) {
-        itemsContainer.firstElementChild.remove();
-      }
-    }
-  }
-  function performChatMemoryGc() {
-    if (!currentConfig.chatMemoryGc) return;
-    if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
-    const topItems = document.querySelectorAll(
-      "yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items"
-    );
-    topItems.forEach(cleanChatContainer);
-    const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]');
-    frames.forEach((frame) => {
-      try {
-        const doc = frame.contentDocument || frame.contentWindow?.document;
-        if (doc) {
-          const iframeItems = doc.querySelectorAll(
-            "yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items"
-          );
-          iframeItems.forEach(cleanChatContainer);
-        }
-      } catch (e) {
-      }
-    });
-  }
-  function initChatMemoryGc() {
-    if (gcInterval) return;
-    gcInterval = setInterval(() => {
-      if (currentConfig.chatMemoryGc) {
-        performChatMemoryGc();
-      }
-    }, 1e4);
-  }
-  function stopChatMemoryGc() {
-    if (gcInterval) {
-      clearInterval(gcInterval);
-      gcInterval = null;
-    }
-  }
-  var gcInterval, MAX_CHAT_ITEMS;
-  var init_chatMemoryGc = __esm({
-    "src/optimization/chatMemoryGc.js"() {
-      init_config();
-      gcInterval = null;
-      MAX_CHAT_ITEMS = 100;
-    }
-  });
-
   // src/styles.css
-  var styles_default = '/* ==========================================================================\r\n   YOUTUBE CUSTOMIZER - TẬP HỢP TOÀN BỘ ĐỊNH KIỂU CSS\r\n   ========================================================================== */\r\n\r\n/* --------------------------------------------------------------------------\r\n   1. LƯỚI VIDEO TRANG CHỦ & FEED: ÉP 3/4/5 CỘT CHUẨN XÁC\r\n   (Độ ưu tiên cao nhất, cố định vĩnh viễn khi F5 tải lại trang)\r\n   -------------------------------------------------------------------------- */\r\n@media (min-width: 900px) {\r\n    ytd-browse[page-subtype="home"] ytd-rich-grid-renderer,\r\n    ytd-browse[page-subtype="subscriptions"] ytd-rich-grid-renderer,\r\n    ytd-browse[page-subtype="channels"] ytd-rich-grid-renderer,\r\n    #page-manager ytd-browse ytd-rich-grid-renderer,\r\n    ytd-rich-grid-renderer.ytc-grid,\r\n    ytd-rich-grid-renderer {\r\n        --ytd-rich-grid-items-per-row: 3 !important;\r\n        --ytd-rich-grid-posts-per-row: 3 !important;\r\n        --ytd-rich-grid-item-max-width: none !important;\r\n    }\r\n\r\n    html[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,\r\n    html[data-ytc-cols="3"] ytd-rich-grid-renderer,\r\n    body[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,\r\n    body[data-ytc-cols="3"] ytd-rich-grid-renderer,\r\n    [data-ytc-cols="3"] #page-manager ytd-browse ytd-rich-grid-renderer,\r\n    [data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,\r\n    [data-ytc-cols="3"] ytd-browse ytd-rich-grid-renderer,\r\n    [data-ytc-cols="3"] ytd-rich-grid-renderer {\r\n        --ytd-rich-grid-items-per-row: 3 !important;\r\n        --ytd-rich-grid-posts-per-row: 3 !important;\r\n        --ytd-rich-grid-item-max-width: none !important;\r\n    }\r\n\r\n    html[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,\r\n    html[data-ytc-cols="4"] ytd-rich-grid-renderer,\r\n    body[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,\r\n    body[data-ytc-cols="4"] ytd-rich-grid-renderer,\r\n    [data-ytc-cols="4"] #page-manager ytd-browse ytd-rich-grid-renderer,\r\n    [data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,\r\n    [data-ytc-cols="4"] ytd-browse ytd-rich-grid-renderer,\r\n    [data-ytc-cols="4"] ytd-rich-grid-renderer {\r\n        --ytd-rich-grid-items-per-row: 4 !important;\r\n        --ytd-rich-grid-posts-per-row: 4 !important;\r\n        --ytd-rich-grid-item-max-width: none !important;\r\n    }\r\n\r\n    html[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,\r\n    html[data-ytc-cols="5"] ytd-rich-grid-renderer,\r\n    body[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,\r\n    body[data-ytc-cols="5"] ytd-rich-grid-renderer,\r\n    [data-ytc-cols="5"] #page-manager ytd-browse ytd-rich-grid-renderer,\r\n    [data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,\r\n    [data-ytc-cols="5"] ytd-browse ytd-rich-grid-renderer,\r\n    [data-ytc-cols="5"] ytd-rich-grid-renderer {\r\n        --ytd-rich-grid-items-per-row: 5 !important;\r\n        --ytd-rich-grid-posts-per-row: 5 !important;\r\n        --ytd-rich-grid-item-max-width: none !important;\r\n    }\r\n\r\n    /* Làm phẳng cấu trúc dòng ytd-rich-grid-row — dùng flex-wrap thay display:contents để GIỮ NGUYÊN hitbox hover */\r\n    #contents > ytd-rich-grid-row {\r\n        display: flex !important;\r\n        flex-wrap: wrap !important;\r\n        width: 100% !important;\r\n    }\r\n    #contents > ytd-rich-grid-row > #contents {\r\n        display: flex !important;\r\n        flex-wrap: wrap !important;\r\n        width: 100% !important;\r\n    }\r\n\r\n    #contents.ytd-rich-grid-row ytd-rich-item-renderer,\r\n    ytd-rich-grid-renderer ytd-rich-item-renderer {\r\n        width: calc(100% / var(--ytd-rich-grid-items-per-row, 3) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n        max-width: calc(100% / var(--ytd-rich-grid-items-per-row, 3) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n    }\r\n\r\n    [data-ytc-cols="3"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,\r\n    [data-ytc-cols="3"] ytd-rich-grid-renderer ytd-rich-item-renderer {\r\n        width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n        max-width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n    }\r\n\r\n    [data-ytc-cols="4"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,\r\n    [data-ytc-cols="4"] ytd-rich-grid-renderer ytd-rich-item-renderer {\r\n        width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n        max-width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n    }\r\n\r\n    [data-ytc-cols="5"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,\r\n    [data-ytc-cols="5"] ytd-rich-grid-renderer ytd-rich-item-renderer {\r\n        width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n        max-width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n    }\r\n}\r\n\r\n/* --------------------------------------------------------------------------\r\n   2. TỐI ƯU HIỆU NĂNG, KHUNG HÌNH & LIVE CHAT (ZERO-LAG)\r\n   -------------------------------------------------------------------------- */\r\n/* Đảm bảo khung xem trước video inline khi hover không bao giờ bị cắt xén hay che khuất */\r\n#page-manager ytd-rich-grid-row {\r\n    overflow: visible !important;\r\n}\r\n\r\n/* Dùng :hover đơn giản, KHÔNG dùng :has() để tránh style recalc storm mỗi khi di chuột */\r\n#page-manager ytd-rich-grid-row:hover {\r\n    z-index: 10 !important;\r\n    position: relative !important;\r\n    overflow: visible !important;\r\n}\r\n\r\n#page-manager ytd-rich-item-renderer {\r\n    overflow: visible !important;\r\n}\r\n\r\n#page-manager ytd-rich-item-renderer:hover,\r\n#page-manager ytd-rich-item-renderer[is-hovered],\r\n#page-manager ytd-rich-item-renderer[has-preview] {\r\n    z-index: 20 !important;\r\n    position: relative !important;\r\n    overflow: visible !important;\r\n}\r\n\r\n/* z-index vừa đủ để preview nổi lên trên thẻ video khi hover, KHÔNG dùng pointer-events: auto toàn cục */\r\n#preview,\r\n#preview.ytd-rich-grid-renderer,\r\nytd-rich-grid-renderer #preview,\r\n#page-manager #preview,\r\nytd-video-preview,\r\n#video-preview {\r\n    z-index: 60 !important;\r\n    overflow: visible !important;\r\n}\r\nytd-video-preview #media-container,\r\nytd-video-preview #player-container,\r\nytd-moving-thumbnail-renderer,\r\n#inline-preview-player {\r\n    z-index: 60 !important;\r\n}\r\n\r\nytd-comment-thread-renderer {\r\n    content-visibility: auto;\r\n    contain-intrinsic-size: auto 200px;\r\n}\r\n\r\n/* Giữ thanh điều khiển và chat hiển thị mượt mà không can thiệp layout */\r\niframe#chatframe {\r\n    contain: paint !important;\r\n}\r\n\r\nyt-live-chat-text-message-renderer,\r\nyt-live-chat-paid-message-renderer,\r\nyt-live-chat-membership-item-renderer {\r\n    content-visibility: auto !important;\r\n    contain-intrinsic-size: auto 32px !important;\r\n}\r\n\r\n/* --------------------------------------------------------------------------\r\n   3. BỘ LỌC NỘI DUNG: SHORTS, CHƠI GAME, HỘI VIÊN, KHÁM PHÁ, CỘNG ĐỒNG, CLEAN SEARCH\r\n   -------------------------------------------------------------------------- */\r\n.ytc-hide-shorts ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),\r\n.ytc-hide-shorts ytd-rich-section-renderer:has(ytd-reel-shelf-renderer),\r\n.ytc-hide-shorts ytd-rich-shelf-renderer[is-shorts],\r\n.ytc-hide-shorts ytd-reel-shelf-renderer,\r\n.ytc-hide-shorts ytd-guide-entry-renderer:has(a[href^="/shorts"]),\r\n.ytc-hide-shorts ytd-mini-guide-entry-renderer:has(a[href^="/shorts"]),\r\n.ytc-hide-shorts ytd-guide-entry-renderer a[title="Shorts"],\r\n.ytc-hide-shorts ytd-mini-guide-entry-renderer[aria-label="Shorts"],\r\n.ytc-hide-shorts #endpoint[title="Shorts"],\r\n.ytc-hide-shorts ytd-mealbar-promo-renderer,\r\n.ytc-hide-shorts ytd-upsell-dialog-renderer {\r\n    display: none !important;\r\n}\r\n\r\n.ytc-hide-playables ytd-rich-section-renderer:has([is-mini-game-card-shelf]),\r\n.ytc-hide-playables ytd-rich-shelf-renderer[is-mini-game-card-shelf],\r\n.ytc-hide-playables ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-mini-game-card-shelf]),\r\n.ytc-hide-playables ytd-rich-section-renderer:has(a[href*="/playables"]),\r\n.ytc-hide-playables ytd-rich-section-renderer:has(a[href*="playables"]),\r\n.ytc-hide-playables ytd-guide-entry-renderer:has(a[href*="/playables"]),\r\n.ytc-hide-playables ytd-mini-guide-entry-renderer:has(a[href*="/playables"]),\r\n.ytc-hide-playables ytd-guide-entry-renderer a[title*="Chơi game"],\r\n.ytc-hide-playables ytd-guide-entry-renderer a[title*="Playables"],\r\n.ytc-hide-playables ytd-mini-guide-entry-renderer[aria-label*="Chơi game"],\r\n.ytc-hide-playables ytd-mini-guide-entry-renderer[aria-label*="Playables"],\r\n.ytc-hide-playables #endpoint[title*="Chơi game"],\r\n.ytc-hide-playables #endpoint[title*="Playables"] {\r\n    display: none !important;\r\n}\r\n\r\n.ytc-hide-members ytd-rich-section-renderer:has(.badge-style-type-members-only),\r\n.ytc-hide-members ytd-rich-section-renderer:has(.badge-style-type-members-first),\r\n.ytc-hide-members ytd-rich-section-renderer:has([badge-style="MEMBERS_FIRST"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has([badge-style="MEMBERS_ONLY"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="hội viên"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Hội viên"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Members only"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="members only"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Members first"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="members first"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has(a[href*="/membership"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has(a[href*="/memberships"]),\r\n.ytc-hide-members ytd-rich-section-renderer.ytc-shelf-members,\r\n.ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-only),\r\n.ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-first),\r\n.ytc-hide-members ytd-rich-item-renderer:has([badge-style="MEMBERS_FIRST"]),\r\n.ytc-hide-members ytd-rich-item-renderer:has([badge-style="MEMBERS_ONLY"]),\r\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="hội viên"]),\r\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Hội viên"]),\r\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Members only"]),\r\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Members first"]),\r\n.ytc-hide-members ytd-rich-item-renderer.ytc-item-members,\r\n.ytc-hide-members ytd-video-renderer:has(.badge-style-type-members-only),\r\n.ytc-hide-members ytd-video-renderer:has(.badge-style-type-members-first),\r\n.ytc-hide-members ytd-video-renderer:has([badge-style="MEMBERS_FIRST"]),\r\n.ytc-hide-members ytd-video-renderer:has([badge-style="MEMBERS_ONLY"]),\r\n.ytc-hide-members ytd-video-renderer:has([aria-label*="hội viên"]),\r\n.ytc-hide-members ytd-video-renderer:has([aria-label*="Hội viên"]),\r\n.ytc-hide-members ytd-video-renderer.ytc-item-members,\r\n.ytc-hide-members ytd-compact-video-renderer:has(.badge-style-type-members-only),\r\n.ytc-hide-members ytd-compact-video-renderer:has(.badge-style-type-members-first),\r\n.ytc-hide-members ytd-compact-video-renderer:has([badge-style="MEMBERS_FIRST"]),\r\n.ytc-hide-members ytd-compact-video-renderer:has([badge-style="MEMBERS_ONLY"]),\r\n.ytc-hide-members ytd-compact-video-renderer.ytc-item-members {\r\n    display: none !important;\r\n}\r\n\r\n/* Ẩn Danh sách kết hợp (Mixes / Radio) và Danh sách phát (Playlists) trên Feed, Tìm kiếm, Gợi ý và Watch page */\r\n.ytc-hide-mixes ytd-playlist-renderer,\r\n.ytc-hide-mixes ytd-compact-playlist-renderer,\r\n.ytc-hide-mixes ytd-radio-renderer,\r\n.ytc-hide-mixes ytd-compact-radio-renderer,\r\n.ytc-hide-mixes ytd-grid-radio-renderer,\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-playlist-renderer),\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-radio-renderer),\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-playlist-thumbnail),\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-playlist-custom-thumbnail-renderer),\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="/playlist?list="]),\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="list=PL"]),\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="list=OLAK5uy_"]),\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="list=CL"]),\r\n.ytc-hide-mixes ytd-video-renderer:has(ytd-playlist-thumbnail),\r\n.ytc-hide-mixes ytd-video-renderer:has(a[href*="/playlist?list="]),\r\n.ytc-hide-mixes ytd-video-renderer:has(a[href*="list=PL"]),\r\n.ytc-hide-mixes ytd-video-renderer:has(a[href*="list=OLAK5uy_"]),\r\n.ytc-hide-mixes ytd-video-renderer:has(a[href*="list=CL"]),\r\n.ytc-hide-mixes ytd-rich-item-renderer.ytc-item-mix,\r\n.ytc-hide-mixes ytd-video-renderer.ytc-item-mix,\r\n.ytc-hide-mixes ytd-compact-video-renderer.ytc-item-mix,\r\n.ytc-hide-mixes #related ytd-compact-radio-renderer,\r\n.ytc-hide-mixes #related ytd-compact-playlist-renderer,\r\n.ytc-hide-mixes #playlist:has(a[href*="list=RD"]),\r\n.ytc-hide-mixes #playlist:has([title*="Danh sách kết hợp"]),\r\n.ytc-hide-mixes #playlist:has([title*="Mixes"]),\r\n.ytc-hide-mixes #playlist:has([title*="Mix -"]),\r\n.ytc-hide-mixes ytd-playlist-panel-renderer:has(a[href*="list=RD"]),\r\n.ytc-hide-mixes ytd-playlist-panel-renderer:has([title*="Danh sách kết hợp"]),\r\n.ytc-hide-mixes ytd-playlist-panel-renderer:has([title*="Mixes"]),\r\n.ytc-hide-mixes ytd-playlist-panel-renderer:has([title*="Mix -"]),\r\n/* Kệ Mix chuyên biệt (dựa theo tiêu đề rõ ràng, không ẩn oan toàn bộ kệ nhạc) */\r\n.ytc-hide-mixes ytd-rich-section-renderer:has(#title-container [title*="Danh sách kết hợp"]),\r\n.ytc-hide-mixes ytd-rich-section-renderer:has(#title-container [title*="Mixes"]),\r\n.ytc-hide-mixes ytd-rich-section-renderer:has(#title[title*="Danh sách kết hợp"]),\r\n.ytc-hide-mixes ytd-rich-section-renderer:has(#title[title*="Mixes"]),\r\n.ytc-hide-mixes ytd-shelf-renderer:has(#title-container [title*="Danh sách kết hợp"]),\r\n.ytc-hide-mixes ytd-shelf-renderer:has(#title-container [title*="Mixes"]),\r\n.ytc-hide-mixes ytd-shelf-renderer:has(#title[title*="Danh sách kết hợp"]),\r\n.ytc-hide-mixes ytd-shelf-renderer:has(#title[title*="Mixes"]),\r\n.ytc-hide-mixes ytd-rich-section-renderer.ytc-shelf-mix,\r\n.ytc-hide-mixes ytd-shelf-renderer.ytc-shelf-mix,\r\n/* Chip "Danh sách kết hợp" trên thanh chủ đề */\r\n.ytc-hide-mixes yt-chip-cloud-chip-renderer:has([title*="Danh sách kết hợp"]),\r\n.ytc-hide-mixes yt-chip-cloud-chip-renderer:has([title*="Mixes"]),\r\n.ytc-hide-mixes .ytc-item-mix {\r\n    display: none !important;\r\n}\r\n\r\n.ytc-hide-explore ytd-rich-section-renderer:has(yt-chip-cloud-chip-renderer),\r\n.ytc-hide-explore ytd-rich-section-renderer:has(yt-chip-cloud-renderer),\r\n.ytc-hide-explore ytd-rich-section-renderer:has(ytd-feed-filter-chip-bar-renderer),\r\n.ytc-hide-explore ytd-rich-section-renderer:has(#chips),\r\n.ytc-hide-explore ytd-rich-section-renderer.ytc-shelf-explore,\r\n.ytc-hide-explore ytd-rich-section-renderer:has([title*="Khám phá các chủ đề"]),\r\n.ytc-hide-explore ytd-rich-section-renderer:has([title*="Explore other topics"]),\r\n.ytc-hide-explore ytd-rich-section-renderer:has([title*="Explore topics"]) {\r\n    display: none !important;\r\n}\r\n\r\n.ytc-clean-search ytd-ad-slot-renderer,\r\n.ytc-clean-search ytd-rich-item-renderer:has(ytd-ad-slot-renderer),\r\n.ytc-clean-search ytd-rich-section-renderer:has(ytd-ad-slot-renderer),\r\n.ytc-clean-search ytd-video-renderer:has(.badge-style-type-ad) {\r\n    display: none !important;\r\n}\r\n\r\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-post-renderer),\r\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-backstage-post-renderer),\r\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-backstage-post-thread-renderer),\r\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-post-multi-image-renderer),\r\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-poll-renderer),\r\n.ytc-hide-community ytd-rich-section-renderer.ytc-shelf-community,\r\n.ytc-hide-community ytd-rich-item-renderer:has(ytd-post-renderer),\r\n.ytc-hide-community ytd-rich-item-renderer:has(ytd-backstage-post-renderer),\r\n.ytc-hide-community ytd-rich-item-renderer.ytc-item-community,\r\n.ytc-hide-community ytd-post-renderer,\r\n.ytc-hide-community ytd-backstage-post-renderer,\r\n.ytc-hide-community ytd-backstage-post-thread-renderer {\r\n    display: none !important;\r\n}\r\n\r\n/* --------------------------------------------------------------------------\r\n   4. TRÌNH PHÁT VIDEO: THẺ KẾT THÚC, BANNER & LOGO PREMIUM\r\n   -------------------------------------------------------------------------- */\r\n/* Tự động tắt ánh sáng gốc của YouTube khi BẬT Ánh sáng phòng (Ambilight) để chống trùng lặp */\r\nhtml.ytc-ambient-lighting #cinematics,\r\nhtml.ytc-ambient-lighting ytd-cinematics-renderer,\r\nhtml.ytc-ambient-lighting .ytp-ambient-mode-rendering-container {\r\n    display: none !important;\r\n    opacity: 0 !important;\r\n    pointer-events: none !important;\r\n}\r\n\r\n.ytc-hide-endscreen .ytp-ce-element,\r\n.ytc-hide-endscreen .ytp-ce-covering-overlay,\r\n.ytc-hide-endscreen .ytp-ce-element-show,\r\n.ytc-hide-endscreen .ytp-ce-video,\r\n.ytc-hide-endscreen .ytp-ce-playlist,\r\n.ytc-hide-endscreen .ytp-ce-channel,\r\n.ytc-hide-endscreen .ytp-ce-subscribe,\r\n.ytc-hide-endscreen .ytp-cards-button,\r\n.ytc-hide-endscreen .ytp-cards-teaser,\r\n.ytc-hide-endscreen .ytp-cards-teaser-box,\r\n.ytc-hide-endscreen .ytp-card {\r\n    display: none !important;\r\n    opacity: 0 !important;\r\n    pointer-events: none !important;\r\n}\r\n\r\n/* Ẩn logo hình mờ kênh ở góc dưới bên phải video */\r\n.ytc-hide-watermark .annotation-type-custom.iv-branding,\r\n.ytc-hide-watermark .iv-branding,\r\n.ytc-hide-watermark .ytp-iv-video-content .iv-branding,\r\n.ytc-hide-watermark .ytp-branding-logo,\r\n.ytc-hide-watermark .ytp-featured-channel,\r\n.ytc-hide-watermark .ytp-branding-element {\r\n    display: none !important;\r\n    opacity: 0 !important;\r\n    pointer-events: none !important;\r\n    visibility: hidden !important;\r\n}\r\n\r\n/* Ẩn sản phẩm gắn thẻ (YouTube Shopping / Shopee affiliate / Merch shelf) */\r\n.ytc-hide-shopping ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-shopping-panel"],\r\n.ytc-hide-shopping ytd-engagement-panel-section-list-renderer[target-id*="shopping"],\r\n.ytc-hide-shopping ytd-engagement-panel-section-list-renderer[target-id*="product"],\r\n.ytc-hide-shopping ytd-merch-shelf-renderer,\r\n.ytc-hide-shopping ytd-products-shelf-renderer,\r\n.ytc-hide-shopping ytd-product-shelf-renderer,\r\n.ytc-hide-shopping .ytp-shopping-button,\r\n.ytc-hide-shopping .ytp-featured-product-banner,\r\n.ytc-hide-shopping .ytp-suggested-action-badge[aria-label*="sản phẩm" i],\r\n.ytc-hide-shopping .ytp-suggested-action-badge[aria-label*="product" i],\r\n.ytc-hide-shopping .ytp-suggested-action-badge[aria-label*="shopping" i],\r\n.ytc-hide-shopping .ytp-suggested-action-badge:has(svg path[d*="M19 6"]) {\r\n    display: none !important;\r\n    opacity: 0 !important;\r\n    pointer-events: none !important;\r\n}\r\n\r\n.ytc-auto-dismiss ytd-mealbar-promo-renderer,\r\n.ytc-auto-dismiss yt-mealbar-promo-renderer,\r\n.ytc-auto-dismiss ytd-upsell-dialog-renderer,\r\n.ytc-auto-dismiss ytd-single-option-survey-renderer,\r\n.ytc-auto-dismiss ytd-in-feed-survey-renderer,\r\n.ytc-auto-dismiss yt-bubble-hint-renderer,\r\n.ytc-auto-dismiss .ytc-dismissed-toast {\r\n    display: none !important;\r\n    opacity: 0 !important;\r\n    pointer-events: none !important;\r\n}\r\n\r\n:root.ytc-premium-logo #start.ytd-masthead ytd-topbar-logo-renderer,\r\n:root.ytc-premium-logo ytd-topbar-logo-renderer#logo {\r\n    margin-left: 0 !important;\r\n    display: flex !important;\r\n    align-items: center !important;\r\n}\r\n:root.ytc-premium-logo ytd-topbar-logo-renderer #logo {\r\n    padding: 18px 4px 18px 16px !important;\r\n    display: inline-flex !important;\r\n    align-items: center !important;\r\n    box-sizing: content-box !important;\r\n}\r\nytd-topbar-logo-renderer ytd-yoodle-renderer,\r\nytd-yoodle-renderer ytd-logo,\r\nytd-topbar-logo-renderer ytd-yoodle-renderer * {\r\n    display: none !important;\r\n}\r\n:root.ytc-premium-logo ytd-topbar-logo-renderer #logo ytd-logo:not(.ytd-yoodle-renderer),\r\n:root.ytc-premium-logo ytd-topbar-logo-renderer #logo ytd-logo[hidden]:not(.ytd-yoodle-renderer),\r\n:root.ytc-premium-logo ytd-topbar-logo-renderer > #logo > div > ytd-logo {\r\n    width: 101px !important;\r\n    min-width: 101px !important;\r\n    max-width: 101px !important;\r\n    height: 20px !important;\r\n    display: flex !important;\r\n    align-items: center !important;\r\n    overflow: visible !important;\r\n    visibility: visible !important;\r\n    opacity: 1 !important;\r\n}\r\n:root.ytc-premium-logo ytd-logo:not(.ytd-yoodle-renderer) > *:not(.custom-premium-logo) {\r\n    display: none !important;\r\n}\r\nytd-logo, ytd-topbar-logo-renderer {\r\n    overflow: visible !important;\r\n}\r\n:root:not(.ytc-premium-logo) .custom-premium-logo {\r\n    display: none !important;\r\n}\r\n:root.ytc-premium-logo .custom-premium-logo {\r\n    display: flex !important;\r\n    align-items: center !important;\r\n    width: 101px !important;\r\n    height: 20px !important;\r\n    color: var(--yt-spec-wordmark-text, var(--yt-spec-text-primary, #0f0f0f)) !important;\r\n    pointer-events: none;\r\n    visibility: visible !important;\r\n    opacity: 1 !important;\r\n}\r\nhtml:not([dark]).ytc-premium-logo .custom-premium-logo,\r\nhtml:not([dark]) .custom-premium-logo,\r\n:root:not([dark]).ytc-premium-logo .custom-premium-logo {\r\n    color: var(--yt-spec-wordmark-text, #0f0f0f) !important;\r\n}\r\nhtml[dark].ytc-premium-logo .custom-premium-logo,\r\nhtml[dark] .custom-premium-logo,\r\n:root[dark].ytc-premium-logo .custom-premium-logo {\r\n    color: var(--yt-spec-wordmark-text, #f1f1f1) !important;\r\n}\r\n.custom-premium-logo svg {\r\n    width: 101px !important;\r\n    height: 20px !important;\r\n    fill: currentColor !important;\r\n}\r\n.custom-premium-logo svg #youtube-paths_yt19,\r\n.custom-premium-logo svg #youtube-paths_yt19 path {\r\n    fill: currentColor !important;\r\n}\r\n\r\n:root.ytc-premium-logo ytd-topbar-logo-renderer #country-code {\r\n    display: inline-block !important;\r\n    font-size: 10px !important;\r\n    font-weight: 400 !important;\r\n    font-family: "Roboto", "Arial", sans-serif !important;\r\n    line-height: 10px !important;\r\n    color: var(--yt-spec-text-secondary, #909090) !important;\r\n    margin-top: 14px !important;\r\n    margin-left: 4px !important;\r\n    margin-right: 0 !important;\r\n    margin-bottom: 0 !important;\r\n    align-self: flex-start !important;\r\n    vertical-align: top !important;\r\n    position: relative !important;\r\n    top: 0 !important;\r\n    left: 0 !important;\r\n}\r\nhtml:not([dark]).ytc-premium-logo ytd-topbar-logo-renderer #country-code,\r\nhtml:not([dark]) ytd-topbar-logo-renderer #country-code {\r\n    color: var(--yt-spec-text-secondary, #606060) !important;\r\n}\r\nhtml[dark].ytc-premium-logo ytd-topbar-logo-renderer #country-code,\r\nhtml[dark] ytd-topbar-logo-renderer #country-code {\r\n    color: var(--yt-spec-text-secondary, #909090) !important;\r\n}\r\n:root.ytc-premium-logo ytd-topbar-logo-renderer #country-code:empty {\r\n    display: none !important;\r\n}\r\n\r\n/* --------------------------------------------------------------------------\r\n   5. GIAO DIỆN CÀI ĐẶT: NÚT BÁNH RĂNG & MENU 4 TAB\r\n   -------------------------------------------------------------------------- */\r\n#ytc-settings-btn {\r\n    order: -1 !important;\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    width: 40px;\r\n    height: 40px;\r\n    border-radius: 50%;\r\n    border: none;\r\n    background: transparent;\r\n    color: var(--yt-spec-text-primary, #f1f1f1);\r\n    cursor: pointer;\r\n    margin-right: 8px;\r\n    flex-shrink: 0;\r\n    transition: background-color 0.15s, color 0.15s;\r\n    position: relative;\r\n}\r\n#ytc-settings-btn:hover {\r\n    background-color: rgba(255, 255, 255, 0.1);\r\n}\r\n#ytc-settings-btn svg {\r\n    width: 24px;\r\n    height: 24px;\r\n    stroke: currentColor;\r\n    display: block;\r\n}\r\nhtml:not([dark]) #ytc-settings-btn {\r\n    color: #0f0f0f !important;\r\n}\r\nhtml:not([dark]) #ytc-settings-btn svg {\r\n    stroke: #0f0f0f !important;\r\n    color: #0f0f0f !important;\r\n}\r\nhtml:not([dark]) #ytc-settings-btn:hover {\r\n    background-color: rgba(0, 0, 0, 0.08);\r\n}\r\nhtml[dark] #ytc-settings-btn {\r\n    color: #f1f1f1 !important;\r\n}\r\nhtml[dark] #ytc-settings-btn svg {\r\n    stroke: #f1f1f1 !important;\r\n    color: #f1f1f1 !important;\r\n}\r\n\r\n#ytc-settings-panel {\r\n    position: fixed;\r\n    width: 380px;\r\n    max-height: calc(100vh - 80px);\r\n    overflow-y: auto;\r\n    background: var(--yt-spec-brand-background-primary, #282828);\r\n    color: var(--yt-spec-text-primary, #f1f1f1);\r\n    border-radius: 12px;\r\n    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.4);\r\n    padding: 12px;\r\n    z-index: 9999;\r\n    font-family: "Roboto", "Arial", sans-serif;\r\n    font-size: 14px;\r\n    display: none;\r\n    flex-direction: column;\r\n    gap: 6px;\r\n    user-select: none;\r\n    border: 1px solid rgba(255, 255, 255, 0.1);\r\n}\r\n#ytc-settings-panel::-webkit-scrollbar {\r\n    width: 4px;\r\n}\r\n#ytc-settings-panel::-webkit-scrollbar-thumb {\r\n    background: rgba(255, 255, 255, 0.2);\r\n    border-radius: 2px;\r\n}\r\n#ytc-settings-panel.open {\r\n    display: flex;\r\n}\r\n\r\n.ytc-header {\r\n    font-weight: 600;\r\n    font-size: 15px;\r\n    padding: 4px 6px 8px 6px;\r\n    border-bottom: 1px solid rgba(255, 255, 255, 0.1);\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n}\r\n.ytc-header-badge {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    font-size: 11px;\r\n    font-weight: 600;\r\n    color: #ff4e45;\r\n    background: rgba(255, 78, 69, 0.12);\r\n    border: 1px solid rgba(255, 78, 69, 0.25);\r\n    padding: 2px 8px;\r\n    border-radius: 6px;\r\n    letter-spacing: 0.5px;\r\n    user-select: none;\r\n    flex-shrink: 0;\r\n}\r\nhtml:not([dark]) .ytc-header-badge {\r\n    color: #cc0000;\r\n    background: rgba(204, 0, 0, 0.08);\r\n    border-color: rgba(204, 0, 0, 0.25);\r\n}\r\n\r\n.ytc-star-badge {\r\n    display: inline-block;\r\n    font-size: 13px;\r\n    margin-left: 5px;\r\n    line-height: 1;\r\n    vertical-align: middle;\r\n    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.6));\r\n    animation: ytc-star-pulse 2.2s infinite ease-in-out;\r\n    cursor: default;\r\n    user-select: none;\r\n}\r\n@keyframes ytc-star-pulse {\r\n    0%, 100% {\r\n        transform: scale(1);\r\n        filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.4));\r\n    }\r\n    50% {\r\n        transform: scale(1.18);\r\n        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.85));\r\n    }\r\n}\r\n\r\n.ytc-tabs {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 3px;\r\n    background: rgba(255, 255, 255, 0.06);\r\n    border-radius: 8px;\r\n    padding: 3px;\r\n    margin: 4px 0 6px 0;\r\n    border: 1px solid rgba(255, 255, 255, 0.08);\r\n}\r\n.ytc-tab-btn {\r\n    flex: 1 1 0px;\r\n    width: 0;\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    gap: 3px;\r\n    padding: 6px 1px;\r\n    border: none;\r\n    background: transparent;\r\n    color: #aaa;\r\n    font-size: 11.5px;\r\n    font-weight: 500;\r\n    border-radius: 6px;\r\n    cursor: pointer;\r\n    transition: background 0.15s ease, color 0.15s ease;\r\n    white-space: nowrap;\r\n    text-align: center;\r\n    box-sizing: border-box;\r\n}\r\n.ytc-tab-btn:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n    color: #fff;\r\n}\r\n.ytc-tab-btn.active {\r\n    background: #f1f1f1;\r\n    color: #0f0f0f;\r\n    font-weight: 500;\r\n}\r\n.ytc-tab-btn svg {\r\n    width: 13px;\r\n    height: 13px;\r\n    fill: currentColor;\r\n    flex-shrink: 0;\r\n}\r\n.ytc-tab-pane {\r\n    display: none;\r\n    flex-direction: column;\r\n    gap: 4px;\r\n}\r\n.ytc-tab-pane.active {\r\n    display: flex;\r\n}\r\n\r\n.ytc-item {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    padding: 8px 8px;\r\n    border-radius: 8px;\r\n    cursor: pointer;\r\n    transition: background 0.15s;\r\n}\r\n.ytc-item:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n}\r\n\r\n.ytc-item-left {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 12px;\r\n}\r\n.ytc-item-left svg {\r\n    width: 20px;\r\n    height: 20px;\r\n    fill: currentColor;\r\n    opacity: 0.9;\r\n    flex-shrink: 0;\r\n}\r\n.ytc-item-left svg[fill="none"] {\r\n    fill: none;\r\n}\r\n\r\n.ytc-switch {\r\n    position: relative;\r\n    display: inline-block;\r\n    width: 36px;\r\n    height: 20px;\r\n}\r\n.ytc-switch input {\r\n    opacity: 0;\r\n    width: 0;\r\n    height: 0;\r\n}\r\n.ytc-slider {\r\n    position: absolute;\r\n    cursor: pointer;\r\n    top: 0;\r\n    left: 0;\r\n    right: 0;\r\n    bottom: 0;\r\n    background-color: #606060;\r\n    border-radius: 20px;\r\n    transition: background-color 0.2s;\r\n}\r\n.ytc-slider:before {\r\n    position: absolute;\r\n    content: "";\r\n    height: 14px;\r\n    width: 14px;\r\n    left: 3px;\r\n    bottom: 3px;\r\n    background-color: white;\r\n    border-radius: 50%;\r\n    transition: transform 0.2s;\r\n}\r\n.ytc-switch input:checked + .ytc-slider {\r\n    background-color: #3ea6ff;\r\n}\r\n.ytc-switch input:checked + .ytc-slider:before {\r\n    transform: translateX(16px);\r\n}\r\n\r\n.ytc-link-badge {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    gap: 4px;\r\n    padding: 3px 8px;\r\n    border-radius: 6px;\r\n    background: rgba(62, 166, 255, 0.12);\r\n    color: #3ea6ff;\r\n    font-size: 11.5px;\r\n    font-weight: 500;\r\n    transition: all 0.2s ease;\r\n    border: 1px solid rgba(62, 166, 255, 0.25);\r\n    user-select: none;\r\n    flex-shrink: 0;\r\n}\r\n.ytc-link-badge svg {\r\n    flex-shrink: 0;\r\n}\r\n.ytc-item:hover .ytc-link-badge {\r\n    background: #3ea6ff;\r\n    color: #0f0f0f;\r\n    border-color: #3ea6ff;\r\n}\r\n\r\n.ytc-cols-group {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 4px;\r\n    background: rgba(255, 255, 255, 0.06);\r\n    padding: 3px;\r\n    border-radius: 8px;\r\n    border: 1px solid rgba(255, 255, 255, 0.08);\r\n}\r\n.ytc-col-btn {\r\n    border: none;\r\n    background: transparent;\r\n    color: #aaa;\r\n    font-size: 12px;\r\n    font-weight: 500;\r\n    padding: 5px 10px;\r\n    border-radius: 6px;\r\n    cursor: pointer;\r\n    transition: all 0.15s ease;\r\n    min-width: 28px;\r\n    text-align: center;\r\n    box-sizing: border-box;\r\n}\r\n.ytc-col-btn:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n    color: #fff;\r\n}\r\n.ytc-col-btn.active {\r\n    background: #f1f1f1 !important;\r\n    color: #0f0f0f !important;\r\n    font-weight: 600;\r\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\r\n}\r\n\r\n.ytc-shortcut-hint {\r\n    font-size: 12px;\r\n    color: var(--yt-spec-text-secondary, #aaa);\r\n    background: rgba(255, 255, 255, 0.04);\r\n    padding: 8px 10px;\r\n    border-radius: 6px;\r\n    line-height: 1.6;\r\n    margin-top: 4px;\r\n    border: 1px solid rgba(255, 255, 255, 0.06);\r\n}\r\n.ytc-shortcut-hint kbd {\r\n    background: rgba(255, 255, 255, 0.15);\r\n    color: var(--yt-spec-text-primary, #fff);\r\n    padding: 2px 5px;\r\n    border-radius: 3px;\r\n    font-family: monospace;\r\n    font-size: 11px;\r\n    font-weight: bold;\r\n}\r\n\r\nhtml:not([dark]) #ytc-settings-panel {\r\n    background: #ffffff;\r\n    color: #0f0f0f;\r\n    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.15);\r\n    border: 1px solid rgba(0, 0, 0, 0.1);\r\n}\r\nhtml:not([dark]) .ytc-header {\r\n    border-bottom: 1px solid rgba(0, 0, 0, 0.08);\r\n}\r\nhtml:not([dark]) .ytc-tabs {\r\n    background: rgba(0, 0, 0, 0.05);\r\n    border: 1px solid rgba(0, 0, 0, 0.08);\r\n}\r\nhtml:not([dark]) .ytc-tab-btn {\r\n    color: #606060;\r\n}\r\nhtml:not([dark]) .ytc-tab-btn:hover {\r\n    background: rgba(0, 0, 0, 0.06);\r\n    color: #0f0f0f;\r\n}\r\nhtml:not([dark]) .ytc-tab-btn.active {\r\n    background: #0f0f0f;\r\n    color: #ffffff;\r\n    font-weight: 500;\r\n}\r\nhtml:not([dark]) .ytc-shortcut-hint {\r\n    background: rgba(0, 0, 0, 0.04);\r\n    color: #606060;\r\n    border-color: rgba(0, 0, 0, 0.08);\r\n}\r\nhtml:not([dark]) .ytc-shortcut-hint kbd {\r\n    background: rgba(0, 0, 0, 0.1);\r\n    color: #0f0f0f;\r\n}\r\n\r\n.ytc-divider {\r\n    height: 1px;\r\n    background: rgba(255, 255, 255, 0.1);\r\n    margin: 4px 0;\r\n}\r\n\r\n.ytc-mode-group {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 4px;\r\n    background: rgba(255, 255, 255, 0.06);\r\n    padding: 3px;\r\n    border-radius: 8px;\r\n    border: 1px solid rgba(255, 255, 255, 0.08);\r\n}\r\n.ytc-mode-btn {\r\n    border: none;\r\n    background: transparent;\r\n    color: #aaa;\r\n    font-size: 12px;\r\n    font-weight: 500;\r\n    padding: 5px 9px;\r\n    border-radius: 6px;\r\n    cursor: pointer;\r\n    transition: all 0.15s ease;\r\n    white-space: nowrap;\r\n    text-align: center;\r\n    box-sizing: border-box;\r\n}\r\n.ytc-mode-btn:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n    color: #fff;\r\n}\r\n.ytc-mode-btn.active {\r\n    background: #f1f1f1 !important;\r\n    color: #0f0f0f !important;\r\n    font-weight: 600;\r\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\r\n}\r\n\r\n/* Định kiểu tường minh cho chế độ Tối (Dark mode) */\r\nhtml[dark] .ytc-cols-group,\r\nhtml[dark] .ytc-mode-group {\r\n    background: rgba(255, 255, 255, 0.06);\r\n    border: 1px solid rgba(255, 255, 255, 0.08);\r\n}\r\nhtml[dark] .ytc-col-btn,\r\nhtml[dark] .ytc-mode-btn {\r\n    color: #aaa;\r\n    background: transparent;\r\n}\r\nhtml[dark] .ytc-col-btn:hover,\r\nhtml[dark] .ytc-mode-btn:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n    color: #fff;\r\n}\r\nhtml[dark] .ytc-col-btn.active,\r\nhtml[dark] .ytc-mode-btn.active {\r\n    background: #f1f1f1 !important;\r\n    color: #0f0f0f !important;\r\n    font-weight: 600;\r\n}\r\n\r\n/* Định kiểu đồng bộ chuẩn xác cho chế độ Sáng (Light mode) */\r\nhtml:not([dark]) .ytc-cols-group {\r\n    background: rgba(0, 0, 0, 0.05);\r\n    border: 1px solid rgba(0, 0, 0, 0.08);\r\n}\r\nhtml:not([dark]) .ytc-col-btn {\r\n    color: #606060;\r\n    background: transparent;\r\n}\r\nhtml:not([dark]) .ytc-col-btn:hover {\r\n    background: rgba(0, 0, 0, 0.06);\r\n    color: #0f0f0f;\r\n}\r\nhtml:not([dark]) .ytc-col-btn.active {\r\n    background: #0f0f0f !important;\r\n    color: #ffffff !important;\r\n    font-weight: 600;\r\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);\r\n}\r\n\r\nhtml:not([dark]) .ytc-mode-group {\r\n    background: rgba(0, 0, 0, 0.05);\r\n    border: 1px solid rgba(0, 0, 0, 0.08);\r\n}\r\nhtml:not([dark]) .ytc-mode-btn {\r\n    color: #606060;\r\n    background: transparent;\r\n}\r\nhtml:not([dark]) .ytc-mode-btn:hover {\r\n    background: rgba(0, 0, 0, 0.06);\r\n    color: #0f0f0f;\r\n}\r\nhtml:not([dark]) .ytc-mode-btn.active {\r\n    background: #0f0f0f !important;\r\n    color: #ffffff !important;\r\n    font-weight: 600;\r\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);\r\n}\r\n\r\n/* Kiểu dáng mục phân giải video (2 tầng & segmented control) */\r\n.ytc-item-vertical {\r\n    flex-direction: column !important;\r\n    align-items: stretch !important;\r\n    gap: 8px !important;\r\n}\r\n.ytc-item-header {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    width: 100%;\r\n}\r\n.ytc-quality-badge {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    font-size: 11px;\r\n    font-weight: 600;\r\n    color: #3ea6ff;\r\n    background: rgba(62, 166, 255, 0.12);\r\n    border: 1px solid rgba(62, 166, 255, 0.25);\r\n    padding: 2px 8px;\r\n    border-radius: 6px;\r\n    letter-spacing: 0.5px;\r\n    user-select: none;\r\n    flex-shrink: 0;\r\n}\r\nhtml:not([dark]) .ytc-quality-badge {\r\n    color: #065fd4;\r\n    background: rgba(6, 95, 212, 0.08);\r\n    border-color: rgba(6, 95, 212, 0.25);\r\n}\r\n.ytc-quality-group {\r\n    display: flex;\r\n    width: 100%;\r\n    gap: 3px;\r\n    box-sizing: border-box;\r\n}\r\n.ytc-quality-btn {\r\n    border: none;\r\n    background: transparent;\r\n    color: #aaa;\r\n    font-size: 11px;\r\n    font-weight: 500;\r\n    padding: 5px 2px;\r\n    border-radius: 6px;\r\n    cursor: pointer;\r\n    transition: all 0.15s ease;\r\n    white-space: nowrap;\r\n    text-align: center;\r\n    box-sizing: border-box;\r\n    flex: 1;\r\n    min-width: 0;\r\n}\r\n.ytc-quality-btn:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n    color: #fff;\r\n}\r\n.ytc-quality-btn.active {\r\n    background: #f1f1f1 !important;\r\n    color: #0f0f0f !important;\r\n    font-weight: 600;\r\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\r\n}\r\n\r\nhtml[dark] .ytc-quality-btn {\r\n    color: #aaa;\r\n    background: transparent;\r\n}\r\nhtml[dark] .ytc-quality-btn:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n    color: #fff;\r\n}\r\nhtml[dark] .ytc-quality-btn.active {\r\n    background: #f1f1f1 !important;\r\n    color: #0f0f0f !important;\r\n    font-weight: 600;\r\n}\r\n\r\nhtml:not([dark]) .ytc-quality-btn {\r\n    color: #606060;\r\n    background: transparent;\r\n}\r\nhtml:not([dark]) .ytc-quality-btn:hover {\r\n    background: rgba(0, 0, 0, 0.06);\r\n    color: #0f0f0f;\r\n}\r\nhtml:not([dark]) .ytc-quality-btn.active {\r\n    background: #0f0f0f !important;\r\n    color: #ffffff !important;\r\n    font-weight: 600;\r\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);\r\n}\r\n\r\n/* Trạng thái vô hiệu hóa của Live Chat row khi video không hỗ trợ chat */\r\n#ytc-row-chatoverlay.ytc-disabled {\r\n    opacity: 0.35 !important;\r\n    pointer-events: none !important;\r\n    cursor: not-allowed !important;\r\n}\r\n/* --------------------------------------------------------------------------\r\n   CUSTOM DROPDOWN MENU (NGÔN NGỮ GIAO DIỆN SIÊU MƯỢT & HIỆN ĐẠI)\r\n   -------------------------------------------------------------------------- */\r\n.ytc-item-lang {\r\n    position: relative;\r\n    overflow: visible !important;\r\n}\r\n\r\n.ytc-dropdown {\r\n    position: relative;\r\n    user-select: none;\r\n}\r\n\r\n.ytc-dropdown-trigger {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    gap: 7px;\r\n    padding: 5px 9px;\r\n    background: rgba(255, 255, 255, 0.08);\r\n    border: 1px solid rgba(255, 255, 255, 0.14);\r\n    border-radius: 8px;\r\n    color: var(--yt-spec-text-primary, #f1f1f1);\r\n    font-size: 12px;\r\n    font-weight: 500;\r\n    font-family: inherit;\r\n    cursor: pointer;\r\n    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);\r\n    max-width: 175px;\r\n    outline: none;\r\n}\r\n.ytc-dropdown-trigger:hover {\r\n    background: rgba(255, 255, 255, 0.12);\r\n    border-color: rgba(255, 255, 255, 0.25);\r\n    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);\r\n}\r\n.ytc-dropdown.open .ytc-dropdown-trigger {\r\n    border-color: #3ea6ff;\r\n    box-shadow: 0 0 0 2px rgba(62, 166, 255, 0.25);\r\n}\r\n.ytc-dropdown-current {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    gap: 6px;\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n    white-space: nowrap;\r\n    max-width: 130px;\r\n}\r\n.ytc-dropdown-flag,\r\n.ytc-dropdown-trigger .ytc-lang-flag {\r\n    font-size: 14px;\r\n    line-height: 1;\r\n    flex-shrink: 0;\r\n}\r\n.ytc-dropdown-label,\r\n.ytc-dropdown-trigger .ytc-lang-name {\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n    white-space: nowrap;\r\n    max-width: 105px;\r\n}\r\n.ytc-dropdown-trigger svg {\r\n    flex-shrink: 0;\r\n    transition: transform 0.2s ease;\r\n    opacity: 0.7;\r\n}\r\n.ytc-dropdown.open .ytc-dropdown-trigger svg {\r\n    transform: rotate(180deg);\r\n}\r\n\r\n.ytc-dropdown-menu {\r\n    position: absolute;\r\n    top: calc(100% + 6px);\r\n    right: 0;\r\n    width: 250px;\r\n    background: rgba(36, 36, 36, 0.96);\r\n    backdrop-filter: blur(20px);\r\n    -webkit-backdrop-filter: blur(20px);\r\n    border: 1px solid rgba(255, 255, 255, 0.15);\r\n    border-radius: 12px;\r\n    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65);\r\n    padding: 8px;\r\n    z-index: 10000;\r\n    display: none;\r\n    flex-direction: column;\r\n    gap: 6px;\r\n    animation: ytc-dropdown-pop 0.2s cubic-bezier(0.16, 1, 0.3, 1);\r\n}\r\n.ytc-dropdown.open .ytc-dropdown-menu {\r\n    display: flex;\r\n}\r\n@keyframes ytc-dropdown-pop {\r\n    0% {\r\n        opacity: 0;\r\n        transform: translateY(-6px) scale(0.96);\r\n    }\r\n    100% {\r\n        opacity: 1;\r\n        transform: translateY(0) scale(1);\r\n    }\r\n}\r\n\r\n.ytc-dropdown-search-wrap {\r\n    padding: 2px 2px 6px 2px;\r\n    border-bottom: 1px solid rgba(255, 255, 255, 0.08);\r\n}\r\n.ytc-dropdown-search {\r\n    width: 100%;\r\n    box-sizing: border-box;\r\n    padding: 6px 10px;\r\n    background: rgba(255, 255, 255, 0.06);\r\n    border: 1px solid rgba(255, 255, 255, 0.1);\r\n    border-radius: 6px;\r\n    color: #fff;\r\n    font-size: 11.5px;\r\n    font-family: inherit;\r\n    outline: none;\r\n    transition: all 0.2s ease;\r\n}\r\n.ytc-dropdown-search:focus {\r\n    background: rgba(255, 255, 255, 0.1);\r\n    border-color: #3ea6ff;\r\n}\r\n\r\n.ytc-dropdown-list {\r\n    max-height: 190px;\r\n    overflow-y: auto;\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 2px;\r\n    padding-right: 2px;\r\n}\r\n.ytc-dropdown-list::-webkit-scrollbar {\r\n    width: 4px;\r\n}\r\n.ytc-dropdown-list::-webkit-scrollbar-thumb {\r\n    background: rgba(255, 255, 255, 0.2);\r\n    border-radius: 2px;\r\n}\r\n\r\n.ytc-dropdown-item {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 10px;\r\n    padding: 6px 8px;\r\n    border-radius: 6px;\r\n    cursor: pointer;\r\n    transition: background 0.15s ease;\r\n}\r\n.ytc-dropdown-item:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n}\r\n.ytc-dropdown-item.active {\r\n    background: rgba(62, 166, 255, 0.15);\r\n}\r\n.ytc-lang-flag {\r\n    font-size: 15px;\r\n    flex-shrink: 0;\r\n}\r\n.ytc-lang-texts {\r\n    display: flex;\r\n    flex-direction: column;\r\n    flex: 1;\r\n    min-width: 0;\r\n}\r\n.ytc-lang-name {\r\n    font-size: 12px;\r\n    font-weight: 500;\r\n    color: var(--yt-spec-text-primary, #f1f1f1);\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n    white-space: nowrap;\r\n}\r\n.ytc-dropdown-item.active .ytc-lang-name {\r\n    color: #3ea6ff;\r\n    font-weight: 600;\r\n}\r\n.ytc-lang-native {\r\n    font-size: 10px;\r\n    color: var(--yt-spec-text-secondary, #aaa);\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n    white-space: nowrap;\r\n}\r\n.ytc-lang-check {\r\n    color: #3ea6ff;\r\n    flex-shrink: 0;\r\n    display: flex;\r\n    align-items: center;\r\n}\r\n\r\n/* Light theme support */\r\nhtml:not([dark]) .ytc-dropdown-trigger {\r\n    background: #ffffff;\r\n    border-color: rgba(0, 0, 0, 0.15);\r\n    color: #0f0f0f;\r\n}\r\nhtml:not([dark]) .ytc-dropdown-trigger:hover {\r\n    background: #f8f8f8;\r\n    border-color: rgba(0, 0, 0, 0.25);\r\n    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);\r\n}\r\nhtml:not([dark]) .ytc-dropdown-menu {\r\n    background: rgba(255, 255, 255, 0.98);\r\n    border-color: rgba(0, 0, 0, 0.12);\r\n    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);\r\n}\r\nhtml:not([dark]) .ytc-dropdown-search-wrap {\r\n    border-bottom-color: rgba(0, 0, 0, 0.08);\r\n}\r\nhtml:not([dark]) .ytc-dropdown-search {\r\n    background: rgba(0, 0, 0, 0.04);\r\n    border-color: rgba(0, 0, 0, 0.1);\r\n    color: #0f0f0f;\r\n}\r\nhtml:not([dark]) .ytc-dropdown-search:focus {\r\n    background: #ffffff;\r\n    border-color: #065fd4;\r\n}\r\nhtml:not([dark]) .ytc-dropdown-item:hover {\r\n    background: rgba(0, 0, 0, 0.05);\r\n}\r\nhtml:not([dark]) .ytc-dropdown-item.active {\r\n    background: rgba(6, 95, 212, 0.08);\r\n}\r\nhtml:not([dark]) .ytc-dropdown-item.active .ytc-lang-name {\r\n    color: #065fd4;\r\n}\r\nhtml:not([dark]) .ytc-lang-check {\r\n    color: #065fd4;\r\n}\r\nhtml:not([dark]) .ytc-lang-name {\r\n    color: #0f0f0f;\r\n}\r\nhtml:not([dark]) .ytc-lang-native {\r\n    color: #606060;\r\n}\r\nhtml:not([dark]) .ytc-dropdown-list::-webkit-scrollbar-thumb {\r\n    background: rgba(0, 0, 0, 0.2);\r\n}\r\n\r\n\r\n#ytc-row-chatoverlay.ytc-disabled .ytc-mode-btn.active {\r\n    background: rgba(255, 255, 255, 0.12) !important;\r\n    color: rgba(255, 255, 255, 0.45) !important;\r\n    box-shadow: none !important;\r\n}\r\nhtml:not([dark]) #ytc-row-chatoverlay.ytc-disabled .ytc-mode-btn.active {\r\n    background: rgba(0, 0, 0, 0.08) !important;\r\n    color: rgba(0, 0, 0, 0.38) !important;\r\n    box-shadow: none !important;\r\n}\r\n\r\nhtml:not([dark]) .ytc-item:hover {\r\n    background: rgba(0, 0, 0, 0.05);\r\n}\r\nhtml:not([dark]) .ytc-divider {\r\n    background: rgba(0, 0, 0, 0.08);\r\n}\r\nhtml:not([dark]) .ytc-slider {\r\n    background-color: #b0b0b0;\r\n}\r\nhtml:not([dark]) .ytc-slider:before {\r\n    background-color: #ffffff;\r\n}\r\nhtml:not([dark]) .ytc-switch input:checked + .ytc-slider {\r\n    background-color: #065fd4;\r\n}\r\n\r\n/* --------------------------------------------------------------------------\r\n   CHAT OVERLAY TRÊN VIDEO (DANMAKU & STREAMER BOX)\r\n   -------------------------------------------------------------------------- */\r\n#ytc-danmaku-container {\r\n    position: absolute;\r\n    inset: 0;\r\n    width: 100% !important;\r\n    height: 100% !important;\r\n    pointer-events: none;\r\n    overflow: hidden;\r\n    z-index: 35 !important;\r\n    container-type: inline-size;\r\n    transition: opacity 0.3s ease;\r\n    display: none;\r\n}\r\n\r\n.ytc-danmaku-item {\r\n    position: absolute;\r\n    left: 100%;\r\n    white-space: nowrap;\r\n    font-family: "YouTube Noto", Roboto, Arial, sans-serif !important;\r\n    font-weight: 700;\r\n    font-size: 18px;\r\n    line-height: 1.3;\r\n    color: #ffffff;\r\n    text-shadow: \r\n        1px 1px 2px #000, \r\n        -1px -1px 2px #000, \r\n        1px -1px 2px #000, \r\n        -1px 1px 2px #000,\r\n        0 0 4px #000;\r\n    will-change: transform;\r\n    animation: ytc-danmaku-slide 8.5s linear forwards;\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 6px;\r\n    pointer-events: none;\r\n}\r\n\r\n@keyframes ytc-danmaku-slide {\r\n    from {\r\n        transform: translateX(0);\r\n    }\r\n    to {\r\n        transform: translateX(calc(-100% - 100cqi));\r\n    }\r\n}\r\n\r\n@supports not (container-type: inline-size) {\r\n    @keyframes ytc-danmaku-slide {\r\n        from {\r\n            transform: translateX(0);\r\n        }\r\n        to {\r\n            transform: translateX(calc(-100% - 100vw));\r\n        }\r\n    }\r\n}\r\n\r\n.ytc-chat-author {\r\n    color: #9ab4c7;\r\n    font-weight: 600;\r\n    flex-shrink: 0;\r\n}\r\n.ytc-chat-author.mod,\r\n.ytc-chat-text.mod {\r\n    color: #3ea6ff !important;\r\n}\r\n.ytc-chat-author.member,\r\n.ytc-chat-text.member {\r\n    color: #2ba640 !important;\r\n}\r\n.ytc-chat-author.owner,\r\n.ytc-chat-text.owner {\r\n    color: #ffd600 !important;\r\n}\r\n\r\n.ytc-chat-text {\r\n    color: #ffffff !important;\r\n    font-weight: 500;\r\n}\r\n\r\n.ytc-danmaku-item img,\r\n.ytc-danmaku-item .ytc-chat-text img,\r\n.ytc-danmaku-item img.emoji,\r\n.ytc-danmaku-item img.yt-emoji,\r\n.ytc-danmaku-item .emoji {\r\n    max-height: 22px !important;\r\n    max-width: 28px !important;\r\n    width: auto !important;\r\n    height: auto !important;\r\n    vertical-align: -3px !important;\r\n    margin: 0 2px !important;\r\n    display: inline-block !important;\r\n    object-fit: contain !important;\r\n}\r\n\r\n/* ĐIỀU KHIỂN HIỂN THỊ THEO TRẠNG THÁI CONFIG */\r\nhtml[data-ytc-chat="danmaku"] #ytc-danmaku-container,\r\nbody[data-ytc-chat="danmaku"] #ytc-danmaku-container {\r\n    display: block !important;\r\n}\r\n\r\nhtml[data-ytc-chat="streamer"] #ytc-streamer-box,\r\nbody[data-ytc-chat="streamer"] #ytc-streamer-box {\r\n    display: flex !important;\r\n}\r\n\r\nhtml[data-ytc-chat="off"] #ytc-danmaku-container,\r\nbody[data-ytc-chat="off"] #ytc-danmaku-container,\r\nhtml[data-ytc-chat="streamer"] #ytc-danmaku-container,\r\nbody[data-ytc-chat="streamer"] #ytc-danmaku-container {\r\n    display: none !important;\r\n}\r\n\r\nhtml[data-ytc-chat="off"] #ytc-streamer-box,\r\nbody[data-ytc-chat="off"] #ytc-streamer-box,\r\nhtml[data-ytc-chat="danmaku"] #ytc-streamer-box,\r\nbody[data-ytc-chat="danmaku"] #ytc-streamer-box {\r\n    display: none !important;\r\n}\r\n\r\n/* ==========================================================================\r\n   QUẢN LÝ KHUNG LIVE CHAT GỐC KHI BẬT OVERLAY\r\n   - Nếu Chat gốc BẬT: Giữ nguyên cho người dùng chat và hiển thị tự nhiên.\r\n   - Nếu Chat gốc TẮT (mặc định tắt hoặc người dùng ẩn):\r\n     + Chưa phóng to: Ẩn gọn off-screen để script lấy data ngầm.\r\n     + Phóng to Fullscreen: Ẩn triệt để panel bên phải & PHÓNG TO KHUNG VIDEO 100% FULL MÀN HÌNH.\r\n   ========================================================================== */\r\n\r\n/* 1. Giao diện thường (chưa phóng to):\r\n   Để YouTube xử lý thu gọn tự nhiên (hiện thẻ teaser "Mở bảng điều khiển" gọn gàng),\r\n   TUYỆT ĐỐI KHÔNG đẩy frame chat gốc ra -9999px để người dùng có thể nhấp mở/đóng bình thường. */\r\nytd-live-chat-frame[collapsed] #chatframe {\r\n    display: none !important;\r\n}\r\n\r\n/* 2. Trạng thái ẩn Chat gốc trong giao diện toàn màn hình (FULLSCREEN) khi CHƯA MỞ CHAT */\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #panels-full-bleed-container,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #chat-container,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #panels,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #secondary,\r\n[data-ytc-chat-hidden="true"] .ytp-fullscreen:not(.ytp-chat-open) #chat-container,\r\n[data-ytc-chat-hidden="true"] .ytp-fullscreen:not(.ytp-chat-open) .ytp-live-chat-panel {\r\n    width: 0 !important;\r\n    min-width: 0 !important;\r\n    max-width: 0 !important;\r\n    flex-basis: 0 !important;\r\n    overflow: hidden !important;\r\n    opacity: 0 !important;\r\n    pointer-events: none !important;\r\n}\r\n\r\n/* Phóng to toàn bộ các tầng container và movie_player ra 100vw x 100vh để xóa sổ vệt đen khi chat đang đóng trong Fullscreen */\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-full-bleed-container,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #full-bleed-container,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container-outer,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container-inner,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #movie_player:not(#inline-preview-player):not(.ytp-chat-open),\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) .html5-video-player:not(#inline-preview-player):not(.ytp-chat-open),\r\n[data-ytc-chat-hidden="true"] .ytp-fullscreen.html5-video-player:not(#inline-preview-player):not(.ytp-chat-open) {\r\n    width: 100vw !important;\r\n    min-width: 100vw !important;\r\n    max-width: 100vw !important;\r\n    height: 100vh !important;\r\n    min-height: 100vh !important;\r\n    max-height: 100vh !important;\r\n    margin-right: 0 !important;\r\n    padding-right: 0 !important;\r\n    left: 0 !important;\r\n    right: 0 !important;\r\n    top: 0 !important;\r\n    bottom: 0 !important;\r\n    transform: none !important;\r\n}\r\n\r\n/* Đảm bảo nút Live Chat trên thanh điều khiển YouTube player luôn bấm được */\r\n.ytp-live-chat-button,\r\n.ytp-chat-button,\r\n#chat-container [aria-label*="chat" i],\r\nytd-live-chat-frame [aria-label*="chat" i] {\r\n    pointer-events: auto !important;\r\n    cursor: pointer !important;\r\n}\r\n\r\n\r\n/* ==========================================================================\r\n   TÍNH NĂNG ẨN BIỂU TƯỢNG CẢM XÚC TRONG LIVE CHAT (hideChatEmojis)\r\n   - Ẩn hoàn toàn thẻ ảnh emoji/sticker trong khung chat gốc\r\n   - Ẩn hoàn toàn các bình luận chỉ chứa icon/emoji không có chữ\r\n   ========================================================================== */\r\nhtml.ytc-hide-chat-emojis img.emoji,\r\nbody.ytc-hide-chat-emojis img.emoji,\r\nhtml.ytc-hide-chat-emojis img.yt-emoji,\r\nbody.ytc-hide-chat-emojis img.yt-emoji,\r\nhtml.ytc-hide-chat-emojis .emoji,\r\nbody.ytc-hide-chat-emojis .emoji,\r\nhtml.ytc-hide-chat-emojis yt-live-chat-paid-sticker-renderer,\r\nbody.ytc-hide-chat-emojis yt-live-chat-paid-sticker-renderer {\r\n    display: none !important;\r\n}\r\n\r\nhtml.ytc-hide-chat-emojis .ytc-emoji-only-msg,\r\nbody.ytc-hide-chat-emojis .ytc-emoji-only-msg {\r\n    display: none !important;\r\n}\r\n\r\n/* ==========================================================================\r\n   TOAST NOTIFICATION (HỖ TRỢ THÔNG BÁO NHẸ NHÀNG)\r\n   ========================================================================== */\r\n#ytc-toast-notification {\r\n    position: fixed;\r\n    bottom: 28px;\r\n    left: 50%;\r\n    transform: translateX(-50%) translateY(20px);\r\n    background: rgba(18, 18, 18, 0.92);\r\n    backdrop-filter: blur(12px);\r\n    -webkit-backdrop-filter: blur(12px);\r\n    color: #fff;\r\n    padding: 10px 18px;\r\n    border-radius: 20px;\r\n    font-size: 13px;\r\n    font-weight: 500;\r\n    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15);\r\n    z-index: 999999;\r\n    opacity: 0;\r\n    pointer-events: none;\r\n    transition: opacity 0.25s ease, transform 0.25s ease;\r\n    font-family: "YouTube Sans", "Roboto", sans-serif;\r\n    white-space: nowrap;\r\n}\r\n\r\n#ytc-toast-notification.ytc-toast-show {\r\n    opacity: 1;\r\n    transform: translateX(-50%) translateY(0);\r\n}\r\n\r\nhtml[light] #ytc-toast-notification,\r\nbody[light] #ytc-toast-notification {\r\n    background: rgba(255, 255, 255, 0.95);\r\n    color: #0f0f0f;\r\n    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.1);\r\n}\r\n\r\n/* Trạng thái disabled cho các mục không hỗ trợ trong menu */\r\n.ytc-item.ytc-disabled {\r\n    opacity: 0.55;\r\n}\r\n\r\n.ytc-item.ytc-disabled .ytc-mode-btn:not([data-overlay="off"]) {\r\n    cursor: not-allowed !important;\r\n    opacity: 0.45;\r\n    pointer-events: auto !important;\r\n}\r\n\r\n\r\n\r\n/* KHUNG LIVE CHAT BOX (NỀN TRONG SUỐT HUD OVERLAY CHO STREAMER) */\r\n#ytc-streamer-box {\r\n    position: absolute;\r\n    width: 320px;\r\n    min-height: 120px;\r\n    max-height: 80%;\r\n    background: transparent !important;\r\n    backdrop-filter: none !important;\r\n    border: none !important;\r\n    box-shadow: none !important;\r\n    border-radius: 6px;\r\n    z-index: 38 !important;\r\n    overflow: hidden;\r\n    display: flex;\r\n    flex-direction: column;\r\n    pointer-events: auto;\r\n    box-sizing: border-box;\r\n    transition: background-color 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;\r\n    user-select: none;\r\n}\r\n\r\n#ytc-streamer-box.ytc-dragging {\r\n    transition: none !important;\r\n    will-change: left, top;\r\n    user-select: none !important;\r\n}\r\n\r\n#ytc-streamer-box:hover,\r\n#ytc-streamer-box.ytc-box-initial,\r\n#ytc-streamer-box.ytc-dragging {\r\n    background: rgba(0, 0, 0, 0.45) !important;\r\n    backdrop-filter: blur(4px) !important;\r\n    border: 1px dashed rgba(255, 255, 255, 0.35) !important;\r\n    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6) !important;\r\n}\r\n\r\n.ytc-box-header {\r\n    height: 24px;\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    padding: 2px 6px;\r\n    background: rgba(0, 0, 0, 0.75);\r\n    color: #eee;\r\n    font-size: 11px;\r\n    font-weight: 600;\r\n    cursor: move;\r\n    opacity: 0;\r\n    pointer-events: none;\r\n    transition: opacity 0.2s ease;\r\n    flex-shrink: 0;\r\n    border-top-left-radius: 6px;\r\n    border-top-right-radius: 6px;\r\n}\r\n\r\n.ytc-box-title {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 5px;\r\n    font-size: 11px;\r\n    font-weight: 600;\r\n    color: #fff;\r\n    user-select: none;\r\n    letter-spacing: 0.2px;\r\n}\r\n\r\n.ytc-box-title svg {\r\n    flex-shrink: 0;\r\n    opacity: 0.9;\r\n}\r\n\r\n.ytc-box-close {\r\n    background: transparent !important;\r\n    border: none !important;\r\n    color: rgba(255, 255, 255, 0.7) !important;\r\n    cursor: pointer !important;\r\n    width: 20px !important;\r\n    height: 20px !important;\r\n    padding: 0 !important;\r\n    margin: 0 !important;\r\n    border-radius: 4px !important;\r\n    display: flex !important;\r\n    align-items: center !important;\r\n    justify-content: center !important;\r\n    transition: background 0.15s ease, color 0.15s ease !important;\r\n    outline: none !important;\r\n    box-shadow: none !important;\r\n}\r\n\r\n.ytc-box-close:hover {\r\n    background: rgba(255, 255, 255, 0.2) !important;\r\n    color: #fff !important;\r\n}\r\n\r\n.ytc-box-close svg {\r\n    display: block;\r\n}\r\n\r\n#ytc-streamer-box:hover .ytc-box-header,\r\n#ytc-streamer-box.ytc-box-initial .ytc-box-header,\r\n#ytc-streamer-box.ytc-dragging .ytc-box-header {\r\n    opacity: 1 !important;\r\n    pointer-events: auto !important;\r\n}\r\n\r\n#ytc-streamer-box:hover .ytc-box-resize,\r\n#ytc-streamer-box.ytc-box-initial .ytc-box-resize,\r\n#ytc-streamer-box.ytc-dragging .ytc-box-resize {\r\n    opacity: 1 !important;\r\n    pointer-events: auto !important;\r\n}\r\n\r\n.ytc-box-messages {\r\n    flex: 1;\r\n    overflow-y: hidden;\r\n    display: flex;\r\n    flex-direction: column;\r\n    justify-content: flex-end;\r\n    gap: 3px;\r\n    padding: 2px 4px;\r\n    pointer-events: none;\r\n}\r\n\r\n.ytc-box-item {\r\n    display: flex;\r\n    align-items: flex-start;\r\n    flex-shrink: 0 !important;\r\n    flex-grow: 0 !important;\r\n    width: 100%;\r\n    box-sizing: border-box;\r\n    height: auto !important;\r\n    min-height: min-content !important;\r\n    gap: 3px;\r\n    font-size: 10px;\r\n    line-height: 1.35;\r\n    color: #fff;\r\n    text-shadow: \r\n        1px 1px 2px #000, \r\n        -1px -1px 2px #000, \r\n        1px -1px 2px #000, \r\n        -1px 1px 2px #000, \r\n        0 0 3px #000;\r\n    animation: ytc-fade-in 0.12s ease-out;\r\n    word-break: break-word;\r\n    overflow-wrap: break-word;\r\n}\r\n\r\n.ytc-box-avatar {\r\n    width: 10px;\r\n    height: 10px;\r\n    border-radius: 50%;\r\n    flex-shrink: 0;\r\n    margin-top: 2px;\r\n}\r\n\r\n.ytc-box-content {\r\n    flex: 1;\r\n    min-width: 0;\r\n    word-break: break-word;\r\n    overflow-wrap: break-word;\r\n    line-height: 1.35;\r\n}\r\n\r\n#ytc-streamer-box .ytc-chat-author {\r\n    color: #b5b5b5 !important;\r\n    font-weight: 700 !important;\r\n    flex-shrink: 0;\r\n}\r\n#ytc-streamer-box .ytc-chat-author.mod {\r\n    color: #3ea6ff !important;\r\n    font-weight: 700 !important;\r\n}\r\n#ytc-streamer-box .ytc-chat-author.member {\r\n    color: #2ba640 !important;\r\n    font-weight: 700 !important;\r\n}\r\n#ytc-streamer-box .ytc-chat-author.owner {\r\n    color: #ffd600 !important;\r\n    font-weight: 700 !important;\r\n}\r\n\r\n#ytc-streamer-box .ytc-chat-text {\r\n    color: #ffffff !important;\r\n    font-weight: 700 !important;\r\n}\r\n\r\n/* THU NHỎ ICON EMOJI VÀ BADGE BẰNG CỠ CHỮ CHỈ ÁP DỤNG CHO KHUNG NỔI STREAMER */\r\n#ytc-streamer-box .ytc-box-content img,\r\n#ytc-streamer-box .ytc-box-item img,\r\n#ytc-streamer-box img.emoji,\r\n#ytc-streamer-box img.yt-emoji,\r\n#ytc-streamer-box .emoji {\r\n    max-height: 10px !important;\r\n    width: auto !important;\r\n    max-width: 12px !important;\r\n    height: auto !important;\r\n    vertical-align: -1px !important;\r\n    display: inline-block !important;\r\n    object-fit: contain !important;\r\n    margin: 0 1px !important;\r\n}\r\n\r\n.ytc-box-badge {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    vertical-align: -1px;\r\n    margin: 0 2px;\r\n}\r\n.ytc-box-badge.ytc-badge-mod,\r\n.ytc-box-badge.ytc-badge-owner {\r\n    display: inline-flex !important;\r\n    align-items: center !important;\r\n    justify-content: center !important;\r\n    vertical-align: -1px !important;\r\n    margin: 0 1px !important;\r\n}\r\n.ytc-box-badge svg.ytc-mod-icon,\r\n.ytc-badge-mod,\r\n.ytc-mod-icon {\r\n    display: inline-block !important;\r\n    width: 10px !important;\r\n    height: 10px !important;\r\n    fill: #3ea6ff !important;\r\n    vertical-align: -1px !important;\r\n}\r\n.ytc-box-badge svg.ytc-owner-icon,\r\n.ytc-badge-owner,\r\n.ytc-owner-icon {\r\n    display: inline-block !important;\r\n    width: 10px !important;\r\n    height: 10px !important;\r\n    fill: #ffd600 !important;\r\n    vertical-align: -1px !important;\r\n}\r\n.ytc-box-badge img {\r\n    width: 10px !important;\r\n    height: 10px !important;\r\n    max-width: 10px !important;\r\n    max-height: 10px !important;\r\n    display: inline-block !important;\r\n    vertical-align: -1px !important;\r\n    object-fit: contain !important;\r\n}\r\n\r\n.ytc-box-resize {\r\n    position: absolute;\r\n    right: 2px;\r\n    bottom: 2px;\r\n    width: 10px;\r\n    height: 10px;\r\n    cursor: nwse-resize;\r\n    opacity: 0;\r\n    pointer-events: none;\r\n    transition: opacity 0.2s ease;\r\n    border-right: 2px solid rgba(255, 255, 255, 0.6);\r\n    border-bottom: 2px solid rgba(255, 255, 255, 0.6);\r\n}\r\n\r\n#ytc-streamer-box:hover .ytc-box-resize,\r\n#ytc-streamer-box.ytc-box-initial .ytc-box-resize {\r\n    opacity: 1;\r\n    pointer-events: auto;\r\n}\r\n\r\n/* HIỆU ỨNG XUẤT HIỆN MƯỢT MÀ, KHÔNG DÙNG TRANSLATE-Y GÂY GIẬT LAG KHUNG HÌNH */\r\n@keyframes ytc-fade-in {\r\n    from { opacity: 0; }\r\n    to { opacity: 1; }\r\n}\r\n\r\n/* TỰ ĐỘNG CÂN ĐỐI TỶ LỆ KÍCH THƯỚC CHỮ KHI PHÓNG TO TOÀN MÀN HÌNH (FULLSCREEN / ZOOM) */\r\n.ytp-fullscreen .ytc-danmaku-item {\r\n    font-size: 25px !important;\r\n}\r\n.ytp-fullscreen .ytc-danmaku-item img,\r\n.ytp-fullscreen .ytc-danmaku-item .ytc-chat-text img,\r\n.ytp-fullscreen .ytc-danmaku-item img.emoji,\r\n.ytp-fullscreen .ytc-danmaku-item img.yt-emoji,\r\n.ytp-fullscreen .ytc-danmaku-item .emoji {\r\n    max-height: 28px !important;\r\n    max-width: 36px !important;\r\n    vertical-align: -4px !important;\r\n}\r\n\r\n/* ==========================================================================\r\n   ONBOARDING TOOLTIP KHI CÀI ĐẶT LẦN ĐẦU (FIRST-TIME USER EXPERIENCE)\r\n   ========================================================================== */\r\n#ytc-onboarding-tip {\r\n    position: fixed;\r\n    z-index: 100000;\r\n    width: 280px;\r\n    background: #18181b;\r\n    border: 1px solid rgba(255, 0, 51, 0.6);\r\n    border-radius: 10px;\r\n    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);\r\n    color: #fff;\r\n    padding: 12px 14px;\r\n    font-family: Roboto, Arial, sans-serif;\r\n    user-select: none;\r\n    box-sizing: border-box;\r\n    animation: ytc-fade-in 0.12s ease-out;\r\n}\r\n\r\n.ytc-onboarding-arrow {\r\n    position: absolute;\r\n    top: -6px;\r\n    right: 18px;\r\n    width: 10px;\r\n    height: 10px;\r\n    background: #18181b;\r\n    border-left: 1px solid rgba(255, 0, 51, 0.6);\r\n    border-top: 1px solid rgba(255, 0, 51, 0.6);\r\n    transform: rotate(45deg);\r\n}\r\n\r\n.ytc-onboarding-header {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    margin-bottom: 6px;\r\n}\r\n\r\n.ytc-onboarding-badge {\r\n    font-size: 10px;\r\n    font-weight: 700;\r\n    background: #ff0033;\r\n    color: #fff;\r\n    padding: 2px 6px;\r\n    border-radius: 4px;\r\n    letter-spacing: 0.5px;\r\n}\r\n\r\n.ytc-onboarding-close {\r\n    background: transparent;\r\n    border: none;\r\n    color: #aaa;\r\n    font-size: 13px;\r\n    cursor: pointer;\r\n    padding: 2px 4px;\r\n    line-height: 1;\r\n    border-radius: 4px;\r\n    transition: color 0.1s;\r\n}\r\n.ytc-onboarding-close:hover {\r\n    color: #fff;\r\n}\r\n\r\n.ytc-onboarding-title {\r\n    font-size: 13px;\r\n    font-weight: 700;\r\n    color: #fff;\r\n    line-height: 1.35;\r\n    margin-bottom: 4px;\r\n}\r\n\r\n.ytc-onboarding-desc {\r\n    font-size: 11.5px;\r\n    color: #ccc;\r\n    line-height: 1.4;\r\n    margin-bottom: 10px;\r\n}\r\n\r\n.ytc-onboarding-footer {\r\n    display: flex;\r\n    justify-content: flex-end;\r\n}\r\n\r\n.ytc-onboarding-btn {\r\n    background: #ff0033;\r\n    color: #fff;\r\n    border: none;\r\n    padding: 5px 14px;\r\n    font-size: 11.5px;\r\n    font-weight: 600;\r\n    border-radius: 6px;\r\n    cursor: pointer;\r\n    transition: background-color 0.15s;\r\n}\r\n.ytc-onboarding-btn:hover {\r\n    background: #cc0029;\r\n}\r\n\r\n/* --------------------------------------------------------------------------\r\n   CHẾ ĐỘ CHỈ PHÁT ÂM THANH (RADIO / AUDIO ONLY)\r\n   -------------------------------------------------------------------------- */\r\nhtml.ytc-audio-only #movie_player video,\r\nbody.ytc-audio-only #movie_player video {\r\n    visibility: hidden !important;\r\n}\r\n\r\n#ytc-audio-only-badge {\r\n    position: absolute;\r\n    top: 50%;\r\n    left: 50%;\r\n    transform: translate(-50%, -50%);\r\n    text-align: center;\r\n    pointer-events: none;\r\n    user-select: none;\r\n    z-index: 30;\r\n    font-family: "YouTube Sans", Roboto, sans-serif;\r\n    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);\r\n    width: 90%;\r\n    max-width: 650px;\r\n}\r\n\r\n.ytc-audio-badge-title {\r\n    color: #ffffff;\r\n    font-size: clamp(22px, 2.5vw, 30px);\r\n    font-weight: 600;\r\n    letter-spacing: 0.4px;\r\n    line-height: 1.35;\r\n}\r\n\r\n.ytc-audio-badge-sub {\r\n    color: rgba(255, 255, 255, 0.65);\r\n    font-size: clamp(15px, 1.4vw, 19px);\r\n    font-weight: 400;\r\n    margin-top: 10px;\r\n    line-height: 1.4;\r\n}\r\n\r\n/* --------------------------------------------------------------------------\r\n   TAB 5: THÔNG TIN, NHÀ PHÁT TRIỂN & ỦNG HỘ\r\n   -------------------------------------------------------------------------- */\r\n.ytc-item-text-group {\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 2px;\r\n    text-align: left;\r\n    min-width: 0;\r\n}\r\n.ytc-item-main-text {\r\n    font-size: 13.5px;\r\n    font-weight: 500;\r\n    color: inherit;\r\n    line-height: 1.2;\r\n}\r\n.ytc-item-sub-text {\r\n    font-size: 11px;\r\n    color: #888;\r\n    line-height: 1.2;\r\n}\r\nhtml:not([dark]) .ytc-item-sub-text {\r\n    color: #606060;\r\n}\r\n\r\n.ytc-info-card {\r\n    background: rgba(255, 255, 255, 0.04);\r\n    border: 1px solid rgba(255, 255, 255, 0.08);\r\n    border-radius: 8px;\r\n    padding: 8px 10px;\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    gap: 8px;\r\n    margin-top: 4px;\r\n}\r\nhtml:not([dark]) .ytc-info-card {\r\n    background: rgba(0, 0, 0, 0.02);\r\n    border-color: rgba(0, 0, 0, 0.08);\r\n}\r\n.ytc-info-title-wrap {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 6px;\r\n    min-width: 0;\r\n}\r\n.ytc-info-title {\r\n    font-weight: 600;\r\n    font-size: 13.5px;\r\n    white-space: nowrap;\r\n}\r\n.ytc-info-version {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    font-size: 11px;\r\n    font-weight: 600;\r\n    color: #ff4e45;\r\n    background: rgba(255, 78, 69, 0.12);\r\n    border: 1px solid rgba(255, 78, 69, 0.25);\r\n    padding: 2px 8px;\r\n    border-radius: 6px;\r\n    letter-spacing: 0.5px;\r\n    user-select: none;\r\n    white-space: nowrap;\r\n}\r\nhtml:not([dark]) .ytc-info-version {\r\n    color: #cc0000;\r\n    background: rgba(204, 0, 0, 0.08);\r\n    border-color: rgba(204, 0, 0, 0.25);\r\n}\r\n.ytc-update-btn {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    gap: 5px;\r\n    padding: 5px 10px;\r\n    background: rgba(255, 255, 255, 0.08);\r\n    border: 1px solid rgba(255, 255, 255, 0.12);\r\n    color: #eee;\r\n    border-radius: 6px;\r\n    font-size: 11.5px;\r\n    font-weight: 500;\r\n    cursor: pointer;\r\n    transition: all 0.2s ease;\r\n    white-space: nowrap;\r\n    flex-shrink: 0;\r\n}\r\n.ytc-update-btn:hover {\r\n    background: rgba(255, 255, 255, 0.15);\r\n    color: #fff;\r\n    border-color: rgba(255, 255, 255, 0.2);\r\n}\r\n.ytc-update-btn svg {\r\n    width: 13px;\r\n    height: 13px;\r\n    fill: currentColor;\r\n    flex-shrink: 0;\r\n}\r\n.ytc-update-btn.ytc-btn-loading {\r\n    opacity: 0.8;\r\n    cursor: wait;\r\n}\r\n.ytc-update-btn.ytc-btn-success {\r\n    background: rgba(46, 204, 113, 0.15) !important;\r\n    color: #2ecc71 !important;\r\n    border-color: rgba(46, 204, 113, 0.35) !important;\r\n}\r\nhtml:not([dark]) .ytc-update-btn.ytc-btn-success {\r\n    background: rgba(39, 174, 96, 0.1) !important;\r\n    color: #27ae60 !important;\r\n    border-color: rgba(39, 174, 96, 0.3) !important;\r\n}\r\n.ytc-update-btn.ytc-btn-has-update {\r\n    background: rgba(62, 166, 255, 0.12) !important;\r\n    color: #3ea6ff !important;\r\n    border: 1px solid rgba(62, 166, 255, 0.25) !important;\r\n    cursor: pointer !important;\r\n}\r\n.ytc-update-btn.ytc-btn-has-update:hover {\r\n    background: #3ea6ff !important;\r\n    color: #0f0f0f !important;\r\n    border-color: #3ea6ff !important;\r\n}\r\nhtml:not([dark]) .ytc-update-btn.ytc-btn-has-update {\r\n    background: rgba(6, 95, 212, 0.08) !important;\r\n    color: #065fd4 !important;\r\n    border-color: rgba(6, 95, 212, 0.25) !important;\r\n}\r\nhtml:not([dark]) .ytc-update-btn.ytc-btn-has-update:hover {\r\n    background: #065fd4 !important;\r\n    color: #ffffff !important;\r\n    border-color: #065fd4 !important;\r\n}\r\nhtml:not([dark]) .ytc-update-btn {\r\n    background: rgba(0, 0, 0, 0.05);\r\n    border-color: rgba(0, 0, 0, 0.1);\r\n    color: #0f0f0f;\r\n}\r\nhtml:not([dark]) .ytc-update-btn:hover {\r\n    background: rgba(0, 0, 0, 0.1);\r\n}\r\n\r\n/* ==========================================================================\r\n   HIỆU ỨNG ÁNH SÁNG PHÒNG (AMBIENT LIGHT / AMBILIGHT) TỰ ĐỘNG TỐI ƯU\r\n   ========================================================================== */\r\n/* ==========================================================================\r\n   HIỆU ỨNG ÁNH SÁNG PHÒNG (AMBIENT LIGHT / AMBILIGHT) FULL-SCREEN CINEMA\r\n   - 4-Border Edge Bleeding: Khung màu ăn khớp 100% mép viền video tiếp giáp\r\n   - Vertical Glow Columns: Dải màu dọc lan sâu xuống giữa trang (chuẩn Ảnh 4)\r\n   - Zero Horizontal Scrollbar: Triệt tiêu hoàn toàn thanh cuộn ngang\r\n   - Masthead Translucent: Trong suốt xuyên thấu ở đỉnh trang, đen lại khi cuộn\r\n   - OLED Depth Shadow & Glass UI: Giao diện kính mờ sang trọng, video nổi bật\r\n   ========================================================================== */\r\n\r\n/* Triệt tiêu 100% thanh cuộn ngang toàn cục */\r\nhtml, body {\r\n    overflow-x: hidden !important;\r\n    max-width: 100vw !important;\r\n}\r\n\r\nytd-app, #page-manager, ytd-watch-flexy {\r\n    overflow-x: clip !important;\r\n    max-width: 100% !important;\r\n}\r\n\r\nytd-watch-flexy {\r\n    position: relative !important;\r\n    overflow: visible !important;\r\n}\r\n\r\n#ytc-ambient-wrapper {\r\n    position: absolute !important;\r\n    top: -56px !important;\r\n    left: 0 !important;\r\n    right: 0 !important;\r\n    width: 100% !important;\r\n    height: 2200px !important;\r\n    pointer-events: none !important;\r\n    z-index: 0 !important;\r\n    overflow: hidden !important;\r\n    contain: paint !important;\r\n    opacity: 0;\r\n    /* Lan tỏa sâu xuống giữa trang (gấp đôi độ dài trước đây), tan biến mượt mà */\r\n    mask-image: linear-gradient(to bottom, #000 0%, #000 55%, rgba(0, 0, 0, 0.6) 75%, rgba(0, 0, 0, 0.2) 90%, transparent 100%);\r\n    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, rgba(0, 0, 0, 0.6) 75%, rgba(0, 0, 0, 0.2) 90%, transparent 100%);\r\n    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);\r\n}\r\n\r\n#ytc-ambient-wrapper.ytc-ambient-active {\r\n    opacity: 1;\r\n}\r\n\r\n/* Lớp Canvas Ambilight duy nhất: Mở rộng tràn viền để triệt tiêu hiện tượng mờ trắng ở các góc */\r\n#ytc-ambient-spread-canvas {\r\n    position: absolute !important;\r\n    top: -60px !important;\r\n    left: -60px !important;\r\n    width: calc(100% + 120px) !important;\r\n    height: calc(100% + 120px) !important;\r\n    filter: blur(48px) saturate(145%) brightness(105%);\r\n    pointer-events: none !important;\r\n    transform: translateZ(0);\r\n    opacity: 0.92;\r\n}\r\n\r\n/* Ẩn Ambilight mặc định của YouTube để tránh xung đột */\r\n#cinematic-container,\r\nytd-watch-flexy #cinematic-container {\r\n    display: none !important;\r\n}\r\n\r\n/* Khung video: Bo tròn mượt mà, KHÔNG viền, KHÔNG bóng đổ tạo viền trắng giả */\r\nhtml.ytc-ambient-lighting #movie_player {\r\n    border-radius: 12px !important;\r\n    overflow: hidden !important;\r\n    border: none !important;\r\n    outline: none !important;\r\n    box-shadow: none !important;\r\n}\r\n\r\nhtml[fullscreen] #movie_player,\r\n.ytp-fullscreen #movie_player {\r\n    border-radius: 0 !important;\r\n    box-shadow: none !important;\r\n    border: none !important;\r\n    outline: none !important;\r\n}\r\n\r\n/* Làm trong suốt các khung chứa video, cột nội dung & bình luận để ánh sáng xuyên thấu sâu xuống trang */\r\nhtml.ytc-ambient-lighting ytd-watch-flexy,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #columns,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #primary,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #primary-inner,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #secondary,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #secondary-inner,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #panels,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #playlist,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #player,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #player-container,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #player-container-outer,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #player-container-inner,\r\nhtml.ytc-ambient-lighting #full-bleed-container,\r\nhtml.ytc-ambient-lighting #player-full-bleed-container,\r\nhtml.ytc-ambient-lighting #player-theater-container,\r\nhtml.ytc-ambient-lighting #below,\r\nhtml.ytc-ambient-lighting ytd-comments,\r\nhtml.ytc-ambient-lighting #comments,\r\nhtml.ytc-ambient-lighting ytd-item-section-renderer#sections {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    outline: none !important;\r\n}\r\n\r\n/* Đảm bảo cột nội dung và khung video nổi trên tầng ambient light */\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #columns,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #full-bleed-container,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #player-theater-container {\r\n    z-index: 1 !important;\r\n}\r\n\r\n/* Playlist / Danh sách kết hợp: TRONG SUỐT HOÀN TOÀN, KHÔNG HIỆN KHUNG */\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer {\r\n    --yt-spec-base-background: transparent !important;\r\n    --yt-spec-raised-background: transparent !important;\r\n    --yt-spec-menu-background: transparent !important;\r\n    --yt-spec-additive-background: transparent !important;\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    box-shadow: none !important;\r\n}\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #container,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #container.ytd-playlist-panel-renderer,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #header,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer .header.ytd-playlist-panel-renderer,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #header.ytd-playlist-panel-renderer,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #items,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer .playlist-items,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #items.ytd-playlist-panel-renderer,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer iron-list,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #items-container,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #contents,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #playlist-actions,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer #content,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer a#wc-endpoint,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer #container,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer .yt-lockup-view-model-wiz {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    border-bottom: none !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\n/* Dải Filter Chips: Nền trong suốt */\r\nhtml.ytc-ambient-lighting yt-related-chip-cloud-renderer,\r\nhtml.ytc-ambient-lighting yt-chip-cloud-renderer,\r\nhtml.ytc-ambient-lighting #chip-bar,\r\nhtml.ytc-ambient-lighting iron-selector#chips,\r\nhtml.ytc-ambient-lighting #chips.yt-chip-cloud-renderer,\r\nhtml.ytc-ambient-lighting #chips.iron-selector {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n}\r\n\r\n/* Description box: TRONG SUỐT HOÀN TOÀN, KHÔNG HIỆN KHUNG */\r\nhtml.ytc-ambient-lighting ytd-watch-metadata #description,\r\nhtml.ytc-ambient-lighting ytd-watch-metadata #description.ytd-watch-metadata,\r\nhtml.ytc-ambient-lighting #description-inner,\r\nhtml.ytc-ambient-lighting ytd-expandable-metadata-renderer,\r\nhtml.ytc-ambient-lighting #description-and-actions,\r\nhtml.ytc-ambient-lighting ytd-text-inline-expander {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\n/* Giảm màu và dịu nội dung phụ xung quanh để video chính nổi bật rực rỡ */\r\nhtml.ytc-ambient-lighting #secondary ytd-thumbnail,\r\nhtml.ytc-ambient-lighting #related ytd-thumbnail {\r\n    filter: brightness(0.88) contrast(0.95);\r\n    transition: filter 0.25s ease;\r\n}\r\nhtml.ytc-ambient-lighting #secondary ytd-thumbnail:hover,\r\nhtml.ytc-ambient-lighting #related ytd-thumbnail:hover {\r\n    filter: brightness(1) contrast(1);\r\n}\r\n\r\n/* ==========================================================================\r\n   1. QUY TẮC RIÊNG CHO GIAO DIỆN TỐI (DARK THEME)\r\n   ========================================================================== */\r\n\r\n/* Khi ở đỉnh trang: Masthead trong suốt cho ánh sáng xuyên qua */\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #masthead-container,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #masthead-container.ytd-app,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #container,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #background,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #background.ytd-masthead,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #end,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #start,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #center,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #buttons {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    border-bottom: none !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\n/* Khung tìm kiếm Dark theme ở đỉnh trang */\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) yt-searchbox,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #search-form,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) form.ytSearchboxComponentSearchForm {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox #container,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #search-form.ytd-searchbox #container,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #search-input,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) .ytSearchboxComponentInputBox {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    box-shadow: none !important;\r\n    border-color: rgba(255, 255, 255, 0.15) !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox #search-icon-legacy,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) .ytSearchboxComponentSearchButton {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border-color: rgba(255, 255, 255, 0.15) !important;\r\n    box-shadow: none !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox input#search,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) input#search,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) input.ytSearchboxComponentInput {\r\n    background: transparent !important;\r\n    color: #fff !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #voice-search-button button,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #voice-search-button yt-button-shape button {\r\n    background: transparent !important;\r\n    border: 1px solid rgba(255, 255, 255, 0.15) !important;\r\n}\r\n\r\n/* KHI CUỘN XUỐNG Ở DARK THEME: Masthead quay về màu ĐEN #0f0f0f */\r\nhtml[dark].ytc-ambient-lighting.ytc-masthead-scrolled #masthead-container,\r\nhtml[dark].ytc-ambient-lighting.ytc-masthead-scrolled ytd-masthead {\r\n    background: #0f0f0f !important;\r\n    background-color: #0f0f0f !important;\r\n    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;\r\n    transition: background-color 0.25s ease, border-color 0.25s ease;\r\n}\r\n\r\n/* Các thành phần phụ trong Dark theme */\r\nhtml[dark].ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer:hover,\r\nhtml[dark].ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer:hover #content,\r\nhtml[dark].ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer:hover a#wc-endpoint {\r\n    background: rgba(255, 255, 255, 0.08) !important;\r\n    border-radius: 8px !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer[selected],\r\nhtml[dark].ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer[selected] #content,\r\nhtml[dark].ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer[selected] a#wc-endpoint {\r\n    background: rgba(255, 255, 255, 0.12) !important;\r\n    border-radius: 8px !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting yt-chip-cloud-chip-renderer:not([selected]) {\r\n    background: rgba(255, 255, 255, 0.06) !important;\r\n    border-radius: 8px !important;\r\n    border: none !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting yt-chip-cloud-chip-renderer:not([selected]):hover {\r\n    background: rgba(255, 255, 255, 0.14) !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting ytd-watch-metadata #description:hover,\r\nhtml[dark].ytc-ambient-lighting ytd-watch-metadata #description.ytd-watch-metadata:hover {\r\n    background: rgba(255, 255, 255, 0.04) !important;\r\n    border-radius: 12px !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting #actions ytd-button-renderer yt-button-shape button,\r\nhtml[dark].ytc-ambient-lighting #actions ytd-menu-renderer yt-button-shape button,\r\nhtml[dark].ytc-ambient-lighting #top-level-buttons-computed yt-button-shape button {\r\n    background: rgba(255, 255, 255, 0.06) !important;\r\n    border: none !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-ready ytd-watch-metadata #title h1,\r\nhtml[dark].ytc-ambient-lighting ytd-watch-metadata #title h1 {\r\n    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);\r\n}\r\n\r\n/* ==========================================================================\r\n   2. QUY TẮC RIÊNG CHO GIAO DIỆN SÁNG (LIGHT THEME)\r\n   ========================================================================== */\r\n\r\n/* Tinh chỉnh màu sắc Ambilight trên nền trắng: Màu sắc rực rỡ, đậm đà ngang ngửa Dark Theme */\r\nhtml:not([dark]) #ytc-ambient-spread-canvas {\r\n    filter: blur(48px) saturate(220%) contrast(115%) brightness(96%);\r\n    opacity: 0.9;\r\n}\r\n\r\n/* Khi ở đỉnh trang: Masthead trong suốt */\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #masthead-container,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #masthead-container.ytd-app,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #container,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #background,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #background.ytd-masthead,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #end,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #start,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #center,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #buttons {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    border-bottom: none !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\n/* Khung tìm kiếm Light theme ở đỉnh trang: 100% trong suốt xuyên thấu */\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) yt-searchbox,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #search-form,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) form.ytSearchboxComponentSearchForm {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox #container,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #search-form.ytd-searchbox #container,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #search-input,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) .ytSearchboxComponentInputBox {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n    border-color: rgba(0, 0, 0, 0.15) !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox #search-icon-legacy,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) .ytSearchboxComponentSearchButton {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border-color: rgba(0, 0, 0, 0.15) !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox input#search,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) input#search,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) input.ytSearchboxComponentInput {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    box-shadow: none !important;\r\n    color: #0f0f0f !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #voice-search-button button,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #voice-search-button yt-button-shape button {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: 1px solid rgba(0, 0, 0, 0.15) !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\n/* KHI CUỘN XUỐNG Ở LIGHT THEME: Masthead TRỞ VỀ MÀU TRẮNG #ffffff (CHUẨN XÁC) */\r\nhtml:not([dark]).ytc-ambient-lighting.ytc-masthead-scrolled #masthead-container,\r\nhtml:not([dark]).ytc-ambient-lighting.ytc-masthead-scrolled ytd-masthead {\r\n    background: #ffffff !important;\r\n    background-color: #ffffff !important;\r\n    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;\r\n    transition: background-color 0.25s ease, border-color 0.25s ease;\r\n}\r\n\r\n/* Các thành phần phụ trong Light theme: Màu tối dịu nhẹ trên nền sáng */\r\nhtml:not([dark]).ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer:hover,\r\nhtml:not([dark]).ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer:hover #content,\r\nhtml:not([dark]).ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer:hover a#wc-endpoint {\r\n    background: rgba(0, 0, 0, 0.05) !important;\r\n    border-radius: 8px !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer[selected],\r\nhtml:not([dark]).ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer[selected] #content,\r\nhtml:not([dark]).ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer[selected] a#wc-endpoint {\r\n    background: rgba(0, 0, 0, 0.08) !important;\r\n    border-radius: 8px !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting yt-chip-cloud-chip-renderer:not([selected]) {\r\n    background: rgba(0, 0, 0, 0.05) !important;\r\n    color: #0f0f0f !important;\r\n    border-radius: 8px !important;\r\n    border: none !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting yt-chip-cloud-chip-renderer:not([selected]):hover {\r\n    background: rgba(0, 0, 0, 0.1) !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting ytd-watch-metadata #description:hover,\r\nhtml:not([dark]).ytc-ambient-lighting ytd-watch-metadata #description.ytd-watch-metadata:hover {\r\n    background: rgba(0, 0, 0, 0.03) !important;\r\n    border-radius: 12px !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting #actions ytd-button-renderer yt-button-shape button,\r\nhtml:not([dark]).ytc-ambient-lighting #actions ytd-menu-renderer yt-button-shape button,\r\nhtml:not([dark]).ytc-ambient-lighting #top-level-buttons-computed yt-button-shape button {\r\n    background: rgba(0, 0, 0, 0.05) !important;\r\n    border: none !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-ready ytd-watch-metadata #title h1,\r\nhtml:not([dark]).ytc-ambient-lighting ytd-watch-metadata #title h1 {\r\n    text-shadow: none !important;\r\n}\r\n\r\n/* Tự động ẩn khi fullscreen hoàn toàn để tiết kiệm 100% GPU */\r\nhtml[fullscreen] #ytc-ambient-wrapper,\r\nytd-watch-flexy[fullscreen] #ytc-ambient-wrapper,\r\n.ytp-fullscreen #ytc-ambient-wrapper {\r\n    display: none !important;\r\n}\r\n\r\n/* Ẩn khi không bật tính năng */\r\nhtml:not(.ytc-ambient-lighting) #ytc-ambient-wrapper {\r\n    display: none !important;\r\n}\r\n\r\n/* ==========================================================================\r\n   TỐI ƯU BỐ CỤC TRANG XEM VIDEO (WATCH PAGE FULL-WIDTH ALIGNMENT)\r\n   - Khắc phục triệt để lỗi khung video bị bóp ép vào trong, thừa 2 khoảng trống 2 bên\r\n   - Triệt tiêu hoàn toàn thanh cuộn ngang (Zero Horizontal Scrollbar)\r\n   - Ép layout trải rộng 100% màn hình, cách đều 2 mép 24px chuẩn như giao diện gốc\r\n   - Video player và sidebar gợi ý tự động co dãn linh hoạt, bám sát mép phải\r\n   ========================================================================== */\r\n@media (min-width: 1000px) {\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #columns.ytd-watch-flexy {\r\n        max-width: 100% !important;\r\n        width: 100% !important;\r\n        margin: 0 !important;\r\n        padding-left: 24px !important;\r\n        padding-right: 24px !important;\r\n        box-sizing: border-box !important;\r\n        display: flex !important;\r\n        justify-content: space-between !important;\r\n        overflow-x: clip !important;\r\n    }\r\n\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #primary.ytd-watch-flexy {\r\n        flex: 1 1 0% !important;\r\n        min-width: 0 !important;\r\n        max-width: none !important;\r\n        width: auto !important;\r\n        margin-right: 24px !important;\r\n    }\r\n\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #primary.ytd-watch-flexy #primary-inner {\r\n        width: 100% !important;\r\n        max-width: 100% !important;\r\n    }\r\n\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #player.ytd-watch-flexy,\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #player-container-outer.ytd-watch-flexy,\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #player-container-inner.ytd-watch-flexy,\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #player-container.ytd-watch-flexy {\r\n        width: 100% !important;\r\n        max-width: 100% !important;\r\n    }\r\n\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #movie_player {\r\n        width: 100% !important;\r\n        height: 100% !important;\r\n    }\r\n\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #secondary.ytd-watch-flexy {\r\n        flex: 0 0 var(--ytd-watch-flexy-sidebar-width, 360px) !important;\r\n        width: var(--ytd-watch-flexy-sidebar-width, 360px) !important;\r\n        min-width: 280px !important;\r\n        max-width: 420px !important;\r\n        margin-right: 0 !important;\r\n        padding-right: 0 !important;\r\n    }\r\n\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #secondary.ytd-watch-flexy #secondary-inner,\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #secondary.ytd-watch-flexy ytd-playlist-panel-renderer,\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #secondary.ytd-watch-flexy #related {\r\n        width: 100% !important;\r\n        max-width: 100% !important;\r\n        box-sizing: border-box !important;\r\n    }\r\n}\r\n\r\n\r\n\r\n\r\n';
+  var styles_default = '/* ==========================================================================\r\n   YOUTUBE CUSTOMIZER - TẬP HỢP TOÀN BỘ ĐỊNH KIỂU CSS\r\n   ========================================================================== */\r\n\r\n/* --------------------------------------------------------------------------\r\n   1. LƯỚI VIDEO TRANG CHỦ & FEED: ÉP 3/4/5 CỘT CHUẨN XÁC\r\n   (Độ ưu tiên cao nhất, cố định vĩnh viễn khi F5 tải lại trang)\r\n   -------------------------------------------------------------------------- */\r\n@media (min-width: 900px) {\r\n    ytd-browse[page-subtype="home"] ytd-rich-grid-renderer,\r\n    ytd-browse[page-subtype="subscriptions"] ytd-rich-grid-renderer,\r\n    ytd-browse[page-subtype="channels"] ytd-rich-grid-renderer,\r\n    #page-manager ytd-browse ytd-rich-grid-renderer,\r\n    ytd-rich-grid-renderer.ytc-grid,\r\n    ytd-rich-grid-renderer {\r\n        --ytd-rich-grid-items-per-row: 3 !important;\r\n        --ytd-rich-grid-posts-per-row: 3 !important;\r\n        --ytd-rich-grid-item-max-width: none !important;\r\n    }\r\n\r\n    html[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,\r\n    html[data-ytc-cols="3"] ytd-rich-grid-renderer,\r\n    body[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,\r\n    body[data-ytc-cols="3"] ytd-rich-grid-renderer,\r\n    [data-ytc-cols="3"] #page-manager ytd-browse ytd-rich-grid-renderer,\r\n    [data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,\r\n    [data-ytc-cols="3"] ytd-browse ytd-rich-grid-renderer,\r\n    [data-ytc-cols="3"] ytd-rich-grid-renderer {\r\n        --ytd-rich-grid-items-per-row: 3 !important;\r\n        --ytd-rich-grid-posts-per-row: 3 !important;\r\n        --ytd-rich-grid-item-max-width: none !important;\r\n    }\r\n\r\n    html[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,\r\n    html[data-ytc-cols="4"] ytd-rich-grid-renderer,\r\n    body[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,\r\n    body[data-ytc-cols="4"] ytd-rich-grid-renderer,\r\n    [data-ytc-cols="4"] #page-manager ytd-browse ytd-rich-grid-renderer,\r\n    [data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,\r\n    [data-ytc-cols="4"] ytd-browse ytd-rich-grid-renderer,\r\n    [data-ytc-cols="4"] ytd-rich-grid-renderer {\r\n        --ytd-rich-grid-items-per-row: 4 !important;\r\n        --ytd-rich-grid-posts-per-row: 4 !important;\r\n        --ytd-rich-grid-item-max-width: none !important;\r\n    }\r\n\r\n    html[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,\r\n    html[data-ytc-cols="5"] ytd-rich-grid-renderer,\r\n    body[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,\r\n    body[data-ytc-cols="5"] ytd-rich-grid-renderer,\r\n    [data-ytc-cols="5"] #page-manager ytd-browse ytd-rich-grid-renderer,\r\n    [data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,\r\n    [data-ytc-cols="5"] ytd-browse ytd-rich-grid-renderer,\r\n    [data-ytc-cols="5"] ytd-rich-grid-renderer {\r\n        --ytd-rich-grid-items-per-row: 5 !important;\r\n        --ytd-rich-grid-posts-per-row: 5 !important;\r\n        --ytd-rich-grid-item-max-width: none !important;\r\n    }\r\n\r\n    /* Làm phẳng cấu trúc dòng ytd-rich-grid-row — dùng flex-wrap thay display:contents để GIỮ NGUYÊN hitbox hover */\r\n    #contents > ytd-rich-grid-row {\r\n        display: flex !important;\r\n        flex-wrap: wrap !important;\r\n        width: 100% !important;\r\n    }\r\n    #contents > ytd-rich-grid-row > #contents {\r\n        display: flex !important;\r\n        flex-wrap: wrap !important;\r\n        width: 100% !important;\r\n    }\r\n\r\n    #contents.ytd-rich-grid-row ytd-rich-item-renderer,\r\n    ytd-rich-grid-renderer ytd-rich-item-renderer {\r\n        width: calc(100% / var(--ytd-rich-grid-items-per-row, 3) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n        max-width: calc(100% / var(--ytd-rich-grid-items-per-row, 3) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n    }\r\n\r\n    [data-ytc-cols="3"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,\r\n    [data-ytc-cols="3"] ytd-rich-grid-renderer ytd-rich-item-renderer {\r\n        width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n        max-width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n    }\r\n\r\n    [data-ytc-cols="4"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,\r\n    [data-ytc-cols="4"] ytd-rich-grid-renderer ytd-rich-item-renderer {\r\n        width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n        max-width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n    }\r\n\r\n    [data-ytc-cols="5"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,\r\n    [data-ytc-cols="5"] ytd-rich-grid-renderer ytd-rich-item-renderer {\r\n        width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n        max-width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;\r\n    }\r\n}\r\n\r\n/* --------------------------------------------------------------------------\r\n   2. TỐI ƯU HIỆU NĂNG, KHUNG HÌNH & LIVE CHAT (ZERO-LAG)\r\n   -------------------------------------------------------------------------- */\r\n/* Đảm bảo khung xem trước video inline khi hover không bao giờ bị cắt xén hay che khuất */\r\n#page-manager ytd-rich-grid-row {\r\n    overflow: visible !important;\r\n}\r\n\r\n/* Dùng :hover đơn giản, KHÔNG dùng :has() để tránh style recalc storm mỗi khi di chuột */\r\n#page-manager ytd-rich-grid-row:hover {\r\n    z-index: 10 !important;\r\n    position: relative !important;\r\n    overflow: visible !important;\r\n}\r\n\r\n#page-manager ytd-rich-item-renderer {\r\n    overflow: visible !important;\r\n}\r\n\r\n#page-manager ytd-rich-item-renderer:hover,\r\n#page-manager ytd-rich-item-renderer[is-hovered],\r\n#page-manager ytd-rich-item-renderer[has-preview] {\r\n    z-index: 20 !important;\r\n    position: relative !important;\r\n    overflow: visible !important;\r\n}\r\n\r\n/* z-index vừa đủ để preview nổi lên trên thẻ video khi hover, KHÔNG dùng pointer-events: auto toàn cục */\r\n#preview,\r\n#preview.ytd-rich-grid-renderer,\r\nytd-rich-grid-renderer #preview,\r\n#page-manager #preview,\r\nytd-video-preview,\r\n#video-preview {\r\n    z-index: 60 !important;\r\n    overflow: visible !important;\r\n}\r\nytd-video-preview #media-container,\r\nytd-video-preview #player-container,\r\nytd-moving-thumbnail-renderer,\r\n#inline-preview-player {\r\n    z-index: 60 !important;\r\n}\r\n\r\nytd-comment-thread-renderer {\r\n    content-visibility: auto;\r\n    contain-intrinsic-size: auto 200px;\r\n}\r\n\r\n/* Giữ thanh điều khiển và chat hiển thị mượt mà không can thiệp layout */\r\niframe#chatframe {\r\n    contain: paint !important;\r\n}\r\n\r\nyt-live-chat-text-message-renderer,\r\nyt-live-chat-paid-message-renderer,\r\nyt-live-chat-membership-item-renderer {\r\n    content-visibility: auto !important;\r\n    contain-intrinsic-size: auto 32px !important;\r\n}\r\n\r\n/* --------------------------------------------------------------------------\r\n   3. BỘ LỌC NỘI DUNG: SHORTS, CHƠI GAME, HỘI VIÊN, KHÁM PHÁ, CỘNG ĐỒNG, CLEAN SEARCH\r\n   -------------------------------------------------------------------------- */\r\n.ytc-hide-shorts ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),\r\n.ytc-hide-shorts ytd-rich-section-renderer:has(ytd-reel-shelf-renderer),\r\n.ytc-hide-shorts ytd-rich-shelf-renderer[is-shorts],\r\n.ytc-hide-shorts ytd-reel-shelf-renderer,\r\n.ytc-hide-shorts ytd-guide-entry-renderer:has(a[href^="/shorts"]),\r\n.ytc-hide-shorts ytd-mini-guide-entry-renderer:has(a[href^="/shorts"]),\r\n.ytc-hide-shorts ytd-guide-entry-renderer a[title="Shorts"],\r\n.ytc-hide-shorts ytd-mini-guide-entry-renderer[aria-label="Shorts"],\r\n.ytc-hide-shorts #endpoint[title="Shorts"],\r\n.ytc-hide-shorts ytd-mealbar-promo-renderer,\r\n.ytc-hide-shorts ytd-upsell-dialog-renderer {\r\n    display: none !important;\r\n}\r\n\r\n.ytc-hide-playables ytd-rich-section-renderer:has([is-mini-game-card-shelf]),\r\n.ytc-hide-playables ytd-rich-shelf-renderer[is-mini-game-card-shelf],\r\n.ytc-hide-playables ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-mini-game-card-shelf]),\r\n.ytc-hide-playables ytd-rich-section-renderer:has(a[href*="/playables"]),\r\n.ytc-hide-playables ytd-rich-section-renderer:has(a[href*="playables"]),\r\n.ytc-hide-playables ytd-guide-entry-renderer:has(a[href*="/playables"]),\r\n.ytc-hide-playables ytd-mini-guide-entry-renderer:has(a[href*="/playables"]),\r\n.ytc-hide-playables ytd-guide-entry-renderer a[title*="Chơi game"],\r\n.ytc-hide-playables ytd-guide-entry-renderer a[title*="Playables"],\r\n.ytc-hide-playables ytd-mini-guide-entry-renderer[aria-label*="Chơi game"],\r\n.ytc-hide-playables ytd-mini-guide-entry-renderer[aria-label*="Playables"],\r\n.ytc-hide-playables #endpoint[title*="Chơi game"],\r\n.ytc-hide-playables #endpoint[title*="Playables"] {\r\n    display: none !important;\r\n}\r\n\r\n.ytc-hide-members ytd-rich-section-renderer:has(.badge-style-type-members-only),\r\n.ytc-hide-members ytd-rich-section-renderer:has(.badge-style-type-members-first),\r\n.ytc-hide-members ytd-rich-section-renderer:has([badge-style="MEMBERS_FIRST"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has([badge-style="MEMBERS_ONLY"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="hội viên"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Hội viên"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Members only"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="members only"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Members first"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="members first"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has(a[href*="/membership"]),\r\n.ytc-hide-members ytd-rich-section-renderer:has(a[href*="/memberships"]),\r\n.ytc-hide-members ytd-rich-section-renderer.ytc-shelf-members,\r\n.ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-only),\r\n.ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-first),\r\n.ytc-hide-members ytd-rich-item-renderer:has([badge-style="MEMBERS_FIRST"]),\r\n.ytc-hide-members ytd-rich-item-renderer:has([badge-style="MEMBERS_ONLY"]),\r\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="hội viên"]),\r\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Hội viên"]),\r\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Members only"]),\r\n.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Members first"]),\r\n.ytc-hide-members ytd-rich-item-renderer.ytc-item-members,\r\n.ytc-hide-members ytd-video-renderer:has(.badge-style-type-members-only),\r\n.ytc-hide-members ytd-video-renderer:has(.badge-style-type-members-first),\r\n.ytc-hide-members ytd-video-renderer:has([badge-style="MEMBERS_FIRST"]),\r\n.ytc-hide-members ytd-video-renderer:has([badge-style="MEMBERS_ONLY"]),\r\n.ytc-hide-members ytd-video-renderer:has([aria-label*="hội viên"]),\r\n.ytc-hide-members ytd-video-renderer:has([aria-label*="Hội viên"]),\r\n.ytc-hide-members ytd-video-renderer.ytc-item-members,\r\n.ytc-hide-members ytd-compact-video-renderer:has(.badge-style-type-members-only),\r\n.ytc-hide-members ytd-compact-video-renderer:has(.badge-style-type-members-first),\r\n.ytc-hide-members ytd-compact-video-renderer:has([badge-style="MEMBERS_FIRST"]),\r\n.ytc-hide-members ytd-compact-video-renderer:has([badge-style="MEMBERS_ONLY"]),\r\n.ytc-hide-members ytd-compact-video-renderer.ytc-item-members {\r\n    display: none !important;\r\n}\r\n\r\n/* Ẩn Danh sách kết hợp (Mixes / Radio) và Danh sách phát (Playlists) trên Feed, Tìm kiếm, Gợi ý và Watch page */\r\n.ytc-hide-mixes ytd-playlist-renderer,\r\n.ytc-hide-mixes ytd-compact-playlist-renderer,\r\n.ytc-hide-mixes ytd-radio-renderer,\r\n.ytc-hide-mixes ytd-compact-radio-renderer,\r\n.ytc-hide-mixes ytd-grid-radio-renderer,\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-playlist-renderer),\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-radio-renderer),\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-playlist-thumbnail),\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-playlist-custom-thumbnail-renderer),\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="/playlist?list="]),\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="list=PL"]),\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="list=OLAK5uy_"]),\r\n.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="list=CL"]),\r\n.ytc-hide-mixes ytd-video-renderer:has(ytd-playlist-thumbnail),\r\n.ytc-hide-mixes ytd-video-renderer:has(a[href*="/playlist?list="]),\r\n.ytc-hide-mixes ytd-video-renderer:has(a[href*="list=PL"]),\r\n.ytc-hide-mixes ytd-video-renderer:has(a[href*="list=OLAK5uy_"]),\r\n.ytc-hide-mixes ytd-video-renderer:has(a[href*="list=CL"]),\r\n.ytc-hide-mixes ytd-rich-item-renderer.ytc-item-mix,\r\n.ytc-hide-mixes ytd-video-renderer.ytc-item-mix,\r\n.ytc-hide-mixes ytd-compact-video-renderer.ytc-item-mix,\r\n.ytc-hide-mixes #related ytd-compact-radio-renderer,\r\n.ytc-hide-mixes #related ytd-compact-playlist-renderer,\r\n.ytc-hide-mixes #playlist:has(a[href*="list=RD"]),\r\n.ytc-hide-mixes #playlist:has([title*="Danh sách kết hợp"]),\r\n.ytc-hide-mixes #playlist:has([title*="Mixes"]),\r\n.ytc-hide-mixes #playlist:has([title*="Mix -"]),\r\n.ytc-hide-mixes ytd-playlist-panel-renderer:has(a[href*="list=RD"]),\r\n.ytc-hide-mixes ytd-playlist-panel-renderer:has([title*="Danh sách kết hợp"]),\r\n.ytc-hide-mixes ytd-playlist-panel-renderer:has([title*="Mixes"]),\r\n.ytc-hide-mixes ytd-playlist-panel-renderer:has([title*="Mix -"]),\r\n/* Kệ Mix chuyên biệt (dựa theo tiêu đề rõ ràng, không ẩn oan toàn bộ kệ nhạc) */\r\n.ytc-hide-mixes ytd-rich-section-renderer:has(#title-container [title*="Danh sách kết hợp"]),\r\n.ytc-hide-mixes ytd-rich-section-renderer:has(#title-container [title*="Mixes"]),\r\n.ytc-hide-mixes ytd-rich-section-renderer:has(#title[title*="Danh sách kết hợp"]),\r\n.ytc-hide-mixes ytd-rich-section-renderer:has(#title[title*="Mixes"]),\r\n.ytc-hide-mixes ytd-shelf-renderer:has(#title-container [title*="Danh sách kết hợp"]),\r\n.ytc-hide-mixes ytd-shelf-renderer:has(#title-container [title*="Mixes"]),\r\n.ytc-hide-mixes ytd-shelf-renderer:has(#title[title*="Danh sách kết hợp"]),\r\n.ytc-hide-mixes ytd-shelf-renderer:has(#title[title*="Mixes"]),\r\n.ytc-hide-mixes ytd-rich-section-renderer.ytc-shelf-mix,\r\n.ytc-hide-mixes ytd-shelf-renderer.ytc-shelf-mix,\r\n/* Chip "Danh sách kết hợp" trên thanh chủ đề */\r\n.ytc-hide-mixes yt-chip-cloud-chip-renderer:has([title*="Danh sách kết hợp"]),\r\n.ytc-hide-mixes yt-chip-cloud-chip-renderer:has([title*="Mixes"]),\r\n.ytc-hide-mixes .ytc-item-mix {\r\n    display: none !important;\r\n}\r\n\r\n.ytc-hide-explore ytd-rich-section-renderer:has(yt-chip-cloud-chip-renderer),\r\n.ytc-hide-explore ytd-rich-section-renderer:has(yt-chip-cloud-renderer),\r\n.ytc-hide-explore ytd-rich-section-renderer:has(ytd-feed-filter-chip-bar-renderer),\r\n.ytc-hide-explore ytd-rich-section-renderer:has(#chips),\r\n.ytc-hide-explore ytd-rich-section-renderer.ytc-shelf-explore,\r\n.ytc-hide-explore ytd-rich-section-renderer:has([title*="Khám phá các chủ đề"]),\r\n.ytc-hide-explore ytd-rich-section-renderer:has([title*="Explore other topics"]),\r\n.ytc-hide-explore ytd-rich-section-renderer:has([title*="Explore topics"]) {\r\n    display: none !important;\r\n}\r\n\r\n.ytc-clean-search ytd-ad-slot-renderer,\r\n.ytc-clean-search ytd-rich-item-renderer:has(ytd-ad-slot-renderer),\r\n.ytc-clean-search ytd-rich-section-renderer:has(ytd-ad-slot-renderer),\r\n.ytc-clean-search ytd-video-renderer:has(.badge-style-type-ad) {\r\n    display: none !important;\r\n}\r\n\r\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-post-renderer),\r\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-backstage-post-renderer),\r\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-backstage-post-thread-renderer),\r\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-post-multi-image-renderer),\r\n.ytc-hide-community ytd-rich-section-renderer:has(ytd-poll-renderer),\r\n.ytc-hide-community ytd-rich-section-renderer.ytc-shelf-community,\r\n.ytc-hide-community ytd-rich-item-renderer:has(ytd-post-renderer),\r\n.ytc-hide-community ytd-rich-item-renderer:has(ytd-backstage-post-renderer),\r\n.ytc-hide-community ytd-rich-item-renderer.ytc-item-community,\r\n.ytc-hide-community ytd-post-renderer,\r\n.ytc-hide-community ytd-backstage-post-renderer,\r\n.ytc-hide-community ytd-backstage-post-thread-renderer {\r\n    display: none !important;\r\n}\r\n\r\n/* --------------------------------------------------------------------------\r\n   4. TRÌNH PHÁT VIDEO: THẺ KẾT THÚC, BANNER & LOGO PREMIUM\r\n   -------------------------------------------------------------------------- */\r\n/* Tự động tắt ánh sáng gốc của YouTube khi BẬT Ánh sáng phòng (Ambilight) để chống trùng lặp */\r\nhtml.ytc-ambient-lighting #cinematics,\r\nhtml.ytc-ambient-lighting ytd-cinematics-renderer,\r\nhtml.ytc-ambient-lighting .ytp-ambient-mode-rendering-container {\r\n    display: none !important;\r\n    opacity: 0 !important;\r\n    pointer-events: none !important;\r\n}\r\n\r\n.ytc-hide-endscreen .ytp-ce-element,\r\n.ytc-hide-endscreen .ytp-ce-covering-overlay,\r\n.ytc-hide-endscreen .ytp-ce-element-show,\r\n.ytc-hide-endscreen .ytp-ce-video,\r\n.ytc-hide-endscreen .ytp-ce-playlist,\r\n.ytc-hide-endscreen .ytp-ce-channel,\r\n.ytc-hide-endscreen .ytp-ce-subscribe,\r\n.ytc-hide-endscreen .ytp-cards-button,\r\n.ytc-hide-endscreen .ytp-cards-teaser,\r\n.ytc-hide-endscreen .ytp-cards-teaser-box,\r\n.ytc-hide-endscreen .ytp-card {\r\n    display: none !important;\r\n    opacity: 0 !important;\r\n    pointer-events: none !important;\r\n}\r\n\r\n/* Ẩn logo hình mờ kênh ở góc dưới bên phải video */\r\n.ytc-hide-watermark .annotation-type-custom.iv-branding,\r\n.ytc-hide-watermark .iv-branding,\r\n.ytc-hide-watermark .ytp-iv-video-content .iv-branding,\r\n.ytc-hide-watermark .ytp-branding-logo,\r\n.ytc-hide-watermark .ytp-featured-channel,\r\n.ytc-hide-watermark .ytp-branding-element {\r\n    display: none !important;\r\n    opacity: 0 !important;\r\n    pointer-events: none !important;\r\n    visibility: hidden !important;\r\n}\r\n\r\n/* Ẩn sản phẩm gắn thẻ (YouTube Shopping / Shopee affiliate / Merch shelf) */\r\n.ytc-hide-shopping ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-shopping-panel"],\r\n.ytc-hide-shopping ytd-engagement-panel-section-list-renderer[target-id*="shopping"],\r\n.ytc-hide-shopping ytd-engagement-panel-section-list-renderer[target-id*="product"],\r\n.ytc-hide-shopping ytd-merch-shelf-renderer,\r\n.ytc-hide-shopping ytd-products-shelf-renderer,\r\n.ytc-hide-shopping ytd-product-shelf-renderer,\r\n.ytc-hide-shopping .ytp-shopping-button,\r\n.ytc-hide-shopping .ytp-featured-product-banner,\r\n.ytc-hide-shopping .ytp-suggested-action-badge[aria-label*="sản phẩm" i],\r\n.ytc-hide-shopping .ytp-suggested-action-badge[aria-label*="product" i],\r\n.ytc-hide-shopping .ytp-suggested-action-badge[aria-label*="shopping" i],\r\n.ytc-hide-shopping .ytp-suggested-action-badge:has(svg path[d*="M19 6"]) {\r\n    display: none !important;\r\n    opacity: 0 !important;\r\n    pointer-events: none !important;\r\n}\r\n\r\n.ytc-auto-dismiss ytd-mealbar-promo-renderer,\r\n.ytc-auto-dismiss yt-mealbar-promo-renderer,\r\n.ytc-auto-dismiss ytd-upsell-dialog-renderer,\r\n.ytc-auto-dismiss ytd-single-option-survey-renderer,\r\n.ytc-auto-dismiss ytd-in-feed-survey-renderer,\r\n.ytc-auto-dismiss yt-bubble-hint-renderer,\r\n.ytc-auto-dismiss .ytc-dismissed-toast {\r\n    display: none !important;\r\n    opacity: 0 !important;\r\n    pointer-events: none !important;\r\n}\r\n\r\n:root.ytc-premium-logo #start.ytd-masthead ytd-topbar-logo-renderer,\r\n:root.ytc-premium-logo ytd-topbar-logo-renderer#logo {\r\n    margin-left: 0 !important;\r\n    display: flex !important;\r\n    align-items: center !important;\r\n}\r\n:root.ytc-premium-logo ytd-topbar-logo-renderer #logo {\r\n    padding: 18px 4px 18px 16px !important;\r\n    display: inline-flex !important;\r\n    align-items: center !important;\r\n    box-sizing: content-box !important;\r\n}\r\nytd-topbar-logo-renderer ytd-yoodle-renderer,\r\nytd-yoodle-renderer ytd-logo,\r\nytd-topbar-logo-renderer ytd-yoodle-renderer * {\r\n    display: none !important;\r\n}\r\n:root.ytc-premium-logo ytd-topbar-logo-renderer #logo ytd-logo:not(.ytd-yoodle-renderer),\r\n:root.ytc-premium-logo ytd-topbar-logo-renderer #logo ytd-logo[hidden]:not(.ytd-yoodle-renderer),\r\n:root.ytc-premium-logo ytd-topbar-logo-renderer > #logo > div > ytd-logo {\r\n    width: 101px !important;\r\n    min-width: 101px !important;\r\n    max-width: 101px !important;\r\n    height: 20px !important;\r\n    display: flex !important;\r\n    align-items: center !important;\r\n    overflow: visible !important;\r\n    visibility: visible !important;\r\n    opacity: 1 !important;\r\n}\r\n:root.ytc-premium-logo ytd-logo:not(.ytd-yoodle-renderer) > *:not(.custom-premium-logo) {\r\n    display: none !important;\r\n}\r\nytd-logo, ytd-topbar-logo-renderer {\r\n    overflow: visible !important;\r\n}\r\n:root:not(.ytc-premium-logo) .custom-premium-logo {\r\n    display: none !important;\r\n}\r\n:root.ytc-premium-logo .custom-premium-logo {\r\n    display: flex !important;\r\n    align-items: center !important;\r\n    width: 101px !important;\r\n    height: 20px !important;\r\n    color: var(--yt-spec-wordmark-text, var(--yt-spec-text-primary, #0f0f0f)) !important;\r\n    pointer-events: none;\r\n    visibility: visible !important;\r\n    opacity: 1 !important;\r\n}\r\nhtml:not([dark]).ytc-premium-logo .custom-premium-logo,\r\nhtml:not([dark]) .custom-premium-logo,\r\n:root:not([dark]).ytc-premium-logo .custom-premium-logo {\r\n    color: var(--yt-spec-wordmark-text, #0f0f0f) !important;\r\n}\r\nhtml[dark].ytc-premium-logo .custom-premium-logo,\r\nhtml[dark] .custom-premium-logo,\r\n:root[dark].ytc-premium-logo .custom-premium-logo {\r\n    color: var(--yt-spec-wordmark-text, #f1f1f1) !important;\r\n}\r\n.custom-premium-logo svg {\r\n    width: 101px !important;\r\n    height: 20px !important;\r\n    fill: currentColor !important;\r\n}\r\n.custom-premium-logo svg #youtube-paths_yt19,\r\n.custom-premium-logo svg #youtube-paths_yt19 path {\r\n    fill: currentColor !important;\r\n}\r\n\r\n:root.ytc-premium-logo ytd-topbar-logo-renderer #country-code {\r\n    display: inline-block !important;\r\n    font-size: 10px !important;\r\n    font-weight: 400 !important;\r\n    font-family: "Roboto", "Arial", sans-serif !important;\r\n    line-height: 10px !important;\r\n    color: var(--yt-spec-text-secondary, #909090) !important;\r\n    margin-top: 14px !important;\r\n    margin-left: 4px !important;\r\n    margin-right: 0 !important;\r\n    margin-bottom: 0 !important;\r\n    align-self: flex-start !important;\r\n    vertical-align: top !important;\r\n    position: relative !important;\r\n    top: 0 !important;\r\n    left: 0 !important;\r\n}\r\nhtml:not([dark]).ytc-premium-logo ytd-topbar-logo-renderer #country-code,\r\nhtml:not([dark]) ytd-topbar-logo-renderer #country-code {\r\n    color: var(--yt-spec-text-secondary, #606060) !important;\r\n}\r\nhtml[dark].ytc-premium-logo ytd-topbar-logo-renderer #country-code,\r\nhtml[dark] ytd-topbar-logo-renderer #country-code {\r\n    color: var(--yt-spec-text-secondary, #909090) !important;\r\n}\r\n:root.ytc-premium-logo ytd-topbar-logo-renderer #country-code:empty {\r\n    display: none !important;\r\n}\r\n\r\n/* --------------------------------------------------------------------------\r\n   5. GIAO DIỆN CÀI ĐẶT: NÚT BÁNH RĂNG & MENU 4 TAB\r\n   -------------------------------------------------------------------------- */\r\n#ytc-settings-btn {\r\n    order: -1 !important;\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    width: 40px;\r\n    height: 40px;\r\n    border-radius: 50%;\r\n    border: none;\r\n    background: transparent;\r\n    color: var(--yt-spec-text-primary, #f1f1f1);\r\n    cursor: pointer;\r\n    margin-right: 8px;\r\n    flex-shrink: 0;\r\n    transition: background-color 0.15s, color 0.15s;\r\n    position: relative;\r\n}\r\n#ytc-settings-btn:hover {\r\n    background-color: rgba(255, 255, 255, 0.1);\r\n}\r\n#ytc-settings-btn svg {\r\n    width: 24px;\r\n    height: 24px;\r\n    stroke: currentColor;\r\n    display: block;\r\n}\r\nhtml:not([dark]) #ytc-settings-btn {\r\n    color: #0f0f0f !important;\r\n}\r\nhtml:not([dark]) #ytc-settings-btn svg {\r\n    stroke: #0f0f0f !important;\r\n    color: #0f0f0f !important;\r\n}\r\nhtml:not([dark]) #ytc-settings-btn:hover {\r\n    background-color: rgba(0, 0, 0, 0.08);\r\n}\r\nhtml[dark] #ytc-settings-btn {\r\n    color: #f1f1f1 !important;\r\n}\r\nhtml[dark] #ytc-settings-btn svg {\r\n    stroke: #f1f1f1 !important;\r\n    color: #f1f1f1 !important;\r\n}\r\n\r\n#ytc-settings-panel {\r\n    position: fixed;\r\n    width: 380px;\r\n    max-height: calc(100vh - 80px);\r\n    overflow-y: auto;\r\n    background: var(--yt-spec-brand-background-primary, #282828);\r\n    color: var(--yt-spec-text-primary, #f1f1f1);\r\n    border-radius: 12px;\r\n    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.4);\r\n    padding: 12px;\r\n    z-index: 9999;\r\n    font-family: "Roboto", "Arial", sans-serif;\r\n    font-size: 14px;\r\n    display: none;\r\n    flex-direction: column;\r\n    gap: 6px;\r\n    user-select: none;\r\n    border: 1px solid rgba(255, 255, 255, 0.1);\r\n}\r\n#ytc-settings-panel::-webkit-scrollbar {\r\n    width: 4px;\r\n}\r\n#ytc-settings-panel::-webkit-scrollbar-thumb {\r\n    background: rgba(255, 255, 255, 0.2);\r\n    border-radius: 2px;\r\n}\r\n#ytc-settings-panel.open {\r\n    display: flex;\r\n}\r\n\r\n.ytc-header {\r\n    font-weight: 600;\r\n    font-size: 15px;\r\n    padding: 4px 6px 8px 6px;\r\n    border-bottom: 1px solid rgba(255, 255, 255, 0.1);\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n}\r\n.ytc-header-badge {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    font-size: 11px;\r\n    font-weight: 600;\r\n    color: #ff4e45;\r\n    background: rgba(255, 78, 69, 0.12);\r\n    border: 1px solid rgba(255, 78, 69, 0.25);\r\n    padding: 2px 8px;\r\n    border-radius: 6px;\r\n    letter-spacing: 0.5px;\r\n    user-select: none;\r\n    flex-shrink: 0;\r\n}\r\nhtml:not([dark]) .ytc-header-badge {\r\n    color: #cc0000;\r\n    background: rgba(204, 0, 0, 0.08);\r\n    border-color: rgba(204, 0, 0, 0.25);\r\n}\r\n\r\n.ytc-star-badge {\r\n    display: inline-block;\r\n    font-size: 13px;\r\n    margin-left: 5px;\r\n    line-height: 1;\r\n    vertical-align: middle;\r\n    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.6));\r\n    animation: ytc-star-pulse 2.2s infinite ease-in-out;\r\n    cursor: default;\r\n    user-select: none;\r\n}\r\n@keyframes ytc-star-pulse {\r\n    0%, 100% {\r\n        transform: scale(1);\r\n        filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.4));\r\n    }\r\n    50% {\r\n        transform: scale(1.18);\r\n        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.85));\r\n    }\r\n}\r\n\r\n.ytc-tabs {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 3px;\r\n    background: rgba(255, 255, 255, 0.06);\r\n    border-radius: 8px;\r\n    padding: 3px;\r\n    margin: 4px 0 6px 0;\r\n    border: 1px solid rgba(255, 255, 255, 0.08);\r\n}\r\n.ytc-tab-btn {\r\n    flex: 1 1 0px;\r\n    width: 0;\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    gap: 3px;\r\n    padding: 6px 1px;\r\n    border: none;\r\n    background: transparent;\r\n    color: #aaa;\r\n    font-size: 11.5px;\r\n    font-weight: 500;\r\n    border-radius: 6px;\r\n    cursor: pointer;\r\n    transition: background 0.15s ease, color 0.15s ease;\r\n    white-space: nowrap;\r\n    text-align: center;\r\n    box-sizing: border-box;\r\n}\r\n.ytc-tab-btn:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n    color: #fff;\r\n}\r\n.ytc-tab-btn.active {\r\n    background: #f1f1f1;\r\n    color: #0f0f0f;\r\n    font-weight: 500;\r\n}\r\n.ytc-tab-btn svg {\r\n    width: 13px;\r\n    height: 13px;\r\n    fill: currentColor;\r\n    flex-shrink: 0;\r\n}\r\n.ytc-tab-pane {\r\n    display: none;\r\n    flex-direction: column;\r\n    gap: 4px;\r\n}\r\n.ytc-tab-pane.active {\r\n    display: flex;\r\n}\r\n\r\n.ytc-item {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    padding: 8px 8px;\r\n    border-radius: 8px;\r\n    cursor: pointer;\r\n    transition: background 0.15s;\r\n}\r\n.ytc-item:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n}\r\n\r\n.ytc-item-left {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 12px;\r\n}\r\n.ytc-item-left svg {\r\n    width: 20px;\r\n    height: 20px;\r\n    fill: currentColor;\r\n    opacity: 0.9;\r\n    flex-shrink: 0;\r\n}\r\n.ytc-item-left svg[fill="none"] {\r\n    fill: none;\r\n}\r\n\r\n.ytc-switch {\r\n    position: relative;\r\n    display: inline-block;\r\n    width: 36px;\r\n    height: 20px;\r\n}\r\n.ytc-switch input {\r\n    opacity: 0;\r\n    width: 0;\r\n    height: 0;\r\n}\r\n.ytc-slider {\r\n    position: absolute;\r\n    cursor: pointer;\r\n    top: 0;\r\n    left: 0;\r\n    right: 0;\r\n    bottom: 0;\r\n    background-color: #606060;\r\n    border-radius: 20px;\r\n    transition: background-color 0.2s;\r\n}\r\n.ytc-slider:before {\r\n    position: absolute;\r\n    content: "";\r\n    height: 14px;\r\n    width: 14px;\r\n    left: 3px;\r\n    bottom: 3px;\r\n    background-color: white;\r\n    border-radius: 50%;\r\n    transition: transform 0.2s;\r\n}\r\n.ytc-switch input:checked + .ytc-slider {\r\n    background-color: #3ea6ff;\r\n}\r\n.ytc-switch input:checked + .ytc-slider:before {\r\n    transform: translateX(16px);\r\n}\r\n\r\n.ytc-link-badge {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    gap: 4px;\r\n    padding: 3px 8px;\r\n    border-radius: 6px;\r\n    background: rgba(62, 166, 255, 0.12);\r\n    color: #3ea6ff;\r\n    font-size: 11.5px;\r\n    font-weight: 500;\r\n    transition: all 0.2s ease;\r\n    border: 1px solid rgba(62, 166, 255, 0.25);\r\n    user-select: none;\r\n    flex-shrink: 0;\r\n}\r\n.ytc-link-badge svg {\r\n    flex-shrink: 0;\r\n}\r\n.ytc-item:hover .ytc-link-badge {\r\n    background: #3ea6ff;\r\n    color: #0f0f0f;\r\n    border-color: #3ea6ff;\r\n}\r\n\r\n.ytc-cols-group {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 4px;\r\n    background: rgba(255, 255, 255, 0.06);\r\n    padding: 3px;\r\n    border-radius: 8px;\r\n    border: 1px solid rgba(255, 255, 255, 0.08);\r\n}\r\n.ytc-col-btn {\r\n    border: none;\r\n    background: transparent;\r\n    color: #aaa;\r\n    font-size: 12px;\r\n    font-weight: 500;\r\n    padding: 5px 10px;\r\n    border-radius: 6px;\r\n    cursor: pointer;\r\n    transition: all 0.15s ease;\r\n    min-width: 28px;\r\n    text-align: center;\r\n    box-sizing: border-box;\r\n}\r\n.ytc-col-btn:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n    color: #fff;\r\n}\r\n.ytc-col-btn.active {\r\n    background: #f1f1f1 !important;\r\n    color: #0f0f0f !important;\r\n    font-weight: 600;\r\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\r\n}\r\n\r\n.ytc-shortcut-hint {\r\n    font-size: 12px;\r\n    color: var(--yt-spec-text-secondary, #aaa);\r\n    background: rgba(255, 255, 255, 0.04);\r\n    padding: 8px 10px;\r\n    border-radius: 6px;\r\n    line-height: 1.6;\r\n    margin-top: 4px;\r\n    border: 1px solid rgba(255, 255, 255, 0.06);\r\n}\r\n.ytc-shortcut-hint kbd {\r\n    background: rgba(255, 255, 255, 0.15);\r\n    color: var(--yt-spec-text-primary, #fff);\r\n    padding: 2px 5px;\r\n    border-radius: 3px;\r\n    font-family: monospace;\r\n    font-size: 11px;\r\n    font-weight: bold;\r\n}\r\n\r\nhtml:not([dark]) #ytc-settings-panel {\r\n    background: #ffffff;\r\n    color: #0f0f0f;\r\n    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.15);\r\n    border: 1px solid rgba(0, 0, 0, 0.1);\r\n}\r\nhtml:not([dark]) .ytc-header {\r\n    border-bottom: 1px solid rgba(0, 0, 0, 0.08);\r\n}\r\nhtml:not([dark]) .ytc-tabs {\r\n    background: rgba(0, 0, 0, 0.05);\r\n    border: 1px solid rgba(0, 0, 0, 0.08);\r\n}\r\nhtml:not([dark]) .ytc-tab-btn {\r\n    color: #606060;\r\n}\r\nhtml:not([dark]) .ytc-tab-btn:hover {\r\n    background: rgba(0, 0, 0, 0.06);\r\n    color: #0f0f0f;\r\n}\r\nhtml:not([dark]) .ytc-tab-btn.active {\r\n    background: #0f0f0f;\r\n    color: #ffffff;\r\n    font-weight: 500;\r\n}\r\nhtml:not([dark]) .ytc-shortcut-hint {\r\n    background: rgba(0, 0, 0, 0.04);\r\n    color: #606060;\r\n    border-color: rgba(0, 0, 0, 0.08);\r\n}\r\nhtml:not([dark]) .ytc-shortcut-hint kbd {\r\n    background: rgba(0, 0, 0, 0.1);\r\n    color: #0f0f0f;\r\n}\r\n\r\n.ytc-divider {\r\n    height: 1px;\r\n    background: rgba(255, 255, 255, 0.1);\r\n    margin: 4px 0;\r\n}\r\n\r\n.ytc-mode-group {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 4px;\r\n    background: rgba(255, 255, 255, 0.06);\r\n    padding: 3px;\r\n    border-radius: 8px;\r\n    border: 1px solid rgba(255, 255, 255, 0.08);\r\n}\r\n.ytc-mode-btn {\r\n    border: none;\r\n    background: transparent;\r\n    color: #aaa;\r\n    font-size: 12px;\r\n    font-weight: 500;\r\n    padding: 5px 9px;\r\n    border-radius: 6px;\r\n    cursor: pointer;\r\n    transition: all 0.15s ease;\r\n    white-space: nowrap;\r\n    text-align: center;\r\n    box-sizing: border-box;\r\n}\r\n.ytc-mode-btn:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n    color: #fff;\r\n}\r\n.ytc-mode-btn.active {\r\n    background: #f1f1f1 !important;\r\n    color: #0f0f0f !important;\r\n    font-weight: 600;\r\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\r\n}\r\n\r\n/* Định kiểu tường minh cho chế độ Tối (Dark mode) */\r\nhtml[dark] .ytc-cols-group,\r\nhtml[dark] .ytc-mode-group {\r\n    background: rgba(255, 255, 255, 0.06);\r\n    border: 1px solid rgba(255, 255, 255, 0.08);\r\n}\r\nhtml[dark] .ytc-col-btn,\r\nhtml[dark] .ytc-mode-btn {\r\n    color: #aaa;\r\n    background: transparent;\r\n}\r\nhtml[dark] .ytc-col-btn:hover,\r\nhtml[dark] .ytc-mode-btn:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n    color: #fff;\r\n}\r\nhtml[dark] .ytc-col-btn.active,\r\nhtml[dark] .ytc-mode-btn.active {\r\n    background: #f1f1f1 !important;\r\n    color: #0f0f0f !important;\r\n    font-weight: 600;\r\n}\r\n\r\n/* Định kiểu đồng bộ chuẩn xác cho chế độ Sáng (Light mode) */\r\nhtml:not([dark]) .ytc-cols-group {\r\n    background: rgba(0, 0, 0, 0.05);\r\n    border: 1px solid rgba(0, 0, 0, 0.08);\r\n}\r\nhtml:not([dark]) .ytc-col-btn {\r\n    color: #606060;\r\n    background: transparent;\r\n}\r\nhtml:not([dark]) .ytc-col-btn:hover {\r\n    background: rgba(0, 0, 0, 0.06);\r\n    color: #0f0f0f;\r\n}\r\nhtml:not([dark]) .ytc-col-btn.active {\r\n    background: #0f0f0f !important;\r\n    color: #ffffff !important;\r\n    font-weight: 600;\r\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);\r\n}\r\n\r\nhtml:not([dark]) .ytc-mode-group {\r\n    background: rgba(0, 0, 0, 0.05);\r\n    border: 1px solid rgba(0, 0, 0, 0.08);\r\n}\r\nhtml:not([dark]) .ytc-mode-btn {\r\n    color: #606060;\r\n    background: transparent;\r\n}\r\nhtml:not([dark]) .ytc-mode-btn:hover {\r\n    background: rgba(0, 0, 0, 0.06);\r\n    color: #0f0f0f;\r\n}\r\nhtml:not([dark]) .ytc-mode-btn.active {\r\n    background: #0f0f0f !important;\r\n    color: #ffffff !important;\r\n    font-weight: 600;\r\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);\r\n}\r\n\r\n/* Kiểu dáng mục phân giải video (2 tầng & segmented control) */\r\n.ytc-item-vertical {\r\n    flex-direction: column !important;\r\n    align-items: stretch !important;\r\n    gap: 8px !important;\r\n}\r\n.ytc-item-header {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    width: 100%;\r\n}\r\n.ytc-quality-badge {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    font-size: 11px;\r\n    font-weight: 600;\r\n    color: #3ea6ff;\r\n    background: rgba(62, 166, 255, 0.12);\r\n    border: 1px solid rgba(62, 166, 255, 0.25);\r\n    padding: 2px 8px;\r\n    border-radius: 6px;\r\n    letter-spacing: 0.5px;\r\n    user-select: none;\r\n    flex-shrink: 0;\r\n}\r\nhtml:not([dark]) .ytc-quality-badge {\r\n    color: #065fd4;\r\n    background: rgba(6, 95, 212, 0.08);\r\n    border-color: rgba(6, 95, 212, 0.25);\r\n}\r\n.ytc-quality-group {\r\n    display: flex;\r\n    width: 100%;\r\n    gap: 3px;\r\n    box-sizing: border-box;\r\n}\r\n.ytc-quality-btn {\r\n    border: none;\r\n    background: transparent;\r\n    color: #aaa;\r\n    font-size: 11px;\r\n    font-weight: 500;\r\n    padding: 5px 2px;\r\n    border-radius: 6px;\r\n    cursor: pointer;\r\n    transition: all 0.15s ease;\r\n    white-space: nowrap;\r\n    text-align: center;\r\n    box-sizing: border-box;\r\n    flex: 1;\r\n    min-width: 0;\r\n}\r\n.ytc-quality-btn:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n    color: #fff;\r\n}\r\n.ytc-quality-btn.active {\r\n    background: #f1f1f1 !important;\r\n    color: #0f0f0f !important;\r\n    font-weight: 600;\r\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\r\n}\r\n\r\nhtml[dark] .ytc-quality-btn {\r\n    color: #aaa;\r\n    background: transparent;\r\n}\r\nhtml[dark] .ytc-quality-btn:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n    color: #fff;\r\n}\r\nhtml[dark] .ytc-quality-btn.active {\r\n    background: #f1f1f1 !important;\r\n    color: #0f0f0f !important;\r\n    font-weight: 600;\r\n}\r\n\r\nhtml:not([dark]) .ytc-quality-btn {\r\n    color: #606060;\r\n    background: transparent;\r\n}\r\nhtml:not([dark]) .ytc-quality-btn:hover {\r\n    background: rgba(0, 0, 0, 0.06);\r\n    color: #0f0f0f;\r\n}\r\nhtml:not([dark]) .ytc-quality-btn.active {\r\n    background: #0f0f0f !important;\r\n    color: #ffffff !important;\r\n    font-weight: 600;\r\n    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);\r\n}\r\n\r\n/* Trạng thái vô hiệu hóa của Live Chat row khi video không hỗ trợ chat */\r\n#ytc-row-chatoverlay.ytc-disabled {\r\n    opacity: 0.35 !important;\r\n    pointer-events: none !important;\r\n    cursor: not-allowed !important;\r\n}\r\n/* --------------------------------------------------------------------------\r\n   FLOATING DROPDOWN MENU (NGÔN NGỮ GIAO DIỆN NỔI TỰ DO NGOÀI KHUNG)\r\n   -------------------------------------------------------------------------- */\r\n.ytc-item-lang {\r\n    position: relative;\r\n}\r\n\r\n.ytc-dropdown {\r\n    position: relative;\r\n    user-select: none;\r\n}\r\n\r\n.ytc-dropdown-trigger {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    gap: 6px;\r\n    padding: 5px 10px;\r\n    background: rgba(255, 255, 255, 0.08);\r\n    border: 1px solid rgba(255, 255, 255, 0.14);\r\n    border-radius: 8px;\r\n    color: var(--yt-spec-text-primary, #f1f1f1);\r\n    font-size: 12px;\r\n    font-weight: 500;\r\n    font-family: inherit;\r\n    cursor: pointer;\r\n    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);\r\n    max-width: 175px;\r\n    outline: none;\r\n    user-select: none;\r\n}\r\n.ytc-dropdown-trigger:hover {\r\n    background: rgba(255, 255, 255, 0.12);\r\n    border-color: rgba(255, 255, 255, 0.25);\r\n    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);\r\n}\r\n.ytc-dropdown-trigger[aria-expanded="true"] {\r\n    border-color: #3ea6ff;\r\n    box-shadow: 0 0 0 2px rgba(62, 166, 255, 0.25);\r\n}\r\n#ytc-lang-current-label {\r\n    overflow: hidden;\r\n    text-overflow: ellipsis;\r\n    white-space: nowrap;\r\n    max-width: 120px;\r\n}\r\n.ytc-dropdown-arrow {\r\n    font-size: 9px;\r\n    opacity: 0.7;\r\n    transition: transform 0.2s ease;\r\n    user-select: none;\r\n}\r\n.ytc-dropdown-trigger[aria-expanded="true"] .ytc-dropdown-arrow {\r\n    transform: rotate(180deg);\r\n}\r\n\r\n/* Floating Menu gắn trực tiếp vào body/documentElement, không bị overflow-y cắt */\r\n#ytc-lang-menu {\r\n    position: fixed;\r\n    display: none;\r\n    flex-direction: column;\r\n    min-width: 140px;\r\n    max-width: 200px;\r\n    max-height: 240px;\r\n    overflow-y: auto;\r\n    background: rgba(36, 36, 36, 0.98);\r\n    backdrop-filter: blur(20px);\r\n    -webkit-backdrop-filter: blur(20px);\r\n    border: 1px solid rgba(255, 255, 255, 0.16);\r\n    border-radius: 10px;\r\n    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.7);\r\n    padding: 6px;\r\n    gap: 2px;\r\n    z-index: 10000000;\r\n    user-select: none;\r\n}\r\n#ytc-lang-menu.open {\r\n    display: flex;\r\n    animation: ytc-lang-pop 0.18s cubic-bezier(0.16, 1, 0.3, 1);\r\n}\r\n@keyframes ytc-lang-pop {\r\n    0% {\r\n        opacity: 0;\r\n        transform: translateY(-4px) scale(0.97);\r\n    }\r\n    100% {\r\n        opacity: 1;\r\n        transform: translateY(0) scale(1);\r\n    }\r\n}\r\n\r\n#ytc-lang-menu::-webkit-scrollbar {\r\n    width: 4px;\r\n}\r\n#ytc-lang-menu::-webkit-scrollbar-thumb {\r\n    background: rgba(255, 255, 255, 0.22);\r\n    border-radius: 2px;\r\n}\r\n\r\n#ytc-lang-menu .ytc-dropdown-item {\r\n    display: flex;\r\n    align-items: center;\r\n    padding: 7px 10px;\r\n    border-radius: 6px;\r\n    font-size: 12px;\r\n    font-weight: 500;\r\n    color: var(--yt-spec-text-primary, #f1f1f1);\r\n    cursor: pointer;\r\n    transition: background 0.15s ease, color 0.15s ease;\r\n    white-space: nowrap;\r\n}\r\n#ytc-lang-menu .ytc-dropdown-item:hover {\r\n    background: rgba(255, 255, 255, 0.08);\r\n}\r\n#ytc-lang-menu .ytc-dropdown-item.active {\r\n    background: rgba(62, 166, 255, 0.16);\r\n    color: #3ea6ff;\r\n    font-weight: 600;\r\n}\r\n\r\n/* Light theme */\r\nhtml:not([dark]) .ytc-dropdown-trigger {\r\n    background: #ffffff;\r\n    border-color: rgba(0, 0, 0, 0.15);\r\n    color: #0f0f0f;\r\n}\r\nhtml:not([dark]) .ytc-dropdown-trigger:hover {\r\n    background: #f8f8f8;\r\n    border-color: rgba(0, 0, 0, 0.25);\r\n    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);\r\n}\r\nhtml:not([dark]) #ytc-lang-menu {\r\n    background: rgba(255, 255, 255, 0.98);\r\n    border-color: rgba(0, 0, 0, 0.14);\r\n    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.18);\r\n}\r\nhtml:not([dark]) #ytc-lang-menu::-webkit-scrollbar-thumb {\r\n    background: rgba(0, 0, 0, 0.2);\r\n}\r\nhtml:not([dark]) #ytc-lang-menu .ytc-dropdown-item {\r\n    color: #0f0f0f;\r\n}\r\nhtml:not([dark]) #ytc-lang-menu .ytc-dropdown-item:hover {\r\n    background: rgba(0, 0, 0, 0.05);\r\n}\r\nhtml:not([dark]) #ytc-lang-menu .ytc-dropdown-item.active {\r\n    background: rgba(6, 95, 212, 0.08);\r\n    color: #065fd4;\r\n}\r\n\r\n\r\n#ytc-row-chatoverlay.ytc-disabled .ytc-mode-btn.active {\r\n    background: rgba(255, 255, 255, 0.12) !important;\r\n    color: rgba(255, 255, 255, 0.45) !important;\r\n    box-shadow: none !important;\r\n}\r\nhtml:not([dark]) #ytc-row-chatoverlay.ytc-disabled .ytc-mode-btn.active {\r\n    background: rgba(0, 0, 0, 0.08) !important;\r\n    color: rgba(0, 0, 0, 0.38) !important;\r\n    box-shadow: none !important;\r\n}\r\n\r\nhtml:not([dark]) .ytc-item:hover {\r\n    background: rgba(0, 0, 0, 0.05);\r\n}\r\nhtml:not([dark]) .ytc-divider {\r\n    background: rgba(0, 0, 0, 0.08);\r\n}\r\nhtml:not([dark]) .ytc-slider {\r\n    background-color: #b0b0b0;\r\n}\r\nhtml:not([dark]) .ytc-slider:before {\r\n    background-color: #ffffff;\r\n}\r\nhtml:not([dark]) .ytc-switch input:checked + .ytc-slider {\r\n    background-color: #065fd4;\r\n}\r\n\r\n/* --------------------------------------------------------------------------\r\n   CHAT OVERLAY TRÊN VIDEO (DANMAKU & STREAMER BOX)\r\n   -------------------------------------------------------------------------- */\r\n#ytc-danmaku-container {\r\n    position: absolute;\r\n    inset: 0;\r\n    width: 100% !important;\r\n    height: 100% !important;\r\n    pointer-events: none;\r\n    overflow: hidden;\r\n    z-index: 35 !important;\r\n    container-type: inline-size;\r\n    transition: opacity 0.3s ease;\r\n    display: none;\r\n}\r\n\r\n.ytc-danmaku-item {\r\n    position: absolute;\r\n    left: 100%;\r\n    white-space: nowrap;\r\n    font-family: "YouTube Noto", Roboto, Arial, sans-serif !important;\r\n    font-weight: 700;\r\n    font-size: 18px;\r\n    line-height: 1.3;\r\n    color: #ffffff;\r\n    text-shadow: \r\n        1px 1px 2px #000, \r\n        -1px -1px 2px #000, \r\n        1px -1px 2px #000, \r\n        -1px 1px 2px #000,\r\n        0 0 4px #000;\r\n    will-change: transform;\r\n    animation: ytc-danmaku-slide 8.5s linear forwards;\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 6px;\r\n    pointer-events: none;\r\n}\r\n\r\n@keyframes ytc-danmaku-slide {\r\n    from {\r\n        transform: translateX(0);\r\n    }\r\n    to {\r\n        transform: translateX(calc(-100% - 100cqi));\r\n    }\r\n}\r\n\r\n@supports not (container-type: inline-size) {\r\n    @keyframes ytc-danmaku-slide {\r\n        from {\r\n            transform: translateX(0);\r\n        }\r\n        to {\r\n            transform: translateX(calc(-100% - 100vw));\r\n        }\r\n    }\r\n}\r\n\r\n.ytc-chat-author {\r\n    color: #9ab4c7;\r\n    font-weight: 600;\r\n    flex-shrink: 0;\r\n}\r\n.ytc-chat-author.mod,\r\n.ytc-chat-text.mod {\r\n    color: #3ea6ff !important;\r\n}\r\n.ytc-chat-author.member,\r\n.ytc-chat-text.member {\r\n    color: #2ba640 !important;\r\n}\r\n.ytc-chat-author.owner,\r\n.ytc-chat-text.owner {\r\n    color: #ffd600 !important;\r\n}\r\n\r\n.ytc-chat-text {\r\n    color: #ffffff !important;\r\n    font-weight: 500;\r\n}\r\n\r\n.ytc-danmaku-item img,\r\n.ytc-danmaku-item .ytc-chat-text img,\r\n.ytc-danmaku-item img.emoji,\r\n.ytc-danmaku-item img.yt-emoji,\r\n.ytc-danmaku-item .emoji {\r\n    max-height: 22px !important;\r\n    max-width: 28px !important;\r\n    width: auto !important;\r\n    height: auto !important;\r\n    vertical-align: -3px !important;\r\n    margin: 0 2px !important;\r\n    display: inline-block !important;\r\n    object-fit: contain !important;\r\n}\r\n\r\n/* ĐIỀU KHIỂN HIỂN THỊ THEO TRẠNG THÁI CONFIG */\r\nhtml[data-ytc-chat="danmaku"] #ytc-danmaku-container,\r\nbody[data-ytc-chat="danmaku"] #ytc-danmaku-container {\r\n    display: block !important;\r\n}\r\n\r\nhtml[data-ytc-chat="streamer"] #ytc-streamer-box,\r\nbody[data-ytc-chat="streamer"] #ytc-streamer-box {\r\n    display: flex !important;\r\n}\r\n\r\nhtml[data-ytc-chat="off"] #ytc-danmaku-container,\r\nbody[data-ytc-chat="off"] #ytc-danmaku-container,\r\nhtml[data-ytc-chat="streamer"] #ytc-danmaku-container,\r\nbody[data-ytc-chat="streamer"] #ytc-danmaku-container {\r\n    display: none !important;\r\n}\r\n\r\nhtml[data-ytc-chat="off"] #ytc-streamer-box,\r\nbody[data-ytc-chat="off"] #ytc-streamer-box,\r\nhtml[data-ytc-chat="danmaku"] #ytc-streamer-box,\r\nbody[data-ytc-chat="danmaku"] #ytc-streamer-box {\r\n    display: none !important;\r\n}\r\n\r\n/* ==========================================================================\r\n   QUẢN LÝ KHUNG LIVE CHAT GỐC KHI BẬT OVERLAY\r\n   - Nếu Chat gốc BẬT: Giữ nguyên cho người dùng chat và hiển thị tự nhiên.\r\n   - Nếu Chat gốc TẮT (mặc định tắt hoặc người dùng ẩn):\r\n     + Chưa phóng to: Ẩn gọn off-screen để script lấy data ngầm.\r\n     + Phóng to Fullscreen: Ẩn triệt để panel bên phải & PHÓNG TO KHUNG VIDEO 100% FULL MÀN HÌNH.\r\n   ========================================================================== */\r\n\r\n/* 1. Giao diện thường (chưa phóng to):\r\n   Để YouTube xử lý thu gọn tự nhiên (hiện thẻ teaser "Mở bảng điều khiển" gọn gàng),\r\n   TUYỆT ĐỐI KHÔNG đẩy frame chat gốc ra -9999px để người dùng có thể nhấp mở/đóng bình thường. */\r\nytd-live-chat-frame[collapsed] #chatframe {\r\n    display: none !important;\r\n}\r\n\r\n/* 2. Trạng thái ẩn Chat gốc trong giao diện toàn màn hình (FULLSCREEN) khi CHƯA MỞ CHAT */\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #panels-full-bleed-container,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #chat-container,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #panels,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #secondary,\r\n[data-ytc-chat-hidden="true"] .ytp-fullscreen:not(.ytp-chat-open) #chat-container,\r\n[data-ytc-chat-hidden="true"] .ytp-fullscreen:not(.ytp-chat-open) .ytp-live-chat-panel {\r\n    width: 0 !important;\r\n    min-width: 0 !important;\r\n    max-width: 0 !important;\r\n    flex-basis: 0 !important;\r\n    overflow: hidden !important;\r\n    opacity: 0 !important;\r\n    pointer-events: none !important;\r\n}\r\n\r\n/* Phóng to toàn bộ các tầng container và movie_player ra 100vw x 100vh để xóa sổ vệt đen khi chat đang đóng trong Fullscreen */\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-full-bleed-container,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #full-bleed-container,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container-outer,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container-inner,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #player-container,\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) #movie_player:not(#inline-preview-player):not(.ytp-chat-open),\r\n[data-ytc-chat-hidden="true"] ytd-watch-flexy[fullscreen]:not([has-active-panel]):not([panels-open]) .html5-video-player:not(#inline-preview-player):not(.ytp-chat-open),\r\n[data-ytc-chat-hidden="true"] .ytp-fullscreen.html5-video-player:not(#inline-preview-player):not(.ytp-chat-open) {\r\n    width: 100vw !important;\r\n    min-width: 100vw !important;\r\n    max-width: 100vw !important;\r\n    height: 100vh !important;\r\n    min-height: 100vh !important;\r\n    max-height: 100vh !important;\r\n    margin-right: 0 !important;\r\n    padding-right: 0 !important;\r\n    left: 0 !important;\r\n    right: 0 !important;\r\n    top: 0 !important;\r\n    bottom: 0 !important;\r\n    transform: none !important;\r\n}\r\n\r\n/* Đảm bảo nút Live Chat trên thanh điều khiển YouTube player luôn bấm được */\r\n.ytp-live-chat-button,\r\n.ytp-chat-button,\r\n#chat-container [aria-label*="chat" i],\r\nytd-live-chat-frame [aria-label*="chat" i] {\r\n    pointer-events: auto !important;\r\n    cursor: pointer !important;\r\n}\r\n\r\n\r\n/* ==========================================================================\r\n   TÍNH NĂNG ẨN BIỂU TƯỢNG CẢM XÚC TRONG LIVE CHAT (hideChatEmojis)\r\n   - Ẩn hoàn toàn thẻ ảnh emoji/sticker trong khung chat gốc\r\n   - Ẩn hoàn toàn các bình luận chỉ chứa icon/emoji không có chữ\r\n   ========================================================================== */\r\nhtml.ytc-hide-chat-emojis img.emoji,\r\nbody.ytc-hide-chat-emojis img.emoji,\r\nhtml.ytc-hide-chat-emojis img.yt-emoji,\r\nbody.ytc-hide-chat-emojis img.yt-emoji,\r\nhtml.ytc-hide-chat-emojis .emoji,\r\nbody.ytc-hide-chat-emojis .emoji,\r\nhtml.ytc-hide-chat-emojis yt-live-chat-paid-sticker-renderer,\r\nbody.ytc-hide-chat-emojis yt-live-chat-paid-sticker-renderer {\r\n    display: none !important;\r\n}\r\n\r\nhtml.ytc-hide-chat-emojis .ytc-emoji-only-msg,\r\nbody.ytc-hide-chat-emojis .ytc-emoji-only-msg {\r\n    display: none !important;\r\n}\r\n\r\n/* ==========================================================================\r\n   TOAST NOTIFICATION (HỖ TRỢ THÔNG BÁO NHẸ NHÀNG)\r\n   ========================================================================== */\r\n#ytc-toast-notification {\r\n    position: fixed;\r\n    bottom: 28px;\r\n    left: 50%;\r\n    transform: translateX(-50%) translateY(20px);\r\n    background: rgba(18, 18, 18, 0.92);\r\n    backdrop-filter: blur(12px);\r\n    -webkit-backdrop-filter: blur(12px);\r\n    color: #fff;\r\n    padding: 10px 18px;\r\n    border-radius: 20px;\r\n    font-size: 13px;\r\n    font-weight: 500;\r\n    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15);\r\n    z-index: 999999;\r\n    opacity: 0;\r\n    pointer-events: none;\r\n    transition: opacity 0.25s ease, transform 0.25s ease;\r\n    font-family: "YouTube Sans", "Roboto", sans-serif;\r\n    white-space: nowrap;\r\n}\r\n\r\n#ytc-toast-notification.ytc-toast-show {\r\n    opacity: 1;\r\n    transform: translateX(-50%) translateY(0);\r\n}\r\n\r\nhtml[light] #ytc-toast-notification,\r\nbody[light] #ytc-toast-notification {\r\n    background: rgba(255, 255, 255, 0.95);\r\n    color: #0f0f0f;\r\n    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.1);\r\n}\r\n\r\n/* Trạng thái disabled cho các mục không hỗ trợ trong menu */\r\n.ytc-item.ytc-disabled {\r\n    opacity: 0.55;\r\n}\r\n\r\n.ytc-item.ytc-disabled .ytc-mode-btn:not([data-overlay="off"]) {\r\n    cursor: not-allowed !important;\r\n    opacity: 0.45;\r\n    pointer-events: auto !important;\r\n}\r\n\r\n\r\n\r\n/* KHUNG LIVE CHAT BOX (NỀN TRONG SUỐT HUD OVERLAY CHO STREAMER) */\r\n#ytc-streamer-box {\r\n    position: absolute;\r\n    width: 320px;\r\n    min-height: 120px;\r\n    max-height: 80%;\r\n    background: transparent !important;\r\n    backdrop-filter: none !important;\r\n    border: none !important;\r\n    box-shadow: none !important;\r\n    border-radius: 6px;\r\n    z-index: 38 !important;\r\n    overflow: hidden;\r\n    display: flex;\r\n    flex-direction: column;\r\n    pointer-events: auto;\r\n    box-sizing: border-box;\r\n    transition: background-color 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;\r\n    user-select: none;\r\n}\r\n\r\n#ytc-streamer-box.ytc-dragging {\r\n    transition: none !important;\r\n    will-change: left, top;\r\n    user-select: none !important;\r\n}\r\n\r\n#ytc-streamer-box:hover,\r\n#ytc-streamer-box.ytc-box-initial,\r\n#ytc-streamer-box.ytc-dragging {\r\n    background: rgba(0, 0, 0, 0.45) !important;\r\n    backdrop-filter: blur(4px) !important;\r\n    border: 1px dashed rgba(255, 255, 255, 0.35) !important;\r\n    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6) !important;\r\n}\r\n\r\n.ytc-box-header {\r\n    height: 24px;\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    padding: 2px 6px;\r\n    background: rgba(0, 0, 0, 0.75);\r\n    color: #eee;\r\n    font-size: 11px;\r\n    font-weight: 600;\r\n    cursor: move;\r\n    opacity: 0;\r\n    pointer-events: none;\r\n    transition: opacity 0.2s ease;\r\n    flex-shrink: 0;\r\n    border-top-left-radius: 6px;\r\n    border-top-right-radius: 6px;\r\n}\r\n\r\n.ytc-box-title {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 5px;\r\n    font-size: 11px;\r\n    font-weight: 600;\r\n    color: #fff;\r\n    user-select: none;\r\n    letter-spacing: 0.2px;\r\n}\r\n\r\n.ytc-box-title svg {\r\n    flex-shrink: 0;\r\n    opacity: 0.9;\r\n}\r\n\r\n.ytc-box-close {\r\n    background: transparent !important;\r\n    border: none !important;\r\n    color: rgba(255, 255, 255, 0.7) !important;\r\n    cursor: pointer !important;\r\n    width: 20px !important;\r\n    height: 20px !important;\r\n    padding: 0 !important;\r\n    margin: 0 !important;\r\n    border-radius: 4px !important;\r\n    display: flex !important;\r\n    align-items: center !important;\r\n    justify-content: center !important;\r\n    transition: background 0.15s ease, color 0.15s ease !important;\r\n    outline: none !important;\r\n    box-shadow: none !important;\r\n}\r\n\r\n.ytc-box-close:hover {\r\n    background: rgba(255, 255, 255, 0.2) !important;\r\n    color: #fff !important;\r\n}\r\n\r\n.ytc-box-close svg {\r\n    display: block;\r\n}\r\n\r\n#ytc-streamer-box:hover .ytc-box-header,\r\n#ytc-streamer-box.ytc-box-initial .ytc-box-header,\r\n#ytc-streamer-box.ytc-dragging .ytc-box-header {\r\n    opacity: 1 !important;\r\n    pointer-events: auto !important;\r\n}\r\n\r\n#ytc-streamer-box:hover .ytc-box-resize,\r\n#ytc-streamer-box.ytc-box-initial .ytc-box-resize,\r\n#ytc-streamer-box.ytc-dragging .ytc-box-resize {\r\n    opacity: 1 !important;\r\n    pointer-events: auto !important;\r\n}\r\n\r\n.ytc-box-messages {\r\n    flex: 1;\r\n    overflow-y: hidden;\r\n    display: flex;\r\n    flex-direction: column;\r\n    justify-content: flex-end;\r\n    gap: 3px;\r\n    padding: 2px 4px;\r\n    pointer-events: none;\r\n}\r\n\r\n.ytc-box-item {\r\n    display: flex;\r\n    align-items: flex-start;\r\n    flex-shrink: 0 !important;\r\n    flex-grow: 0 !important;\r\n    width: 100%;\r\n    box-sizing: border-box;\r\n    height: auto !important;\r\n    min-height: min-content !important;\r\n    gap: 3px;\r\n    font-size: 10px;\r\n    line-height: 1.35;\r\n    color: #fff;\r\n    text-shadow: \r\n        1px 1px 2px #000, \r\n        -1px -1px 2px #000, \r\n        1px -1px 2px #000, \r\n        -1px 1px 2px #000, \r\n        0 0 3px #000;\r\n    animation: ytc-fade-in 0.12s ease-out;\r\n    word-break: break-word;\r\n    overflow-wrap: break-word;\r\n}\r\n\r\n.ytc-box-avatar {\r\n    width: 10px;\r\n    height: 10px;\r\n    border-radius: 50%;\r\n    flex-shrink: 0;\r\n    margin-top: 2px;\r\n}\r\n\r\n.ytc-box-content {\r\n    flex: 1;\r\n    min-width: 0;\r\n    word-break: break-word;\r\n    overflow-wrap: break-word;\r\n    line-height: 1.35;\r\n}\r\n\r\n#ytc-streamer-box .ytc-chat-author {\r\n    color: #b5b5b5 !important;\r\n    font-weight: 700 !important;\r\n    flex-shrink: 0;\r\n}\r\n#ytc-streamer-box .ytc-chat-author.mod {\r\n    color: #3ea6ff !important;\r\n    font-weight: 700 !important;\r\n}\r\n#ytc-streamer-box .ytc-chat-author.member {\r\n    color: #2ba640 !important;\r\n    font-weight: 700 !important;\r\n}\r\n#ytc-streamer-box .ytc-chat-author.owner {\r\n    color: #ffd600 !important;\r\n    font-weight: 700 !important;\r\n}\r\n\r\n#ytc-streamer-box .ytc-chat-text {\r\n    color: #ffffff !important;\r\n    font-weight: 700 !important;\r\n}\r\n\r\n/* THU NHỎ ICON EMOJI VÀ BADGE BẰNG CỠ CHỮ CHỈ ÁP DỤNG CHO KHUNG NỔI STREAMER */\r\n#ytc-streamer-box .ytc-box-content img,\r\n#ytc-streamer-box .ytc-box-item img,\r\n#ytc-streamer-box img.emoji,\r\n#ytc-streamer-box img.yt-emoji,\r\n#ytc-streamer-box .emoji {\r\n    max-height: 10px !important;\r\n    width: auto !important;\r\n    max-width: 12px !important;\r\n    height: auto !important;\r\n    vertical-align: -1px !important;\r\n    display: inline-block !important;\r\n    object-fit: contain !important;\r\n    margin: 0 1px !important;\r\n}\r\n\r\n.ytc-box-badge {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    vertical-align: -1px;\r\n    margin: 0 2px;\r\n}\r\n.ytc-box-badge.ytc-badge-mod,\r\n.ytc-box-badge.ytc-badge-owner {\r\n    display: inline-flex !important;\r\n    align-items: center !important;\r\n    justify-content: center !important;\r\n    vertical-align: -1px !important;\r\n    margin: 0 1px !important;\r\n}\r\n.ytc-box-badge svg.ytc-mod-icon,\r\n.ytc-badge-mod,\r\n.ytc-mod-icon {\r\n    display: inline-block !important;\r\n    width: 10px !important;\r\n    height: 10px !important;\r\n    fill: #3ea6ff !important;\r\n    vertical-align: -1px !important;\r\n}\r\n.ytc-box-badge svg.ytc-owner-icon,\r\n.ytc-badge-owner,\r\n.ytc-owner-icon {\r\n    display: inline-block !important;\r\n    width: 10px !important;\r\n    height: 10px !important;\r\n    fill: #ffd600 !important;\r\n    vertical-align: -1px !important;\r\n}\r\n.ytc-box-badge img {\r\n    width: 10px !important;\r\n    height: 10px !important;\r\n    max-width: 10px !important;\r\n    max-height: 10px !important;\r\n    display: inline-block !important;\r\n    vertical-align: -1px !important;\r\n    object-fit: contain !important;\r\n}\r\n\r\n.ytc-box-resize {\r\n    position: absolute;\r\n    right: 2px;\r\n    bottom: 2px;\r\n    width: 10px;\r\n    height: 10px;\r\n    cursor: nwse-resize;\r\n    opacity: 0;\r\n    pointer-events: none;\r\n    transition: opacity 0.2s ease;\r\n    border-right: 2px solid rgba(255, 255, 255, 0.6);\r\n    border-bottom: 2px solid rgba(255, 255, 255, 0.6);\r\n}\r\n\r\n#ytc-streamer-box:hover .ytc-box-resize,\r\n#ytc-streamer-box.ytc-box-initial .ytc-box-resize {\r\n    opacity: 1;\r\n    pointer-events: auto;\r\n}\r\n\r\n/* HIỆU ỨNG XUẤT HIỆN MƯỢT MÀ, KHÔNG DÙNG TRANSLATE-Y GÂY GIẬT LAG KHUNG HÌNH */\r\n@keyframes ytc-fade-in {\r\n    from { opacity: 0; }\r\n    to { opacity: 1; }\r\n}\r\n\r\n/* TỰ ĐỘNG CÂN ĐỐI TỶ LỆ KÍCH THƯỚC CHỮ KHI PHÓNG TO TOÀN MÀN HÌNH (FULLSCREEN / ZOOM) */\r\n.ytp-fullscreen .ytc-danmaku-item {\r\n    font-size: 25px !important;\r\n}\r\n.ytp-fullscreen .ytc-danmaku-item img,\r\n.ytp-fullscreen .ytc-danmaku-item .ytc-chat-text img,\r\n.ytp-fullscreen .ytc-danmaku-item img.emoji,\r\n.ytp-fullscreen .ytc-danmaku-item img.yt-emoji,\r\n.ytp-fullscreen .ytc-danmaku-item .emoji {\r\n    max-height: 28px !important;\r\n    max-width: 36px !important;\r\n    vertical-align: -4px !important;\r\n}\r\n\r\n/* ==========================================================================\r\n   ONBOARDING TOOLTIP KHI CÀI ĐẶT LẦN ĐẦU (FIRST-TIME USER EXPERIENCE)\r\n   ========================================================================== */\r\n#ytc-onboarding-tip {\r\n    position: fixed;\r\n    z-index: 100000;\r\n    width: 280px;\r\n    background: #18181b;\r\n    border: 1px solid rgba(255, 0, 51, 0.6);\r\n    border-radius: 10px;\r\n    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);\r\n    color: #fff;\r\n    padding: 12px 14px;\r\n    font-family: Roboto, Arial, sans-serif;\r\n    user-select: none;\r\n    box-sizing: border-box;\r\n    animation: ytc-fade-in 0.12s ease-out;\r\n}\r\n\r\n.ytc-onboarding-arrow {\r\n    position: absolute;\r\n    top: -6px;\r\n    right: 18px;\r\n    width: 10px;\r\n    height: 10px;\r\n    background: #18181b;\r\n    border-left: 1px solid rgba(255, 0, 51, 0.6);\r\n    border-top: 1px solid rgba(255, 0, 51, 0.6);\r\n    transform: rotate(45deg);\r\n}\r\n\r\n.ytc-onboarding-header {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    margin-bottom: 6px;\r\n}\r\n\r\n.ytc-onboarding-badge {\r\n    font-size: 10px;\r\n    font-weight: 700;\r\n    background: #ff0033;\r\n    color: #fff;\r\n    padding: 2px 6px;\r\n    border-radius: 4px;\r\n    letter-spacing: 0.5px;\r\n}\r\n\r\n.ytc-onboarding-close {\r\n    background: transparent;\r\n    border: none;\r\n    color: #aaa;\r\n    font-size: 13px;\r\n    cursor: pointer;\r\n    padding: 2px 4px;\r\n    line-height: 1;\r\n    border-radius: 4px;\r\n    transition: color 0.1s;\r\n}\r\n.ytc-onboarding-close:hover {\r\n    color: #fff;\r\n}\r\n\r\n.ytc-onboarding-title {\r\n    font-size: 13px;\r\n    font-weight: 700;\r\n    color: #fff;\r\n    line-height: 1.35;\r\n    margin-bottom: 4px;\r\n}\r\n\r\n.ytc-onboarding-desc {\r\n    font-size: 11.5px;\r\n    color: #ccc;\r\n    line-height: 1.4;\r\n    margin-bottom: 10px;\r\n}\r\n\r\n.ytc-onboarding-footer {\r\n    display: flex;\r\n    justify-content: flex-end;\r\n}\r\n\r\n.ytc-onboarding-btn {\r\n    background: #ff0033;\r\n    color: #fff;\r\n    border: none;\r\n    padding: 5px 14px;\r\n    font-size: 11.5px;\r\n    font-weight: 600;\r\n    border-radius: 6px;\r\n    cursor: pointer;\r\n    transition: background-color 0.15s;\r\n}\r\n.ytc-onboarding-btn:hover {\r\n    background: #cc0029;\r\n}\r\n\r\n/* --------------------------------------------------------------------------\r\n   CHẾ ĐỘ CHỈ PHÁT ÂM THANH (RADIO / AUDIO ONLY)\r\n   -------------------------------------------------------------------------- */\r\nhtml.ytc-audio-only #movie_player video,\r\nbody.ytc-audio-only #movie_player video {\r\n    visibility: hidden !important;\r\n}\r\n\r\n#ytc-audio-only-badge {\r\n    position: absolute;\r\n    top: 50%;\r\n    left: 50%;\r\n    transform: translate(-50%, -50%);\r\n    text-align: center;\r\n    pointer-events: none;\r\n    user-select: none;\r\n    z-index: 30;\r\n    font-family: "YouTube Sans", Roboto, sans-serif;\r\n    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);\r\n    width: 90%;\r\n    max-width: 650px;\r\n}\r\n\r\n.ytc-audio-badge-title {\r\n    color: #ffffff;\r\n    font-size: clamp(22px, 2.5vw, 30px);\r\n    font-weight: 600;\r\n    letter-spacing: 0.4px;\r\n    line-height: 1.35;\r\n}\r\n\r\n.ytc-audio-badge-sub {\r\n    color: rgba(255, 255, 255, 0.65);\r\n    font-size: clamp(15px, 1.4vw, 19px);\r\n    font-weight: 400;\r\n    margin-top: 10px;\r\n    line-height: 1.4;\r\n}\r\n\r\n/* --------------------------------------------------------------------------\r\n   TAB 5: THÔNG TIN, NHÀ PHÁT TRIỂN & ỦNG HỘ\r\n   -------------------------------------------------------------------------- */\r\n.ytc-item-text-group {\r\n    display: flex;\r\n    flex-direction: column;\r\n    gap: 2px;\r\n    text-align: left;\r\n    min-width: 0;\r\n}\r\n.ytc-item-main-text {\r\n    font-size: 13.5px;\r\n    font-weight: 500;\r\n    color: inherit;\r\n    line-height: 1.2;\r\n}\r\n.ytc-item-sub-text {\r\n    font-size: 11px;\r\n    color: #888;\r\n    line-height: 1.2;\r\n}\r\nhtml:not([dark]) .ytc-item-sub-text {\r\n    color: #606060;\r\n}\r\n\r\n.ytc-info-card {\r\n    background: rgba(255, 255, 255, 0.04);\r\n    border: 1px solid rgba(255, 255, 255, 0.08);\r\n    border-radius: 8px;\r\n    padding: 8px 10px;\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: space-between;\r\n    gap: 8px;\r\n    margin-top: 4px;\r\n}\r\nhtml:not([dark]) .ytc-info-card {\r\n    background: rgba(0, 0, 0, 0.02);\r\n    border-color: rgba(0, 0, 0, 0.08);\r\n}\r\n.ytc-info-title-wrap {\r\n    display: flex;\r\n    align-items: center;\r\n    gap: 6px;\r\n    min-width: 0;\r\n}\r\n.ytc-info-title {\r\n    font-weight: 600;\r\n    font-size: 13.5px;\r\n    white-space: nowrap;\r\n}\r\n.ytc-info-version {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    font-size: 11px;\r\n    font-weight: 600;\r\n    color: #ff4e45;\r\n    background: rgba(255, 78, 69, 0.12);\r\n    border: 1px solid rgba(255, 78, 69, 0.25);\r\n    padding: 2px 8px;\r\n    border-radius: 6px;\r\n    letter-spacing: 0.5px;\r\n    user-select: none;\r\n    white-space: nowrap;\r\n}\r\nhtml:not([dark]) .ytc-info-version {\r\n    color: #cc0000;\r\n    background: rgba(204, 0, 0, 0.08);\r\n    border-color: rgba(204, 0, 0, 0.25);\r\n}\r\n.ytc-update-btn {\r\n    display: inline-flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    gap: 5px;\r\n    padding: 5px 10px;\r\n    background: rgba(255, 255, 255, 0.08);\r\n    border: 1px solid rgba(255, 255, 255, 0.12);\r\n    color: #eee;\r\n    border-radius: 6px;\r\n    font-size: 11.5px;\r\n    font-weight: 500;\r\n    cursor: pointer;\r\n    transition: all 0.2s ease;\r\n    white-space: nowrap;\r\n    flex-shrink: 0;\r\n}\r\n.ytc-update-btn:hover {\r\n    background: rgba(255, 255, 255, 0.15);\r\n    color: #fff;\r\n    border-color: rgba(255, 255, 255, 0.2);\r\n}\r\n.ytc-update-btn svg {\r\n    width: 13px;\r\n    height: 13px;\r\n    fill: currentColor;\r\n    flex-shrink: 0;\r\n}\r\n.ytc-update-btn.ytc-btn-loading {\r\n    opacity: 0.8;\r\n    cursor: wait;\r\n}\r\n.ytc-update-btn.ytc-btn-success {\r\n    background: rgba(46, 204, 113, 0.15) !important;\r\n    color: #2ecc71 !important;\r\n    border-color: rgba(46, 204, 113, 0.35) !important;\r\n}\r\nhtml:not([dark]) .ytc-update-btn.ytc-btn-success {\r\n    background: rgba(39, 174, 96, 0.1) !important;\r\n    color: #27ae60 !important;\r\n    border-color: rgba(39, 174, 96, 0.3) !important;\r\n}\r\n.ytc-update-btn.ytc-btn-has-update {\r\n    background: rgba(62, 166, 255, 0.12) !important;\r\n    color: #3ea6ff !important;\r\n    border: 1px solid rgba(62, 166, 255, 0.25) !important;\r\n    cursor: pointer !important;\r\n}\r\n.ytc-update-btn.ytc-btn-has-update:hover {\r\n    background: #3ea6ff !important;\r\n    color: #0f0f0f !important;\r\n    border-color: #3ea6ff !important;\r\n}\r\nhtml:not([dark]) .ytc-update-btn.ytc-btn-has-update {\r\n    background: rgba(6, 95, 212, 0.08) !important;\r\n    color: #065fd4 !important;\r\n    border-color: rgba(6, 95, 212, 0.25) !important;\r\n}\r\nhtml:not([dark]) .ytc-update-btn.ytc-btn-has-update:hover {\r\n    background: #065fd4 !important;\r\n    color: #ffffff !important;\r\n    border-color: #065fd4 !important;\r\n}\r\nhtml:not([dark]) .ytc-update-btn {\r\n    background: rgba(0, 0, 0, 0.05);\r\n    border-color: rgba(0, 0, 0, 0.1);\r\n    color: #0f0f0f;\r\n}\r\nhtml:not([dark]) .ytc-update-btn:hover {\r\n    background: rgba(0, 0, 0, 0.1);\r\n}\r\n\r\n/* ==========================================================================\r\n   HIỆU ỨNG ÁNH SÁNG PHÒNG (AMBIENT LIGHT / AMBILIGHT) TỰ ĐỘNG TỐI ƯU\r\n   ========================================================================== */\r\n/* ==========================================================================\r\n   HIỆU ỨNG ÁNH SÁNG PHÒNG (AMBIENT LIGHT / AMBILIGHT) FULL-SCREEN CINEMA\r\n   - 4-Border Edge Bleeding: Khung màu ăn khớp 100% mép viền video tiếp giáp\r\n   - Vertical Glow Columns: Dải màu dọc lan sâu xuống giữa trang (chuẩn Ảnh 4)\r\n   - Zero Horizontal Scrollbar: Triệt tiêu hoàn toàn thanh cuộn ngang\r\n   - Masthead Translucent: Trong suốt xuyên thấu ở đỉnh trang, đen lại khi cuộn\r\n   - OLED Depth Shadow & Glass UI: Giao diện kính mờ sang trọng, video nổi bật\r\n   ========================================================================== */\r\n\r\n/* Triệt tiêu 100% thanh cuộn ngang toàn cục */\r\nhtml, body {\r\n    overflow-x: hidden !important;\r\n    max-width: 100vw !important;\r\n}\r\n\r\nytd-app, #page-manager, ytd-watch-flexy {\r\n    overflow-x: clip !important;\r\n    max-width: 100% !important;\r\n}\r\n\r\nytd-watch-flexy {\r\n    position: relative !important;\r\n    overflow: visible !important;\r\n}\r\n\r\n#ytc-ambient-wrapper {\r\n    position: absolute !important;\r\n    top: -56px !important;\r\n    left: 0 !important;\r\n    right: 0 !important;\r\n    width: 100% !important;\r\n    height: 2200px !important;\r\n    pointer-events: none !important;\r\n    z-index: 0 !important;\r\n    overflow: hidden !important;\r\n    contain: paint !important;\r\n    opacity: 0;\r\n    /* Lan tỏa sâu xuống giữa trang (gấp đôi độ dài trước đây), tan biến mượt mà */\r\n    mask-image: linear-gradient(to bottom, #000 0%, #000 55%, rgba(0, 0, 0, 0.6) 75%, rgba(0, 0, 0, 0.2) 90%, transparent 100%);\r\n    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, rgba(0, 0, 0, 0.6) 75%, rgba(0, 0, 0, 0.2) 90%, transparent 100%);\r\n    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);\r\n}\r\n\r\n#ytc-ambient-wrapper.ytc-ambient-active {\r\n    opacity: 1;\r\n}\r\n\r\n/* Lớp Canvas Ambilight duy nhất: Mở rộng tràn viền để triệt tiêu hiện tượng mờ trắng ở các góc */\r\n#ytc-ambient-spread-canvas {\r\n    position: absolute !important;\r\n    top: -60px !important;\r\n    left: -60px !important;\r\n    width: calc(100% + 120px) !important;\r\n    height: calc(100% + 120px) !important;\r\n    filter: blur(48px) saturate(145%) brightness(105%);\r\n    pointer-events: none !important;\r\n    transform: translateZ(0);\r\n    opacity: 0.92;\r\n}\r\n\r\n/* Ẩn Ambilight mặc định của YouTube để tránh xung đột */\r\n#cinematic-container,\r\nytd-watch-flexy #cinematic-container {\r\n    display: none !important;\r\n}\r\n\r\n/* Khung video: Bo tròn mượt mà, KHÔNG viền, KHÔNG bóng đổ tạo viền trắng giả */\r\nhtml.ytc-ambient-lighting #movie_player {\r\n    border-radius: 12px !important;\r\n    overflow: hidden !important;\r\n    border: none !important;\r\n    outline: none !important;\r\n    box-shadow: none !important;\r\n}\r\n\r\nhtml[fullscreen] #movie_player,\r\n.ytp-fullscreen #movie_player {\r\n    border-radius: 0 !important;\r\n    box-shadow: none !important;\r\n    border: none !important;\r\n    outline: none !important;\r\n}\r\n\r\n/* Làm trong suốt các khung chứa video, cột nội dung & bình luận để ánh sáng xuyên thấu sâu xuống trang */\r\nhtml.ytc-ambient-lighting ytd-watch-flexy,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #columns,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #primary,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #primary-inner,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #secondary,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #secondary-inner,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #panels,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #playlist,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #player,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #player-container,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #player-container-outer,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #player-container-inner,\r\nhtml.ytc-ambient-lighting #full-bleed-container,\r\nhtml.ytc-ambient-lighting #player-full-bleed-container,\r\nhtml.ytc-ambient-lighting #player-theater-container,\r\nhtml.ytc-ambient-lighting #below,\r\nhtml.ytc-ambient-lighting ytd-comments,\r\nhtml.ytc-ambient-lighting #comments,\r\nhtml.ytc-ambient-lighting ytd-item-section-renderer#sections {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    outline: none !important;\r\n}\r\n\r\n/* Đảm bảo cột nội dung và khung video nổi trên tầng ambient light */\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #columns,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #full-bleed-container,\r\nhtml.ytc-ambient-lighting ytd-watch-flexy #player-theater-container {\r\n    z-index: 1 !important;\r\n}\r\n\r\n/* Playlist / Danh sách kết hợp: TRONG SUỐT HOÀN TOÀN, KHÔNG HIỆN KHUNG */\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer {\r\n    --yt-spec-base-background: transparent !important;\r\n    --yt-spec-raised-background: transparent !important;\r\n    --yt-spec-menu-background: transparent !important;\r\n    --yt-spec-additive-background: transparent !important;\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    box-shadow: none !important;\r\n}\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #container,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #container.ytd-playlist-panel-renderer,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #header,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer .header.ytd-playlist-panel-renderer,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #header.ytd-playlist-panel-renderer,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #items,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer .playlist-items,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #items.ytd-playlist-panel-renderer,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer iron-list,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #items-container,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #contents,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer #playlist-actions,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer #content,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer a#wc-endpoint,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer #container,\r\nhtml.ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer .yt-lockup-view-model-wiz {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    border-bottom: none !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\n/* Dải Filter Chips: Nền trong suốt */\r\nhtml.ytc-ambient-lighting yt-related-chip-cloud-renderer,\r\nhtml.ytc-ambient-lighting yt-chip-cloud-renderer,\r\nhtml.ytc-ambient-lighting #chip-bar,\r\nhtml.ytc-ambient-lighting iron-selector#chips,\r\nhtml.ytc-ambient-lighting #chips.yt-chip-cloud-renderer,\r\nhtml.ytc-ambient-lighting #chips.iron-selector {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n}\r\n\r\n/* Description box: TRONG SUỐT HOÀN TOÀN, KHÔNG HIỆN KHUNG */\r\nhtml.ytc-ambient-lighting ytd-watch-metadata #description,\r\nhtml.ytc-ambient-lighting ytd-watch-metadata #description.ytd-watch-metadata,\r\nhtml.ytc-ambient-lighting #description-inner,\r\nhtml.ytc-ambient-lighting ytd-expandable-metadata-renderer,\r\nhtml.ytc-ambient-lighting #description-and-actions,\r\nhtml.ytc-ambient-lighting ytd-text-inline-expander {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\n/* Giảm màu và dịu nội dung phụ xung quanh để video chính nổi bật rực rỡ */\r\nhtml.ytc-ambient-lighting #secondary ytd-thumbnail,\r\nhtml.ytc-ambient-lighting #related ytd-thumbnail {\r\n    filter: brightness(0.88) contrast(0.95);\r\n    transition: filter 0.25s ease;\r\n}\r\nhtml.ytc-ambient-lighting #secondary ytd-thumbnail:hover,\r\nhtml.ytc-ambient-lighting #related ytd-thumbnail:hover {\r\n    filter: brightness(1) contrast(1);\r\n}\r\n\r\n/* ==========================================================================\r\n   1. QUY TẮC RIÊNG CHO GIAO DIỆN TỐI (DARK THEME)\r\n   ========================================================================== */\r\n\r\n/* Khi ở đỉnh trang: Masthead trong suốt cho ánh sáng xuyên qua */\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #masthead-container,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #masthead-container.ytd-app,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #container,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #background,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #background.ytd-masthead,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #end,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #start,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #center,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #buttons {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    border-bottom: none !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\n/* Khung tìm kiếm Dark theme ở đỉnh trang */\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) yt-searchbox,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #search-form,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) form.ytSearchboxComponentSearchForm {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox #container,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #search-form.ytd-searchbox #container,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #search-input,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) .ytSearchboxComponentInputBox {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    box-shadow: none !important;\r\n    border-color: rgba(255, 255, 255, 0.15) !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox #search-icon-legacy,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) .ytSearchboxComponentSearchButton {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border-color: rgba(255, 255, 255, 0.15) !important;\r\n    box-shadow: none !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox input#search,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) input#search,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) input.ytSearchboxComponentInput {\r\n    background: transparent !important;\r\n    color: #fff !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #voice-search-button button,\r\nhtml[dark].ytc-ambient-lighting:not(.ytc-masthead-scrolled) #voice-search-button yt-button-shape button {\r\n    background: transparent !important;\r\n    border: 1px solid rgba(255, 255, 255, 0.15) !important;\r\n}\r\n\r\n/* KHI CUỘN XUỐNG Ở DARK THEME: Masthead quay về màu ĐEN #0f0f0f */\r\nhtml[dark].ytc-ambient-lighting.ytc-masthead-scrolled #masthead-container,\r\nhtml[dark].ytc-ambient-lighting.ytc-masthead-scrolled ytd-masthead {\r\n    background: #0f0f0f !important;\r\n    background-color: #0f0f0f !important;\r\n    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;\r\n    transition: background-color 0.25s ease, border-color 0.25s ease;\r\n}\r\n\r\n/* Các thành phần phụ trong Dark theme */\r\nhtml[dark].ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer:hover,\r\nhtml[dark].ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer:hover #content,\r\nhtml[dark].ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer:hover a#wc-endpoint {\r\n    background: rgba(255, 255, 255, 0.08) !important;\r\n    border-radius: 8px !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer[selected],\r\nhtml[dark].ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer[selected] #content,\r\nhtml[dark].ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer[selected] a#wc-endpoint {\r\n    background: rgba(255, 255, 255, 0.12) !important;\r\n    border-radius: 8px !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting yt-chip-cloud-chip-renderer:not([selected]) {\r\n    background: rgba(255, 255, 255, 0.06) !important;\r\n    border-radius: 8px !important;\r\n    border: none !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting yt-chip-cloud-chip-renderer:not([selected]):hover {\r\n    background: rgba(255, 255, 255, 0.14) !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting ytd-watch-metadata #description:hover,\r\nhtml[dark].ytc-ambient-lighting ytd-watch-metadata #description.ytd-watch-metadata:hover {\r\n    background: rgba(255, 255, 255, 0.04) !important;\r\n    border-radius: 12px !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-lighting #actions ytd-button-renderer yt-button-shape button,\r\nhtml[dark].ytc-ambient-lighting #actions ytd-menu-renderer yt-button-shape button,\r\nhtml[dark].ytc-ambient-lighting #top-level-buttons-computed yt-button-shape button {\r\n    background: rgba(255, 255, 255, 0.06) !important;\r\n    border: none !important;\r\n}\r\n\r\nhtml[dark].ytc-ambient-ready ytd-watch-metadata #title h1,\r\nhtml[dark].ytc-ambient-lighting ytd-watch-metadata #title h1 {\r\n    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);\r\n}\r\n\r\n/* ==========================================================================\r\n   2. QUY TẮC RIÊNG CHO GIAO DIỆN SÁNG (LIGHT THEME)\r\n   ========================================================================== */\r\n\r\n/* Tinh chỉnh màu sắc Ambilight trên nền trắng: Màu sắc rực rỡ, đậm đà ngang ngửa Dark Theme */\r\nhtml:not([dark]) #ytc-ambient-spread-canvas {\r\n    filter: blur(48px) saturate(220%) contrast(115%) brightness(96%);\r\n    opacity: 0.9;\r\n}\r\n\r\n/* Khi ở đỉnh trang: Masthead trong suốt */\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #masthead-container,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #masthead-container.ytd-app,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #container,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #background,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #background.ytd-masthead,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #end,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #start,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #center,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-masthead #buttons {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    border-bottom: none !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\n/* Khung tìm kiếm Light theme ở đỉnh trang: 100% trong suốt xuyên thấu */\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) yt-searchbox,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #search-form,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) form.ytSearchboxComponentSearchForm {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: none !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox #container,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #search-form.ytd-searchbox #container,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #search-input,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) .ytSearchboxComponentInputBox {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n    border-color: rgba(0, 0, 0, 0.15) !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox #search-icon-legacy,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) .ytSearchboxComponentSearchButton {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border-color: rgba(0, 0, 0, 0.15) !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) ytd-searchbox input#search,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) input#search,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) input.ytSearchboxComponentInput {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    box-shadow: none !important;\r\n    color: #0f0f0f !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #voice-search-button button,\r\nhtml:not([dark]).ytc-ambient-lighting:not(.ytc-masthead-scrolled) #voice-search-button yt-button-shape button {\r\n    background: transparent !important;\r\n    background-color: transparent !important;\r\n    border: 1px solid rgba(0, 0, 0, 0.15) !important;\r\n    box-shadow: none !important;\r\n    backdrop-filter: none !important;\r\n    -webkit-backdrop-filter: none !important;\r\n}\r\n\r\n/* KHI CUỘN XUỐNG Ở LIGHT THEME: Masthead TRỞ VỀ MÀU TRẮNG #ffffff (CHUẨN XÁC) */\r\nhtml:not([dark]).ytc-ambient-lighting.ytc-masthead-scrolled #masthead-container,\r\nhtml:not([dark]).ytc-ambient-lighting.ytc-masthead-scrolled ytd-masthead {\r\n    background: #ffffff !important;\r\n    background-color: #ffffff !important;\r\n    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;\r\n    transition: background-color 0.25s ease, border-color 0.25s ease;\r\n}\r\n\r\n/* Các thành phần phụ trong Light theme: Màu tối dịu nhẹ trên nền sáng */\r\nhtml:not([dark]).ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer:hover,\r\nhtml:not([dark]).ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer:hover #content,\r\nhtml:not([dark]).ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer:hover a#wc-endpoint {\r\n    background: rgba(0, 0, 0, 0.05) !important;\r\n    border-radius: 8px !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer[selected],\r\nhtml:not([dark]).ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer[selected] #content,\r\nhtml:not([dark]).ytc-ambient-lighting ytd-playlist-panel-renderer ytd-playlist-panel-video-renderer[selected] a#wc-endpoint {\r\n    background: rgba(0, 0, 0, 0.08) !important;\r\n    border-radius: 8px !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting yt-chip-cloud-chip-renderer:not([selected]) {\r\n    background: rgba(0, 0, 0, 0.05) !important;\r\n    color: #0f0f0f !important;\r\n    border-radius: 8px !important;\r\n    border: none !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting yt-chip-cloud-chip-renderer:not([selected]):hover {\r\n    background: rgba(0, 0, 0, 0.1) !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting ytd-watch-metadata #description:hover,\r\nhtml:not([dark]).ytc-ambient-lighting ytd-watch-metadata #description.ytd-watch-metadata:hover {\r\n    background: rgba(0, 0, 0, 0.03) !important;\r\n    border-radius: 12px !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-lighting #actions ytd-button-renderer yt-button-shape button,\r\nhtml:not([dark]).ytc-ambient-lighting #actions ytd-menu-renderer yt-button-shape button,\r\nhtml:not([dark]).ytc-ambient-lighting #top-level-buttons-computed yt-button-shape button {\r\n    background: rgba(0, 0, 0, 0.05) !important;\r\n    border: none !important;\r\n}\r\n\r\nhtml:not([dark]).ytc-ambient-ready ytd-watch-metadata #title h1,\r\nhtml:not([dark]).ytc-ambient-lighting ytd-watch-metadata #title h1 {\r\n    text-shadow: none !important;\r\n}\r\n\r\n/* Tự động ẩn khi fullscreen hoàn toàn để tiết kiệm 100% GPU */\r\nhtml[fullscreen] #ytc-ambient-wrapper,\r\nytd-watch-flexy[fullscreen] #ytc-ambient-wrapper,\r\n.ytp-fullscreen #ytc-ambient-wrapper {\r\n    display: none !important;\r\n}\r\n\r\n/* Ẩn khi không bật tính năng */\r\nhtml:not(.ytc-ambient-lighting) #ytc-ambient-wrapper {\r\n    display: none !important;\r\n}\r\n\r\n/* ==========================================================================\r\n   TỐI ƯU BỐ CỤC TRANG XEM VIDEO (WATCH PAGE FULL-WIDTH ALIGNMENT)\r\n   - Khắc phục triệt để lỗi khung video bị bóp ép vào trong, thừa 2 khoảng trống 2 bên\r\n   - Triệt tiêu hoàn toàn thanh cuộn ngang (Zero Horizontal Scrollbar)\r\n   - Ép layout trải rộng 100% màn hình, cách đều 2 mép 24px chuẩn như giao diện gốc\r\n   - Video player và sidebar gợi ý tự động co dãn linh hoạt, bám sát mép phải\r\n   ========================================================================== */\r\n@media (min-width: 1000px) {\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #columns.ytd-watch-flexy {\r\n        max-width: 100% !important;\r\n        width: 100% !important;\r\n        margin: 0 !important;\r\n        padding-left: 24px !important;\r\n        padding-right: 24px !important;\r\n        box-sizing: border-box !important;\r\n        display: flex !important;\r\n        justify-content: space-between !important;\r\n        overflow-x: clip !important;\r\n    }\r\n\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #primary.ytd-watch-flexy {\r\n        flex: 1 1 0% !important;\r\n        min-width: 0 !important;\r\n        max-width: none !important;\r\n        width: auto !important;\r\n        margin-right: 24px !important;\r\n    }\r\n\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #primary.ytd-watch-flexy #primary-inner {\r\n        width: 100% !important;\r\n        max-width: 100% !important;\r\n    }\r\n\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #player.ytd-watch-flexy,\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #player-container-outer.ytd-watch-flexy,\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #player-container-inner.ytd-watch-flexy,\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #player-container.ytd-watch-flexy {\r\n        width: 100% !important;\r\n        max-width: 100% !important;\r\n    }\r\n\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #movie_player {\r\n        width: 100% !important;\r\n        height: 100% !important;\r\n    }\r\n\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #secondary.ytd-watch-flexy {\r\n        flex: 0 0 var(--ytd-watch-flexy-sidebar-width, 360px) !important;\r\n        width: var(--ytd-watch-flexy-sidebar-width, 360px) !important;\r\n        min-width: 280px !important;\r\n        max-width: 420px !important;\r\n        margin-right: 0 !important;\r\n        padding-right: 0 !important;\r\n    }\r\n\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #secondary.ytd-watch-flexy #secondary-inner,\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #secondary.ytd-watch-flexy ytd-playlist-panel-renderer,\r\n    ytd-watch-flexy:not([theater]):not([fullscreen]) #secondary.ytd-watch-flexy #related {\r\n        width: 100% !important;\r\n        max-width: 100% !important;\r\n        box-sizing: border-box !important;\r\n    }\r\n}\r\n\r\n\r\n\r\n\r\n';
 
   // src/index.js
   init_config();
@@ -4313,976 +6487,7 @@
   // src/ui/index.js
   init_sync();
   init_notifier();
-
-  // src/ui/panel.js
-  init_config();
-  init_utils();
-  init_constants();
-  init_i18n();
-  init_sync();
-  init_notifier();
-  var menuDismissBound = false;
-  function bindGlobalMenuDismiss() {
-    if (menuDismissBound) return;
-    menuDismissBound = true;
-    document.addEventListener("click", (e) => {
-      const panel = document.getElementById("ytc-settings-panel");
-      if (panel && panel.classList.contains("open")) {
-        if (!e.target.closest("#ytc-settings-panel") && !e.target.closest("#ytc-settings-btn")) {
-          panel.classList.remove("open");
-        }
-      }
-      const langDropdown = document.getElementById("ytc-lang-dropdown");
-      if (langDropdown && langDropdown.classList.contains("open")) {
-        if (!e.target.closest("#ytc-lang-dropdown")) {
-          langDropdown.classList.remove("open");
-          const trigger = document.getElementById("ytc-lang-trigger");
-          if (trigger) trigger.setAttribute("aria-expanded", "false");
-        }
-      }
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        const panel = document.getElementById("ytc-settings-panel");
-        if (panel && panel.classList.contains("open")) {
-          panel.classList.remove("open");
-        }
-      }
-    });
-    window.addEventListener("resize", () => {
-      const panel = document.getElementById("ytc-settings-panel");
-      const btn = document.getElementById("ytc-settings-btn");
-      if (panel && panel.classList.contains("open") && btn) {
-        const rect = btn.getBoundingClientRect();
-        panel.style.top = rect.bottom + 8 + "px";
-        panel.style.right = Math.max(12, window.innerWidth - rect.right - 10) + "px";
-      }
-    }, { passive: true });
-  }
-  function createSettingsPanel() {
-    let panel = document.getElementById("ytc-settings-panel");
-    if (!panel) {
-      let filterLangItems = function(query) {
-        const q = (query || "").toLowerCase().trim();
-        const items = langList ? langList.querySelectorAll(".ytc-dropdown-item") : [];
-        items.forEach((item) => {
-          const name = (item.querySelector(".ytc-lang-name")?.textContent || "").toLowerCase();
-          const native = (item.querySelector(".ytc-lang-native")?.textContent || "").toLowerCase();
-          const code = (item.getAttribute("data-code") || "").toLowerCase();
-          const match = !q || name.includes(q) || native.includes(q) || code.includes(q);
-          item.style.display = match ? "flex" : "none";
-        });
-      };
-      panel = document.createElement("div");
-      panel.id = "ytc-settings-panel";
-      setElementHTML(panel, `
-            <div class="ytc-header">
-                <span>YouTube Customizer</span>
-                <span class="ytc-header-badge">v${APP_VERSION}</span>
-            </div>
-
-            <div class="ytc-tabs">
-                <button class="ytc-tab-btn active" data-tab="layout" title="Bố cục & Giao diện">
-                    ${LAYOUT_TAB_SVG}
-                    <span>Giao diện</span>
-                </button>
-                <button class="ytc-tab-btn" data-tab="filter" title="Lọc nội dung sạch">
-                    ${SHIELD_TAB_SVG}
-                    <span>Lọc</span>
-                </button>
-                <button class="ytc-tab-btn" data-tab="player" title="Trình phát & Video">
-                    ${PLAYER_TAB_SVG}
-                    <span>Trình phát</span>
-                </button>
-                <button class="ytc-tab-btn" data-tab="optimize" title="Tối ưu hiệu năng, RAM & GPU">
-                    ${OPTIMIZE_TAB_SVG}
-                    <span>Tối Ưu</span>
-                </button>
-                <button class="ytc-tab-btn" data-tab="info" title="Thông tin tiện ích & Tác giả">
-                    ${INFO_TAB_SVG}
-                    <span>Thông tin</span>
-                </button>
-            </div>
-
-            <!-- TAB 1: GIAO DIỆN & BỐ CỤC -->
-            <div class="ytc-tab-pane active" id="ytc-pane-layout">
-                <div class="ytc-item" id="ytc-row-cols" title="Tùy chỉnh số cột video hiển thị trên trang chủ và kênh">
-                    <div class="ytc-item-left">
-                        ${GRID_SVG}
-                        <span>Số cột trang chủ</span>
-                    </div>
-                    <div class="ytc-cols-group">
-                        <button class="ytc-col-btn ${currentConfig.columns === 3 ? "active" : ""}" data-cols="3" title="Hiển thị 3 cột">3</button>
-                        <button class="ytc-col-btn ${currentConfig.columns === 4 ? "active" : ""}" data-cols="4" title="Hiển thị 4 cột">4</button>
-                        <button class="ytc-col-btn ${currentConfig.columns === 5 ? "active" : ""}" data-cols="5" title="Hiển thị 5 cột">5</button>
-                    </div>
-                </div>
-
-                <div class="ytc-item" data-toggle="premiumLogo" title="Thay thế logo YouTube thường bằng logo YouTube Premium kèm mã quốc gia">
-                    <div class="ytc-item-left">
-                        ${YOUTUBE_SVG}
-                        <span>Logo Premium</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-logo">
-                        <input type="checkbox" id="ytc-chk-logo" name="premiumLogo" aria-label="Logo Premium" ${currentConfig.premiumLogo ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="unlockLiveDvr" title="Mở khóa tua lùi thời gian trên các luồng Live Stream bị chủ kênh cấm tua">
-                    <div class="ytc-item-left">
-                        ${REWIND_SVG}
-                        <span>Mở khóa tua Live Stream</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-livedvr">
-                        <input type="checkbox" id="ytc-chk-livedvr" name="unlockLiveDvr" aria-label="Mở khóa tua Live Stream" ${currentConfig.unlockLiveDvr ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="autoLiveSync" title="Tự động giữ mốc trực tiếp khi xem Live Stream, chống trễ hình khi mạng lag hoặc chuyển tab">
-                    <div class="ytc-item-left">
-                        ${RADIO_SVG}
-                        <span>Tự động trực tiếp (Auto Live)</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-autolive">
-                        <input type="checkbox" id="ytc-chk-autolive" name="autoLiveSync" aria-label="Tự động trực tiếp (Auto Live)" ${currentConfig.autoLiveSync ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-
-                <div class="ytc-item" data-toggle="ambientLighting" title="Hiệu ứng ánh sáng phòng (Ambilight) phản chiếu theo màu video cực đẹp, tự động tối ưu phần cứng siêu nhẹ">
-                    <div class="ytc-item-left">
-                        ${AMBIENT_LIGHT_SVG}
-                        <span>Ánh sáng phòng (Ambilight)<span class="ytc-star-badge" title="Tính năng đặc biệt nổi bật">⭐</span></span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-ambient-light">
-                        <input type="checkbox" id="ytc-chk-ambient-light" name="ambientLighting" aria-label="Ánh sáng phòng (Ambilight)" ${currentConfig.ambientLighting ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <!-- CHỌN NGÔN NGỮ GIAO DIỆN SCRIPT (CUSTOM DROPDOWN) -->
-                <div class="ytc-item ytc-item-lang" id="ytc-row-language" title="Chọn ngôn ngữ hiển thị giao diện bảng điều khiển của script">
-                    <div class="ytc-item-left">
-                        ${GLOBE_SVG}
-                        <span>Ngôn ngữ giao diện</span>
-                    </div>
-                    <div class="ytc-dropdown" id="ytc-lang-dropdown">
-                        <button type="button" class="ytc-dropdown-trigger" id="ytc-lang-trigger" aria-haspopup="listbox" aria-expanded="false" title="Nhấp để thay đổi ngôn ngữ">
-                            <span class="ytc-dropdown-current">
-                                <span class="ytc-lang-flag" id="ytc-lang-current-flag">${(getLanguageInfo(currentConfig.language || "auto") || {}).flag || "🌐"}</span>
-                                <span class="ytc-lang-name" id="ytc-lang-current-label">${(getLanguageInfo(currentConfig.language || "auto") || {}).name || "Tự động"}</span>
-                            </span>
-                            ${CHEVRON_DOWN_SVG}
-                        </button>
-                        <div class="ytc-dropdown-menu" id="ytc-lang-menu" role="listbox">
-                            <div class="ytc-dropdown-search-wrap">
-                                <input type="text" class="ytc-dropdown-search" id="ytc-lang-search" placeholder="🔍 Tìm kiếm ngôn ngữ..." autocomplete="off" spellcheck="false">
-                            </div>
-                            <div class="ytc-dropdown-list" id="ytc-lang-list">
-                                ${SUPPORTED_LANGUAGES.map((lang) => {
-        const isSelected = (currentConfig.language || "auto") === lang.code;
-        return `
-                                    <div class="ytc-dropdown-item ${isSelected ? "active" : ""}" data-code="${lang.code}" role="option" aria-selected="${isSelected ? "true" : "false"}">
-                                        <span class="ytc-lang-flag">${lang.flag}</span>
-                                        <div class="ytc-lang-texts">
-                                            <span class="ytc-lang-name">${lang.name}</span>
-                                            <span class="ytc-lang-native">${lang.nativeName}</span>
-                                        </div>
-                                        <span class="ytc-lang-check">${isSelected ? CHECK_SVG : ""}</span>
-                                    </div>
-                                    `;
-      }).join("")}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="ytc-item" id="ytc-row-chatoverlay" title="Hiển thị chat trực tiếp nổi trên màn hình video (tự động ẩn khi tua lùi video)">
-                    <div class="ytc-item-left">
-                        ${MESSAGE_SVG}
-                        <span>Live Chat</span>
-                    </div>
-                    <div class="ytc-mode-group">
-                        <button class="ytc-mode-btn ${!currentConfig.chatOverlay || currentConfig.chatOverlay === "off" ? "active" : ""}" data-overlay="off" title="Tắt chat trên video">Tắt</button>
-                        <button class="ytc-mode-btn ${currentConfig.chatOverlay === "danmaku" ? "active" : ""}" data-overlay="danmaku" title="Chữ chạy ngang màn hình dạng Danmaku">Ngang</button>
-                        <button class="ytc-mode-btn ${currentConfig.chatOverlay === "streamer" ? "active" : ""}" data-overlay="streamer" title="Khung chat nổi của streamer, kéo thả và co giãn tự do">Nổi</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 2: LỌC NỘI DUNG SẠCH -->
-            <div class="ytc-tab-pane" id="ytc-pane-filter">
-                <div class="ytc-item" data-toggle="hideShorts" title="Ẩn toàn bộ video ngắn Shorts trên trang chủ, đăng ký và thanh menu">
-                    <div class="ytc-item-left">
-                        ${SHORTS_SVG}
-                        <span>Ẩn mục Shorts</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-shorts">
-                        <input type="checkbox" id="ytc-chk-shorts" name="hideShorts" aria-label="Ẩn mục Shorts" ${currentConfig.hideShorts ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="hidePlayables" title="Ẩn mục trò chơi Playables trên trang chủ và thanh menu">
-                    <div class="ytc-item-left">
-                        ${GAMEPAD_SVG}
-                        <span>Ẩn mục Chơi game</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-playables">
-                        <input type="checkbox" id="ytc-chk-playables" name="hidePlayables" aria-label="Ẩn mục Chơi game" ${currentConfig.hidePlayables ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="hideMembersOnly" title="Ẩn video dành riêng cho hội viên và video ưu tiên xem trước">
-                    <div class="ytc-item-left">
-                        ${CROWN_SVG}
-                        <span>Ẩn video Hội viên</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-members">
-                        <input type="checkbox" id="ytc-chk-members" name="hideMembersOnly" aria-label="Ẩn video Hội viên" ${currentConfig.hideMembersOnly ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="hideCommunity" title="Ẩn bài viết, khảo sát và hình ảnh bài đăng cộng đồng trên feed">
-                    <div class="ytc-item-left">
-                        ${POST_SVG}
-                        <span>Ẩn bài đăng cộng đồng</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-community">
-                        <input type="checkbox" id="ytc-chk-community" name="hideCommunity" aria-label="Ẩn bài đăng cộng đồng" ${currentConfig.hideCommunity ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="cleanSearch" title="Ẩn video được tài trợ và quảng cáo khi tìm kiếm trên YouTube">
-                    <div class="ytc-item-left">
-                        ${SEARCH_SVG}
-                        <span>Lọc tìm kiếm sạch</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-search">
-                        <input type="checkbox" id="ytc-chk-search" name="cleanSearch" aria-label="Lọc tìm kiếm sạch" ${currentConfig.cleanSearch ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="hideExploreTopics" title="Ẩn kệ Khám phá các chủ đề khác chen giữa video trang chủ">
-                    <div class="ytc-item-left">
-                        ${COMPASS_SVG}
-                        <span>Ẩn Khám phá chủ đề</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-explore">
-                        <input type="checkbox" id="ytc-chk-explore" name="hideExploreTopics" aria-label="Ẩn Khám phá chủ đề" ${currentConfig.hideExploreTopics ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="hideShopping" title="Ẩn bảng Sản phẩm (Shopping), nút túi xách mua sắm trên video và kệ sản phẩm gắn thẻ">
-                    <div class="ytc-item-left">
-                        ${SHOPPING_SVG}
-                        <span>Ẩn sản phẩm gắn thẻ</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-shopping">
-                        <input type="checkbox" id="ytc-chk-shopping" name="hideShopping" aria-label="Ẩn sản phẩm gắn thẻ" ${currentConfig.hideShopping ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="hideMixes" title="Ẩn toàn bộ Danh sách kết hợp (Mixes/Radio) và Danh sách phát (Playlists) trên trang chủ, tìm kiếm, gợi ý và tự động chuyển tiếp video đề xuất khi xem">
-                    <div class="ytc-item-left">
-                        ${PLAYLIST_SVG}
-                        <span>Ẩn Danh sách phát & Mix</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-mixes">
-                        <input type="checkbox" id="ytc-chk-mixes" name="hideMixes" aria-label="Ẩn Danh sách phát & Mix" ${currentConfig.hideMixes ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- TAB 3: TRÌNH PHÁT & VIDEO -->
-            <div class="ytc-tab-pane" id="ytc-pane-player">
-                <div class="ytc-item" data-toggle="hideEndscreen" title="Ẩn khung gợi ý video cuối clip và biểu tượng thẻ chữ (i) góc trên">
-                    <div class="ytc-item-left">
-                        ${ENDSCREEN_SVG}
-                        <span>Ẩn thẻ kết thúc/chú thích</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-endscreen">
-                        <input type="checkbox" id="ytc-chk-endscreen" name="hideEndscreen" aria-label="Ẩn thẻ kết thúc/chú thích" ${currentConfig.hideEndscreen ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="hideWatermark" title="Ẩn logo hình mờ hoặc avatar kênh ở góc dưới cùng bên phải video">
-                    <div class="ytc-item-left">
-                        ${WATERMARK_SVG}
-                        <span>Ẩn logo góc video</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-watermark">
-                        <input type="checkbox" id="ytc-chk-watermark" name="hideWatermark" aria-label="Ẩn logo góc video" ${currentConfig.hideWatermark ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="autoDismissPromos" title="Tự động tắt banner Premium, khảo sát và thông báo sự cố gián đoạn phiền toái">
-                    <div class="ytc-item-left">
-                        ${BELL_OFF_SVG}
-                        <span>Tự đóng banner & thông báo</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-promos">
-                        <input type="checkbox" id="ytc-chk-promos" name="autoDismissPromos" aria-label="Tự đóng banner & thông báo" ${currentConfig.autoDismissPromos ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="hideNativeLiveChat" title="Tự động tắt khung trò chuyện khi mới mở video (người dùng vẫn có thể bấm mở lại bình thường, Live Chat Overlay vẫn chạy ngầm nếu bật)">
-                    <div class="ytc-item-left">
-                        ${CHAT_OFF_SVG}
-                        <span>Tắt trò chuyện trực tiếp</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-hidenativechat">
-                        <input type="checkbox" id="ytc-chk-hidenativechat" name="hideNativeLiveChat" aria-label="Tắt trò chuyện trực tiếp" ${currentConfig.hideNativeLiveChat ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="hideChatEmojis" title="Ẩn biểu tượng cảm xúc (emoji/sticker) trong Live Chat: cmt chỉ có icon sẽ ẩn hẳn, cmt có chữ sẽ chỉ hiện chữ">
-                    <div class="ytc-item-left">
-                        ${EMOJI_OFF_SVG}
-                        <span>Ẩn biểu tượng trong Live Chat</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-hidechatemojis">
-                        <input type="checkbox" id="ytc-chk-hidechatemojis" name="hideChatEmojis" aria-label="Ẩn biểu tượng trong Live Chat" ${currentConfig.hideChatEmojis ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item ytc-item-link" id="ytc-btn-ublock" title="Mở trang tiện ích uBlock Origin — trình chặn quảng cáo số 1 thế giới, sạch sẽ, an toàn và không gây giật lag">
-                    <div class="ytc-item-left">
-                        ${SHIELD_CHECK_SVG}
-                        <span>Chặn quảng cáo (uBlock)</span>
-                    </div>
-                    <div class="ytc-link-badge">
-                        <span>Mở trang</span>
-                        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 4: TỐI ƯU HIỆU NĂNG & TIỆN ÍCH -->
-            <div class="ytc-tab-pane" id="ytc-pane-optimize">
-                <div class="ytc-item ytc-item-vertical" id="ytc-row-quality" title="Ưu tiên tự động chọn độ phân giải theo ý muốn (Mặc định: Tự động của YouTube)">
-                    <div class="ytc-item-header">
-                        <div class="ytc-item-left">
-                            ${QUALITY_SVG}
-                            <span>Độ phân giải video</span>
-                        </div>
-                        <span class="ytc-quality-badge">${currentConfig.preferredQuality === "auto" ? "TỰ ĐỘNG" : currentConfig.preferredQuality === "max" ? "CAO NHẤT" : currentConfig.preferredQuality.toUpperCase()}</span>
-                    </div>
-                    <div class="ytc-mode-group ytc-quality-group">
-                        <button class="ytc-quality-btn ${!currentConfig.preferredQuality || currentConfig.preferredQuality === "auto" ? "active" : ""}" data-quality="auto" title="Để YouTube tự động quyết định">Tự động</button>
-                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === "max" ? "active" : ""}" data-quality="max" title="Ưu tiên độ phân giải cao nhất khả dụng (4K, 2K...)">Cao nhất</button>
-                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === "1440p" ? "active" : ""}" data-quality="1440p" title="Ưu tiên 2K (1440p)">2K</button>
-                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === "1080p" ? "active" : ""}" data-quality="1080p" title="Ưu tiên Full HD (1080p)">1080p</button>
-                        <button class="ytc-quality-btn ${currentConfig.preferredQuality === "720p" ? "active" : ""}" data-quality="720p" title="Ưu tiên HD (720p)">720p</button>
-                    </div>
-                </div>
-
-                <div class="ytc-item" data-toggle="preventAutoPause" title="Tự động xác nhận hộp thoại 'Video đã tạm dừng. Bạn vẫn đang xem chứ?' và duy trì trạng thái hoạt động để phát nhạc/video liên tục">
-                    <div class="ytc-item-left">
-                        ${INFINITY_SVG}
-                        <span>Chặn tự dừng video</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-autopause">
-                        <input type="checkbox" id="ytc-chk-autopause" name="preventAutoPause" aria-label="Chặn tự dừng video" ${currentConfig.preventAutoPause ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="chatMemoryGc" title="Giới hạn tối đa 100 tin nhắn trong DOM Live Chat, dọn dẹp bộ nhớ định kỳ chống đầy tràn RAM khi xem stream lâu">
-                    <div class="ytc-item-left">
-                        ${BROOM_SVG}
-                        <span>Dọn rác bộ nhớ Live Chat</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-chatgc">
-                        <input type="checkbox" id="ytc-chk-chatgc" name="chatMemoryGc" aria-label="Dọn rác bộ nhớ Live Chat" ${currentConfig.chatMemoryGc ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="keyboardControls" title="Phím tắt: A/D hoặc 4/6 tua 10s, S hoặc 5 dừng/phát, 8/2 âm lượng (chặn nhảy % khi bật NumLock)">
-                    <div class="ytc-item-left">
-                        ${KEYBOARD_SVG}
-                        <span>Phím tắt (A-S-D, Numpad)</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-keys">
-                        <input type="checkbox" id="ytc-chk-keys" name="keyboardControls" aria-label="Phím tắt điều khiển" ${currentConfig.keyboardControls ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="audioOnlyMode" title="Chế độ Radio: Tắt hoàn toàn render hình ảnh video, hạ chất lượng tối thiểu để chỉ nghe tiếng, giảm tối đa RAM/GPU">
-                    <div class="ytc-item-left">
-                        ${HEADPHONES_SVG}
-                        <span>Chỉ phát âm thanh (Radio)</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-audioonly">
-                        <input type="checkbox" id="ytc-chk-audioonly" name="audioOnlyMode" aria-label="Chỉ phát âm thanh" ${currentConfig.audioOnlyMode ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="blockAv1" title="Chặn codec AV1 ngốn CPU, ép dùng bộ giải mã phần cứng H.264 & VP9 mượt mà, mát máy">
-                    <div class="ytc-item-left">
-                        ${CPU_SVG}
-                        <span>Chặn AV1 / Ép Codec H.264</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-blockav1">
-                        <input type="checkbox" id="ytc-chk-blockav1" name="blockAv1" aria-label="Chặn AV1 / Ép Codec H.264" ${currentConfig.blockAv1 ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- TAB 5: THÔNG TIN & HỖ TRỢ -->
-            <div class="ytc-tab-pane" id="ytc-pane-info">
-                <!-- Thông tin nhà phát triển -->
-                <div class="ytc-item ytc-item-link" id="ytc-btn-dev" title="Ghé thăm website cá nhân của Huy Vũ">
-                    <div class="ytc-item-left">
-                        ${USER_SVG}
-                        <div class="ytc-item-text-group">
-                            <span class="ytc-item-main-text">Huy Vũ</span>
-                            <span class="ytc-item-sub-text">huyvu2512.io.vn • Tác giả</span>
-                        </div>
-                    </div>
-                    <div class="ytc-link-badge">
-                        <span>Website</span>
-                        ${EXTERNAL_LINK_SVG}
-                    </div>
-                </div>
-
-                <!-- Báo cáo sự cố / Góp ý -->
-                <div class="ytc-item ytc-item-link" id="ytc-btn-report" title="Báo lỗi hoặc đề xuất tính năng mới trên GitHub Issues">
-                    <div class="ytc-item-left">
-                        ${BUG_SVG}
-                        <div class="ytc-item-text-group">
-                            <span class="ytc-item-main-text">Báo cáo & Góp ý</span>
-                            <span class="ytc-item-sub-text">Báo lỗi hoặc đề xuất ý tưởng</span>
-                        </div>
-                    </div>
-                    <div class="ytc-link-badge">
-                        <span>Báo cáo</span>
-                        ${EXTERNAL_LINK_SVG}
-                    </div>
-                </div>
-
-                <!-- Tặng quà / Ủng hộ -->
-                <div class="ytc-item ytc-item-link" id="ytc-btn-donate" title="Ủng hộ tác giả 1 ly cà phê tiếp thêm động lực">
-                    <div class="ytc-item-left">
-                        ${GIFT_SVG}
-                        <div class="ytc-item-text-group">
-                            <span class="ytc-item-main-text">Tặng quà & Ủng hộ</span>
-                            <span class="ytc-item-sub-text">Ủng hộ 1 ly cà phê tiếp thêm động lực</span>
-                        </div>
-                    </div>
-                    <div class="ytc-link-badge">
-                        <span>Ủng hộ</span>
-                        ${EXTERNAL_LINK_SVG}
-                    </div>
-                </div>
-
-                <!-- Thẻ kiểm tra cập nhật tinh gọn -->
-                <div class="ytc-info-card">
-                    <div class="ytc-info-title-wrap">
-                        <span class="ytc-info-title">Kiểm tra cập nhật</span>
-                    </div>
-                    <button class="ytc-update-btn" id="ytc-btn-update" title="Kiểm tra bản cập nhật mới nhất từ GitHub">
-                        ${UPDATE_SVG}
-                        <span id="ytc-update-btn-text">Kiểm tra</span>
-                    </button>
-                </div>
-
-                <!-- Công tắc gạt Tự động cập nhật -->
-                <div class="ytc-item" data-toggle="autoUpdate" title="Tự động gọi API kiểm tra phiên bản mới mỗi khi vào YouTube và tự trỏ sang link cập nhật">
-                    <div class="ytc-item-left">
-                        ${UPDATE_SVG}
-                        <div class="ytc-item-text-group">
-                            <span class="ytc-item-main-text">Tự động cập nhật</span>
-                            <span class="ytc-item-sub-text">Tự gọi API và trỏ sang link cài bản mới khi vào YouTube</span>
-                        </div>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-autoupdate">
-                        <input type="checkbox" id="ytc-chk-autoupdate" name="autoUpdate" aria-label="Tự động cập nhật" ${currentConfig.autoUpdate ? "checked" : ""}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-            </div>
-        `);
-      (document.body || document.documentElement).appendChild(panel);
-      panel.querySelectorAll(".ytc-tab-btn").forEach((tabBtn) => {
-        tabBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const tabKey = tabBtn.getAttribute("data-tab");
-          panel.querySelectorAll(".ytc-tab-btn").forEach((b) => b.classList.remove("active"));
-          panel.querySelectorAll(".ytc-tab-pane").forEach((p) => p.classList.remove("active"));
-          tabBtn.classList.add("active");
-          const targetPane = panel.querySelector(`#ytc-pane-${tabKey}`);
-          if (targetPane) targetPane.classList.add("active");
-        });
-      });
-      panel.querySelectorAll(".ytc-col-btn").forEach((colBtn) => {
-        colBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const cols = parseInt(colBtn.getAttribute("data-cols"), 10) || 4;
-          currentConfig.columns = cols;
-          saveConfig(currentConfig);
-          panel.querySelectorAll(".ytc-col-btn").forEach((b) => b.classList.remove("active"));
-          colBtn.classList.add("active");
-          applyConfigToRoot();
-        });
-      });
-      const langDropdown = panel.querySelector("#ytc-lang-dropdown");
-      const langTrigger = panel.querySelector("#ytc-lang-trigger");
-      const langSearch = panel.querySelector("#ytc-lang-search");
-      const langList = panel.querySelector("#ytc-lang-list");
-      if (langTrigger && langDropdown) {
-        langTrigger.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const isOpen = langDropdown.classList.toggle("open");
-          langTrigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
-          if (isOpen && langSearch) {
-            langSearch.value = "";
-            filterLangItems("");
-            setTimeout(() => langSearch.focus(), 60);
-          }
-        });
-      }
-      if (langSearch) {
-        langSearch.addEventListener("input", (e) => {
-          filterLangItems(e.target.value);
-        });
-        langSearch.addEventListener("click", (e) => {
-          e.stopPropagation();
-        });
-        langSearch.addEventListener("keydown", (e) => {
-          e.stopPropagation();
-          if (e.key === "Escape") {
-            langDropdown?.classList.remove("open");
-            langTrigger?.setAttribute("aria-expanded", "false");
-          }
-        });
-      }
-      if (langList) {
-        langList.querySelectorAll(".ytc-dropdown-item").forEach((item) => {
-          item.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const code = item.getAttribute("data-code") || "auto";
-            currentConfig.language = code;
-            saveConfig(currentConfig);
-            const langInfo = getLanguageInfo(code);
-            const currentFlag = panel.querySelector("#ytc-lang-current-flag");
-            const currentLabel = panel.querySelector("#ytc-lang-current-label");
-            if (currentFlag) currentFlag.textContent = langInfo.flag;
-            if (currentLabel) currentLabel.textContent = langInfo.name;
-            langList.querySelectorAll(".ytc-dropdown-item").forEach((it) => {
-              const isMatch = it.getAttribute("data-code") === code;
-              it.classList.toggle("active", isMatch);
-              it.setAttribute("aria-selected", isMatch ? "true" : "false");
-              const check = it.querySelector(".ytc-lang-check");
-              if (check) check.innerHTML = isMatch ? CHECK_SVG : "";
-            });
-            langDropdown?.classList.remove("open");
-            langTrigger?.setAttribute("aria-expanded", "false");
-            showToast(`🌐 Đã chuyển ngôn ngữ: ${langInfo.flag} ${langInfo.name}`);
-          });
-        });
-      }
-      panel.querySelectorAll("#ytc-row-chatoverlay .ytc-mode-btn").forEach((modeBtn) => {
-        modeBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const mode = modeBtn.getAttribute("data-overlay") || "off";
-          if (mode !== "off" && !hasLiveOrChatSupport()) {
-            showToast("⚠️ Live Chat chỉ khả dụng khi xem Live Stream hoặc video có khung trò chuyện!");
-            return;
-          }
-          currentConfig.chatOverlay = mode;
-          saveConfig(currentConfig);
-          panel.querySelectorAll("#ytc-row-chatoverlay .ytc-mode-btn").forEach((b) => b.classList.remove("active"));
-          modeBtn.classList.add("active");
-          applyConfigToRoot();
-          Promise.resolve().then(() => (init_chat(), chat_exports)).then((m) => {
-            if (m && typeof m.updateChatOverlayVisibility === "function") {
-              m.updateChatOverlayVisibility();
-            }
-          }).catch(() => {
-          });
-        });
-      });
-      panel.querySelectorAll(".ytc-quality-btn").forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const quality = btn.getAttribute("data-quality") || "auto";
-          currentConfig.preferredQuality = quality;
-          saveConfig(currentConfig);
-          panel.querySelectorAll(".ytc-quality-btn").forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-          const labelBadge = panel.querySelector(".ytc-quality-badge");
-          if (labelBadge) {
-            const labels = {
-              auto: "TỰ ĐỘNG",
-              max: "CAO NHẤT",
-              "1440p": "2K",
-              "1080p": "1080P",
-              "720p": "720P"
-            };
-            labelBadge.textContent = labels[quality] || quality.toUpperCase();
-          }
-          Promise.resolve().then(() => (init_qualityManager(), qualityManager_exports)).then((m) => {
-            if (m && typeof m.applyPreferredQuality === "function") {
-              m.applyPreferredQuality();
-            }
-          }).catch(() => {
-          });
-        });
-      });
-      panel.querySelectorAll(".ytc-item[data-toggle]").forEach((item) => {
-        const key = item.getAttribute("data-toggle");
-        const checkbox = item.querySelector('input[type="checkbox"]');
-        if (!checkbox) return;
-        checkbox.addEventListener("change", () => {
-          currentConfig[key] = checkbox.checked;
-          saveConfig(currentConfig);
-          applyConfigToRoot();
-          if (key === "hideNativeLiveChat") {
-            Promise.resolve().then(() => (init_chat(), chat_exports)).then((m) => {
-              if (checkbox.checked) {
-                if (m && typeof m.resetChatCollapseState === "function") {
-                  m.resetChatCollapseState();
-                }
-                if (m && typeof m.autoCollapseNativeChatIfOpen === "function") {
-                  m.autoCollapseNativeChatIfOpen(true);
-                }
-                if (m && typeof m.setupAutoCloseObserver === "function") {
-                  m.setupAutoCloseObserver();
-                }
-                setTimeout(() => m.autoCollapseNativeChatIfOpen?.(true), 100);
-                setTimeout(() => m.autoCollapseNativeChatIfOpen?.(true), 300);
-                setTimeout(() => m.autoCollapseNativeChatIfOpen?.(true), 700);
-              } else {
-                if (m && typeof m.setUserManuallyOpenedChat === "function") {
-                  m.setUserManuallyOpenedChat(true);
-                }
-                if (m && typeof m.setNativeChatHiddenState === "function") {
-                  m.setNativeChatHiddenState(false);
-                }
-                const chatFrame = document.querySelector("ytd-live-chat-frame#chat, #chat.ytd-watch-flexy");
-                if (chatFrame && chatFrame.hasAttribute("collapsed")) {
-                  const showBtn = chatFrame.querySelector("#show-hide-button yt-button-shape button, #show-hide-button button, #show-hide-button");
-                  if (showBtn) showBtn.click();
-                }
-              }
-              if (m && typeof m.syncPlayerFullscreenSize === "function") {
-                m.syncPlayerFullscreenSize();
-              }
-              if (m && typeof m.updateChatOverlayVisibility === "function") {
-                m.updateChatOverlayVisibility();
-              }
-            }).catch(() => {
-            });
-            window.dispatchEvent(new Event("resize"));
-          }
-          if (key === "ambientLighting") {
-            Promise.resolve().then(() => (init_ambientLight(), ambientLight_exports)).then((m) => {
-              if (m && typeof m.applyAmbientLightingState === "function") {
-                m.applyAmbientLightingState();
-              }
-            }).catch(() => {
-            });
-          }
-          if (key === "audioOnlyMode") {
-            Promise.resolve().then(() => (init_audioOnly(), audioOnly_exports)).then((m) => {
-              if (m && typeof m.applyAudioOnlyState === "function") {
-                m.applyAudioOnlyState();
-              }
-            }).catch(() => {
-            });
-            Promise.resolve().then(() => (init_ambientLight(), ambientLight_exports)).then((m) => {
-              if (m && typeof m.applyAmbientLightingState === "function") {
-                m.applyAmbientLightingState();
-              }
-            }).catch(() => {
-            });
-          }
-          if (key === "chatMemoryGc" && checkbox.checked) {
-            Promise.resolve().then(() => (init_chatMemoryGc(), chatMemoryGc_exports)).then((m) => {
-              if (m && typeof m.performChatMemoryGc === "function") {
-                m.performChatMemoryGc();
-              }
-            }).catch(() => {
-            });
-          }
-          if (key === "hideMixes") {
-            Promise.resolve().then(() => (init_mixFilter(), mixFilter_exports)).then((m) => {
-              if (checkbox.checked) {
-                if (typeof m.cleanMixUrl === "function") m.cleanMixUrl();
-                if (typeof m.tagWatchMixPanel === "function") m.tagWatchMixPanel();
-              }
-            }).catch(() => {
-            });
-            Promise.resolve().then(() => (init_feedFilter(), feedFilter_exports)).then((m) => {
-              if (m && typeof m.scheduleFeedScan === "function") {
-                m.scheduleFeedScan(document);
-              }
-            }).catch(() => {
-            });
-          }
-          if (key === "hideShopping" && checkbox.checked) {
-            Promise.resolve().then(() => (init_shoppingFilter(), shoppingFilter_exports)).then((m) => {
-              if (m && typeof m.dismissShoppingPanels === "function") {
-                m.dismissShoppingPanels(document);
-              }
-            }).catch(() => {
-            });
-          }
-          if (key === "unlockLiveDvr") {
-            if (location.pathname.startsWith("/watch") || location.pathname.startsWith("/live")) {
-              setTimeout(() => {
-                location.reload();
-              }, 250);
-            }
-          }
-          if (key === "autoUpdate" && checkbox.checked) {
-            Promise.resolve().then(() => (init_notifier(), notifier_exports)).then((m) => {
-              if (m && typeof m.checkAndAutoUpdate === "function") {
-                m.checkAndAutoUpdate(true);
-              }
-            }).catch(() => {
-            });
-          }
-        });
-        item.addEventListener("click", (e) => {
-          if (!e.target.closest(".ytc-switch")) {
-            checkbox.checked = !checkbox.checked;
-            checkbox.dispatchEvent(new Event("change"));
-          }
-        });
-      });
-      const ublockBtn = panel.querySelector("#ytc-btn-ublock");
-      if (ublockBtn) {
-        ublockBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          window.open("https://ublockorigin.com/", "_blank", "noopener,noreferrer");
-        });
-      }
-      const updateBtn = panel.querySelector("#ytc-btn-update");
-      const updateBtnText = panel.querySelector("#ytc-update-btn-text");
-      if (updateBtn) {
-        let isChecking = false;
-        let isCountingDown = false;
-        let countdownInterval = null;
-        let reloadTriggered = false;
-        const triggerReload = () => {
-          if (reloadTriggered) return;
-          reloadTriggered = true;
-          if (countdownInterval) {
-            clearInterval(countdownInterval);
-            countdownInterval = null;
-          }
-          if (updateBtnText) updateBtnText.textContent = "Đang tải lại...";
-          location.reload();
-        };
-        updateBtn.addEventListener("click", async (e) => {
-          e.stopPropagation();
-          if (isCountingDown) {
-            triggerReload();
-            return;
-          }
-          if (isChecking) return;
-          isChecking = true;
-          updateBtn.disabled = true;
-          updateBtn.classList.remove("ytc-btn-success", "ytc-btn-has-update");
-          updateBtn.classList.add("ytc-btn-loading");
-          if (updateBtnText) updateBtnText.textContent = "Đang kiểm tra...";
-          try {
-            let pkg = null;
-            try {
-              const apiRes = await fetch("https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main", {
-                headers: { "Accept": "application/vnd.github.v3.raw" },
-                cache: "no-store"
-              });
-              if (apiRes.ok) {
-                const data = await apiRes.json();
-                if (data && data.version) {
-                  pkg = data;
-                } else if (data && data.content && data.encoding === "base64") {
-                  try {
-                    pkg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, "")))));
-                  } catch (err) {
-                  }
-                }
-              }
-            } catch (e2) {
-            }
-            if (!pkg || !pkg.version) {
-              const rawRes = await fetch(`https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?t=${Date.now()}`, {
-                cache: "no-store"
-              });
-              if (rawRes.ok) {
-                pkg = await rawRes.json();
-              }
-            }
-            if (pkg && pkg.version) {
-              if (isNewerVersion(pkg.version, APP_VERSION)) {
-                const newVersionUrl = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${pkg.version}`;
-                window.open(newVersionUrl, "_blank");
-                isChecking = false;
-                isCountingDown = true;
-                updateBtn.disabled = false;
-                updateBtn.classList.remove("ytc-btn-loading");
-                updateBtn.classList.add("ytc-btn-has-update");
-                updateBtn.title = `Đã mở trang cập nhật v${pkg.version}. Bấm để tải lại trang ngay!`;
-                let countdown = 10;
-                if (updateBtnText) updateBtnText.textContent = "F5 sau 10s";
-                const openedTime = Date.now();
-                const onReturnToTab = () => {
-                  if (Date.now() - openedTime >= 1200) {
-                    window.removeEventListener("focus", onReturnToTab);
-                    document.removeEventListener("visibilitychange", handleVisibilityChange2);
-                    triggerReload();
-                  }
-                };
-                const handleVisibilityChange2 = () => {
-                  if (document.visibilityState === "visible") {
-                    onReturnToTab();
-                  }
-                };
-                window.addEventListener("focus", onReturnToTab);
-                document.addEventListener("visibilitychange", handleVisibilityChange2);
-                countdownInterval = setInterval(() => {
-                  countdown--;
-                  if (countdown <= 0) {
-                    window.removeEventListener("focus", onReturnToTab);
-                    document.removeEventListener("visibilitychange", handleVisibilityChange2);
-                    triggerReload();
-                  } else {
-                    if (updateBtnText) updateBtnText.textContent = `F5 sau ${countdown}s`;
-                  }
-                }, 1e3);
-                return;
-              } else {
-                updateBtn.classList.remove("ytc-btn-loading");
-                updateBtn.classList.add("ytc-btn-success");
-                if (updateBtnText) updateBtnText.textContent = "Đã cập nhật";
-                setTimeout(() => {
-                  updateBtn.classList.remove("ytc-btn-success");
-                  if (updateBtnText) updateBtnText.textContent = "Kiểm tra";
-                  updateBtn.disabled = false;
-                  isChecking = false;
-                }, 2500);
-                return;
-              }
-            } else {
-              window.open("https://github.com/huyvu2512/youtube-customizer/releases", "_blank");
-            }
-          } catch (err) {
-            window.open("https://github.com/huyvu2512/youtube-customizer/releases", "_blank");
-          }
-          setTimeout(() => {
-            updateBtn.classList.remove("ytc-btn-loading", "ytc-btn-has-update");
-            if (updateBtnText) updateBtnText.textContent = "Kiểm tra";
-            updateBtn.disabled = false;
-            isChecking = false;
-          }, 3e3);
-        });
-      }
-      const devBtn = panel.querySelector("#ytc-btn-dev");
-      if (devBtn) {
-        devBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          window.open("https://huyvu2512.io.vn", "_blank", "noopener,noreferrer");
-        });
-      }
-      const reportBtn = panel.querySelector("#ytc-btn-report");
-      if (reportBtn) {
-        reportBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          window.open("https://github.com/huyvu2512/youtube-customizer/issues", "_blank", "noopener,noreferrer");
-        });
-      }
-      const donateBtn = panel.querySelector("#ytc-btn-donate");
-      if (donateBtn) {
-        donateBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          window.open("https://vietqr.app/img?acc=0886308216&bank=MoMo&fullacc=true&holder=VU+QUANG+HUY&template=standee", "_blank", "noopener,noreferrer");
-        });
-      }
-      panel.addEventListener("click", (e) => {
-        e.stopPropagation();
-      });
-    }
-    return panel;
-  }
-  function ensureSettingsElements() {
-    const endContainer = document.querySelector("ytd-masthead #end, #masthead #end, #end.ytd-masthead");
-    if (!endContainer) return;
-    let btn = document.getElementById("ytc-settings-btn");
-    const isBtnInPlace = btn && btn.parentElement === endContainer && btn === endContainer.firstElementChild;
-    const isPanelExisting = !!document.getElementById("ytc-settings-panel");
-    if (isBtnInPlace && isPanelExisting) {
-      return;
-    }
-    if (!btn) {
-      btn = document.createElement("button");
-      btn.id = "ytc-settings-btn";
-      btn.title = "YouTube Customizer";
-      setElementHTML(btn, GEAR_SVG);
-    }
-    if (btn.parentElement !== endContainer || btn !== endContainer.firstElementChild) {
-      endContainer.insertBefore(btn, endContainer.firstElementChild);
-    }
-    const panel = createSettingsPanel();
-    syncPanelState(panel);
-    bindGlobalMenuDismiss();
-    setupOnboardingAndUpdates(btn);
-    if (!btn._ytcBound) {
-      btn._ytcBound = true;
-      const updatePosition = () => {
-        const rect = btn.getBoundingClientRect();
-        panel.style.top = rect.bottom + 8 + "px";
-        panel.style.right = Math.max(12, window.innerWidth - rect.right - 10) + "px";
-      };
-      btn.addEventListener("mouseenter", updatePosition, { passive: true });
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        syncPanelState(panel);
-        updatePosition();
-        panel.classList.toggle("open");
-      });
-    }
-  }
-  function setupSettingsObserver() {
-    ensureSettingsElements();
-    const throttledEnsure = rafThrottle(ensureSettingsElements);
-    const attach = (masthead2) => {
-      throttledEnsure();
-      new MutationObserver(throttledEnsure).observe(masthead2, { childList: true, subtree: true });
-    };
-    const masthead = document.querySelector("ytd-masthead");
-    if (masthead) attach(masthead);
-    else whenElement("ytd-masthead", attach);
-    let retryCount = 0;
-    const retryInterval = setInterval(() => {
-      retryCount++;
-      ensureSettingsElements();
-      if (retryCount >= 6 && document.getElementById("ytc-settings-btn")) {
-        clearInterval(retryInterval);
-      }
-    }, 500);
-  }
+  init_panel();
 
   // src/optimization/codecBlocker.js
   init_config();
@@ -5420,11 +6625,11 @@
       target.appendChild(style);
     } else {
       const docObserver = new MutationObserver(() => {
-        const t = document.head || document.documentElement;
-        if (t) {
+        const t2 = document.head || document.documentElement;
+        if (t2) {
           docObserver.disconnect();
           if (!document.getElementById("yt-customizer-styles")) {
-            t.appendChild(style);
+            t2.appendChild(style);
           }
         }
       });
