@@ -17,13 +17,13 @@ export function normalizeTimeDisplay() {
     if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
 
     const now = Date.now();
-    if (now - lastCorrectionTime < 800) return; // Cooldown 800ms chống lặp
+    if (now - lastCorrectionTime < 400) return; // Cooldown 400ms chống lặp
 
     const player = document.querySelector('#movie_player:not(#inline-preview-player)');
     if (!player) return;
 
-    // Chỉ áp dụng cho video thông thường (không can thiệp live stream đang phát trực tiếp)
-    if (player.classList.contains('ytp-live')) return;
+    // Tuyệt đối không can thiệp nếu là video trực tiếp / livestream
+    if (player.classList.contains('ytp-live') || player.querySelector('.ytp-live-badge')) return;
 
     const currentEl = player.querySelector('.ytp-time-current');
     if (!currentEl) return;
@@ -52,8 +52,12 @@ export function initTimeLock() {
     if (timeLockInitialized) return;
     timeLockInitialized = true;
 
-    // 1. Chặn click vô tình / ghost click vào thanh thời gian khi đang hiển thị thời gian dương
+    // 1. Lắng nghe khi click vào khu vực thời gian
+    // TUYỆT ĐỐI không chặn sự kiện bấm vào nút Trực tiếp (.ytp-live-badge)
     document.addEventListener('click', (e) => {
+        // Nếu bấm vào nút Trực tiếp (.ytp-live-badge) -> Bỏ qua 100%, cho phép nhảy về live
+        if (e.target && e.target.closest && e.target.closest('.ytp-live-badge')) return;
+
         const timeDisplay = e.target.closest && e.target.closest('.ytp-time-display');
         if (!timeDisplay) return;
 
@@ -61,19 +65,11 @@ export function initTimeLock() {
         if (isProgrammaticFix) return;
 
         const player = document.querySelector('#movie_player:not(#inline-preview-player)');
-        if (player && player.classList.contains('ytp-live')) return;
+        if (player && (player.classList.contains('ytp-live') || player.querySelector('.ytp-live-badge'))) return;
 
-        const currentEl = timeDisplay.querySelector('.ytp-time-current');
-        const text = currentEl ? (currentEl.textContent || '').trim() : '';
-
-        // Nếu thời gian đang ở dạng DƯƠNG bình thường (Elapsed time, không có dấu âm):
-        // Chặn tuyệt đối để không bao giờ bị nhảy sang dạng âm (Remaining time)!
-        if (text && !text.startsWith('-') && !text.startsWith('−')) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
-        }
-    }, true);
+        // Ép định dạng thời gian về dạng số dương đã phát thay vì chặn click
+        setTimeout(normalizeTimeDisplay, 60);
+    }, false);
 
     // 2. Tự động kiểm tra và nắn về thời gian dương khi nạp / chuyển video
     document.addEventListener('yt-navigate-finish', () => {

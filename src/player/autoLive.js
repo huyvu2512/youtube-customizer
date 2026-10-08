@@ -37,20 +37,17 @@ export function snapToLive(player) {
     // Tuyệt đối không can thiệp nếu không phải luồng trực tiếp đang phát sóng
     if (!isCurrentlyActiveLive(player)) return;
 
-    // 1. Ưu tiên click nút "Trực tiếp" / "LIVE" chính thức của YouTube player (chỉ khi nút đang hiển thị)
-    // YouTube sẽ tự đồng bộ buffer và audio mượt mà theo đúng chuẩn native
-    const liveBadge = player.querySelector('.ytp-live-badge');
-    if (liveBadge && liveBadge.offsetParent !== null && window.getComputedStyle(liveBadge).display !== 'none') {
-        try {
-            liveBadge.click();
-            return;
-        } catch (e) {}
-    }
-
-    // 2. Dự phòng an toàn: chỉ gọi seekToStreamTime nếu player có hỗ trợ và đang là live thật sự
+    // 1. Nhảy ngay lập tức về điểm phát trực tiếp thời gian thực
     try {
         if (typeof player.seekToStreamTime === 'function') {
             player.seekToStreamTime(Infinity);
+        }
+        const video = player.querySelector('video');
+        if (video && video.seekable && video.seekable.length) {
+            const end = video.seekable.end(video.seekable.length - 1);
+            if (isFinite(end) && end > 0) {
+                video.currentTime = Math.max(0, end - 0.5);
+            }
         }
     } catch (e) {}
 }
@@ -246,10 +243,10 @@ export function initAutoLiveSync() {
     document.addEventListener('click', (e) => {
         if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
 
-        // Nhấp vào badge "Trực tiếp" -> chỉ xử lý khi đang xem live stream thật sự
-        if (e.target.closest('.ytp-live-badge')) {
+        // Nhấp vào badge "Trực tiếp" -> nhảy ngay lập tức về điểm phát sóng thời gian thực
+        if (e.target && e.target.closest && e.target.closest('.ytp-live-badge')) {
             const player = document.querySelector('#movie_player:not(#inline-preview-player)');
-            if (player && isCurrentlyActiveLive(player)) {
+            if (player) {
                 userIsRewound = false;
                 lastUserSeekTime = 0;
                 lastSnapTime = Date.now();
