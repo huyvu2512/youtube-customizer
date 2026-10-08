@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.6.2
-// @description  YouTube Customizer v3.6.2 — Tối ưu bố cục trang xem video bám sát mép, xóa bỏ khoảng trống thừa 2 bên và chống bóp khung hình; Ánh sáng phòng Full-Screen Cinema.
+// @version      3.6.5
+// @description  YouTube Customizer v3.6.5 — Tối ưu bố cục trang xem video bám sát mép, xóa bỏ khoảng trống thừa 2 bên và chống bóp khung hình; Ánh sáng phòng Full-Screen Cinema.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
