@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>YouTube Ambilight Cinema</title>
+  <style>
+    :root {
+      --bg: #141416;
+      --card: #1f1f23;
+      --accent: #ff0033;
+      --text: #ffffff;
+      --subtext: #8e8e93;
+      --border: rgba(255, 255, 255, 0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 320px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      font-size: 13px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .title {
+      font-weight: 700;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .title span {
+      color: var(--accent);
+    }
+    .version {
+      font-size: 11px;
+      color: var(--subtext);
+    }
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .slider-item {
+      margin-bottom: 14px;
+    }
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .slider-val {
+      color: var(--subtext);
+      font-variant-numeric: tabular-nums;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider-toggle {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #3a3a3c;
+      transition: .3s;
+      border-radius: 24px;
+    }
+    .slider-toggle:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .slider-toggle {
+      background-color: var(--accent);
+    }
+    input:checked + .slider-toggle:before {
+      transform: translateX(20px);
+    }
+    .note {
+      font-size: 11px;
+      color: var(--subtext);
+      line-height: 1.4;
+      margin-top: 16px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="title">Ambilight <span>Cinema</span></div>
+    <div class="version">v1.0.0</div>
+  </div>
+
+  <div class="item">
+    <span>Kích hoạt hiệu ứng</span>
+    <label class="switch">
+      <input type="checkbox" id="chk-enabled" checked>
+      <span class="slider-toggle"></span>
+    </label>
+  </div>
+
+  <div class="slider-item">
+    <div class="slider-header">
+      <span>Độ lan tỏa xuống dưới (Spread)</span>
+      <span class="slider-val" id="val-spread">155%</span>
+    </div>
+    <input type="range" id="range-spread" min="80" max="250" value="155">
+  </div>
+
+  <div class="slider-item">
+    <div class="slider-header">
+      <span>Độ mờ quầng sáng (Blur)</span>
+      <span class="slider-val" id="val-blur">34px</span>
+    </div>
+    <input type="range" id="range-blur" min="10" max="60" value="34">
+  </div>
+
+  <div class="slider-item">
+    <div class="slider-header">
+      <span>Độ rực rỡ màu (Saturation)</span>
+      <span class="slider-val" id="val-saturate">145%</span>
+    </div>
+    <input type="range" id="range-saturate" min="100" max="200" value="145">
+  </div>
+
+  <div class="slider-item">
+    <div class="slider-header">
+      <span>Độ sáng (Brightness)</span>
+      <span class="slider-val" id="val-brightness">110%</span>
+    </div>
+    <input type="range" id="range-brightness" min="80" max="150" value="110">
+  </div>
+
+  <div class="item" style="margin-top: 10px;">
+    <span>Thanh Masthead trong suốt đỉnh</span>
+    <label class="switch">
+      <input type="checkbox" id="chk-masthead" checked>
+      <span class="slider-toggle"></span>
+    </label>
+  </div>
+
+  <div class="note">
+    Hiệu ứng tự động cập nhật ngay lập tức không cần tải lại trang.
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

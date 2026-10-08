@@ -1954,12 +1954,6 @@ html:not([dark]) #ytc-ambient-accent-canvas {
 }
 
 /* 1. Thanh Masthead trên cùng: Trong suốt 100% khi ở đỉnh trang để ánh sáng xuyên thấu lên đỉnh trình duyệt */
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) #masthead-container,
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) #masthead-container.ytd-app,
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-masthead,
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-masthead #container,
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-masthead #background,
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) #background.ytd-masthead,
 html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) #masthead-container,
 html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) #masthead-container.ytd-app,
 html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-masthead,
@@ -1976,13 +1970,6 @@ html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) #backgro
 }
 
 /* Khung tìm kiếm trong suốt tinh tế (chuẩn Ảnh 5) */
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-searchbox,
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-searchbox #container,
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-searchbox #container.ytd-searchbox,
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) #search-form,
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) #search-form.ytd-searchbox,
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) #search-form.ytd-searchbox #container,
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-searchbox #search-icon-legacy,
 html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-searchbox,
 html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-searchbox #container,
 html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-searchbox #container.ytd-searchbox,
@@ -1996,7 +1983,6 @@ html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-sear
     box-shadow: none !important;
 }
 
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-searchbox input#search,
 html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-searchbox input#search {
     background: transparent !important;
     background-color: transparent !important;
@@ -2004,8 +1990,6 @@ html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-sear
     color: #fff !important;
 }
 
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) #voice-search-button yt-button-shape button,
-html.ytc-ambient-ready:not(.ytc-masthead-scrolled) #voice-search-button button,
 html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) #voice-search-button yt-button-shape button,
 html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) #voice-search-button button {
     background: rgba(255, 255, 255, 0.08) !important;
@@ -2013,10 +1997,6 @@ html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) #voice-s
 }
 
 /* Khi cuộn xuống qua khung video: Masthead tự động trở lại nền đen bình thường */
-html.ytc-masthead-scrolled #masthead-container,
-html.ytc-masthead-scrolled ytd-masthead,
-html.ytc-ambient-ready.ytc-masthead-scrolled #masthead-container,
-html.ytc-ambient-ready.ytc-masthead-scrolled ytd-masthead,
 html.ytc-ambient-lighting.ytc-ambient-ready.ytc-masthead-scrolled #masthead-container,
 html.ytc-ambient-lighting.ytc-ambient-ready.ytc-masthead-scrolled ytd-masthead {
     background: #0f0f0f !important;
@@ -2025,41 +2005,11 @@ html.ytc-ambient-lighting.ytc-ambient-ready.ytc-masthead-scrolled ytd-masthead {
     transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
-/* 2. Nền tảng toàn trang: KHÔNG BAO GIỜ để html/body/ytd-app bị trong suốt làm lộ nền trắng trình duyệt */
-html,
-body,
-ytd-app,
-#page-manager {
-    background: #0f0f0f !important;
-    background-color: #0f0f0f !important;
-}
-
-html:not([dark]),
-body:not([dark]),
-ytd-app:not([dark]),
-#page-manager:not([dark]) {
-    background: #f9f9f9 !important;
-    background-color: #f9f9f9 !important;
-}
-
-/* CHỈ làm trong suốt các khung chứa video bên trong ytd-watch-flexy để quầng sáng phòng hiển thị */
-html.ytc-ambient-ready ytd-watch-flexy,
-html.ytc-ambient-ready ytd-watch-flexy #columns,
-html.ytc-ambient-ready ytd-watch-flexy #primary,
-html.ytc-ambient-ready ytd-watch-flexy #primary-inner,
-html.ytc-ambient-ready ytd-watch-flexy #secondary,
-html.ytc-ambient-ready ytd-watch-flexy #secondary-inner,
-html.ytc-ambient-ready ytd-watch-flexy #player,
-html.ytc-ambient-ready ytd-watch-flexy #player-container,
-html.ytc-ambient-ready ytd-watch-flexy #player-container-outer,
-html.ytc-ambient-ready ytd-watch-flexy #player-container-inner,
-html.ytc-ambient-ready #below,
+/* 2. CHỈ làm trong suốt các khung chứa video khi tính năng Ánh Sáng Phòng được BẬT & ĐÃ SẴN SÀNG */
 html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy,
 html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #columns,
 html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #primary,
 html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #primary-inner,
-html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #secondary,
-html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #secondary-inner,
 html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #player,
 html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #player-container,
 html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #player-container-outer,
