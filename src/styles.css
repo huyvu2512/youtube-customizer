@@ -1902,46 +1902,55 @@ html:not([dark]) .ytc-update-btn:hover {
     opacity: 1;
 }
 
-/* Lớp 1: Tỏa rộng Full Màn hình (Spread 400%) - Lan tỏa ra tận mép trên, dưới, trái, phải */
+/* Lớp 1: Tỏa rộng Full Màn hình (Spread Ambient) - Lan tỏa không gian ra Masthead và Playlist */
 #ytc-ambient-spread-canvas {
     position: absolute;
-    transform: scale(3.8, 4.0) translateZ(0);
+    transform: scale(2.2, 2.3) translateZ(0);
     transform-origin: center center;
-    filter: blur(120px) saturate(210%) brightness(120%);
+    filter: blur(65px) saturate(175%) brightness(115%);
     pointer-events: none !important;
     will-change: filter, transform;
-    opacity: 0.78;
+    opacity: 0.76;
+    border-radius: 16px;
     transition: opacity 0.4s ease;
 }
 
-/* Lớp 2: Hào quang viền sống động sát mép video (Accent Glow) - Tạo độ rực rỡ và chiều sâu */
+/* Lớp 2: Hào quang viền sống động sát mép video (Edge Halo) - Ăn khớp 100% từng pixel tiếp giáp */
 #ytc-ambient-accent-canvas {
     position: absolute;
-    transform: scale(1.75, 1.85) translateZ(0);
+    transform: scale(1.14, 1.18) translateZ(0);
     transform-origin: center center;
-    filter: blur(55px) saturate(240%) brightness(130%);
+    filter: blur(22px) saturate(210%) brightness(125%);
     pointer-events: none !important;
     will-change: filter, transform;
-    opacity: 0.82;
+    opacity: 0.95;
+    border-radius: 14px;
     transition: opacity 0.4s ease;
 }
 
 html:not([dark]) #ytc-ambient-spread-canvas {
-    filter: blur(100px) saturate(160%) brightness(110%);
+    filter: blur(55px) saturate(150%) brightness(108%);
     opacity: 0.55;
 }
 html:not([dark]) #ytc-ambient-accent-canvas {
-    filter: blur(48px) saturate(180%) brightness(115%);
-    opacity: 0.65;
+    filter: blur(20px) saturate(170%) brightness(115%);
+    opacity: 0.75;
 }
 
 /* 1. Thanh Masthead trên cùng: Kính mờ siêu sang để ánh sáng hắt lên đỉnh trình duyệt */
-html.ytc-ambient-lighting #masthead-container,
-html.ytc-ambient-lighting ytd-masthead {
-    background: rgba(11, 11, 11, 0.65) !important;
+html.ytc-ambient-lighting #masthead-container {
+    background: transparent !important;
+}
+html.ytc-ambient-lighting #background.ytd-masthead {
+    background: transparent !important;
+    opacity: 0 !important;
+}
+html.ytc-ambient-lighting ytd-masthead,
+html.ytc-ambient-lighting ytd-masthead #container {
+    background: rgba(11, 11, 11, 0.45) !important;
     backdrop-filter: blur(24px) !important;
     -webkit-backdrop-filter: blur(24px) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
 
 /* 2. Làm nền toàn trang xem video hoàn toàn trong suốt để ánh sáng xuyên thấu 100% */
@@ -1963,30 +1972,49 @@ html.ytc-ambient-lighting ytd-watch-flexy #player-container-inner {
 }
 
 /* 3. Nền playlist panel: Kính mờ sang trọng hòa quyện cùng ánh sáng bên phải */
-html.ytc-ambient-lighting ytd-playlist-panel-renderer,
-html.ytc-ambient-lighting ytd-playlist-panel-renderer #container,
-html.ytc-ambient-lighting ytd-playlist-panel-renderer #header,
-html.ytc-ambient-lighting ytd-playlist-panel-renderer .header.ytd-playlist-panel-renderer {
-    background: rgba(18, 18, 18, 0.68) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
+html.ytc-ambient-lighting ytd-playlist-panel-renderer {
+    background: transparent !important;
+}
+html.ytc-ambient-lighting ytd-playlist-panel-renderer #container {
+    background: rgba(18, 18, 18, 0.45) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
+}
+html.ytc-ambient-lighting ytd-playlist-panel-renderer #header,
+html.ytc-ambient-lighting ytd-playlist-panel-renderer .header.ytd-playlist-panel-renderer {
+    background: rgba(255, 255, 255, 0.04) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+html.ytc-ambient-lighting ytd-playlist-panel-renderer #items,
+html.ytc-ambient-lighting ytd-playlist-panel-renderer .playlist-items,
+html.ytc-ambient-lighting ytd-playlist-panel-renderer #playlist-actions {
+    background: transparent !important;
 }
 html.ytc-ambient-lighting ytd-playlist-panel-video-renderer {
     background: transparent !important;
+    border-radius: 8px !important;
+    transition: background-color 0.2s ease !important;
 }
-html.ytc-ambient-lighting ytd-playlist-panel-video-renderer[selected] {
+html.ytc-ambient-lighting ytd-playlist-panel-video-renderer:hover {
     background: rgba(255, 255, 255, 0.08) !important;
 }
+html.ytc-ambient-lighting ytd-playlist-panel-video-renderer[selected] {
+    background: rgba(255, 255, 255, 0.14) !important;
+}
 
-/* 4. Tách biệt viền video sắc nét như màn hình OLED, xóa tan 100% hiện tượng lộ viền */
+/* 4. Khung video sắc nét, viền tiếp giáp ánh sáng ăn khớp liền mạch tuyệt đối */
 html.ytc-ambient-lighting #movie_player {
     z-index: 2 !important;
     position: relative;
-    box-shadow: 0 12px 42px rgba(0, 0, 0, 0.85), 0 0 2px rgba(0, 0, 0, 0.95) !important;
     border-radius: 12px !important;
     overflow: hidden !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
 }
 
 /* 5. Giảm màu và dịu nội dung phụ xung quanh để video chính nổi bật rực rỡ */

@@ -21,9 +21,9 @@ let intersectionObserver = null;
 let resizeObserver = null;
 let isIntersecting = true;
 
-const CANVAS_WIDTH = 32;
-const CANVAS_HEIGHT = 18;
-const TARGET_INTERVAL = 1000 / 18; // ~18 FPS (55.5ms)
+const CANVAS_WIDTH = 160;
+const CANVAS_HEIGHT = 90;
+const TARGET_INTERVAL = 1000 / 20; // 20 FPS (50ms)
 
 /**
  * Cập nhật vị trí và kích thước canvas bám chuẩn xác theo Video Player
@@ -36,13 +36,16 @@ export function updateAmbientPosition() {
     if (!moviePlayer) return;
 
     if (watchFlexy && ambientWrapper.parentElement === watchFlexy) {
-        const playerRect = moviePlayer.getBoundingClientRect();
+        const videoEl = currentVideo || moviePlayer.querySelector('video.html5-main-video') || moviePlayer.querySelector('video');
+        const targetRect = (videoEl && videoEl.clientWidth > 0 && videoEl.clientHeight > 0)
+            ? videoEl.getBoundingClientRect()
+            : moviePlayer.getBoundingClientRect();
         const flexyRect = watchFlexy.getBoundingClientRect();
 
-        const top = Math.round(playerRect.top - flexyRect.top);
-        const left = Math.round(playerRect.left - flexyRect.left);
-        const width = Math.round(playerRect.width);
-        const height = Math.round(playerRect.height);
+        const top = Math.round(targetRect.top - flexyRect.top);
+        const left = Math.round(targetRect.left - flexyRect.left);
+        const width = Math.round(targetRect.width);
+        const height = Math.round(targetRect.height);
 
         const setPos = (c) => {
             if (!c) return;
@@ -87,13 +90,13 @@ function ensureAmbientCanvas() {
         ambientWrapper.id = 'ytc-ambient-wrapper';
         ambientWrapper.setAttribute('aria-hidden', 'true');
 
-        // Lớp 1: Tỏa rộng Full-Screen (Spread 400%)
+        // Lớp 1: Tỏa rộng Full-Screen (Spread Wash)
         ambientSpreadCanvas = document.createElement('canvas');
         ambientSpreadCanvas.id = 'ytc-ambient-spread-canvas';
         ambientSpreadCanvas.width = CANVAS_WIDTH;
         ambientSpreadCanvas.height = CANVAS_HEIGHT;
 
-        // Lớp 2: Hào quang viền sống động sát mép video (Accent Halo)
+        // Lớp 2: Hào quang viền sống động sát mép video (Edge Halo)
         ambientAccentCanvas = document.createElement('canvas');
         ambientAccentCanvas.id = 'ytc-ambient-accent-canvas';
         ambientAccentCanvas.width = CANVAS_WIDTH;
@@ -114,7 +117,7 @@ function ensureAmbientCanvas() {
         });
         if (ambientSpreadCtx) {
             ambientSpreadCtx.imageSmoothingEnabled = true;
-            ambientSpreadCtx.imageSmoothingQuality = 'low';
+            ambientSpreadCtx.imageSmoothingQuality = 'medium';
         }
 
         ambientAccentCtx = ambientAccentCanvas.getContext('2d', {
@@ -123,7 +126,7 @@ function ensureAmbientCanvas() {
         });
         if (ambientAccentCtx) {
             ambientAccentCtx.imageSmoothingEnabled = true;
-            ambientAccentCtx.imageSmoothingQuality = 'low';
+            ambientAccentCtx.imageSmoothingQuality = 'medium';
         }
     }
 
@@ -171,7 +174,7 @@ function shouldBeActive() {
 }
 
 /**
- * Vòng lặp render siêu nhẹ (18 FPS) cho cả 2 lớp ánh sáng
+ * Vòng lặp render siêu nhẹ (20 FPS) cho cả 2 lớp ánh sáng kèm tự động loại bỏ viền đen letterbox
  */
 function renderLoop(timestamp) {
     if (!isRunning) return;
@@ -188,7 +191,26 @@ function renderLoop(timestamp) {
 
     if (ambientSpreadCtx && ambientAccentCtx) {
         try {
-            ambientSpreadCtx.drawImage(currentVideo, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            const vW = currentVideo.videoWidth || 16;
+            const vH = currentVideo.videoHeight || 9;
+            const pW = currentVideo.clientWidth || vW;
+            const pH = currentVideo.clientHeight || vH;
+
+            const videoAspect = vW / vH;
+            const playerAspect = pW / pH;
+
+            let sX = 0, sY = 0, sW = vW, sH = vH;
+            if (videoAspect > playerAspect + 0.03) {
+                const targetW = vH * playerAspect;
+                sX = (vW - targetW) / 2;
+                sW = targetW;
+            } else if (videoAspect < playerAspect - 0.03) {
+                const targetH = vW / playerAspect;
+                sY = (vH - targetH) / 2;
+                sH = targetH;
+            }
+
+            ambientSpreadCtx.drawImage(currentVideo, sX, sY, sW, sH, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             ambientAccentCtx.drawImage(ambientSpreadCanvas, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         } catch (e) {}
     }
