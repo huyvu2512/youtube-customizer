@@ -1,10 +1,10 @@
 // ==========================================================================
 // TÍNH NĂNG ÁNH SÁNG PHÒNG (AMBIENT LIGHT / AMBILIGHT) SIÊU TỐI ƯU
 // - 4-Border Edge Bleeding: Ánh sáng 4 mép ăn khớp 100% với khung hình tiếp giáp
-// - Zero White Flash: Không bao giờ bị chớp trắng, chỉ kích hoạt khi video đã phát
-// - Dải màu dóng dọc lan tỏa xuống giữa trang ("các ô dải màu" chuẩn Cinema)
-// - Masthead xuyên thấu ở đỉnh trang, tự động hoàn nguyên nền tối khi cuộn xuống
-// - GPU Hardware Compositor: Canvas siêu nhẹ, mượt mà 60 FPS
+// - Full-Width Masthead Glow: Phủ kín 100% đỉnh trang (kể cả góc phải màn hình)
+// - Vertical Glow Columns: Các ô dải màu dóng dọc lan sâu xuống giữa trang
+// - Pure Video Sharpness: Tuyệt đối không can thiệp layout của player, video nét 100%
+// - Resilient Render Loop: Không bao giờ bị tắt khi buffer hay đổi độ phân giải
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
 
@@ -17,112 +17,68 @@ let animFrameId = null;
 let isRunning = false;
 let lastDrawTime = 0;
 let currentVideo = null;
-let intersectionObserver = null;
-let resizeObserver = null;
-let isIntersecting = true;
 let hasDrawnFirstFrame = false;
+let isPausedAndDrawn = false;
 
-// Kích thước canvas với tỷ lệ vùng đệm chuẩn xác
-const CANVAS_WIDTH = 320;
-const CANVAS_HEIGHT = 380;
-const VX = 40;  // Đệm lề trái trong canvas
-const VY = 36;  // Đệm lề trên trong canvas (hắt lên Masthead)
-const VW = 240; // Bề rộng video 16:9 trong canvas
-const VH = 135; // Bề cao video 16:9 trong canvas (240 * 9 / 16 = 135)
-// Phần đệm lề dưới: 380 - (36 + 135) = 209 (gấp 1.55x chiều cao video, lan sâu xuống giữa trang)
-const TARGET_INTERVAL = 1000 / 24; // 24 FPS mượt mà
+// Kích thước canvas nội bộ (tỷ lệ chuẩn tối ưu hiệu năng và GPU)
+const CANVAS_WIDTH = 512;
+const CANVAS_HEIGHT = 440;
+const TARGET_INTERVAL = 1000 / 30; // 30 FPS mượt mà & siêu nhẹ
 
 /**
- * Cập nhật vị trí và kích thước canvas bám chuẩn xác tuyệt đối theo Video Player
+ * Tìm phần tử Video đang phát
  */
-export function updateAmbientPosition() {
-    if (!ambientSpreadCanvas || !ambientWrapper) return;
+function findActiveVideo() {
     const moviePlayer = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
-    const watchFlexy = document.querySelector('ytd-watch-flexy');
-
-    if (!moviePlayer) return;
-
-    const targetParent = watchFlexy || moviePlayer.parentElement;
-    if (!targetParent) return;
-
-    const videoEl = currentVideo || moviePlayer.querySelector('video.html5-main-video') || moviePlayer.querySelector('video');
-    const playerRect = moviePlayer.getBoundingClientRect();
-    const wrapperRect = ambientWrapper.getBoundingClientRect();
-
-    if (playerRect.width === 0 || playerRect.height === 0) return;
-
-    // Ưu tiên theo khung hình video hiển thị thực tế nếu có pillarbox hoặc letterbox
-    let targetRect = playerRect;
-    if (videoEl && videoEl.clientWidth > 0 && videoEl.clientHeight > 0 &&
-        (Math.abs(videoEl.clientWidth - playerRect.width) > 6 || Math.abs(videoEl.clientHeight - playerRect.height) > 6)) {
-        targetRect = videoEl.getBoundingClientRect();
+    if (moviePlayer) {
+        const v = moviePlayer.querySelector('video.html5-main-video') || moviePlayer.querySelector('video');
+        if (v) return v;
     }
-
-    // Tọa độ tương đối chuẩn xác của video player đối với ambientWrapper (triệt tiêu mọi sai lệch lề)
-    const pLeft = targetRect.left - wrapperRect.left;
-    const pTop = targetRect.top - wrapperRect.top;
-    const pWidth = targetRect.width;
-    const pHeight = targetRect.height;
-
-    // Tỉ lệ scale hình học từ vùng trung tâm [VX, VY, VW, VH] ra toàn bộ canvas
-    const scaleX = pWidth / VW;
-    const scaleY = pHeight / VH;
-
-    const cW = Math.round(CANVAS_WIDTH * scaleX);
-    const cH = Math.round(CANVAS_HEIGHT * scaleY);
-    const cLeft = Math.round(pLeft - (VX * scaleX));
-    const cTop = Math.round(pTop - (VY * scaleY));
-
-    const setPos = (c) => {
-        if (!c) return;
-        c.style.top = `${cTop}px`;
-        c.style.left = `${cLeft}px`;
-        c.style.width = `${cW}px`;
-        c.style.height = `${cH}px`;
-    };
-    setPos(ambientSpreadCanvas);
-    setPos(ambientAccentCanvas);
+    return document.querySelector('video.html5-main-video') || document.querySelector('video');
 }
 
 /**
- * Khởi tạo hoặc gắn canvas vào tầng nền của trang xem video (ytd-watch-flexy)
+ * Khởi tạo hoặc gắn canvas vào tầng nền sâu nhất của ytd-watch-flexy
  */
 function ensureAmbientCanvas() {
-    const moviePlayer = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
-    if (!moviePlayer) return null;
-
     const watchFlexy = document.querySelector('ytd-watch-flexy');
-    const targetParent = watchFlexy || moviePlayer.parentElement;
-    if (!targetParent) return null;
+    const moviePlayer = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
+    if (!watchFlexy && !moviePlayer) return false;
+
+    const targetParent = watchFlexy || (moviePlayer ? moviePlayer.parentElement : null);
+    if (!targetParent) return false;
 
     if (!ambientWrapper || !ambientWrapper.isConnected || ambientWrapper.parentElement !== targetParent) {
-        let existing = document.getElementById('ytc-ambient-wrapper');
-        if (existing) {
+        const existing = document.getElementById('ytc-ambient-wrapper');
+        if (existing && existing !== ambientWrapper) {
             existing.remove();
         }
 
-        ambientWrapper = document.createElement('div');
-        ambientWrapper.id = 'ytc-ambient-wrapper';
-        ambientWrapper.setAttribute('aria-hidden', 'true');
+        if (!ambientWrapper) {
+            ambientWrapper = document.createElement('div');
+            ambientWrapper.id = 'ytc-ambient-wrapper';
+            ambientWrapper.setAttribute('aria-hidden', 'true');
 
-        // Lớp 1: Tỏa rộng Full-Screen (Spread Wash)
-        ambientSpreadCanvas = document.createElement('canvas');
-        ambientSpreadCanvas.id = 'ytc-ambient-spread-canvas';
-        ambientSpreadCanvas.width = CANVAS_WIDTH;
-        ambientSpreadCanvas.height = CANVAS_HEIGHT;
+            // Lớp 1: Tỏa rộng Full-Screen (Spread Wash)
+            ambientSpreadCanvas = document.createElement('canvas');
+            ambientSpreadCanvas.id = 'ytc-ambient-spread-canvas';
+            ambientSpreadCanvas.width = CANVAS_WIDTH;
+            ambientSpreadCanvas.height = CANVAS_HEIGHT;
 
-        // Lớp 2: Hào quang viền sống động sát mép video (Edge Halo)
-        ambientAccentCanvas = document.createElement('canvas');
-        ambientAccentCanvas.id = 'ytc-ambient-accent-canvas';
-        ambientAccentCanvas.width = CANVAS_WIDTH;
-        ambientAccentCanvas.height = CANVAS_HEIGHT;
+            // Lớp 2: Hào quang viền sống động sát mép video (Edge Halo)
+            ambientAccentCanvas = document.createElement('canvas');
+            ambientAccentCanvas.id = 'ytc-ambient-accent-canvas';
+            ambientAccentCanvas.width = CANVAS_WIDTH;
+            ambientAccentCanvas.height = CANVAS_HEIGHT;
 
-        ambientWrapper.appendChild(ambientSpreadCanvas);
-        ambientWrapper.appendChild(ambientAccentCanvas);
+            ambientWrapper.appendChild(ambientSpreadCanvas);
+            ambientWrapper.appendChild(ambientAccentCanvas);
+        }
 
+        // Luôn gắn làm con đầu tiên (firstChild) để nằm dưới tất cả các phần tử video và cột nội dung
         if (watchFlexy) {
             watchFlexy.insertBefore(ambientWrapper, watchFlexy.firstChild);
-        } else {
+        } else if (moviePlayer && moviePlayer.parentElement) {
             moviePlayer.parentElement.insertBefore(ambientWrapper, moviePlayer);
         }
 
@@ -145,139 +101,177 @@ function ensureAmbientCanvas() {
         }
     }
 
-    updateAmbientPosition();
-
-    // Theo dõi thay đổi kích thước của Player (Theater mode, resize) để cập nhật vị trí
-    if (!resizeObserver && moviePlayer) {
-        try {
-            resizeObserver = new ResizeObserver(() => {
-                updateAmbientPosition();
-            });
-            resizeObserver.observe(moviePlayer);
-        } catch (e) {}
-    }
-
-    // Thiết lập IntersectionObserver nếu chưa có
-    if (!intersectionObserver && moviePlayer) {
-        try {
-            intersectionObserver = new IntersectionObserver((entries) => {
-                const entry = entries[0];
-                isIntersecting = !!(entry && entry.isIntersecting);
-                if (!isIntersecting) {
-                    stopLoop();
-                } else if (shouldBeActive()) {
-                    startLoop();
-                }
-            }, { threshold: 0.05 });
-            intersectionObserver.observe(moviePlayer);
-        } catch (e) {}
-    }
-
-    return ambientSpreadCanvas;
+    return !!(ambientSpreadCtx && ambientAccentCtx);
 }
 
 /**
- * Kiểm tra xem Ambient Light có đủ điều kiện để render không
+ * Vẽ một khung hình Ambilight:
+ * - Tràn màu toàn bộ dải Masthead (kể cả góc phải màn hình)
+ * - Dóng dải màu dọc xuống dưới ("các ô dải màu ý" chuẩn Cinema)
+ * - Khoét rỗng vùng video thật để video sắc nét 100% nguyên bản
  */
-function shouldBeActive() {
-    if (!currentConfig.ambientLighting) return false;
-    if (currentConfig.audioOnlyMode) return false;
-    if (document.hidden) return false;
-    if (!isIntersecting) return false;
-    if (!currentVideo || currentVideo.paused || currentVideo.ended || currentVideo.readyState < 2) return false;
-    return true;
+function drawFrame(video) {
+    if (!ensureAmbientCanvas()) return;
+    if (!ambientSpreadCtx || !ambientAccentCtx) return;
+
+    const moviePlayer = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
+    if (!moviePlayer) return;
+
+    try {
+        const vW = video.videoWidth;
+        const vH = video.videoHeight;
+        if (!vW || !vH || vW < 10 || vH < 10) return;
+
+        const playerRect = moviePlayer.getBoundingClientRect();
+        const wrapperRect = ambientWrapper.getBoundingClientRect();
+
+        const pW = playerRect.width;
+        const pH = playerRect.height;
+        if (pW < 10 || pH < 10) return;
+
+        const wrapW = wrapperRect.width || window.innerWidth || 1920;
+        const wrapH = wrapperRect.height || 1200;
+
+        // Tọa độ tương đối của player trong không gian wrapper
+        const relX = Math.max(0, playerRect.left - wrapperRect.left);
+        const relY = Math.max(0, playerRect.top - wrapperRect.top);
+
+        // Quy đổi sang hệ tọa độ Canvas (CANVAS_WIDTH x CANVAS_HEIGHT)
+        const scaleX = CANVAS_WIDTH / wrapW;
+        const scaleY = CANVAS_HEIGHT / wrapH;
+
+        const cvX = Math.round(relX * scaleX);
+        const cvY = Math.round(relY * scaleY);
+        const cvW = Math.round(pW * scaleX);
+        const cvH = Math.round(pH * scaleY);
+
+        // Tính toán tỷ lệ aspect ratio của video để lấy đúng vùng hình ảnh (tránh viền đen trong video)
+        const videoAspect = vW / vH;
+        const playerAspect = pW / pH;
+
+        let sX = 0, sY = 0, sW = vW, sH = vH;
+        if (videoAspect > playerAspect + 0.03) {
+            const targetW = vH * playerAspect;
+            sX = (vW - targetW) / 2;
+            sW = targetW;
+        } else if (videoAspect < playerAspect - 0.03) {
+            const targetH = vW / playerAspect;
+            sY = (vH - targetH) / 2;
+            sH = targetH;
+        }
+
+        // Xóa sạch canvas trước khi vẽ
+        ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+        const rightW = Math.max(0, CANVAS_WIDTH - (cvX + cvW));
+
+        // 1. MÉP TRÊN (Lan tỏa lên toàn bộ thanh Masthead phía trên):
+        if (cvY > 0) {
+            // - Dải trực diện phía trên video
+            ambientSpreadCtx.drawImage(video, sX, sY, sW, 4, cvX, 0, cvW, cvY);
+            // - Góc trên bên trái (chạm viền trái màn hình)
+            if (cvX > 0) {
+                ambientSpreadCtx.drawImage(video, sX, sY, 4, 4, 0, 0, cvX, cvY);
+            }
+            // - GÓC TRÊN BÊN PHẢI (LAN TỎA QUA TOÀN BỘ GÓC PHẢI MÀN HÌNH - PHÍA TRÊN NÚT TẠO/AVATAR/CHAT)
+            if (rightW > 0) {
+                ambientSpreadCtx.drawImage(video, sX + sW - 4, sY, 4, 4, cvX + cvW, 0, rightW, cvY);
+            }
+        }
+
+        // 2. HAI BÊN HÔNG (Trái & Phải khung video):
+        if (cvH > 0) {
+            if (cvX > 0) {
+                ambientSpreadCtx.drawImage(video, sX, sY, 4, sH, 0, cvY, cvX, cvH);
+            }
+            if (rightW > 0) {
+                ambientSpreadCtx.drawImage(video, sX + sW - 4, sY, 4, sH, cvX + cvW, cvY, rightW, cvH);
+            }
+        }
+
+        // 3. MÉP DƯỚI (DÓNG CÁC Ô DẢI MÀU DỌC LAN SÂU XUỐNG DƯỚI TRANG):
+        const bottomY = cvY + cvH;
+        const bottomH = Math.max(0, CANVAS_HEIGHT - bottomY);
+        if (bottomH > 0) {
+            // Dải dóng màu thẳng từ mép dưới video xuống
+            ambientSpreadCtx.drawImage(video, sX, sY + sH - 4, sW, 4, cvX, bottomY, cvW, bottomH);
+            // Góc dưới trái
+            if (cvX > 0) {
+                ambientSpreadCtx.drawImage(video, sX, sY + sH - 4, 4, 4, 0, bottomY, cvX, bottomH);
+            }
+            // Góc dưới phải
+            if (rightW > 0) {
+                ambientSpreadCtx.drawImage(video, sX + sW - 4, sY + sH - 4, 4, 4, cvX + cvW, bottomY, rightW, bottomH);
+            }
+        }
+
+        // 4. KHOÉT RỖNG VÙNG VIDEO THẬT:
+        ambientSpreadCtx.clearRect(cvX, cvY, cvW, cvH);
+
+        // 5. Sao chép sang Accent Canvas để tạo hào quang viền kép
+        ambientAccentCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ambientAccentCtx.drawImage(ambientSpreadCanvas, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ambientAccentCtx.clearRect(cvX, cvY, cvW, cvH);
+
+        // 6. Kích hoạt trạng thái hiển thị
+        if (!hasDrawnFirstFrame) {
+            hasDrawnFirstFrame = true;
+            if (ambientWrapper) ambientWrapper.classList.add('ytc-ambient-active');
+            document.documentElement.classList.add('ytc-ambient-lighting');
+            document.documentElement.classList.add('ytc-ambient-ready');
+        }
+    } catch (e) {
+        // Không làm ngắt quãng vòng lặp
+    }
 }
 
 /**
- * Vòng lặp render siêu nhẹ (24 FPS) với thuật toán 4-Border Edge Bleeding:
- * - Kéo dãn trực tiếp viền video ra 4 hướng
- * - Mép dưới dóng thẳng xuống tạo dải màu dọc ("các ô dải màu" như ảnh 4)
+ * Vòng lặp render liên tục kiên cường (Resilient Render Loop)
  */
 function renderLoop(timestamp) {
     if (!isRunning) return;
 
     animFrameId = requestAnimationFrame(renderLoop);
 
+    if (!currentConfig.ambientLighting || currentConfig.audioOnlyMode) return;
+
     if (timestamp - lastDrawTime < TARGET_INTERVAL) return;
     lastDrawTime = timestamp;
 
-    if (!currentVideo || currentVideo.paused || currentVideo.ended || currentVideo.readyState < 2) {
-        stopLoop();
+    const video = currentVideo || findActiveVideo();
+    if (!video) return;
+
+    if (video !== currentVideo) {
+        attachVideo(video);
+    }
+
+    if (document.fullscreenElement) return;
+
+    // Khi video pause: Vẽ 1 frame lúc pause rồi tạm nghỉ để tiết kiệm CPU
+    if (video.paused || video.ended) {
+        if (!isPausedAndDrawn && video.readyState >= 2 && video.videoWidth > 0) {
+            drawFrame(video);
+            isPausedAndDrawn = true;
+        }
         return;
     }
 
-    if (ambientSpreadCtx && ambientAccentCtx) {
-        try {
-            const vW = currentVideo.videoWidth || 16;
-            const vH = currentVideo.videoHeight || 9;
-            const pW = currentVideo.clientWidth || vW;
-            const pH = currentVideo.clientHeight || vH;
+    isPausedAndDrawn = false;
 
-            const videoAspect = vW / vH;
-            const playerAspect = pW / pH;
-
-            let sX = 0, sY = 0, sW = vW, sH = vH;
-            if (videoAspect > playerAspect + 0.03) {
-                const targetW = vH * playerAspect;
-                sX = (vW - targetW) / 2;
-                sW = targetW;
-            } else if (videoAspect < playerAspect - 0.03) {
-                const targetH = vW / playerAspect;
-                sY = (vH - targetH) / 2;
-                sH = targetH;
-            }
-
-            // 1. Vẽ video thật vào khung trung tâm [VX, VY, VW, VH]
-            ambientSpreadCtx.drawImage(currentVideo, sX, sY, sW, sH, VX, VY, VW, VH);
-
-            // 2. Kéo dãn màu 4 mép ăn khớp 100% với khung video:
-            // Mép trên: Kéo thẳng lên đỉnh y=0 (xuyên qua Masthead)
-            ambientSpreadCtx.drawImage(ambientSpreadCanvas, VX, VY, VW, 3, VX, 0, VW, VY);
-            ambientSpreadCtx.drawImage(ambientSpreadCanvas, VX, VY, 3, 3, 0, 0, VX, VY);
-            ambientSpreadCtx.drawImage(ambientSpreadCanvas, VX + VW - 3, VY, 3, 3, VX + VW, 0, CANVAS_WIDTH - (VX + VW), VY);
-
-            // Mép trái: Kéo dãn sang trái x=0
-            ambientSpreadCtx.drawImage(ambientSpreadCanvas, VX, VY, 3, VH, 0, VY, VX, VH);
-
-            // Mép phải: Kéo dãn sang phải CANVAS_WIDTH
-            ambientSpreadCtx.drawImage(ambientSpreadCanvas, VX + VW - 3, VY, 3, VH, VX + VW, VY, CANVAS_WIDTH - (VX + VW), VH);
-
-            // Mép dưới: Kéo dãn thẳng xuống dưới tận CANVAS_HEIGHT tạo các dải dóng màu ("các ô dải màu ý" chuẩn ảnh 4)
-            const bottomY = VY + VH;
-            const bottomH = CANVAS_HEIGHT - bottomY;
-            ambientSpreadCtx.drawImage(ambientSpreadCanvas, VX, bottomY - 3, VW, 3, VX, bottomY, VW, bottomH);
-            ambientSpreadCtx.drawImage(ambientSpreadCanvas, VX, bottomY - 3, 3, 3, 0, bottomY, VX, bottomH);
-            ambientSpreadCtx.drawImage(ambientSpreadCanvas, VX + VW - 3, bottomY - 3, 3, 3, VX + VW, bottomY, CANVAS_WIDTH - (VX + VW), bottomH);
-
-            // 3. Sao chép sang canvas hào quang Accent
-            ambientAccentCtx.drawImage(ambientSpreadCanvas, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-            // 4. Kích hoạt trạng thái sẵn sàng (Zero-White-Flash)
-            if (!hasDrawnFirstFrame) {
-                hasDrawnFirstFrame = true;
-                if (ambientWrapper) ambientWrapper.classList.add('ytc-ambient-active');
-                document.documentElement.classList.add('ytc-ambient-lighting');
-                document.documentElement.classList.add('ytc-ambient-ready');
-            }
-        } catch (e) {}
+    if (video.readyState < 2 || !video.videoWidth || !video.videoHeight) {
+        return;
     }
+
+    drawFrame(video);
 }
 
-/**
- * Bắt đầu vòng lặp render
- */
 function startLoop() {
     if (isRunning) return;
-    if (!shouldBeActive()) return;
-
     isRunning = true;
-    lastDrawTime = performance.now();
+    lastDrawTime = 0;
     animFrameId = requestAnimationFrame(renderLoop);
 }
 
-/**
- * Dừng vòng lặp render để tiết kiệm 100% tài nguyên
- */
 function stopLoop() {
     if (!isRunning) return;
     isRunning = false;
@@ -287,74 +281,70 @@ function stopLoop() {
     }
 }
 
-/**
- * Lắng nghe các sự kiện trạng thái của video
- */
-function onVideoPlay() {
-    if (shouldBeActive()) startLoop();
-}
-
-function onVideoPause() {
-    stopLoop();
-}
-
-function onVideoSeeking() {
-    stopLoop();
-}
-
-function onVideoSeeked() {
-    if (shouldBeActive()) startLoop();
+function handleVideoActivity() {
+    isPausedAndDrawn = false;
+    if (!isRunning) {
+        startLoop();
+    }
 }
 
 function attachVideo(video) {
     if (!video || video === currentVideo) return;
 
+    const events = ['play', 'playing', 'timeupdate', 'canplay', 'loadeddata', 'seeked', 'ratechange'];
+
     if (currentVideo) {
-        currentVideo.removeEventListener('play', onVideoPlay);
-        currentVideo.removeEventListener('playing', onVideoPlay);
-        currentVideo.removeEventListener('pause', onVideoPause);
-        currentVideo.removeEventListener('ended', onVideoPause);
-        currentVideo.removeEventListener('seeking', onVideoSeeking);
-        currentVideo.removeEventListener('seeked', onVideoSeeked);
+        events.forEach(evt => currentVideo.removeEventListener(evt, handleVideoActivity));
     }
 
     currentVideo = video;
-    currentVideo.addEventListener('play', onVideoPlay);
-    currentVideo.addEventListener('playing', onVideoPlay);
-    currentVideo.addEventListener('pause', onVideoPause);
-    currentVideo.addEventListener('ended', onVideoPause);
-    currentVideo.addEventListener('seeking', onVideoSeeking);
-    currentVideo.addEventListener('seeked', onVideoSeeked);
+    events.forEach(evt => currentVideo.addEventListener(evt, handleVideoActivity, { passive: true }));
 
-    if (shouldBeActive()) {
-        startLoop();
-    }
+    startLoop();
 }
 
-/**
- * Cập nhật trạng thái khi người dùng chuyển tab hoặc ẩn cửa sổ
- */
 function handleVisibilityChange() {
     if (document.hidden) {
         stopLoop();
     } else {
-        if (shouldBeActive()) startLoop();
+        isPausedAndDrawn = false;
+        startLoop();
     }
 }
 
-/**
- * Xử lý cuộn trang: Khi ở trên đỉnh (thấy video) thì masthead trong suốt, khi cuộn xuống thì hoàn nguyên nền đen
- */
 function handleScroll() {
     const scrollY = window.scrollY || window.pageYOffset || 0;
-    const isScrolled = scrollY > 80;
+    const isScrolled = scrollY > 60;
     document.documentElement.classList.toggle('ytc-masthead-scrolled', isScrolled);
-    updateAmbientPosition();
 }
 
-/**
- * Đồng bộ hoặc áp dụng trạng thái Ambient Light theo cấu hình
- */
+function handleNavigation() {
+    const isWatchPage = location.pathname.startsWith('/watch') ||
+                        location.pathname.startsWith('/live') ||
+                        document.querySelector('ytd-watch-flexy') !== null;
+
+    if (!isWatchPage) {
+        stopLoop();
+        hasDrawnFirstFrame = false;
+        document.documentElement.classList.remove('ytc-ambient-ready');
+        if (ambientWrapper) ambientWrapper.classList.remove('ytc-ambient-active');
+        return;
+    }
+
+    isPausedAndDrawn = false;
+    setTimeout(() => {
+        ensureAmbientCanvas();
+        const v = findActiveVideo();
+        if (v) attachVideo(v);
+        startLoop();
+    }, 200);
+
+    setTimeout(() => {
+        const v = findActiveVideo();
+        if (v && isRunning) drawFrame(v);
+    }, 700);
+}
+
 export function applyAmbientLightingState() {
     if (!currentConfig.ambientLighting || currentConfig.audioOnlyMode) {
         stopLoop();
@@ -369,7 +359,6 @@ export function applyAmbientLightingState() {
         return;
     }
 
-    // Nếu cấu hình bật
     document.documentElement.classList.add('ytc-ambient-lighting');
     if (ambientWrapper) {
         ambientWrapper.style.display = '';
@@ -377,47 +366,37 @@ export function applyAmbientLightingState() {
 
     ensureAmbientCanvas();
 
-    const video = document.querySelector('video.html5-main-video') || document.querySelector('video');
+    const video = findActiveVideo();
     if (video) {
         attachVideo(video);
-        if (!video.paused && !video.ended) {
-            startLoop();
-        }
     }
+    startLoop();
 }
 
-/**
- * Khởi tạo bộ điều phối Ambient Light
- */
 let ambientInitialized = false;
 export function initAmbientLight() {
     if (ambientInitialized) return;
     ambientInitialized = true;
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('resize', updateAmbientPosition);
-    window.addEventListener('fullscreenchange', updateAmbientPosition);
+    window.addEventListener('resize', () => {
+        const v = findActiveVideo();
+        if (v && isRunning) drawFrame(v);
+    });
+    window.addEventListener('fullscreenchange', () => {
+        const v = findActiveVideo();
+        if (v && isRunning) drawFrame(v);
+    });
     window.addEventListener('scroll', handleScroll, { passive: true });
 
-    // Lắng nghe khi YouTube chuyển trang SPA (/watch, /live)
-    window.addEventListener('yt-navigate-finish', () => {
-        hasDrawnFirstFrame = false;
-        document.documentElement.classList.remove('ytc-ambient-ready');
-        document.documentElement.classList.remove('ytc-masthead-scrolled');
-        if (ambientWrapper) ambientWrapper.classList.remove('ytc-ambient-active');
-        setTimeout(() => {
-            applyAmbientLightingState();
-            updateAmbientPosition();
-        }, 300);
-        setTimeout(updateAmbientPosition, 800);
-    });
+    window.addEventListener('yt-navigate-finish', handleNavigation);
+    window.addEventListener('yt-page-data-updated', handleNavigation);
+    window.addEventListener('popstate', handleNavigation);
 
-    // Quan sát xuất hiện video player
     const observer = new MutationObserver(() => {
-        const video = document.querySelector('video.html5-main-video') || document.querySelector('video');
+        const video = findActiveVideo();
         if (video && video !== currentVideo) {
             attachVideo(video);
-            updateAmbientPosition();
         }
     });
 

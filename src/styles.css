@@ -1900,24 +1900,24 @@ ytd-app, #page-manager, ytd-watch-flexy {
 
 ytd-watch-flexy {
     position: relative !important;
+    overflow: visible !important;
 }
 
 #ytc-ambient-wrapper {
-    position: absolute;
-    top: -56px;
-    left: 0;
-    right: 0;
-    width: 100%;
-    max-width: 100%;
-    height: calc(100% + 56px);
+    position: absolute !important;
+    top: -56px !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 1200px !important;
     pointer-events: none !important;
     z-index: 0 !important;
     overflow: hidden !important;
     contain: paint !important;
     opacity: 0;
-    mask-image: linear-gradient(to bottom, #000 0%, #000 52%, rgba(0, 0, 0, 0.65) 75%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 52%, rgba(0, 0, 0, 0.65) 75%, transparent 100%);
-    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 45%, rgba(0, 0, 0, 0.6) 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 45%, rgba(0, 0, 0, 0.6) 70%, transparent 100%);
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #ytc-ambient-wrapper.ytc-ambient-active {
@@ -1926,22 +1926,28 @@ ytd-watch-flexy {
 
 /* Lớp 1: Tỏa rộng Full Màn hình (Spread Ambient) - Dải màu dóng dọc lan tỏa sâu */
 #ytc-ambient-spread-canvas {
-    position: absolute;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
     filter: blur(34px) saturate(145%) brightness(110%);
     pointer-events: none !important;
-    will-change: filter;
-    opacity: 0.9;
-    transition: opacity 0.4s ease;
+    transform: translateZ(0);
+    opacity: 0.92;
 }
 
 /* Lớp 2: Hào quang viền sống động sát mép video (Edge Halo) */
 #ytc-ambient-accent-canvas {
-    position: absolute;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
     filter: blur(14px) saturate(160%) brightness(115%);
     pointer-events: none !important;
-    will-change: filter;
-    opacity: 0.8;
-    transition: opacity 0.4s ease;
+    transform: translateZ(0);
+    opacity: 0.85;
 }
 
 html:not([dark]) #ytc-ambient-spread-canvas {
@@ -1953,13 +1959,23 @@ html:not([dark]) #ytc-ambient-accent-canvas {
     opacity: 0.65;
 }
 
+/* Ẩn Ambilight mặc định của YouTube để tránh xung đột */
+#cinematic-container,
+ytd-watch-flexy #cinematic-container {
+    display: none !important;
+}
+
 /* 1. Thanh Masthead trên cùng: Trong suốt 100% khi ở đỉnh trang để ánh sáng xuyên thấu lên đỉnh trình duyệt */
 html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) #masthead-container,
 html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) #masthead-container.ytd-app,
 html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-masthead,
 html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-masthead #container,
 html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-masthead #background,
-html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) #background.ytd-masthead {
+html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) #background.ytd-masthead,
+html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-masthead #end,
+html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-masthead #start,
+html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-masthead #center,
+html.ytc-ambient-lighting.ytc-ambient-ready:not(.ytc-masthead-scrolled) ytd-masthead #buttons {
     background: transparent !important;
     background-color: transparent !important;
     border: none !important;
@@ -2014,9 +2030,19 @@ html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #player,
 html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #player-container,
 html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #player-container-outer,
 html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #player-container-inner,
+html.ytc-ambient-lighting.ytc-ambient-ready #full-bleed-container,
+html.ytc-ambient-lighting.ytc-ambient-ready #player-full-bleed-container,
+html.ytc-ambient-lighting.ytc-ambient-ready #player-theater-container,
 html.ytc-ambient-lighting.ytc-ambient-ready #below {
     background: transparent !important;
     background-color: transparent !important;
+}
+
+/* Đảm bảo cột nội dung và khung video nổi trên tầng ambient light */
+html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #columns,
+html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #full-bleed-container,
+html.ytc-ambient-lighting.ytc-ambient-ready ytd-watch-flexy #player-theater-container {
+    z-index: 1 !important;
 }
 
 /* 3. Nền playlist panel: Kính mờ sang trọng hòa quyện cùng ánh sáng bên phải */
@@ -2054,13 +2080,17 @@ html.ytc-ambient-lighting.ytc-ambient-ready ytd-playlist-panel-video-renderer[se
     background: rgba(255, 255, 255, 0.14) !important;
 }
 
-/* 4. Khung video sắc nét, viền tiếp giáp ánh sáng ăn khớp liền mạch tuyệt đối */
+/* 4. Khung video sắc nét, viền bo tròn & bóng đổ — Tuyệt đối không can thiệp position để giữ vững bố cục player */
 html.ytc-ambient-lighting #movie_player {
-    z-index: 2 !important;
-    position: relative;
     border-radius: 12px !important;
     overflow: hidden !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[fullscreen] #movie_player,
+.ytp-fullscreen #movie_player {
+    border-radius: 0 !important;
+    box-shadow: none !important;
 }
 
 /* 5. Giảm màu và dịu nội dung phụ xung quanh để video chính nổi bật rực rỡ */
