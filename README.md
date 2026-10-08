@@ -7,7 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.5.3-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.5.6-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -32,7 +32,7 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.5.5** bổ sung tính năng **Khóa cố định thời gian đã phát (Lock Elapsed Time)** chống tình trạng thanh thời gian bị tự động đổi hoặc ghost-click sang dạng đếm ngược âm (`-3:13`), đồng thời nâng cấp trải nghiệm mượt mà cho **Mở khóa tua Live Stream (Force Live DVR)**: tự động F5 thông minh sau khi gạt công tắc và loại bỏ hoàn toàn các thông báo Toast phiền toái. Toàn bộ tính năng hiện có được bảo toàn nguyên vẹn 100%.
+Phiên bản **v3.5.6** nâng cấp toàn diện tính năng **Kiểm tra cập nhật**: tự động mở ngay trang cài đặt Tampermonkey khi có bản mới, đếm ngược 10s tự động F5 kèm cơ chế **Smart Return Reload** (tự động F5 tức thì khi người dùng cập nhật xong và quay lại tab YouTube), đồng thời chuẩn hóa nhãn hiển thị thành **"Đã cập nhật"** khi đang ở bản mới nhất. Toàn bộ tính năng hiện có được bảo toàn nguyên vẹn 100%.
 
 ---
 

@@ -111,6 +111,17 @@ export function checkForUpdates(btn) {
             onAction: () => {
                 window.open('https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js', '_blank');
                 try { localStorage.setItem(dismissedKey, 'true'); } catch (e) {}
+                const openTime = Date.now();
+                const reloadOnReturn = () => {
+                    if (Date.now() - openTime >= 1200) {
+                        location.reload();
+                    }
+                };
+                window.addEventListener('focus', reloadOnReturn, { once: true });
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState === 'visible') reloadOnReturn();
+                });
+                setTimeout(() => location.reload(), 10000);
             },
             onClose: () => {
                 try { localStorage.setItem(dismissedKey, 'true'); } catch (e) {}

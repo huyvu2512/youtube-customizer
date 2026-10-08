@@ -694,20 +694,32 @@ export function createSettingsPanel() {
             });
         }
 
-        // Tab 5: Nút Kiểm tra cập nhật (Thông báo trực tiếp trên nút, không popup)
+        // Tab 5: Nút Kiểm tra cập nhật (Tự mở link cập nhật, tự F5 thông minh khi quay lại tab hoặc sau 10s)
         const updateBtn = panel.querySelector('#ytc-btn-update');
         const updateBtnText = panel.querySelector('#ytc-update-btn-text');
         if (updateBtn) {
             let isChecking = false;
-            let hasNewVersion = false;
-            let newVersionUrl = '';
+            let isCountingDown = false;
+            let countdownInterval = null;
+            let reloadTriggered = false;
+
+            const triggerReload = () => {
+                if (reloadTriggered) return;
+                reloadTriggered = true;
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
+                if (updateBtnText) updateBtnText.textContent = 'Đang tải lại...';
+                location.reload();
+            };
 
             updateBtn.addEventListener('click', async (e) => {
                 e.stopPropagation();
 
-                // Nếu đang ở trạng thái có bản mới (nút màu xanh dương "Cập nhật"), bấm vào sẽ tự nhảy ra link cập nhật
-                if (hasNewVersion && newVersionUrl) {
-                    window.open(newVersionUrl, '_blank');
+                // Nếu đang trong trạng thái đếm ngược F5, bấm vào sẽ tải lại trang ngay lập tức
+                if (isCountingDown) {
+                    triggerReload();
                     return;
                 }
 
@@ -724,19 +736,61 @@ export function createSettingsPanel() {
                     if (res.ok) {
                         const pkg = await res.json();
                         if (pkg.version && isNewerVersion(pkg.version, APP_VERSION)) {
-                            hasNewVersion = true;
-                            newVersionUrl = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${pkg.version}`;
+                            const newVersionUrl = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${pkg.version}`;
+
+                            // 1. Tự động mở trang cài đặt bản mới Tampermonkey trong tab mới
+                            window.open(newVersionUrl, '_blank');
+
+                            // 2. Chuyển nút sang trạng thái đếm ngược F5
+                            isChecking = false;
+                            isCountingDown = true;
+                            updateBtn.disabled = false;
                             updateBtn.classList.remove('ytc-btn-loading');
                             updateBtn.classList.add('ytc-btn-has-update');
-                            if (updateBtnText) updateBtnText.textContent = 'Cập nhật';
-                            updateBtn.title = `Có bản mới v${pkg.version} — Bấm để cập nhật ngay`;
-                            updateBtn.disabled = false;
-                            isChecking = false;
+                            updateBtn.title = `Đã mở trang cập nhật v${pkg.version}. Bấm để tải lại trang ngay!`;
+
+                            let countdown = 10;
+                            if (updateBtnText) updateBtnText.textContent = 'F5 sau 10s';
+
+                            const openedTime = Date.now();
+
+                            // 3. Cơ chế thông minh: Tự động F5 ngay khi người dùng cập nhật xong và quay lại tab YouTube
+                            const onReturnToTab = () => {
+                                // Người dùng đã chuyển sang tab Tampermonkey >= 1.2s rồi quay lại tab YouTube
+                                if (Date.now() - openedTime >= 1200) {
+                                    window.removeEventListener('focus', onReturnToTab);
+                                    document.removeEventListener('visibilitychange', handleVisibilityChange);
+                                    triggerReload();
+                                }
+                            };
+
+                            const handleVisibilityChange = () => {
+                                if (document.visibilityState === 'visible') {
+                                    onReturnToTab();
+                                }
+                            };
+
+                            window.addEventListener('focus', onReturnToTab);
+                            document.addEventListener('visibilitychange', handleVisibilityChange);
+
+                            // 4. Đếm ngược 10 giây tự F5 nếu người dùng không chuyển tab
+                            countdownInterval = setInterval(() => {
+                                countdown--;
+                                if (countdown <= 0) {
+                                    window.removeEventListener('focus', onReturnToTab);
+                                    document.removeEventListener('visibilitychange', handleVisibilityChange);
+                                    triggerReload();
+                                } else {
+                                    if (updateBtnText) updateBtnText.textContent = `F5 sau ${countdown}s`;
+                                }
+                            }, 1000);
+
                             return;
                         } else {
+                            // Đang ở phiên bản mới nhất -> Hiển thị "Đã cập nhật"
                             updateBtn.classList.remove('ytc-btn-loading');
                             updateBtn.classList.add('ytc-btn-success');
-                            if (updateBtnText) updateBtnText.textContent = 'Bản mới nhất';
+                            if (updateBtnText) updateBtnText.textContent = 'Đã cập nhật';
                             setTimeout(() => {
                                 updateBtn.classList.remove('ytc-btn-success');
                                 if (updateBtnText) updateBtnText.textContent = 'Kiểm tra';

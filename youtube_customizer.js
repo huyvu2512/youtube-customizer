@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.5.5
-// @description  YouTube Customizer v3.5.5 — Khóa cố định thời gian đã phát (chống tự đổi số âm), tự động F5 thông minh khi bật Live DVR và loại bỏ thông báo phiền toái.
+// @version      3.5.6
+// @description  YouTube Customizer v3.5.6 — Tự động mở trang cập nhật, đếm ngược 10s tự F5 và tự reload khi quay lại tab sau khi cập nhật, hiển thị "Đã cập nhật".
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -11,15 +11,14 @@
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.5:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.6:
  * ============================================================================
- * 1. [Khóa cố định thời gian đã phát (Lock Elapsed Time)]:
- *    - Tự động nắn và cố định mốc thời gian trình phát luôn ở dạng thời gian đã phát (vd: 1:47 / 4:13).
- *    - Chống ghost-click và ngăn chặn triệt để tình trạng tự nhảy sang thời gian đếm ngược âm (vd: -3:13 / 4:13) khi mở video.
- * 2. [Tự động F5 thông minh cho Live DVR]:
- *    - Bỏ hoàn toàn thông báo Toast phiền toái.
- *    - Tự động tải lại trang sau 250ms khi gạt công tắc nếu đang ở trong video Live (/watch hoặc /live).
- *    - Giữ nguyên trang chủ/tìm kiếm không reload khi bật từ feed.
+ * 1. [Nâng cấp cơ chế Cập nhật tự động & Tải lại trang]:
+ *    - Tự động mở ngay liên kết cài đặt bản mới Tampermonkey khi phát hiện bản cập nhật.
+ *    - Bộ đếm ngược 10 giây tự động F5 kèm nút bấm F5 tức thì.
+ *    - Cơ chế Smart Return Reload: Tự động tải lại trang ngay khi người dùng cập nhật xong và quay lại tab YouTube.
+ * 2. [Chuẩn hóa hiển thị]:
+ *    - Đổi trạng thái khi ở bản mới nhất thành "Đã cập nhật" tinh tế, trực quan.
  * ============================================================================
  */
 (() => {
@@ -42,7 +41,7 @@
   var APP_VERSION, CONFIG_KEY, CLOCK_SVG, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.5.5";
+      APP_VERSION = "3.5.6";
       CONFIG_KEY = "ytc_config";
       CLOCK_SVG = `<svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`;
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
@@ -3839,6 +3838,17 @@
             localStorage.setItem(dismissedKey, "true");
           } catch (e) {
           }
+          const openTime = Date.now();
+          const reloadOnReturn = () => {
+            if (Date.now() - openTime >= 1200) {
+              location.reload();
+            }
+          };
+          window.addEventListener("focus", reloadOnReturn, { once: true });
+          document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") reloadOnReturn();
+          });
+          setTimeout(() => location.reload(), 1e4);
         },
         onClose: () => {
           try {
@@ -4554,12 +4564,23 @@
       const updateBtnText = panel.querySelector("#ytc-update-btn-text");
       if (updateBtn) {
         let isChecking = false;
-        let hasNewVersion = false;
-        let newVersionUrl = "";
+        let isCountingDown = false;
+        let countdownInterval = null;
+        let reloadTriggered = false;
+        const triggerReload = () => {
+          if (reloadTriggered) return;
+          reloadTriggered = true;
+          if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+          }
+          if (updateBtnText) updateBtnText.textContent = "Đang tải lại...";
+          location.reload();
+        };
         updateBtn.addEventListener("click", async (e) => {
           e.stopPropagation();
-          if (hasNewVersion && newVersionUrl) {
-            window.open(newVersionUrl, "_blank");
+          if (isCountingDown) {
+            triggerReload();
             return;
           }
           if (isChecking) return;
@@ -4573,19 +4594,46 @@
             if (res.ok) {
               const pkg = await res.json();
               if (pkg.version && isNewerVersion(pkg.version, APP_VERSION)) {
-                hasNewVersion = true;
-                newVersionUrl = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${pkg.version}`;
+                const newVersionUrl = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${pkg.version}`;
+                window.open(newVersionUrl, "_blank");
+                isChecking = false;
+                isCountingDown = true;
+                updateBtn.disabled = false;
                 updateBtn.classList.remove("ytc-btn-loading");
                 updateBtn.classList.add("ytc-btn-has-update");
-                if (updateBtnText) updateBtnText.textContent = "Cập nhật";
-                updateBtn.title = `Có bản mới v${pkg.version} — Bấm để cập nhật ngay`;
-                updateBtn.disabled = false;
-                isChecking = false;
+                updateBtn.title = `Đã mở trang cập nhật v${pkg.version}. Bấm để tải lại trang ngay!`;
+                let countdown = 10;
+                if (updateBtnText) updateBtnText.textContent = "F5 sau 10s";
+                const openedTime = Date.now();
+                const onReturnToTab = () => {
+                  if (Date.now() - openedTime >= 1200) {
+                    window.removeEventListener("focus", onReturnToTab);
+                    document.removeEventListener("visibilitychange", handleVisibilityChange);
+                    triggerReload();
+                  }
+                };
+                const handleVisibilityChange = () => {
+                  if (document.visibilityState === "visible") {
+                    onReturnToTab();
+                  }
+                };
+                window.addEventListener("focus", onReturnToTab);
+                document.addEventListener("visibilitychange", handleVisibilityChange);
+                countdownInterval = setInterval(() => {
+                  countdown--;
+                  if (countdown <= 0) {
+                    window.removeEventListener("focus", onReturnToTab);
+                    document.removeEventListener("visibilitychange", handleVisibilityChange);
+                    triggerReload();
+                  } else {
+                    if (updateBtnText) updateBtnText.textContent = `F5 sau ${countdown}s`;
+                  }
+                }, 1e3);
                 return;
               } else {
                 updateBtn.classList.remove("ytc-btn-loading");
                 updateBtn.classList.add("ytc-btn-success");
-                if (updateBtnText) updateBtnText.textContent = "Bản mới nhất";
+                if (updateBtnText) updateBtnText.textContent = "Đã cập nhật";
                 setTimeout(() => {
                   updateBtn.classList.remove("ytc-btn-success");
                   if (updateBtnText) updateBtnText.textContent = "Kiểm tra";
