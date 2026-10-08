@@ -5,6 +5,7 @@
 // - Vertical Glow Columns: Các ô dải màu dóng dọc lan sâu xuống giữa trang
 // - Pure Video Sharpness: Tuyệt đối không can thiệp layout của player, video nét 100%
 // - Resilient Render Loop: Không bao giờ bị tắt khi buffer hay đổi độ phân giải
+// - Chống kích hoạt sai: Đảm bảo tắt 100% khi người dùng không bật tính năng
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
 
@@ -24,6 +25,13 @@ const CANVAS_HEIGHT = 720;
 const TARGET_INTERVAL = 1000 / 30; // 30 FPS mượt mà & siêu nhẹ
 
 /**
+ * Kiểm tra xem tính năng Ambilight có đang được phép chạy hay không
+ */
+function isAmbientEnabled() {
+    return !!currentConfig.ambientLighting && !currentConfig.audioOnlyMode;
+}
+
+/**
  * Tìm phần tử Video đang phát
  */
 function findActiveVideo() {
@@ -39,6 +47,14 @@ function findActiveVideo() {
  * Khởi tạo hoặc gắn canvas vào tầng nền sâu nhất của ytd-watch-flexy
  */
 function ensureAmbientCanvas() {
+    if (!isAmbientEnabled()) {
+        if (ambientWrapper) {
+            ambientWrapper.style.display = 'none';
+            ambientWrapper.classList.remove('ytc-ambient-active');
+        }
+        return false;
+    }
+
     const watchFlexy = document.querySelector('ytd-watch-flexy');
     const moviePlayer = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
     if (!watchFlexy && !moviePlayer) return false;
@@ -66,6 +82,8 @@ function ensureAmbientCanvas() {
             ambientWrapper.appendChild(ambientSpreadCanvas);
         }
 
+        ambientWrapper.style.display = '';
+
         // Luôn gắn làm con đầu tiên (firstChild) để nằm dưới tất cả các phần tử video và cột nội dung
         if (watchFlexy) {
             watchFlexy.insertBefore(ambientWrapper, watchFlexy.firstChild);
@@ -87,12 +105,14 @@ function ensureAmbientCanvas() {
 }
 
 /**
- * Vẽ một khung hình Ambilight:
- * - Tràn màu toàn bộ dải Masthead (kể cả góc phải màn hình)
- * - Dóng dải màu dọc xuống dưới ("các ô dải màu ý" chuẩn Cinema)
- * - Khoét rỗng vùng video thật để video sắc nét 100% nguyên bản
+ * Vẽ một khung hình Ambilight
  */
 function drawFrame(video) {
+    if (!isAmbientEnabled()) {
+        stopLoop();
+        return;
+    }
+    if (!video) return;
     if (!ensureAmbientCanvas()) return;
     if (!ambientSpreadCtx) return;
 
@@ -187,12 +207,14 @@ function drawFrame(video) {
             }
         }
 
-        // 5. Kích hoạt trạng thái hiển thị
-        if (!hasDrawnFirstFrame) {
-            hasDrawnFirstFrame = true;
-            if (ambientWrapper) ambientWrapper.classList.add('ytc-ambient-active');
-            document.documentElement.classList.add('ytc-ambient-lighting');
-            document.documentElement.classList.add('ytc-ambient-ready');
+        // 5. Kích hoạt trạng thái hiển thị CHỈ KHI tính năng thực sự được bật
+        if (isAmbientEnabled()) {
+            if (!hasDrawnFirstFrame) {
+                hasDrawnFirstFrame = true;
+                if (ambientWrapper) ambientWrapper.classList.add('ytc-ambient-active');
+                document.documentElement.classList.add('ytc-ambient-lighting');
+                document.documentElement.classList.add('ytc-ambient-ready');
+            }
         }
     } catch (e) {
         // Không làm ngắt quãng vòng lặp
@@ -205,9 +227,12 @@ function drawFrame(video) {
 function renderLoop(timestamp) {
     if (!isRunning) return;
 
-    animFrameId = requestAnimationFrame(renderLoop);
+    if (!isAmbientEnabled()) {
+        stopLoop();
+        return;
+    }
 
-    if (!currentConfig.ambientLighting || currentConfig.audioOnlyMode) return;
+    animFrameId = requestAnimationFrame(renderLoop);
 
     if (timestamp - lastDrawTime < TARGET_INTERVAL) return;
     lastDrawTime = timestamp;
@@ -240,6 +265,10 @@ function renderLoop(timestamp) {
 }
 
 function startLoop() {
+    if (!isAmbientEnabled()) {
+        stopLoop();
+        return;
+    }
     if (isRunning) return;
     isRunning = true;
     lastDrawTime = 0;
@@ -247,7 +276,6 @@ function startLoop() {
 }
 
 function stopLoop() {
-    if (!isRunning) return;
     isRunning = false;
     if (animFrameId) {
         cancelAnimationFrame(animFrameId);
@@ -256,6 +284,10 @@ function stopLoop() {
 }
 
 function handleVideoActivity() {
+    if (!isAmbientEnabled()) {
+        stopLoop();
+        return;
+    }
     isPausedAndDrawn = false;
     if (!isRunning) {
         startLoop();
@@ -263,6 +295,14 @@ function handleVideoActivity() {
 }
 
 function attachVideo(video) {
+    if (!isAmbientEnabled()) {
+        if (currentVideo) {
+            const events = ['play', 'playing', 'timeupdate', 'canplay', 'loadeddata', 'seeked', 'ratechange'];
+            events.forEach(evt => currentVideo.removeEventListener(evt, handleVideoActivity));
+            currentVideo = null;
+        }
+        return;
+    }
     if (!video || video === currentVideo) return;
 
     const events = ['play', 'playing', 'timeupdate', 'canplay', 'loadeddata', 'seeked', 'ratechange'];
@@ -281,18 +321,31 @@ function handleVisibilityChange() {
     if (document.hidden) {
         stopLoop();
     } else {
+        if (!isAmbientEnabled()) {
+            stopLoop();
+            return;
+        }
         isPausedAndDrawn = false;
         startLoop();
     }
 }
 
 function handleScroll() {
+    if (!isAmbientEnabled()) {
+        document.documentElement.classList.remove('ytc-masthead-scrolled');
+        return;
+    }
     const scrollY = window.scrollY || window.pageYOffset || 0;
     const isScrolled = scrollY > 60;
     document.documentElement.classList.toggle('ytc-masthead-scrolled', isScrolled);
 }
 
 function handleNavigation() {
+    if (!isAmbientEnabled()) {
+        applyAmbientLightingState();
+        return;
+    }
+
     const isWatchPage = location.pathname.startsWith('/watch') ||
                         location.pathname.startsWith('/live') ||
                         document.querySelector('ytd-watch-flexy') !== null;
@@ -307,6 +360,7 @@ function handleNavigation() {
 
     isPausedAndDrawn = false;
     setTimeout(() => {
+        if (!isAmbientEnabled()) return;
         ensureAmbientCanvas();
         const v = findActiveVideo();
         if (v) attachVideo(v);
@@ -314,26 +368,47 @@ function handleNavigation() {
     }, 200);
 
     setTimeout(() => {
+        if (!isAmbientEnabled()) return;
         const v = findActiveVideo();
         if (v && isRunning) drawFrame(v);
     }, 700);
 }
 
 export function applyAmbientLightingState() {
-    if (!currentConfig.ambientLighting || currentConfig.audioOnlyMode) {
+    if (!isAmbientEnabled()) {
         stopLoop();
         hasDrawnFirstFrame = false;
+        isPausedAndDrawn = false;
         document.documentElement.classList.remove('ytc-ambient-lighting');
         document.documentElement.classList.remove('ytc-ambient-ready');
         document.documentElement.classList.remove('ytc-masthead-scrolled');
+        if (document.body) {
+            document.body.classList.remove('ytc-ambient-lighting');
+        }
         if (ambientWrapper) {
             ambientWrapper.classList.remove('ytc-ambient-active');
             ambientWrapper.style.display = 'none';
+        }
+        const existing = document.getElementById('ytc-ambient-wrapper');
+        if (existing) {
+            existing.classList.remove('ytc-ambient-active');
+            existing.style.display = 'none';
+        }
+        if (ambientSpreadCtx) {
+            ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        }
+        if (currentVideo) {
+            const events = ['play', 'playing', 'timeupdate', 'canplay', 'loadeddata', 'seeked', 'ratechange'];
+            events.forEach(evt => currentVideo.removeEventListener(evt, handleVideoActivity));
+            currentVideo = null;
         }
         return;
     }
 
     document.documentElement.classList.add('ytc-ambient-lighting');
+    if (document.body) {
+        document.body.classList.add('ytc-ambient-lighting');
+    }
     if (ambientWrapper) {
         ambientWrapper.style.display = '';
     }
@@ -354,10 +429,12 @@ export function initAmbientLight() {
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('resize', () => {
+        if (!isAmbientEnabled()) return;
         const v = findActiveVideo();
         if (v && isRunning) drawFrame(v);
     });
     window.addEventListener('fullscreenchange', () => {
+        if (!isAmbientEnabled()) return;
         const v = findActiveVideo();
         if (v && isRunning) drawFrame(v);
     });
@@ -368,6 +445,7 @@ export function initAmbientLight() {
     window.addEventListener('popstate', handleNavigation);
 
     const observer = new MutationObserver(() => {
+        if (!isAmbientEnabled()) return;
         const video = findActiveVideo();
         if (video && video !== currentVideo) {
             attachVideo(video);

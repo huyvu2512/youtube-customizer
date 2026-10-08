@@ -2068,6 +2068,15 @@ ytd-watch-flexy {
     overflow: visible !important;
 }
 
+/* Khi tính năng TẮT (không có class ytc-ambient-lighting): Triệt tiêu 100% hiển thị Ambilight */
+html:not(.ytc-ambient-lighting) #ytc-ambient-wrapper,
+body:not(.ytc-ambient-lighting) #ytc-ambient-wrapper {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
 #ytc-ambient-wrapper {
     position: absolute !important;
     top: -56px !important;
@@ -2086,7 +2095,7 @@ ytd-watch-flexy {
     transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-#ytc-ambient-wrapper.ytc-ambient-active {
+html.ytc-ambient-lighting #ytc-ambient-wrapper.ytc-ambient-active {
     opacity: 1;
 }
 
@@ -2103,9 +2112,9 @@ ytd-watch-flexy {
     opacity: 0.92;
 }
 
-/* Ẩn Ambilight mặc định của YouTube để tránh xung đột */
-#cinematic-container,
-ytd-watch-flexy #cinematic-container {
+/* Chỉ ẩn Ambilight mặc định của YouTube khi BẬT Ánh sáng phòng của script để tránh xung đột */
+html.ytc-ambient-lighting #cinematic-container,
+html.ytc-ambient-lighting ytd-watch-flexy #cinematic-container {
     display: none !important;
 }
 
