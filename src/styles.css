@@ -1915,15 +1915,9 @@ ytd-watch-flexy {
     overflow: hidden !important;
     contain: paint !important;
     opacity: 0;
-    /* Loại bỏ hoàn toàn viền sáng ở mép web bằng mặt nạ mờ dần 4 hướng */
-    mask-image: 
-        linear-gradient(to bottom, transparent 0%, #000 24px, #000 50%, rgba(0, 0, 0, 0.5) 75%, transparent 100%),
-        linear-gradient(to right, transparent 0%, #000 48px, #000 calc(100% - 48px), transparent 100%);
-    -webkit-mask-image: 
-        linear-gradient(to bottom, transparent 0%, #000 24px, #000 50%, rgba(0, 0, 0, 0.5) 75%, transparent 100%),
-        linear-gradient(to right, transparent 0%, #000 48px, #000 calc(100% - 48px), transparent 100%);
-    mask-composite: intersect;
-    -webkit-mask-composite: source-in;
+    /* Phủ kín 100% toàn bộ đỉnh trang và các góc, chỉ làm mờ dần xuống phía dưới */
+    mask-image: linear-gradient(to bottom, #000 0%, #000 60%, rgba(0, 0, 0, 0.4) 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 60%, rgba(0, 0, 0, 0.4) 85%, transparent 100%);
     transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1931,17 +1925,17 @@ ytd-watch-flexy {
     opacity: 1;
 }
 
-/* Lớp Canvas Ambilight duy nhất: Tỏa rộng Full màn hình, siêu mịn không vệt */
+/* Lớp Canvas Ambilight duy nhất: Mở rộng tràn viền để triệt tiêu hiện tượng mờ trắng ở các góc */
 #ytc-ambient-spread-canvas {
     position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    filter: blur(48px) saturate(135%) brightness(100%);
+    top: -60px !important;
+    left: -60px !important;
+    width: calc(100% + 120px) !important;
+    height: calc(100% + 120px) !important;
+    filter: blur(48px) saturate(145%) brightness(105%);
     pointer-events: none !important;
     transform: translateZ(0);
-    opacity: 0.9;
+    opacity: 0.92;
 }
 
 /* Ẩn Ambilight mặc định của YouTube để tránh xung đột */

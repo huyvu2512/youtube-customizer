@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.7.5
-// @description  YouTube Customizer v3.7.5 — Thanh tìm kiếm Light theme trong suốt 100%; Khắc phục viền đen letterbox; Ambilight rực rỡ, sống động tương đương Dark theme.
+// @version      3.7.6
+// @description  YouTube Customizer v3.7.6 — Mở rộng Ambilight tràn viền phủ kín 100% các góc màn hình, triệt tiêu hoàn toàn khoảng trắng góc trên và 2 mép web.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
