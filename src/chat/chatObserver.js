@@ -427,41 +427,22 @@ export function setupChatToggleListeners() {
     chatToggleListenersBound = true;
 
     document.addEventListener('click', (e) => {
-        if (!e.isTrusted) return; // Bỏ qua click tự động / giả lập
+        if (!e.isTrusted) return;
         if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
+
+        // Thoát ngay lập tức nếu click không nằm trong khu vực chat hoặc nút chat player — KHÔNG làm chậm bất kỳ nút nào khác
+        const inChatArea = e.target.closest(
+            '#chat, ytd-live-chat-frame, #chat-container, ' +
+            'ytd-engagement-panel-section-list-renderer[target-id*="chat" i], ' +
+            '#panels-full-bleed-container, .ytp-live-chat-button, .ytp-chat-button, ' +
+            '#show-hide-button, #collapse-button, #close-button, #teaser, #chat-teaser'
+        );
+        if (!inChatArea) return;
 
         // 1. Nút ĐÓNG / ẨN CHAT (X hoặc nút thu gọn):
         const isCloseBtn = !!e.target.closest(
-            '#close-button, ' +
-            '#visibility-button, ' +
-            '#collapse-button, ' +
-            '#panels-full-bleed-container #visibility-button, ' +
-            '#panels-full-bleed-container #close-button, ' +
-            '#panels-full-bleed-container [aria-label*="Đóng" i], ' +
-            '#panels-full-bleed-container [aria-label*="Close" i], ' +
-            '#panels-full-bleed-container [aria-label*="Ẩn" i], ' +
-            '#panels-full-bleed-container [aria-label*="Hide" i], ' +
-            'ytd-engagement-panel-section-list-renderer #visibility-button, ' +
-            'ytd-engagement-panel-section-list-renderer #close-button, ' +
-            'ytd-engagement-panel-section-list-renderer [aria-label*="Đóng" i], ' +
-            'ytd-engagement-panel-section-list-renderer [aria-label*="Close" i], ' +
-            'ytd-engagement-panel-section-list-renderer [aria-label*="Ẩn" i], ' +
-            'ytd-engagement-panel-section-list-renderer [aria-label*="Hide" i], ' +
-            'ytd-live-chat-frame:not([collapsed]) #show-hide-button, ' +
-            'ytd-live-chat-frame:not([collapsed]) #show-hide-button button, ' +
-            'ytd-live-chat-frame:not([collapsed]) #show-hide-button yt-button-shape, ' +
-            '#chat-container ytd-live-chat-frame:not([collapsed]) #show-hide-button, ' +
-            'ytd-live-chat-frame:not([collapsed]) #collapse-button, ' +
-            'ytd-live-chat-frame:not([collapsed]) #close-button, ' +
-            'yt-live-chat-header-renderer #close-button, ' +
-            'yt-live-chat-header-renderer #collapse-button, ' +
-            '[aria-label*="Ẩn cuộc trò chuyện" i], ' +
-            '[aria-label*="Ẩn trò chuyện" i], ' +
-            '[aria-label*="Ẩn mục trò chuyện" i], ' +
-            '[aria-label*="Thu gọn" i], ' +
-            '[aria-label*="Hide chat" i], ' +
-            '[aria-label*="Collapse live chat" i], ' +
-            '[aria-label*="Close chat" i]'
+            '#close-button, #visibility-button, #collapse-button, ' +
+            '[aria-label*="Đóng" i], [aria-label*="Close" i], [aria-label*="Ẩn" i], [aria-label*="Hide" i], [aria-label*="Thu gọn" i]'
         );
 
         if (isCloseBtn) {
@@ -474,32 +455,13 @@ export function setupChatToggleListeners() {
             return;
         }
 
-        // 2. Click vào nút để BẬT / MỞ Live Chat (KHI CHAT ĐANG COLLAPSED HOẶC ĐANG ĐÓNG):
-        const chatFrameEl = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy, #chat-container ytd-live-chat-frame');
-        const isFrameCollapsed = !chatFrameEl || chatFrameEl.hasAttribute('collapsed') || chatFrameEl.collapsed === true;
-        const isPanelClosed = !document.querySelector('ytd-engagement-panel-section-list-renderer[target-id*="chat" i][visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"]');
-
+        // 2. Click vào nút để BẬT / MỞ Live Chat:
         const isExplicitOpenBtn = !!e.target.closest(
-            'ytd-live-chat-frame[collapsed] #show-hide-button, ' +
-            'ytd-live-chat-frame[collapsed] #show-hide-button button, ' +
-            'ytd-live-chat-frame[collapsed] #teaser, ' +
-            'ytd-live-chat-frame[collapsed] #chat-teaser, ' +
-            'ytd-live-chat-frame[collapsed] ytd-button-renderer, ' +
-            'ytd-live-chat-frame[collapsed] yt-button-shape, ' +
-            '[aria-label*="Hiện cuộc trò chuyện" i], ' +
-            '[aria-label*="Hiện trò chuyện" i], ' +
-            '[aria-label*="Mở rộng cuộc trò chuyện" i], ' +
-            '[aria-label*="Mở bảng điều khiển" i], ' +
-            '[aria-label*="Show chat" i], ' +
-            '[aria-label*="Expand live chat" i], ' +
-            '[aria-label*="Open panel" i]'
+            '#show-hide-button, #teaser, #chat-teaser, ' +
+            '[aria-label*="Hiện" i], [aria-label*="Show" i], [aria-label*="Mở" i], [aria-label*="Open" i]'
         );
 
-        const isPlayerChatToggle = (isFrameCollapsed || isPanelClosed) && !!e.target.closest(
-            '.ytp-live-chat-button, ' +
-            '.ytp-chat-button, ' +
-            'button[data-tooltip-target-id*="chat" i]'
-        );
+        const isPlayerChatToggle = !!e.target.closest('.ytp-live-chat-button, .ytp-chat-button, button[data-tooltip-target-id*="chat" i]');
 
         if (isExplicitOpenBtn || isPlayerChatToggle) {
             setUserManuallyOpenedChat(true);
@@ -520,11 +482,11 @@ export function setupChatToggleListeners() {
             }
         }
 
-        // Tự động kiểm tra và đồng bộ lại sau khi YouTube xử lý xong click
-        setTimeout(syncNativeChatFullscreenState, 30);
-        setTimeout(syncNativeChatFullscreenState, 100);
-        setTimeout(syncNativeChatFullscreenState, 250);
-        setTimeout(syncNativeChatFullscreenState, 500);
+        // Chỉ đồng bộ lại khi đang ở Fullscreen (có debounce 1 lần duy nhất)
+        const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen'));
+        if (isFs) {
+            setTimeout(syncNativeChatFullscreenState, 120);
+        }
     }, true);
 }
 
@@ -1332,11 +1294,7 @@ export function initChatOverlay() {
         } else if ((currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') || currentConfig.hideNativeLiveChat) {
             setNativeChatHiddenState(true);
         }
-        syncPlayerFullscreenSize();
-        setTimeout(syncPlayerFullscreenSize, 50);
-        setTimeout(syncPlayerFullscreenSize, 150);
-        setTimeout(syncPlayerFullscreenSize, 300);
-        setTimeout(syncPlayerFullscreenSize, 600);
+        setTimeout(syncPlayerFullscreenSize, 100);
     });
     let windowResizeTimer = null;
     window.addEventListener('resize', () => {

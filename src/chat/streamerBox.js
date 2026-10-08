@@ -294,14 +294,8 @@ export function setupChatBoxInteractions(box, player) {
         const p = document.querySelector('#movie_player:not(#inline-preview-player)');
         if (box && p) {
             applyChatBoxPos(box, p);
-            setTimeout(() => applyChatBoxPos(box, p), 100);
-            setTimeout(() => applyChatBoxPos(box, p), 300);
+            setTimeout(() => applyChatBoxPos(box, p), 150);
         }
-        syncPlayerFullscreenSize();
-        setTimeout(syncPlayerFullscreenSize, 50);
-        setTimeout(syncPlayerFullscreenSize, 150);
-        setTimeout(syncPlayerFullscreenSize, 300);
-        setTimeout(syncPlayerFullscreenSize, 600);
     });
 
     if (window.ResizeObserver && player) {

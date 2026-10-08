@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.5.0
-// @description  YouTube Customizer v3.5.0 — Đại tu tối ưu hiệu năng Zero-Lag, sửa lỗi hitbox lưới video, chống nghẽn style recalculation và tối ưu luồng tải video & Live Chat.
+// @version      3.5.1
+// @description  YouTube Customizer v3.5.1 — Tối ưu hóa toàn diện trang xem video (Zero-Lag Watch), mượt mà khi tua video, hover preview, bật tắt Live Chat và thao tác player controls.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,20 +23,16 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.0:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.1:
  * ============================================================================
- * 1. [Tối ưu & Sửa lỗi Hitbox] Sửa triệt để lỗi mất hitbox hover và click trượt trên lưới video:
- *    - Thay thế display:contents trên ytd-rich-grid-row bằng flexbox wrap để giữ nguyên bounding box.
- *    - Loại bỏ toàn bộ bộ chọn :has() khi hover gây recalculate style storm trên mỗi chuyển động chuột.
- *    - Hạ z-index khung preview và bỏ pointer-events: auto toàn cục chống chặn click chuột.
- * 2. [Trình phát & Video Stream] Chống nghẽn buffer & ngắt kết nối video:
- *    - Chuyển cơ chế đặt chất lượng (qualityManager) sang kích hoạt 1 lần duy nhất khi manifest sẵn sàng.
- *    - Tối ưu hóa hook JSON.parse trong liveDvr chỉ chạy khi tính năng bật và dữ liệu phù hợp.
- *    - Khóa điều kiện autoLiveSync cho checkInitialLiveSnap tránh polling thừa khi tắt tính năng.
- * 3. [Tối ưu DOM & MutationObserver] Giảm tải CPU Main Thread:
- *    - Debounce MutationObserver và thu hẹp phạm vi trong preventAutoPause.
- *    - Quét feed lũy tiến (incremental scan) với thẻ data-attribute và kiểm tra selector nhẹ trước.
- *    - Triệt tiêu click storm và chuỗi setTimeout lặp trong tự động đóng Live Chat và căn cột lưới.
+ * 1. [Zero-Lag Watch Page & Player Controls] Tối ưu trang xem video mượt mà tuyệt đối:
+ *    - Loại bỏ hoàn toàn bộ chọn html:not(:has(...)) triệt tiêu Style Recalculation Storms khi rê chuột, xem preview tooltip và thao tác player.
+ *    - Bỏ cơ chế ẩn controls/con trỏ chuột khi tua video (.seeking-mode), tua mượt mà không chớp tắt HUD.
+ *    - Gỡ bỏ khóa cứng click player 1.5s (fullscreenLock), các nút phóng to, play/pause, cài đặt và phím tắt F phản hồi tức thì.
+ * 2. [Tối ưu Live Chat Toggle & Click Capture]:
+ *    - Tối ưu bộ lắng nghe click toggle chat với bộ lọc vùng nhanh (inChatArea), giải phóng Main Thread cho toàn bộ cụm nút điều khiển player.
+ *    - Loại bỏ tính toán px inline thủ công trên video khi không ở chế độ Fullscreen, để YouTube layout tự nhiên không xung đột reflow.
+ *    - Triệt tiêu chuỗi setTimeout layout cascade trong fullscreenchange và chat state sync.
  * ============================================================================
  */`;
 

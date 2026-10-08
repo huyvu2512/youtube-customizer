@@ -3,16 +3,9 @@
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
 import { recordUserSeek } from './autoLive.js';
-import { isWatchLoading } from './fullscreenLock.js';
 
-let seekModeTimer = null;
 export function triggerCleanSeek(player) {
-    if (!player) return;
-    player.classList.add('seeking-mode');
-    clearTimeout(seekModeTimer);
-    seekModeTimer = setTimeout(() => {
-        player.classList.remove('seeking-mode');
-    }, 600);
+    // Không ẩn controls hoặc con trỏ chuột khi tua để giữ trải nghiệm mượt mà, không bị giật chớp HUD
 }
 
 function getPlayerVideo(player) {
@@ -170,10 +163,6 @@ export function bindGlobalKeys() {
             captured = true;
             dispatchYtSeek('l');
             isSeekAction = true;
-        } else if (!e.ctrlKey && !e.altKey && !e.metaKey && (code === 'KeyF' || e.key === 'f' || e.key === 'F')) {
-            if (isWatchLoading) {
-                captured = true;
-            }
         }
 
         if (captured) {
