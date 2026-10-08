@@ -7,7 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.8.0-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.8.1-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -32,12 +32,13 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.8.0** là bản nâng cấp lớn: Siêu nâng cấp **Ánh sáng phòng (Ambilight 2.0 Cinema ⭐)** tràn viền phủ kín 100% các góc màn hình, dải màu kéo dài sâu xuống giữa trang (2200px) chiếu rọi xuyên suốt bình luận; Tách biệt hoàn hảo CSS cho cả **Dark Mode** và **Light Mode**; Thanh tìm kiếm và Playlist trong suốt 100% Frameless; Tích hợp công tắc **Tự động cập nhật (Auto-Update)** gọi GitHub API tiện lợi.
+Phiên bản **v3.8.1** bổ sung tính năng **Phụ đề tự động (Auto Subtitles & Live Captions)**: Tự động kích hoạt phụ đề cho video và Live Stream, mở khóa nút phụ đề trên các luồng trực tiếp đang bị tắt, giữ nguyên 100% font chữ và khung nền phụ đề người dùng setup trên YouTube, ghim ngôn ngữ ưu tiên lên ngay đầu menu; Tinh chỉnh huy hiệu ngôi sao ⭐ nằm sát chữ, loại bỏ góc nghiêng lệch.
 
 ---
 
 ## Tính năng chính
 
+- **Phụ đề tự động (Auto Subtitles & Live Captions)** - Tự động bật phụ đề cho video và các luồng phát trực tiếp (Live Stream), mở khóa nút phụ đề trên luồng live bị ẩn/tắt. Tận dụng 100% font chữ, kích cỡ, màu nền native mà người dùng đã setup cho YouTube. Tự động ghim ngôn ngữ ưu tiên (mặc định theo YouTube/hệ thống hoặc tùy chọn qua menu) lên trên cùng danh sách phụ đề để chọn nhanh chóng.
 - **Ánh sáng phòng (Ambilight 2.0 Cinema) ⭐** - Tỏa sáng viền video theo màu sắc khung hình chuẩn rạp chiếu phim. Tự động nhận diện và bỏ qua viền đen (Cinematic Letterbox), mở rộng tràn viền phủ kín 100% bốn góc màn hình, dải màu dóng dọc chiếu rọi sâu 2200px xuống tận vùng bình luận. Tự động tối ưu GPU, ngắt khi tạm dừng video hoặc chuyển tab.
 - **Menu cài đặt 5 Tab trực quan** - Phân chia khoa học thành Giao diện, Lọc nội dung, Trình phát, Tối Ưu và Thông tin tiện ích với giao diện Dark Mode bán trong suốt tinh tế.
 - **Tối ưu hiệu năng Zero-Lag & Bố cục lưới mượt mà** - Khắc phục triệt để lỗi click trượt do mất hitbox, loại bỏ hoàn toàn các bộ chọn `:has()` gây recalculate style khi hover, giải phóng áp lực CPU trên Main Thread.

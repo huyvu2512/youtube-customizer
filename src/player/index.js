@@ -7,3 +7,4 @@ export * from './autoLive.js';
 export * from './liveDvr.js';
 export * from './timeLock.js';
 export * from './ambientLight.js';
+export * from './autoSubtitles.js';

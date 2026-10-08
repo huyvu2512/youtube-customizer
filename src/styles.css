@@ -584,23 +584,24 @@ html:not([dark]) .ytc-header-badge {
 }
 
 .ytc-star-badge {
-    display: inline-flex;
-    align-items: center;
+    display: inline-block;
     font-size: 13px;
-    margin-left: 6px;
-    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.7));
-    animation: ytc-star-pulse 2.4s infinite ease-in-out;
+    margin-left: 5px;
+    line-height: 1;
+    vertical-align: middle;
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.6));
+    animation: ytc-star-pulse 2.2s infinite ease-in-out;
     cursor: default;
     user-select: none;
 }
 @keyframes ytc-star-pulse {
     0%, 100% {
-        transform: scale(1) rotate(0deg);
-        filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.5));
+        transform: scale(1);
+        filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.4));
     }
     50% {
-        transform: scale(1.22) rotate(10deg);
-        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.9));
+        transform: scale(1.18);
+        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.85));
     }
 }
 
@@ -1041,12 +1042,77 @@ html:not([dark]) .ytc-quality-btn.active {
     pointer-events: none !important;
     cursor: not-allowed !important;
 }
-#ytc-row-chatoverlay.ytc-disabled:hover {
-    background: transparent !important;
-}
 #ytc-row-chatoverlay.ytc-disabled .ytc-mode-btn {
     pointer-events: none !important;
     cursor: not-allowed !important;
+}
+
+/* Kiểu dáng danh mục phụ & hộp chọn (Sub-item & Select Dropdown) */
+.ytc-sub-item {
+    margin-top: -2px;
+    margin-bottom: 2px;
+    padding-left: 20px !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+.ytc-sub-bullet {
+    color: var(--yt-spec-text-secondary, #888);
+    font-size: 13px;
+    line-height: 1;
+    margin-right: -4px;
+    opacity: 0.6;
+}
+.ytc-sub-label {
+    font-size: 12.5px;
+    color: var(--yt-spec-text-secondary, #ccc);
+}
+.ytc-select {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--yt-spec-text-primary, #f1f1f1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 12px;
+    font-family: inherit;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    max-width: 175px;
+}
+.ytc-select:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+.ytc-select:focus {
+    border-color: #3ea6ff;
+    box-shadow: 0 0 0 2px rgba(62, 166, 255, 0.2);
+}
+.ytc-select option {
+    background: #282828;
+    color: #f1f1f1;
+}
+
+html:not([dark]) .ytc-sub-item {
+    background: rgba(0, 0, 0, 0.025);
+}
+html:not([dark]) .ytc-sub-label {
+    color: #606060;
+}
+html:not([dark]) .ytc-select {
+    background: #ffffff;
+    color: #0f0f0f;
+    border-color: rgba(0, 0, 0, 0.15);
+}
+html:not([dark]) .ytc-select:hover {
+    background: #f8f8f8;
+    border-color: rgba(0, 0, 0, 0.25);
+}
+html:not([dark]) .ytc-select option {
+    background: #ffffff;
+    color: #0f0f0f;
 }
 #ytc-row-chatoverlay.ytc-disabled .ytc-mode-btn.active {
     background: rgba(255, 255, 255, 0.12) !important;
