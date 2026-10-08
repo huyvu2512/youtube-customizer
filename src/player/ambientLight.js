@@ -10,9 +10,7 @@ import { currentConfig } from '../core/config.js';
 
 let ambientWrapper = null;
 let ambientSpreadCanvas = null;
-let ambientAccentCanvas = null;
 let ambientSpreadCtx = null;
-let ambientAccentCtx = null;
 let animFrameId = null;
 let isRunning = false;
 let lastDrawTime = 0;
@@ -59,20 +57,13 @@ function ensureAmbientCanvas() {
             ambientWrapper.id = 'ytc-ambient-wrapper';
             ambientWrapper.setAttribute('aria-hidden', 'true');
 
-            // Lớp 1: Tỏa rộng Full-Screen (Spread Wash)
+            // Lớp Canvas Ambilight duy nhất: Tỏa rộng tự nhiên, siêu mịn không vệt viền giả
             ambientSpreadCanvas = document.createElement('canvas');
             ambientSpreadCanvas.id = 'ytc-ambient-spread-canvas';
             ambientSpreadCanvas.width = CANVAS_WIDTH;
             ambientSpreadCanvas.height = CANVAS_HEIGHT;
 
-            // Lớp 2: Hào quang viền sống động sát mép video (Edge Halo)
-            ambientAccentCanvas = document.createElement('canvas');
-            ambientAccentCanvas.id = 'ytc-ambient-accent-canvas';
-            ambientAccentCanvas.width = CANVAS_WIDTH;
-            ambientAccentCanvas.height = CANVAS_HEIGHT;
-
             ambientWrapper.appendChild(ambientSpreadCanvas);
-            ambientWrapper.appendChild(ambientAccentCanvas);
         }
 
         // Luôn gắn làm con đầu tiên (firstChild) để nằm dưới tất cả các phần tử video và cột nội dung
@@ -90,18 +81,9 @@ function ensureAmbientCanvas() {
             ambientSpreadCtx.imageSmoothingEnabled = true;
             ambientSpreadCtx.imageSmoothingQuality = 'medium';
         }
-
-        ambientAccentCtx = ambientAccentCanvas.getContext('2d', {
-            alpha: true,
-            willReadFrequently: false
-        });
-        if (ambientAccentCtx) {
-            ambientAccentCtx.imageSmoothingEnabled = true;
-            ambientAccentCtx.imageSmoothingQuality = 'medium';
-        }
     }
 
-    return !!(ambientSpreadCtx && ambientAccentCtx);
+    return !!ambientSpreadCtx;
 }
 
 /**
@@ -112,7 +94,7 @@ function ensureAmbientCanvas() {
  */
 function drawFrame(video) {
     if (!ensureAmbientCanvas()) return;
-    if (!ambientSpreadCtx || !ambientAccentCtx) return;
+    if (!ambientSpreadCtx) return;
 
     const moviePlayer = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
     if (!moviePlayer) return;
@@ -165,55 +147,38 @@ function drawFrame(video) {
 
         const rightW = Math.max(0, CANVAS_WIDTH - (cvX + cvW));
 
-        // 1. MÉP TRÊN (Lan tỏa lên toàn bộ thanh Masthead phía trên):
+        // 1. Phủ toàn bộ canvas một lớp màu nền liên tục, mượt mà từ video (Zero seams, zero blocks)
+        ambientSpreadCtx.drawImage(video, sX, sY, sW, sH, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+        // 2. MÉP TRÊN (Lan tỏa dải màu lên toàn bộ thanh Masthead phía trên):
         if (cvY > 0) {
-            // - Dải trực diện phía trên video
-            ambientSpreadCtx.drawImage(video, sX, sY, sW, 4, cvX, 0, cvW, cvY);
-            // - Góc trên bên trái (chạm viền trái màn hình)
-            if (cvX > 0) {
-                ambientSpreadCtx.drawImage(video, sX, sY, 4, 4, 0, 0, cvX, cvY);
-            }
-            // - GÓC TRÊN BÊN PHẢI (LAN TỎA QUA TOÀN BỘ GÓC PHẢI MÀN HÌNH - PHÍA TRÊN NÚT TẠO/AVATAR/CHAT)
-            if (rightW > 0) {
-                ambientSpreadCtx.drawImage(video, sX + sW - 4, sY, 4, 4, cvX + cvW, 0, rightW, cvY);
-            }
+            ambientSpreadCtx.drawImage(video, sX, sY, sW, 8, 0, 0, CANVAS_WIDTH, cvY);
         }
 
-        // 2. HAI BÊN HÔNG (Trái & Phải khung video):
+        // 3. HAI BÊN HÔNG (Trái & Phải khung video):
         if (cvH > 0) {
             if (cvX > 0) {
-                ambientSpreadCtx.drawImage(video, sX, sY, 4, sH, 0, cvY, cvX, cvH);
+                ambientSpreadCtx.drawImage(video, sX, sY, 8, sH, 0, cvY, cvX, cvH);
             }
             if (rightW > 0) {
-                ambientSpreadCtx.drawImage(video, sX + sW - 4, sY, 4, sH, cvX + cvW, cvY, rightW, cvH);
+                ambientSpreadCtx.drawImage(video, sX + sW - 8, sY, 8, sH, cvX + cvW, cvY, rightW, cvH);
             }
         }
 
-        // 3. MÉP DƯỚI (DÓNG CÁC Ô DẢI MÀU DỌC LAN SÂU XUỐNG DƯỚI TRANG):
+        // 4. MÉP DƯỚI (DÓNG CÁC Ô DẢI MÀU DỌC LAN SÂU XUỐNG DƯỚI TRANG):
         const bottomY = cvY + cvH;
         const bottomH = Math.max(0, CANVAS_HEIGHT - bottomY);
         if (bottomH > 0) {
-            // Dải dóng màu thẳng từ mép dưới video xuống
-            ambientSpreadCtx.drawImage(video, sX, sY + sH - 4, sW, 4, cvX, bottomY, cvW, bottomH);
-            // Góc dưới trái
+            ambientSpreadCtx.drawImage(video, sX, sY + sH - 8, sW, 8, cvX, bottomY, cvW, bottomH);
             if (cvX > 0) {
-                ambientSpreadCtx.drawImage(video, sX, sY + sH - 4, 4, 4, 0, bottomY, cvX, bottomH);
+                ambientSpreadCtx.drawImage(video, sX, sY + sH - 8, 8, 8, 0, bottomY, cvX, bottomH);
             }
-            // Góc dưới phải
             if (rightW > 0) {
-                ambientSpreadCtx.drawImage(video, sX + sW - 4, sY + sH - 4, 4, 4, cvX + cvW, bottomY, rightW, bottomH);
+                ambientSpreadCtx.drawImage(video, sX + sW - 8, sY + sH - 8, 8, 8, cvX + cvW, bottomY, rightW, bottomH);
             }
         }
 
-        // 4. KHOÉT RỖNG VÙNG VIDEO THẬT:
-        ambientSpreadCtx.clearRect(cvX, cvY, cvW, cvH);
-
-        // 5. Sao chép sang Accent Canvas để tạo hào quang viền kép
-        ambientAccentCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        ambientAccentCtx.drawImage(ambientSpreadCanvas, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        ambientAccentCtx.clearRect(cvX, cvY, cvW, cvH);
-
-        // 6. Kích hoạt trạng thái hiển thị
+        // 5. Kích hoạt trạng thái hiển thị
         if (!hasDrawnFirstFrame) {
             hasDrawnFirstFrame = true;
             if (ambientWrapper) ambientWrapper.classList.add('ytc-ambient-active');

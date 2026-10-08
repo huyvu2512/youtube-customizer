@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.7.3
-// @description  YouTube Customizer v3.7.3 — Thêm công tắc Tự động cập nhật (Auto-Update); Tự gọi API kiểm tra và trỏ link cài bản mới khi vào YouTube; Giao diện Frameless không khung viền.
+// @version      3.7.4
+// @description  YouTube Customizer v3.7.4 — Tách biệt CSS Dark/Light theme, sửa lỗi Masthead đen khi cuộn ở giao diện sáng, loại bỏ hoàn toàn viền trắng quanh video và mép web.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
