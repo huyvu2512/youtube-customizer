@@ -3544,12 +3544,13 @@
     try {
       if (typeof player.seekToStreamTime === "function") {
         player.seekToStreamTime(Infinity);
+        return;
       }
       const video = player.querySelector("video");
       if (video && video.seekable && video.seekable.length) {
         const end = video.seekable.end(video.seekable.length - 1);
         if (isFinite(end) && end > 0) {
-          video.currentTime = Math.max(0, end - 0.5);
+          video.currentTime = Math.max(0, end - 1);
         }
       }
     } catch (e) {
@@ -3623,8 +3624,8 @@
     }
     if (Date.now() - lastUserSeekTime < 8e3) return;
     const now = Date.now();
-    if (delay > 12) {
-      if (now - lastSnapTime > 1e4) {
+    if (delay > 15) {
+      if (now - lastSnapTime > 15e3) {
         lastSnapTime = now;
         snapToLive(player);
         if (video.playbackRate !== 1) {
@@ -3633,9 +3634,9 @@
       }
       return;
     }
-    if (delay > 7) {
-      if (video.playbackRate !== 1.06) {
-        video.playbackRate = 1.06;
+    if (delay > 8) {
+      if (video.playbackRate !== 1.04) {
+        video.playbackRate = 1.04;
       }
       return;
     }
@@ -3668,14 +3669,14 @@
           const video = player.querySelector("video");
           if (video && !video.paused) {
             const delay = getLiveDelay(player, video);
-            if (!userIsRewound && delay > 10) {
+            if (!userIsRewound && delay > 30) {
               clearInterval(initialSnapTimer);
               initialSnapTimer = null;
               lastSnapTime = Date.now();
               snapToLive(player);
               return;
             }
-            if (delay <= 10) {
+            if (delay <= 30) {
               clearInterval(initialSnapTimer);
               initialSnapTimer = null;
               return;
@@ -3683,18 +3684,18 @@
           }
         }
       }
-      if (attempts >= 25) {
+      if (attempts >= 15) {
         clearInterval(initialSnapTimer);
         initialSnapTimer = null;
       }
-    }, 300);
+    }, 500);
   }
   function initAutoLiveSync() {
     if (autoLiveSyncTimer) return;
-    autoLiveSyncTimer = setInterval(checkLiveSync, 2e3);
+    autoLiveSyncTimer = setInterval(checkLiveSync, 3e3);
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden && currentConfig.autoLiveSync) {
-        setTimeout(checkLiveSync, 500);
+        setTimeout(checkLiveSync, 1e3);
       }
     });
     document.addEventListener("click", (e) => {
@@ -3708,7 +3709,7 @@
           snapToLive(player);
         }
       }
-      if (e.target.closest(".ytp-progress-bar")) {
+      if (e.target && e.target.closest && e.target.closest(".ytp-progress-bar")) {
         const player = document.querySelector("#movie_player:not(#inline-preview-player)");
         if (!player || !isCurrentlyActiveLive(player)) return;
         recordUserSeek();
