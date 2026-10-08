@@ -7,7 +7,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.5.1-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.5.2-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -32,7 +32,7 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.5.1** đại tu toàn diện trang xem video (**Zero-Lag Watch Page**): loại bỏ hoàn toàn hiện tượng khựng lag khi tua video, di chuột xem preview tooltip, bật/tắt khung Live Chat và thao tác các nút điều khiển trình phát. Toàn bộ tính năng hiện có được bảo toàn nguyên vẹn 100%.
+Phiên bản **v3.5.2** sửa triệt để lỗi mất hình ảnh video (đen màn hình, chỉ còn tiếng) khi thoát chế độ phóng to (Exit Fullscreen), đồng thời kế thừa trọn vẹn bản đại tu hiệu năng **Zero-Lag Watch Page** giúp tua video, rê chuột preview, bật/tắt Live Chat và bấm các nút player phản hồi tức thì. Toàn bộ tính năng hiện có được bảo toàn nguyên vẹn 100%.
 
 ---
 

@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.5.1
-// @description  YouTube Customizer v3.5.1 — Tối ưu hóa toàn diện trang xem video (Zero-Lag Watch), mượt mà khi tua video, hover preview, bật tắt Live Chat và thao tác player controls.
+// @version      3.5.2
+// @description  YouTube Customizer v3.5.2 — Tối ưu hóa trang xem video Zero-Lag và khắc phục triệt để lỗi đen màn hình khi thoát chế độ toàn màn hình.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -11,16 +11,17 @@
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.1:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.5.2:
  * ============================================================================
- * 1. [Zero-Lag Watch Page & Player Controls] Tối ưu trang xem video mượt mà tuyệt đối:
- *    - Loại bỏ hoàn toàn bộ chọn html:not(:has(...)) triệt tiêu Style Recalculation Storms khi rê chuột, xem preview tooltip và thao tác player.
- *    - Bỏ cơ chế ẩn controls/con trỏ chuột khi tua video (.seeking-mode), tua mượt mà không chớp tắt HUD.
- *    - Gỡ bỏ khóa cứng click player 1.5s (fullscreenLock), các nút phóng to, play/pause, cài đặt và phím tắt F phản hồi tức thì.
- * 2. [Tối ưu Live Chat Toggle & Click Capture]:
- *    - Tối ưu bộ lắng nghe click toggle chat với bộ lọc vùng nhanh (inChatArea), giải phóng Main Thread cho toàn bộ cụm nút điều khiển player.
- *    - Loại bỏ tính toán px inline thủ công trên video khi không ở chế độ Fullscreen, để YouTube layout tự nhiên không xung đột reflow.
- *    - Triệt tiêu chuỗi setTimeout layout cascade trong fullscreenchange và chat state sync.
+ * 1. [Sửa lỗi đen màn hình khi thoát toàn màn hình (Exit Fullscreen Fix)]:
+ *    - Khắc phục triệt để lỗi mất hình ảnh (chỉ còn tiếng, phóng to lại mới có hình) khi thoát chế độ phóng to.
+ *    - Áp dụng hàm applyVideoDimensions tính toán chuẩn xác tỷ lệ khung hình video theo kích thước player container.
+ *    - Đồng bộ kích thước liên tục qua các mốc chuyển cảnh và gọi player.setInternalSize() để YouTube căn chỉnh hoàn hảo.
+ * 2. [Zero-Lag Watch Page & Player Controls]:
+ *    - Loại bỏ hoàn toàn bộ chọn html:not(:has(...)) triệt tiêu Style Recalculation Storms khi rê chuột và xem preview tooltip.
+ *    - Bỏ ẩn controls/con trỏ chuột khi tua video, tua mượt mà không chớp tắt HUD.
+ *    - Gỡ bỏ khóa cứng click player 1.5s, các nút điều khiển và phím tắt phản hồi tức thì.
+ *    - Tối ưu bộ lắng nghe click toggle chat với bộ lọc vùng nhanh (inChatArea).
  * ============================================================================
  */
 (() => {
@@ -43,7 +44,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, SPARKLE_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.5.1";
+      APP_VERSION = "3.5.2";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -986,6 +987,36 @@
     }
     syncPlayerFullscreenSize();
   }
+  function applyVideoDimensions(video, containerW, containerH) {
+    if (!video || containerW <= 0 || containerH <= 0) return;
+    const vW = video.videoWidth;
+    const vH = video.videoHeight;
+    if (vW > 0 && vH > 0) {
+      const videoRatio = vW / vH;
+      const containerRatio = containerW / containerH;
+      let targetW, targetH, targetLeft, targetTop;
+      if (containerRatio > videoRatio) {
+        targetH = containerH;
+        targetW = Math.round(targetH * videoRatio);
+        targetLeft = Math.round((containerW - targetW) / 2);
+        targetTop = 0;
+      } else {
+        targetW = containerW;
+        targetH = Math.round(targetW / videoRatio);
+        targetLeft = 0;
+        targetTop = Math.round((containerH - targetH) / 2);
+      }
+      video.style.width = `${targetW}px`;
+      video.style.height = `${targetH}px`;
+      video.style.left = `${targetLeft}px`;
+      video.style.top = `${targetTop}px`;
+    } else {
+      video.style.width = `${containerW}px`;
+      video.style.height = `${containerH}px`;
+      video.style.left = "0px";
+      video.style.top = "0px";
+    }
+  }
   function syncPlayerFullscreenSize() {
     if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
     if (isSyncingPlayerSize) return;
@@ -997,50 +1028,40 @@
       const video = player.querySelector("video.html5-main-video") || player.querySelector("video");
       if (!video) return;
       if (!isFs) {
-        if (video.dataset.ytcOverridden) {
-          delete video.dataset.ytcOverridden;
-          video.style.width = "";
-          video.style.height = "";
-          video.style.left = "";
-          video.style.top = "";
+        delete video.dataset.ytcOverridden;
+        const pW = player.clientWidth || player.offsetWidth;
+        const pH = player.clientHeight || player.offsetHeight;
+        if (pW > 0 && pH > 0) {
+          applyVideoDimensions(video, pW, pH);
+        }
+        if (typeof player.setInternalSize === "function") {
+          try {
+            player.setInternalSize();
+          } catch (e) {
+          }
         }
         return;
       }
       if (!isNativeChatHiddenByScript) {
-        if (video.dataset.ytcOverridden) {
-          delete video.dataset.ytcOverridden;
-          video.style.width = "";
-          video.style.height = "";
-          video.style.left = "";
-          video.style.top = "";
+        delete video.dataset.ytcOverridden;
+        const pW = player.clientWidth || player.offsetWidth;
+        const pH = player.clientHeight || player.offsetHeight;
+        if (pW > 0 && pH > 0) {
+          applyVideoDimensions(video, pW, pH);
+        }
+        if (typeof player.setInternalSize === "function") {
+          try {
+            player.setInternalSize();
+          } catch (e) {
+          }
         }
         return;
       }
-      if (video.videoWidth && video.videoHeight) {
-        const screenW = window.innerWidth || screen.width;
-        const screenH = window.innerHeight || screen.height;
-        const videoRatio = video.videoWidth / video.videoHeight;
-        const screenRatio = screenW / screenH;
-        let targetW, targetH, targetLeft, targetTop;
-        if (screenRatio > videoRatio) {
-          targetH = screenH;
-          targetW = Math.round(targetH * videoRatio);
-          targetLeft = Math.round((screenW - targetW) / 2);
-          targetTop = 0;
-        } else {
-          targetW = screenW;
-          targetH = Math.round(targetW / videoRatio);
-          targetLeft = 0;
-          targetTop = Math.round((screenH - targetH) / 2);
-        }
-        const currentW = parseInt(video.style.width) || 0;
-        if (currentW < targetW - 20) {
-          video.dataset.ytcOverridden = "true";
-          video.style.width = `${targetW}px`;
-          video.style.height = `${targetH}px`;
-          video.style.left = `${targetLeft}px`;
-          video.style.top = `${targetTop}px`;
-        }
+      const screenW = window.innerWidth || screen.width;
+      const screenH = window.innerHeight || screen.height;
+      if (screenW > 0 && screenH > 0) {
+        video.dataset.ytcOverridden = "true";
+        applyVideoDimensions(video, screenW, screenH);
       }
     } finally {
       isSyncingPlayerSize = false;
@@ -2736,7 +2757,10 @@
       } else if (currentConfig.chatOverlay && currentConfig.chatOverlay !== "off" || currentConfig.hideNativeLiveChat) {
         setNativeChatHiddenState(true);
       }
-      setTimeout(syncPlayerFullscreenSize, 100);
+      syncPlayerFullscreenSize();
+      setTimeout(syncPlayerFullscreenSize, 60);
+      setTimeout(syncPlayerFullscreenSize, 180);
+      setTimeout(syncPlayerFullscreenSize, 350);
     });
     let windowResizeTimer = null;
     window.addEventListener("resize", () => {

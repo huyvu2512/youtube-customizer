@@ -1294,7 +1294,10 @@ export function initChatOverlay() {
         } else if ((currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') || currentConfig.hideNativeLiveChat) {
             setNativeChatHiddenState(true);
         }
-        setTimeout(syncPlayerFullscreenSize, 100);
+        syncPlayerFullscreenSize();
+        setTimeout(syncPlayerFullscreenSize, 60);
+        setTimeout(syncPlayerFullscreenSize, 180);
+        setTimeout(syncPlayerFullscreenSize, 350);
     });
     let windowResizeTimer = null;
     window.addEventListener('resize', () => {
