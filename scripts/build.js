@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.8.1
-// @description  YouTube Customizer v3.8.1 — Tinh chỉnh huy hiệu ngôi sao ⭐ cho Ánh sáng phòng (Ambilight 2.0 Cinema), kéo sát chữ và loại bỏ góc nghiêng, tối ưu độ ổn định.
+// @version      3.8.2
+// @description  YouTube Customizer v3.8.2 — Hệ thống đa ngôn ngữ 21 ngôn ngữ, menu nổi ngoài panel, sửa triệt để tự bật Ambilight khi F5/đổi video.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

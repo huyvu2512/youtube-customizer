@@ -9,7 +9,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.8.1-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.8.2-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -34,7 +34,7 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.8.1** tập trung hoàn thiện trải nghiệm thị giác và độ ổn định: Tinh chỉnh huy hiệu ngôi sao ⭐ của **Ánh sáng phòng (Ambilight 2.0 Cinema)** nằm sát cạnh chữ `(Ambilight)`, loại bỏ hoàn toàn góc nghiêng lệch, tối ưu hiệu ứng co giãn ánh vàng đồng bộ mượt mà cho menu cài đặt.
+Phiên bản **v3.8.2** nâng cấp hệ thống đa ngôn ngữ toàn cầu 21 thứ tiếng, thả nổi menu chọn ngôn ngữ độc lập ngoài panel không lo bị tràn viền, đồng thời sửa triệt để lỗi tự bật Ambilight khi F5 hoặc đổi video với cơ chế CSS Fail-Safe 2 lớp.
 
 ---
 
@@ -42,7 +42,7 @@ Phiên bản **v3.8.1** tập trung hoàn thiện trải nghiệm thị giác v�
 
 - **Ánh sáng phòng (Ambilight 2.0 Cinema) ⭐** - Tỏa sáng viền video theo màu sắc khung hình chuẩn rạp chiếu phim. Tự động nhận diện và bỏ qua viền đen (Cinematic Letterbox), mở rộng tràn viền phủ kín 100% bốn góc màn hình, dải màu dóng dọc chiếu rọi sâu 2200px xuống tận vùng bình luận. Tự động tối ưu GPU, ngắt khi tạm dừng video hoặc chuyển tab.
 - **Menu cài đặt 5 Tab trực quan** - Phân chia khoa học thành Giao diện, Lọc nội dung, Trình phát, Tối Ưu và Thông tin tiện ích với giao diện Dark Mode bán trong suốt tinh tế.
-- **Hỗ trợ đa ngôn ngữ quốc tế (20+ Quốc gia)** - Tùy chọn ngôn ngữ hiển thị giao diện với menu Dropdown sang trọng, tích hợp biểu tượng cờ quốc gia, bộ lọc tìm kiếm nhanh mượt mà và tự động nhận diện ngôn ngữ theo YouTube / hệ thống.
+- **Hỗ trợ đa ngôn ngữ quốc tế (21 Ngôn ngữ)** - Tùy chọn ngôn ngữ hiển thị giao diện với menu nổi mượt mà, chuyển đổi ngôn ngữ tức thì cho toàn bộ menu cài đặt.
 - **Tối ưu hiệu năng Zero-Lag & Bố cục lưới mượt mà** - Khắc phục triệt để lỗi click trượt do mất hitbox, loại bỏ hoàn toàn các bộ chọn `:has()` gây recalculate style khi hover, giải phóng áp lực CPU trên Main Thread.
 - **Ẩn sản phẩm gắn thẻ (YouTube Shopping)** - Tự động đóng và ẩn thanh trượt Sản phẩm bên phải (`engagement-panel-shopping-panel`), nút túi xách mua sắm trên video player và các kệ hàng tiếp thị liên kết Shopee.
 - **Ưu tiên độ phân giải video (Buffer-Safe)** - Cung cấp thanh chọn 5 chế độ: Tự động, Cao nhất (Max / 4K / 8K), 2K (1440p), 1080p (Full HD) và 720p (HD). Áp dụng thông minh duy nhất 1 lần khi manifest video sẵn sàng, chống giật buffer.
