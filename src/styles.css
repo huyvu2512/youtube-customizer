@@ -1872,3 +1872,68 @@ html:not([dark]) .ytc-update-btn:hover {
     background: rgba(0, 0, 0, 0.1);
 }
 
+/* ==========================================================================
+   HIỆU ỨNG ÁNH SÁNG PHÒNG (AMBIENT LIGHT / AMBILIGHT) TỰ ĐỘNG TỐI ƯU
+   ========================================================================== */
+#ytc-ambient-wrapper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none !important;
+    z-index: 0 !important;
+    overflow: visible;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+#ytc-ambient-wrapper.ytc-ambient-active {
+    opacity: 1;
+}
+
+#ytc-ambient-canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: scale(1.15, 1.22) translateZ(0);
+    filter: blur(48px) saturate(180%) brightness(120%);
+    pointer-events: none !important;
+    will-change: filter, transform;
+    opacity: 0.85;
+}
+
+html:not([dark]) #ytc-ambient-canvas {
+    filter: blur(42px) saturate(145%) brightness(105%);
+    opacity: 0.7;
+}
+
+/* Mở rộng không gian tỏa sáng xung quanh player */
+html.ytc-ambient-lighting #player-container,
+html.ytc-ambient-lighting #player-container-inner,
+html.ytc-ambient-lighting #player-container-outer,
+html.ytc-ambient-lighting #ytd-player,
+html.ytc-ambient-lighting #full-bleed-container,
+html.ytc-ambient-lighting #player-full-bleed-container {
+    overflow: visible !important;
+}
+
+html.ytc-ambient-lighting #movie_player {
+    z-index: 1 !important;
+    position: relative;
+}
+
+/* Tự động ẩn khi fullscreen hoàn toàn để tiết kiệm 100% GPU */
+html.ytc-ambient-lighting ytd-watch-flexy[fullscreen] #ytc-ambient-wrapper,
+html.ytc-ambient-lighting .ytp-fullscreen #ytc-ambient-wrapper {
+    display: none !important;
+}
+
+/* Ẩn khi không bật tính năng */
+html:not(.ytc-ambient-lighting) #ytc-ambient-wrapper {
+    display: none !important;
+}
+
+

@@ -43,7 +43,8 @@ import {
     BUG_SVG,
     GIFT_SVG,
     EXTERNAL_LINK_SVG,
-    SHOPPING_SVG
+    SHOPPING_SVG,
+    AMBIENT_LIGHT_SVG
 } from '../core/constants.js';
 import { syncPanelState } from './sync.js';
 import { setupOnboardingAndUpdates, isNewerVersion } from './notifier.js';
@@ -170,6 +171,17 @@ export function createSettingsPanel() {
                     </div>
                     <label class="ytc-switch" for="ytc-chk-shopping">
                         <input type="checkbox" id="ytc-chk-shopping" name="hideShopping" aria-label="Ẩn sản phẩm gắn thẻ" ${currentConfig.hideShopping ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="ambientLighting" title="Hiệu ứng ánh sáng phòng (Ambilight) phản chiếu theo màu video cực đẹp, tự động tối ưu phần cứng siêu nhẹ">
+                    <div class="ytc-item-left">
+                        ${AMBIENT_LIGHT_SVG}
+                        <span>Ánh sáng phòng (Ambilight)</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-ambient-light">
+                        <input type="checkbox" id="ytc-chk-ambient-light" name="ambientLighting" aria-label="Ánh sáng phòng (Ambilight)" ${currentConfig.ambientLighting ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -626,10 +638,22 @@ export function createSettingsPanel() {
                     }).catch(() => {});
                     window.dispatchEvent(new Event('resize'));
                 }
+                if (key === 'ambientLighting') {
+                    import('../player/ambientLight.js').then(m => {
+                        if (m && typeof m.applyAmbientLightingState === 'function') {
+                            m.applyAmbientLightingState();
+                        }
+                    }).catch(() => {});
+                }
                 if (key === 'audioOnlyMode') {
                     import('../optimization/audioOnly.js').then(m => {
                         if (m && typeof m.applyAudioOnlyState === 'function') {
                             m.applyAudioOnlyState();
+                        }
+                    }).catch(() => {});
+                    import('../player/ambientLight.js').then(m => {
+                        if (m && typeof m.applyAmbientLightingState === 'function') {
+                            m.applyAmbientLightingState();
                         }
                     }).catch(() => {});
                 }
