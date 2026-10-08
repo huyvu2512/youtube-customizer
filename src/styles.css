@@ -1909,15 +1909,15 @@ ytd-watch-flexy {
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
-    height: 1200px !important;
+    height: 2200px !important;
     pointer-events: none !important;
     z-index: 0 !important;
     overflow: hidden !important;
     contain: paint !important;
     opacity: 0;
-    /* Phủ kín 100% toàn bộ đỉnh trang và các góc, chỉ làm mờ dần xuống phía dưới */
-    mask-image: linear-gradient(to bottom, #000 0%, #000 60%, rgba(0, 0, 0, 0.4) 85%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 60%, rgba(0, 0, 0, 0.4) 85%, transparent 100%);
+    /* Lan tỏa sâu xuống giữa trang (gấp đôi độ dài trước đây), tan biến mượt mà */
+    mask-image: linear-gradient(to bottom, #000 0%, #000 55%, rgba(0, 0, 0, 0.6) 75%, rgba(0, 0, 0, 0.2) 90%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, rgba(0, 0, 0, 0.6) 75%, rgba(0, 0, 0, 0.2) 90%, transparent 100%);
     transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1961,7 +1961,7 @@ html[fullscreen] #movie_player,
     outline: none !important;
 }
 
-/* Làm trong suốt các khung chứa video & cột nội dung để ánh sáng xuyên thấu */
+/* Làm trong suốt các khung chứa video, cột nội dung & bình luận để ánh sáng xuyên thấu sâu xuống trang */
 html.ytc-ambient-lighting ytd-watch-flexy,
 html.ytc-ambient-lighting ytd-watch-flexy #columns,
 html.ytc-ambient-lighting ytd-watch-flexy #primary,
@@ -1977,7 +1977,10 @@ html.ytc-ambient-lighting ytd-watch-flexy #player-container-inner,
 html.ytc-ambient-lighting #full-bleed-container,
 html.ytc-ambient-lighting #player-full-bleed-container,
 html.ytc-ambient-lighting #player-theater-container,
-html.ytc-ambient-lighting #below {
+html.ytc-ambient-lighting #below,
+html.ytc-ambient-lighting ytd-comments,
+html.ytc-ambient-lighting #comments,
+html.ytc-ambient-lighting ytd-item-section-renderer#sections {
     background: transparent !important;
     background-color: transparent !important;
     border: none !important;

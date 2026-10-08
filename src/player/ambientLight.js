@@ -20,7 +20,7 @@ let isPausedAndDrawn = false;
 
 // Kích thước canvas nội bộ (tỷ lệ chuẩn tối ưu hiệu năng và GPU)
 const CANVAS_WIDTH = 512;
-const CANVAS_HEIGHT = 440;
+const CANVAS_HEIGHT = 720;
 const TARGET_INTERVAL = 1000 / 30; // 30 FPS mượt mà & siêu nhẹ
 
 /**
@@ -112,7 +112,7 @@ function drawFrame(video) {
         if (pW < 10 || pH < 10) return;
 
         const wrapW = wrapperRect.width || window.innerWidth || 1920;
-        const wrapH = wrapperRect.height || 1200;
+        const wrapH = wrapperRect.height || 2200;
 
         // Tọa độ tương đối của player trong không gian wrapper
         const relX = Math.max(0, playerRect.left - wrapperRect.left);

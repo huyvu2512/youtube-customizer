@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.7.6
-// @description  YouTube Customizer v3.7.6 — Mở rộng Ambilight tràn viền phủ kín 100% các góc màn hình, triệt tiêu hoàn toàn khoảng trắng góc trên và 2 mép web.
+// @version      3.7.7
+// @description  YouTube Customizer v3.7.7 — Kéo dài dải màu Ambilight xuống giữa trang (gấp đôi độ dài 2200px) cho cả Giao diện Sáng và Tối.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
