@@ -130,105 +130,132 @@ function selectPreferredTrack(player, tracklist) {
  * Ghim ngôn ngữ ưu tiên lên đầu tiên trong menu chọn phụ đề của YouTube Player
  */
 function pinPreferredLanguageInMenu() {
-    if (!currentConfig.autoSubtitles) return;
+    try {
+        if (!currentConfig.autoSubtitles) return;
 
-    const panelMenu = document.querySelector('.ytp-popup.ytp-settings-menu .ytp-panel-menu');
-    if (!panelMenu) return;
+        const panelMenu = document.querySelector('.ytp-popup.ytp-settings-menu .ytp-panel-menu');
+        if (!panelMenu) return;
 
-    const items = Array.from(panelMenu.querySelectorAll('.ytp-menuitem'));
-    if (items.length < 2) return;
+        const items = Array.from(panelMenu.querySelectorAll('.ytp-menuitem'));
+        if (items.length < 2) return;
 
-    // Kiểm tra xem đây có phải menu phụ đề không (chứa "Tắt" / "Off" / "Dịch tự động" / "Auto-translate")
-    const isCaptionMenu = items.some(it => {
-        const text = (it.textContent || '').toLowerCase();
-        return text.includes('tắt') || text.includes('off') || text.includes('dịch tự động') || text.includes('auto-translate');
-    });
+        // Kiểm tra xem đây có phải menu phụ đề không (chứa "Tắt" / "Off" / "Dịch tự động" / "Auto-translate")
+        const isCaptionMenu = items.some(it => {
+            const text = (it.textContent || '').toLowerCase();
+            return text.includes('tắt') || text.includes('off') || text.includes('dịch tự động') || text.includes('auto-translate');
+        });
 
-    if (!isCaptionMenu) return;
+        if (!isCaptionMenu) return;
 
-    const targetLang = getTargetCaptionLang();
-    const targetLangName = getLangDisplayName(targetLang).toLowerCase();
+        const targetLang = getTargetCaptionLang();
+        const targetLangName = getLangDisplayName(targetLang).toLowerCase();
 
-    // Tìm item trùng với ngôn ngữ ưu tiên
-    const matchedItem = items.find(it => {
-        const text = (it.textContent || '').toLowerCase();
-        return text.includes(targetLangName) || (targetLang === 'vi' && text.includes('tiếng việt'));
-    });
+        // Tìm item trùng với ngôn ngữ ưu tiên
+        const matchedItem = items.find(it => {
+            const text = (it.textContent || '').toLowerCase();
+            return text.includes(targetLangName) || (targetLang === 'vi' && text.includes('tiếng việt'));
+        });
 
-    if (matchedItem) {
-        // Đưa item này lên ngay sau item "Tắt" (vị trí đầu danh sách ngôn ngữ)
-        const offItem = items[0];
-        if (offItem && offItem.nextSibling !== matchedItem) {
-            panelMenu.insertBefore(matchedItem, offItem.nextSibling);
-            matchedItem.style.background = 'rgba(62, 166, 255, 0.15)';
-            matchedItem.style.fontWeight = '600';
-        }
-    } else {
-        // Nếu video chỉ có tiếng nước ngoài và cần dịch: Ghim nút chọn nhanh dịch tự động sang targetLang
-        const existingCustom = panelMenu.querySelector('.ytc-pinned-caption-item');
-        if (!existingCustom) {
-            const player = getPlayer();
-            const tracklist = (player && typeof player.getOption === 'function' && player.getOption('captions', 'tracklist')) || [];
-            const baseTrack = tracklist.find(t => t.kind === 'asr') || tracklist[0];
+        if (matchedItem) {
+            // Đưa item này lên ngay sau item "Tắt" (vị trí đầu danh sách ngôn ngữ)
+            const offItem = items[0];
+            if (offItem && offItem.nextSibling !== matchedItem) {
+                panelMenu.insertBefore(matchedItem, offItem.nextSibling);
+                matchedItem.style.background = 'rgba(62, 166, 255, 0.15)';
+                matchedItem.style.fontWeight = '600';
+            }
+        } else {
+            // Nếu video chỉ có tiếng nước ngoài và cần dịch: Ghim nút chọn nhanh dịch tự động sang targetLang
+            const existingCustom = panelMenu.querySelector('.ytc-pinned-caption-item');
+            if (!existingCustom) {
+                const player = getPlayer();
+                const tracklist = (player && typeof player.getOption === 'function' && player.getOption('captions', 'tracklist')) || [];
+                const baseTrack = tracklist.find(t => t.kind === 'asr') || tracklist[0];
 
-            if (baseTrack) {
-                const customItem = document.createElement('div');
-                customItem.className = 'ytp-menuitem ytc-pinned-caption-item';
-                customItem.setAttribute('role', 'menuitemradio');
-                customItem.setAttribute('tabindex', '0');
-                customItem.style.cssText = 'background: rgba(62, 166, 255, 0.18); font-weight: 600; color: #3ea6ff; cursor: pointer;';
-                customItem.innerHTML = `
-                    <div class="ytp-menuitem-icon"></div>
-                    <div class="ytp-menuitem-label">⭐ ${getLangDisplayName(targetLang)} (Tự động dịch)</div>
-                    <div class="ytp-menuitem-content"></div>
-                `;
+                if (baseTrack) {
+                    const customItem = document.createElement('div');
+                    customItem.className = 'ytp-menuitem ytc-pinned-caption-item';
+                    customItem.setAttribute('role', 'menuitemradio');
+                    customItem.setAttribute('tabindex', '0');
+                    customItem.style.cssText = 'background: rgba(62, 166, 255, 0.18); font-weight: 600; color: #3ea6ff; cursor: pointer;';
+                    customItem.innerHTML = `
+                        <div class="ytp-menuitem-icon"></div>
+                        <div class="ytp-menuitem-label">⭐ ${getLangDisplayName(targetLang)} (Tự động dịch)</div>
+                        <div class="ytp-menuitem-content"></div>
+                    `;
 
-                customItem.addEventListener('click', (ev) => {
-                    ev.stopPropagation();
-                    if (player && typeof player.setOption === 'function') {
-                        player.setOption('captions', 'track', {
-                            languageCode: baseTrack.languageCode,
-                            translationLanguage: { languageCode: targetLang }
-                        });
+                    customItem.addEventListener('click', (ev) => {
+                        ev.stopPropagation();
+                        if (player && typeof player.setOption === 'function') {
+                            player.setOption('captions', 'track', {
+                                languageCode: baseTrack.languageCode,
+                                translationLanguage: { languageCode: targetLang }
+                            });
+                        }
+                        const settingsBtn = document.querySelector('.ytp-settings-button');
+                        if (settingsBtn) settingsBtn.click();
+                    });
+
+                    const offItem = items[0];
+                    if (offItem) {
+                        panelMenu.insertBefore(customItem, offItem.nextSibling);
+                    } else {
+                        panelMenu.prepend(customItem);
                     }
-                    const settingsBtn = document.querySelector('.ytp-settings-button');
-                    if (settingsBtn) settingsBtn.click();
-                });
-
-                const offItem = items[0];
-                if (offItem) {
-                    panelMenu.insertBefore(customItem, offItem.nextSibling);
-                } else {
-                    panelMenu.prepend(customItem);
                 }
             }
         }
-    }
+    } catch (e) {}
 }
 
 /**
  * Khởi tạo hệ thống phụ đề tự động
  */
 export function initAutoSubtitles() {
-    // Theo dõi menu cài đặt của YouTube Player để ghim ngôn ngữ ưu tiên lên đầu
-    if (!observerAttached) {
-        observerAttached = true;
-        const menuObserver = new MutationObserver(() => {
-            pinPreferredLanguageInMenu();
+    try {
+        // Theo dõi menu cài đặt của YouTube Player để ghim ngôn ngữ ưu tiên lên đầu
+        if (!observerAttached) {
+            observerAttached = true;
+            const menuObserver = new MutationObserver(() => {
+                try {
+                    pinPreferredLanguageInMenu();
+                } catch (e) {}
+            });
+            const attach = () => {
+                const target = document.body || document.documentElement;
+                if (target) {
+                    try {
+                        menuObserver.observe(target, { childList: true, subtree: true });
+                    } catch (e) {}
+                }
+            };
+            if (document.body) {
+                attach();
+            } else {
+                if (document.documentElement) {
+                    try {
+                        menuObserver.observe(document.documentElement, { childList: true, subtree: true });
+                    } catch (e) {}
+                }
+                document.addEventListener('DOMContentLoaded', attach, { once: true });
+            }
+        }
+
+        // Lắng nghe khi điều hướng trang video
+        window.addEventListener('yt-navigate-finish', () => {
+            isCaptionsModuleLoaded = false;
+            setTimeout(() => {
+                try {
+                    applyAutoSubtitles();
+                } catch (e) {}
+            }, 1000);
         });
-        menuObserver.observe(document.body, { childList: true, subtree: true });
-    }
 
-    // Lắng nghe khi điều hướng trang video
-    window.addEventListener('yt-navigate-finish', () => {
-        isCaptionsModuleLoaded = false;
+        // Lần tải đầu tiên
         setTimeout(() => {
-            applyAutoSubtitles();
-        }, 1000);
-    });
-
-    // Lần tải đầu tiên
-    setTimeout(() => {
-        applyAutoSubtitles();
-    }, 1500);
+            try {
+                applyAutoSubtitles();
+            } catch (e) {}
+        }, 1500);
+    } catch (e) {}
 }

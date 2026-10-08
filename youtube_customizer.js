@@ -1246,179 +1246,6 @@
     }
   });
 
-  // src/player/autoSubtitles.js
-  var autoSubtitles_exports = {};
-  __export(autoSubtitles_exports, {
-    applyAutoSubtitles: () => applyAutoSubtitles,
-    getTargetCaptionLang: () => getTargetCaptionLang,
-    initAutoSubtitles: () => initAutoSubtitles
-  });
-  function getTargetCaptionLang() {
-    const cfgLang = currentConfig.captionLanguage || "auto";
-    if (cfgLang !== "auto") return cfgLang;
-    const docLang = (document.documentElement.lang || navigator.language || "vi").toLowerCase();
-    if (docLang.startsWith("vi")) return "vi";
-    if (docLang.startsWith("en")) return "en";
-    if (docLang.startsWith("ja")) return "ja";
-    if (docLang.startsWith("ko")) return "ko";
-    if (docLang.startsWith("zh")) return "zh";
-    return "vi";
-  }
-  function getLangDisplayName(code) {
-    const map = {
-      vi: "Tiếng Việt",
-      en: "Tiếng Anh (English)",
-      ja: "Tiếng Nhật (日本語)",
-      ko: "Tiếng Hàn (한국어)",
-      zh: "Tiếng Trung (中文)"
-    };
-    return map[code] || code.toUpperCase();
-  }
-  function getPlayer() {
-    return document.getElementById("movie_player") || document.querySelector(".html5-video-player");
-  }
-  function applyAutoSubtitles() {
-    if (!currentConfig.autoSubtitles) return;
-    const player = getPlayer();
-    if (!player) return;
-    try {
-      const subBtn = player.querySelector(".ytp-subtitles-button") || document.querySelector(".ytp-subtitles-button");
-      if (subBtn) {
-        subBtn.style.display = "inline-block";
-        subBtn.removeAttribute("aria-disabled");
-      }
-      if (typeof player.loadModule === "function" && !isCaptionsModuleLoaded) {
-        player.loadModule("captions");
-        isCaptionsModuleLoaded = true;
-      }
-      const isSubOn = typeof player.isSubtitlesOn === "function" && player.isSubtitlesOn() || subBtn && subBtn.getAttribute("aria-pressed") === "true";
-      if (!isSubOn) {
-        if (typeof player.toggleSubtitlesOn === "function") {
-          player.toggleSubtitlesOn();
-        } else if (subBtn) {
-          subBtn.click();
-        }
-      }
-      const tracklist = typeof player.getOption === "function" && player.getOption("captions", "tracklist") || [];
-      if (!tracklist || tracklist.length === 0) {
-        setTimeout(() => {
-          const retryPlayer = getPlayer();
-          const retryTracks = retryPlayer && typeof retryPlayer.getOption === "function" && retryPlayer.getOption("captions", "tracklist");
-          if (retryTracks && retryTracks.length > 0) {
-            selectPreferredTrack(retryPlayer, retryTracks);
-          }
-        }, 800);
-        return;
-      }
-      selectPreferredTrack(player, tracklist);
-    } catch (e) {
-    }
-  }
-  function selectPreferredTrack(player, tracklist) {
-    if (!player || typeof player.setOption !== "function") return;
-    const targetLang = getTargetCaptionLang();
-    const exactTrack = tracklist.find((t) => t.languageCode === targetLang);
-    if (exactTrack) {
-      player.setOption("captions", "track", exactTrack);
-      return;
-    }
-    const baseTrack = tracklist.find((t) => t.kind === "asr") || tracklist[0];
-    if (baseTrack) {
-      player.setOption("captions", "track", {
-        languageCode: baseTrack.languageCode,
-        translationLanguage: { languageCode: targetLang }
-      });
-    }
-  }
-  function pinPreferredLanguageInMenu() {
-    if (!currentConfig.autoSubtitles) return;
-    const panelMenu = document.querySelector(".ytp-popup.ytp-settings-menu .ytp-panel-menu");
-    if (!panelMenu) return;
-    const items = Array.from(panelMenu.querySelectorAll(".ytp-menuitem"));
-    if (items.length < 2) return;
-    const isCaptionMenu = items.some((it) => {
-      const text = (it.textContent || "").toLowerCase();
-      return text.includes("tắt") || text.includes("off") || text.includes("dịch tự động") || text.includes("auto-translate");
-    });
-    if (!isCaptionMenu) return;
-    const targetLang = getTargetCaptionLang();
-    const targetLangName = getLangDisplayName(targetLang).toLowerCase();
-    const matchedItem = items.find((it) => {
-      const text = (it.textContent || "").toLowerCase();
-      return text.includes(targetLangName) || targetLang === "vi" && text.includes("tiếng việt");
-    });
-    if (matchedItem) {
-      const offItem = items[0];
-      if (offItem && offItem.nextSibling !== matchedItem) {
-        panelMenu.insertBefore(matchedItem, offItem.nextSibling);
-        matchedItem.style.background = "rgba(62, 166, 255, 0.15)";
-        matchedItem.style.fontWeight = "600";
-      }
-    } else {
-      const existingCustom = panelMenu.querySelector(".ytc-pinned-caption-item");
-      if (!existingCustom) {
-        const player = getPlayer();
-        const tracklist = player && typeof player.getOption === "function" && player.getOption("captions", "tracklist") || [];
-        const baseTrack = tracklist.find((t) => t.kind === "asr") || tracklist[0];
-        if (baseTrack) {
-          const customItem = document.createElement("div");
-          customItem.className = "ytp-menuitem ytc-pinned-caption-item";
-          customItem.setAttribute("role", "menuitemradio");
-          customItem.setAttribute("tabindex", "0");
-          customItem.style.cssText = "background: rgba(62, 166, 255, 0.18); font-weight: 600; color: #3ea6ff; cursor: pointer;";
-          customItem.innerHTML = `
-                    <div class="ytp-menuitem-icon"></div>
-                    <div class="ytp-menuitem-label">⭐ ${getLangDisplayName(targetLang)} (Tự động dịch)</div>
-                    <div class="ytp-menuitem-content"></div>
-                `;
-          customItem.addEventListener("click", (ev) => {
-            ev.stopPropagation();
-            if (player && typeof player.setOption === "function") {
-              player.setOption("captions", "track", {
-                languageCode: baseTrack.languageCode,
-                translationLanguage: { languageCode: targetLang }
-              });
-            }
-            const settingsBtn = document.querySelector(".ytp-settings-button");
-            if (settingsBtn) settingsBtn.click();
-          });
-          const offItem = items[0];
-          if (offItem) {
-            panelMenu.insertBefore(customItem, offItem.nextSibling);
-          } else {
-            panelMenu.prepend(customItem);
-          }
-        }
-      }
-    }
-  }
-  function initAutoSubtitles() {
-    if (!observerAttached) {
-      observerAttached = true;
-      const menuObserver = new MutationObserver(() => {
-        pinPreferredLanguageInMenu();
-      });
-      menuObserver.observe(document.body, { childList: true, subtree: true });
-    }
-    window.addEventListener("yt-navigate-finish", () => {
-      isCaptionsModuleLoaded = false;
-      setTimeout(() => {
-        applyAutoSubtitles();
-      }, 1e3);
-    });
-    setTimeout(() => {
-      applyAutoSubtitles();
-    }, 1500);
-  }
-  var isCaptionsModuleLoaded, observerAttached;
-  var init_autoSubtitles = __esm({
-    "src/player/autoSubtitles.js"() {
-      init_config();
-      isCaptionsModuleLoaded = false;
-      observerAttached = false;
-    }
-  });
-
   // src/chat/chatState.js
   function setChatOverlayInitialized(v) {
     chatOverlayInitialized = v;
@@ -4438,7 +4265,202 @@
 
   // src/player/index.js
   init_ambientLight();
-  init_autoSubtitles();
+
+  // src/player/autoSubtitles.js
+  init_config();
+  var isCaptionsModuleLoaded = false;
+  var observerAttached = false;
+  function getTargetCaptionLang() {
+    const cfgLang = currentConfig.captionLanguage || "auto";
+    if (cfgLang !== "auto") return cfgLang;
+    const docLang = (document.documentElement.lang || navigator.language || "vi").toLowerCase();
+    if (docLang.startsWith("vi")) return "vi";
+    if (docLang.startsWith("en")) return "en";
+    if (docLang.startsWith("ja")) return "ja";
+    if (docLang.startsWith("ko")) return "ko";
+    if (docLang.startsWith("zh")) return "zh";
+    return "vi";
+  }
+  function getLangDisplayName(code) {
+    const map = {
+      vi: "Tiếng Việt",
+      en: "Tiếng Anh (English)",
+      ja: "Tiếng Nhật (日本語)",
+      ko: "Tiếng Hàn (한국어)",
+      zh: "Tiếng Trung (中文)"
+    };
+    return map[code] || code.toUpperCase();
+  }
+  function getPlayer() {
+    return document.getElementById("movie_player") || document.querySelector(".html5-video-player");
+  }
+  function applyAutoSubtitles() {
+    if (!currentConfig.autoSubtitles) return;
+    const player = getPlayer();
+    if (!player) return;
+    try {
+      const subBtn = player.querySelector(".ytp-subtitles-button") || document.querySelector(".ytp-subtitles-button");
+      if (subBtn) {
+        subBtn.style.display = "inline-block";
+        subBtn.removeAttribute("aria-disabled");
+      }
+      if (typeof player.loadModule === "function" && !isCaptionsModuleLoaded) {
+        player.loadModule("captions");
+        isCaptionsModuleLoaded = true;
+      }
+      const isSubOn = typeof player.isSubtitlesOn === "function" && player.isSubtitlesOn() || subBtn && subBtn.getAttribute("aria-pressed") === "true";
+      if (!isSubOn) {
+        if (typeof player.toggleSubtitlesOn === "function") {
+          player.toggleSubtitlesOn();
+        } else if (subBtn) {
+          subBtn.click();
+        }
+      }
+      const tracklist = typeof player.getOption === "function" && player.getOption("captions", "tracklist") || [];
+      if (!tracklist || tracklist.length === 0) {
+        setTimeout(() => {
+          const retryPlayer = getPlayer();
+          const retryTracks = retryPlayer && typeof retryPlayer.getOption === "function" && retryPlayer.getOption("captions", "tracklist");
+          if (retryTracks && retryTracks.length > 0) {
+            selectPreferredTrack(retryPlayer, retryTracks);
+          }
+        }, 800);
+        return;
+      }
+      selectPreferredTrack(player, tracklist);
+    } catch (e) {
+    }
+  }
+  function selectPreferredTrack(player, tracklist) {
+    if (!player || typeof player.setOption !== "function") return;
+    const targetLang = getTargetCaptionLang();
+    const exactTrack = tracklist.find((t) => t.languageCode === targetLang);
+    if (exactTrack) {
+      player.setOption("captions", "track", exactTrack);
+      return;
+    }
+    const baseTrack = tracklist.find((t) => t.kind === "asr") || tracklist[0];
+    if (baseTrack) {
+      player.setOption("captions", "track", {
+        languageCode: baseTrack.languageCode,
+        translationLanguage: { languageCode: targetLang }
+      });
+    }
+  }
+  function pinPreferredLanguageInMenu() {
+    try {
+      if (!currentConfig.autoSubtitles) return;
+      const panelMenu = document.querySelector(".ytp-popup.ytp-settings-menu .ytp-panel-menu");
+      if (!panelMenu) return;
+      const items = Array.from(panelMenu.querySelectorAll(".ytp-menuitem"));
+      if (items.length < 2) return;
+      const isCaptionMenu = items.some((it) => {
+        const text = (it.textContent || "").toLowerCase();
+        return text.includes("tắt") || text.includes("off") || text.includes("dịch tự động") || text.includes("auto-translate");
+      });
+      if (!isCaptionMenu) return;
+      const targetLang = getTargetCaptionLang();
+      const targetLangName = getLangDisplayName(targetLang).toLowerCase();
+      const matchedItem = items.find((it) => {
+        const text = (it.textContent || "").toLowerCase();
+        return text.includes(targetLangName) || targetLang === "vi" && text.includes("tiếng việt");
+      });
+      if (matchedItem) {
+        const offItem = items[0];
+        if (offItem && offItem.nextSibling !== matchedItem) {
+          panelMenu.insertBefore(matchedItem, offItem.nextSibling);
+          matchedItem.style.background = "rgba(62, 166, 255, 0.15)";
+          matchedItem.style.fontWeight = "600";
+        }
+      } else {
+        const existingCustom = panelMenu.querySelector(".ytc-pinned-caption-item");
+        if (!existingCustom) {
+          const player = getPlayer();
+          const tracklist = player && typeof player.getOption === "function" && player.getOption("captions", "tracklist") || [];
+          const baseTrack = tracklist.find((t) => t.kind === "asr") || tracklist[0];
+          if (baseTrack) {
+            const customItem = document.createElement("div");
+            customItem.className = "ytp-menuitem ytc-pinned-caption-item";
+            customItem.setAttribute("role", "menuitemradio");
+            customItem.setAttribute("tabindex", "0");
+            customItem.style.cssText = "background: rgba(62, 166, 255, 0.18); font-weight: 600; color: #3ea6ff; cursor: pointer;";
+            customItem.innerHTML = `
+                        <div class="ytp-menuitem-icon"></div>
+                        <div class="ytp-menuitem-label">⭐ ${getLangDisplayName(targetLang)} (Tự động dịch)</div>
+                        <div class="ytp-menuitem-content"></div>
+                    `;
+            customItem.addEventListener("click", (ev) => {
+              ev.stopPropagation();
+              if (player && typeof player.setOption === "function") {
+                player.setOption("captions", "track", {
+                  languageCode: baseTrack.languageCode,
+                  translationLanguage: { languageCode: targetLang }
+                });
+              }
+              const settingsBtn = document.querySelector(".ytp-settings-button");
+              if (settingsBtn) settingsBtn.click();
+            });
+            const offItem = items[0];
+            if (offItem) {
+              panelMenu.insertBefore(customItem, offItem.nextSibling);
+            } else {
+              panelMenu.prepend(customItem);
+            }
+          }
+        }
+      }
+    } catch (e) {
+    }
+  }
+  function initAutoSubtitles() {
+    try {
+      if (!observerAttached) {
+        observerAttached = true;
+        const menuObserver = new MutationObserver(() => {
+          try {
+            pinPreferredLanguageInMenu();
+          } catch (e) {
+          }
+        });
+        const attach = () => {
+          const target = document.body || document.documentElement;
+          if (target) {
+            try {
+              menuObserver.observe(target, { childList: true, subtree: true });
+            } catch (e) {
+            }
+          }
+        };
+        if (document.body) {
+          attach();
+        } else {
+          if (document.documentElement) {
+            try {
+              menuObserver.observe(document.documentElement, { childList: true, subtree: true });
+            } catch (e) {
+            }
+          }
+          document.addEventListener("DOMContentLoaded", attach, { once: true });
+        }
+      }
+      window.addEventListener("yt-navigate-finish", () => {
+        isCaptionsModuleLoaded = false;
+        setTimeout(() => {
+          try {
+            applyAutoSubtitles();
+          } catch (e) {
+          }
+        }, 1e3);
+      });
+      setTimeout(() => {
+        try {
+          applyAutoSubtitles();
+        } catch (e) {
+        }
+      }, 1500);
+    } catch (e) {
+    }
+  }
 
   // src/index.js
   init_chat();
@@ -5058,12 +5080,10 @@
             if (rowLang) {
               rowLang.style.display = checkbox.checked ? "flex" : "none";
             }
-            Promise.resolve().then(() => (init_autoSubtitles(), autoSubtitles_exports)).then((m) => {
-              if (m && typeof m.applyAutoSubtitles === "function") {
-                m.applyAutoSubtitles();
-              }
-            }).catch(() => {
-            });
+            try {
+              applyAutoSubtitles();
+            } catch (e) {
+            }
           }
           if (key === "audioOnlyMode") {
             Promise.resolve().then(() => (init_audioOnly(), audioOnly_exports)).then((m) => {
@@ -5139,12 +5159,10 @@
           e.stopPropagation();
           currentConfig.captionLanguage = captionLangSelect.value;
           saveConfig(currentConfig);
-          Promise.resolve().then(() => (init_autoSubtitles(), autoSubtitles_exports)).then((m) => {
-            if (m && typeof m.applyAutoSubtitles === "function") {
-              m.applyAutoSubtitles();
-            }
-          }).catch(() => {
-          });
+          try {
+            applyAutoSubtitles();
+          } catch (err) {
+          }
         });
       }
       const ublockBtn = panel.querySelector("#ytc-btn-ublock");

@@ -45,6 +45,7 @@ import {
     AMBIENT_LIGHT_SVG,
     SUBTITLES_SVG
 } from '../core/constants.js';
+import { applyAutoSubtitles } from '../player/autoSubtitles.js';
 import { syncPanelState } from './sync.js';
 import { setupOnboardingAndUpdates, isNewerVersion } from './notifier.js';
 
@@ -673,11 +674,9 @@ export function createSettingsPanel() {
                     if (rowLang) {
                         rowLang.style.display = checkbox.checked ? 'flex' : 'none';
                     }
-                    import('../player/autoSubtitles.js').then(m => {
-                        if (m && typeof m.applyAutoSubtitles === 'function') {
-                            m.applyAutoSubtitles();
-                        }
-                    }).catch(() => {});
+                    try {
+                        applyAutoSubtitles();
+                    } catch (e) {}
                 }
                 if (key === 'audioOnlyMode') {
                     import('../optimization/audioOnly.js').then(m => {
@@ -750,11 +749,9 @@ export function createSettingsPanel() {
                 e.stopPropagation();
                 currentConfig.captionLanguage = captionLangSelect.value;
                 saveConfig(currentConfig);
-                import('../player/autoSubtitles.js').then(m => {
-                    if (m && typeof m.applyAutoSubtitles === 'function') {
-                        m.applyAutoSubtitles();
-                    }
-                }).catch(() => {});
+                try {
+                    applyAutoSubtitles();
+                } catch (err) {}
             });
         }
 
