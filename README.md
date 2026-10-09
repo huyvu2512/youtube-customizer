@@ -9,7 +9,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.8.3-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.8.4-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -34,7 +34,7 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.8.3** tối ưu hóa hiệu năng vượt trội, triệt tiêu forced layout reflow để di chuột xem trước thumbnail video hoàn toàn zero-lag, khôi phục khung video gốc hoàn hảo cho mọi tỷ lệ (Shorts/video dọc/ngang), và mở khóa hiển thị toàn vẹn cho các bảng điều khiển bình luận / chat trong chế độ toàn màn hình.
+Phiên bản **v3.8.4** đại tu toàn diện tính năng Ánh sáng phòng (Ambilight Cinema) với thuật toán kéo giãn mép anamorphic (Anamorphic Edge Stretch), chiếu dải màu các vật thể ở mép video (vỉa hè, người đi qua, tán cây) thẳng tắp ra xung quanh tạo cảm giác mở rộng không gian chân thực, đồng thời hòa quyện 100% không để lộ viền video.
 
 ---
 

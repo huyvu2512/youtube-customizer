@@ -20,8 +20,8 @@ let hasDrawnFirstFrame = false;
 let isPausedAndDrawn = false;
 
 // Kích thước canvas nội bộ (tỷ lệ chuẩn tối ưu hiệu năng và GPU)
-const CANVAS_WIDTH = 512;
-const CANVAS_HEIGHT = 720;
+const CANVAS_WIDTH = 640;
+const CANVAS_HEIGHT = 800;
 const TARGET_INTERVAL = 1000 / 30; // 30 FPS mượt mà & siêu nhẹ
 
 /**
@@ -171,64 +171,104 @@ function drawFrame(video) {
         const cvW = Math.round(pW * scaleX);
         const cvH = Math.round(pH * scaleY);
 
-        // Tính toán tỷ lệ aspect ratio của video để lấy đúng vùng hình ảnh (tránh viền đen trong video)
+        // Tính toán vùng hiển thị thực của video (bỏ qua viền đen Cinematic Letterbox / Pillarbox nếu có)
         const videoAspect = vW / vH;
         const playerAspect = pW / pH;
 
         let sX = 0, sY = 0, sW = vW, sH = vH;
-        if (videoAspect > playerAspect + 0.03) {
+        if (videoAspect > playerAspect + 0.05) {
+            // Letterbox (viền đen trên/dưới)
             const targetW = vH * playerAspect;
-            sX = (vW - targetW) / 2;
-            sW = targetW;
-        } else if (videoAspect < playerAspect - 0.03) {
+            sX = Math.round((vW - targetW) / 2);
+            sW = Math.round(targetW);
+        } else if (videoAspect < playerAspect - 0.05) {
+            // Pillarbox (viền đen trái/phải)
             const targetH = vW / playerAspect;
-            sY = (vH - targetH) / 2;
-            sH = targetH;
+            sY = Math.round((vH - targetH) / 2);
+            sH = Math.round(targetH);
         }
 
-        // Bỏ qua viền đen (Cinematic Letterbox 21:9 / 2.39:1 hoặc Pillarbox 4:3)
-        // Cắt an toàn 10% trên/dưới và 4% trái/phải để luôn bắt trọn màu sắc thật của khung hình
-        const padX = sW * 0.04;
-        const padY = sH * 0.10;
-        const cX = sX + padX;
-        const cY = sY + padY;
-        const cW = sW - (padX * 2);
-        const cH = sH - (padY * 2);
+        // Độ dày dải mép lấy mẫu (sát mép video chuẩn xác 100%, không thụt sâu làm sai lệch màu)
+        const stripW = Math.max(4, Math.round(sW * 0.016));
+        const stripH = Math.max(4, Math.round(sH * 0.020));
 
         // Xóa sạch canvas trước khi vẽ
         ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
+        // 1. LỚP ĐỆM HÒA QUYỆN DƯỚI KHUNG VIDEO (Under-Player Seamless Blend Pad)
+        // Vẽ video mở rộng nhẹ 3% xung quanh khung player để xóa sổ hoàn toàn viền cắt sắc nhọn
+        const bleedX = Math.round(cvW * 0.035);
+        const bleedY = Math.round(cvH * 0.035);
+        ambientSpreadCtx.globalAlpha = 0.85;
+        ambientSpreadCtx.drawImage(
+            video,
+            sX, sY, sW, sH,
+            Math.max(0, cvX - bleedX),
+            Math.max(0, cvY - bleedY),
+            cvW + bleedX * 2,
+            cvH + bleedY * 2
+        );
+        ambientSpreadCtx.globalAlpha = 1.0;
+
         const rightW = Math.max(0, CANVAS_WIDTH - (cvX + cvW));
-
-        // 1. Phủ toàn bộ canvas một lớp màu nền liên tục, mượt mà từ video (Zero seams, zero blocks)
-        ambientSpreadCtx.drawImage(video, cX, cY, cW, cH, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-        // 2. MÉP TRÊN (Lan tỏa dải màu lên toàn bộ thanh Masthead phía trên):
-        if (cvY > 0) {
-            ambientSpreadCtx.drawImage(video, cX, cY, cW, 12, 0, 0, CANVAS_WIDTH, cvY);
-        }
-
-        // 3. HAI BÊN HÔNG (Trái & Phải khung video):
-        if (cvH > 0) {
-            if (cvX > 0) {
-                ambientSpreadCtx.drawImage(video, cX, cY, 12, cH, 0, cvY, cvX, cvH);
-            }
-            if (rightW > 0) {
-                ambientSpreadCtx.drawImage(video, cX + cW - 12, cY, 12, cH, cvX + cvW, cvY, rightW, cvH);
-            }
-        }
-
-        // 4. MÉP DƯỚI (DÓNG CÁC Ô DẢI MÀU DỌC LAN SÂU XUỐNG DƯỚI TRANG):
         const bottomY = cvY + cvH;
         const bottomH = Math.max(0, CANVAS_HEIGHT - bottomY);
-        if (bottomH > 0) {
-            ambientSpreadCtx.drawImage(video, cX, cY + cH - 12, cW, 12, cvX, bottomY, cvW, bottomH);
-            if (cvX > 0) {
-                ambientSpreadCtx.drawImage(video, cX, cY + cH - 12, 12, 12, 0, bottomY, cvX, bottomH);
-            }
-            if (rightW > 0) {
-                ambientSpreadCtx.drawImage(video, cX + cW - 12, cY + cH - 12, 12, 12, cvX + cvW, bottomY, rightW, bottomH);
-            }
+
+        // 2. KÉO DÃI TRỰC TIẾP MÉP PHẢI (Right Edge Anamorphic Extension)
+        // Kéo dải pixel sát cạnh phải của video sang tận mép phải màn hình,
+        // giữ nguyên 100% tọa độ dọc cvY & chiều cao cvH để vật thể (vỉa hè, người, cây) kéo dài thẳng tắp
+        if (rightW > 0 && cvH > 0) {
+            const srcX = sX + sW - stripW;
+            ambientSpreadCtx.drawImage(
+                video,
+                srcX, sY, stripW, sH,
+                cvX + cvW - 1, cvY, rightW + 1, cvH
+            );
+        }
+
+        // 3. KÉO DÃI TRỰC TIẾP MÉP TRÁI (Left Edge Anamorphic Extension)
+        // Kéo dải pixel sát cạnh trái của video sang tận mép trái màn hình
+        if (cvX > 0 && cvH > 0) {
+            ambientSpreadCtx.drawImage(
+                video,
+                sX, sY, stripW, sH,
+                0, cvY, cvX + 1, cvH
+            );
+        }
+
+        // 4. KÉO DÃI TRỰC TIẾP MÉP TRÊN (Top Edge Anamorphic Extension)
+        // Kéo dải pixel sát mép trên lên hết thanh Masthead
+        if (cvY > 0 && cvW > 0) {
+            ambientSpreadCtx.drawImage(
+                video,
+                sX, sY, sW, stripH,
+                cvX, 0, cvW, cvY + 1
+            );
+        }
+
+        // 5. KÉO DÃI TRỰC TIẾP MÉP DƯỚI (Bottom Edge Anamorphic Extension)
+        // Kéo dải pixel sát mép dưới xuống sâu tận khu vực bình luận
+        if (bottomH > 0 && cvW > 0) {
+            const srcY = sY + sH - stripH;
+            ambientSpreadCtx.drawImage(
+                video,
+                sX, srcY, sW, stripH,
+                cvX, bottomY - 1, cvW, bottomH + 1
+            );
+        }
+
+        // 6. KHUẾCH TÁN 4 GÓC ĐỐI XỨNG (4 Diagonal Corners Extension)
+        if (cvX > 0 && cvY > 0) {
+            ambientSpreadCtx.drawImage(video, sX, sY, stripW, stripH, 0, 0, cvX + 1, cvY + 1);
+        }
+        if (rightW > 0 && cvY > 0) {
+            ambientSpreadCtx.drawImage(video, sX + sW - stripW, sY, stripW, stripH, cvX + cvW - 1, 0, rightW + 1, cvY + 1);
+        }
+        if (cvX > 0 && bottomH > 0) {
+            ambientSpreadCtx.drawImage(video, sX, sY + sH - stripH, stripW, stripH, 0, bottomY - 1, cvX + 1, bottomH + 1);
+        }
+        if (rightW > 0 && bottomH > 0) {
+            ambientSpreadCtx.drawImage(video, sX + sW - stripW, sY + sH - stripH, stripW, stripH, cvX + cvW - 1, bottomY - 1, rightW + 1, bottomH + 1);
         }
 
         // 5. Kích hoạt trạng thái hiển thị CHỈ KHI tính năng thực sự được bật

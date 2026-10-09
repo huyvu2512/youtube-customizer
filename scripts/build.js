@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.8.3
-// @description  YouTube Customizer v3.8.3 — Tối ưu hóa mượt mà zero-lag khi xem video, mở chuẩn xác panels bình luận/chat toàn màn hình, khôi phục khung video chuẩn gốc cho mọi tỷ lệ video (Shorts/dọc/ngang).
+// @version      3.8.4
+// @description  YouTube Customizer v3.8.4 — Nâng cấp Ánh sáng phòng (Ambilight Cinema) mở rộng không gian vật thể video (Anamorphic Edge Stretch), kéo giãn chuyển động mép tự nhiên không lộ viền.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
