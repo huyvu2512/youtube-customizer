@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.8.2
-// @description  YouTube Customizer v3.8.2 — Hệ thống đa ngôn ngữ 21 ngôn ngữ, menu nổi ngoài panel, sửa triệt để tự bật Ambilight khi F5/đổi video.
+// @version      3.8.3
+// @description  YouTube Customizer v3.8.3 — Tối ưu hóa mượt mà zero-lag khi xem video, mở chuẩn xác panels bình luận/chat toàn màn hình, khôi phục khung video chuẩn gốc cho mọi tỷ lệ video (Shorts/dọc/ngang).
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

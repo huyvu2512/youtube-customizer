@@ -34,13 +34,30 @@ function isAmbientEnabled() {
 /**
  * Tìm phần tử Video đang phát
  */
+let cachedPlayerRect = null;
+let cachedWrapperRect = null;
+let lastRectUpdateTime = 0;
+
+function updateCachedRects(force = false) {
+    const now = Date.now();
+    if (!force && now - lastRectUpdateTime < 1500 && cachedPlayerRect && cachedWrapperRect) return;
+    const moviePlayer = document.querySelector('#movie_player:not(#inline-preview-player)') || document.getElementById('movie_player');
+    if (!moviePlayer || !ambientWrapper) return;
+    cachedPlayerRect = moviePlayer.getBoundingClientRect();
+    cachedWrapperRect = ambientWrapper.getBoundingClientRect();
+    lastRectUpdateTime = now;
+}
+
+/**
+ * Tìm phần tử Video đang phát (Bỏ qua 100% inline-preview-player để không lag preview thumbnail)
+ */
 function findActiveVideo() {
-    const moviePlayer = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
+    const moviePlayer = document.querySelector('#movie_player:not(#inline-preview-player)') || document.getElementById('movie_player');
     if (moviePlayer) {
         const v = moviePlayer.querySelector('video.html5-main-video') || moviePlayer.querySelector('video');
-        if (v) return v;
+        if (v && (!v.closest || !v.closest('#inline-preview-player, #preview, ytd-video-preview'))) return v;
     }
-    return document.querySelector('video.html5-main-video') || document.querySelector('video');
+    return null;
 }
 
 /**
@@ -124,8 +141,15 @@ function drawFrame(video) {
         const vH = video.videoHeight;
         if (!vW || !vH || vW < 10 || vH < 10) return;
 
-        const playerRect = moviePlayer.getBoundingClientRect();
-        const wrapperRect = ambientWrapper.getBoundingClientRect();
+        if (!cachedPlayerRect || !cachedWrapperRect) {
+            updateCachedRects(true);
+        } else if (Date.now() - lastRectUpdateTime > 2000) {
+            updateCachedRects(false);
+        }
+
+        const playerRect = cachedPlayerRect;
+        const wrapperRect = cachedWrapperRect;
+        if (!playerRect || !wrapperRect) return;
 
         const pW = playerRect.width;
         const pH = playerRect.height;
@@ -304,6 +328,7 @@ function attachVideo(video) {
         return;
     }
     if (!video || video === currentVideo) return;
+    if (video.closest && video.closest('#inline-preview-player, #preview, ytd-video-preview')) return;
 
     const events = ['play', 'playing', 'timeupdate', 'canplay', 'loadeddata', 'seeked', 'ratechange'];
 
@@ -359,9 +384,12 @@ function handleNavigation() {
     }
 
     isPausedAndDrawn = false;
+    cachedPlayerRect = null;
+    cachedWrapperRect = null;
     setTimeout(() => {
         if (!isAmbientEnabled()) return;
         ensureAmbientCanvas();
+        updateCachedRects(true);
         const v = findActiveVideo();
         if (v) attachVideo(v);
         startLoop();
@@ -369,6 +397,7 @@ function handleNavigation() {
 
     setTimeout(() => {
         if (!isAmbientEnabled()) return;
+        updateCachedRects(true);
         const v = findActiveVideo();
         if (v && isRunning) drawFrame(v);
     }, 700);
@@ -430,11 +459,13 @@ export function initAmbientLight() {
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('resize', () => {
         if (!isAmbientEnabled()) return;
+        updateCachedRects(true);
         const v = findActiveVideo();
         if (v && isRunning) drawFrame(v);
     });
     window.addEventListener('fullscreenchange', () => {
         if (!isAmbientEnabled()) return;
+        updateCachedRects(true);
         const v = findActiveVideo();
         if (v && isRunning) drawFrame(v);
     });
@@ -446,6 +477,7 @@ export function initAmbientLight() {
 
     const observer = new MutationObserver(() => {
         if (!isAmbientEnabled()) return;
+        if (currentVideo && currentVideo.isConnected) return;
         const video = findActiveVideo();
         if (video && video !== currentVideo) {
             attachVideo(video);

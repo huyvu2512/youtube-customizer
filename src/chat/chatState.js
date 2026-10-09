@@ -50,89 +50,20 @@ export function setNativeChatHiddenState(hidden) {
     syncPlayerFullscreenSize();
 }
 
-let isSyncingPlayerSize = false;
-
-function applyVideoDimensions(video, containerW, containerH) {
-    if (!video || containerW <= 0 || containerH <= 0) return;
-    const vW = video.videoWidth;
-    const vH = video.videoHeight;
-    if (vW > 0 && vH > 0) {
-        const videoRatio = vW / vH;
-        const containerRatio = containerW / containerH;
-        let targetW, targetH, targetLeft, targetTop;
-
-        if (containerRatio > videoRatio) {
-            targetH = containerH;
-            targetW = Math.round(targetH * videoRatio);
-            targetLeft = Math.round((containerW - targetW) / 2);
-            targetTop = 0;
-        } else {
-            targetW = containerW;
-            targetH = Math.round(targetW / videoRatio);
-            targetLeft = 0;
-            targetTop = Math.round((containerH - targetH) / 2);
-        }
-
-        video.style.width = `${targetW}px`;
-        video.style.height = `${targetH}px`;
-        video.style.left = `${targetLeft}px`;
-        video.style.top = `${targetTop}px`;
-    } else {
-        video.style.width = `${containerW}px`;
-        video.style.height = `${containerH}px`;
-        video.style.left = '0px';
-        video.style.top = '0px';
-    }
-}
-
 export function syncPlayerFullscreenSize() {
     if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
-    if (isSyncingPlayerSize) return;
-    isSyncingPlayerSize = true;
-
     try {
-        const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen'));
         const player = document.querySelector('#movie_player:not(#inline-preview-player)');
         if (!player) return;
-
         const video = player.querySelector('video.html5-main-video') || player.querySelector('video');
-        if (!video) return;
-
-        if (!isFs) {
+        if (video && video.dataset.ytcOverridden) {
             delete video.dataset.ytcOverridden;
-            const pW = player.clientWidth || player.offsetWidth;
-            const pH = player.clientHeight || player.offsetHeight;
-            if (pW > 0 && pH > 0) {
-                applyVideoDimensions(video, pW, pH);
-            }
-            if (typeof player.setInternalSize === 'function') {
-                try { player.setInternalSize(); } catch(e) {}
-            }
-            return;
+            video.style.width = '';
+            video.style.height = '';
+            video.style.left = '';
+            video.style.top = '';
         }
-
-        if (!isNativeChatHiddenByScript) {
-            delete video.dataset.ytcOverridden;
-            const pW = player.clientWidth || player.offsetWidth;
-            const pH = player.clientHeight || player.offsetHeight;
-            if (pW > 0 && pH > 0) {
-                applyVideoDimensions(video, pW, pH);
-            }
-            if (typeof player.setInternalSize === 'function') {
-                try { player.setInternalSize(); } catch(e) {}
-            }
-            return;
-        }
-
-        const screenW = window.innerWidth || screen.width;
-        const screenH = window.innerHeight || screen.height;
-        if (screenW > 0 && screenH > 0) {
-            video.dataset.ytcOverridden = 'true';
-            applyVideoDimensions(video, screenW, screenH);
-        }
-    } finally {
-        isSyncingPlayerSize = false;
-    }
+    } catch (e) {}
 }
 
 export function ensureChatOverlayContainers() {
