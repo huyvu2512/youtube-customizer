@@ -9,7 +9,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.8.8-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.8.9-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -34,7 +34,7 @@
 
 **YouTube Customizer** is a high-performance Userscript running on Tampermonkey / Violentmonkey, engineered to deliver a clean, distraction-free, and immersive YouTube viewing experience. Designed and developed by Huy Vũ (@huyvu2512), this project serves as an in-depth exploration of advanced DOM manipulation, video player rendering pipeline optimization, and fine-tuned browser event interactions on YouTube.
 
-Release **v3.8.8** introduces an integrated Real-time Web & System Vitals Monitor (RAM JS Heap, DOM Nodes, FPS, Buffer, Dropped Frames...) directly within the Interface tab, alongside a streamlined and intuitive reordering of the Video Player controls.
+Release **v3.8.9** streamlines the Real-time Web & System Vitals Monitor into 4 essential metrics (RAM JS Heap, Framerate FPS, Network / Ping, DOM Node count) with a clean, headerless flat layout and minimized CPU footprint.
 
 ---
 
