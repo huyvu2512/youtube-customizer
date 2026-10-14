@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.8.9
-// @description  YouTube Customizer v3.8.9 — Tinh gọn bảng đo thông số hệ thống còn 4 chỉ số thiết yếu (RAM, FPS, Mạng, DOM), tối ưu hiệu năng.
+// @version      3.9.0
+// @description  YouTube Customizer v3.9.0 — Đo RAM Video thực tế, FPS Video chuẩn giải mã, và Ping mạng real-time chuẩn xác.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
