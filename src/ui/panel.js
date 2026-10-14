@@ -42,8 +42,7 @@ import {
     GIFT_SVG,
     EXTERNAL_LINK_SVG,
     SHOPPING_SVG,
-    AMBIENT_LIGHT_SVG,
-    ACTIVITY_SVG
+    AMBIENT_LIGHT_SVG
 } from '../core/constants.js';
 import { SUPPORTED_LANGUAGES, getLanguageInfo, t } from '../core/i18n.js';
 import { syncPanelState } from './sync.js';
@@ -235,48 +234,24 @@ export function createSettingsPanel() {
                     </div>
                 </div>
 
-                <!-- KHUNG THÔNG SỐ HIỆU NĂNG WEB & HỆ THỐNG (REAL-TIME PERFORMANCE MONITOR) -->
+                <!-- THÔNG SỐ HIỆU NĂNG GỌN (RAM, FPS, MẠNG, DOM) -->
                 <div class="ytc-perf-card" id="ytc-perf-monitor">
-                    <div class="ytc-perf-header">
-                        <div class="ytc-perf-title">
-                            <span class="ytc-live-dot"></span>
-                            ${ACTIVITY_SVG}
-                            <span data-i18n="perf_monitor_title">Thông số trang & Hệ thống</span>
-                        </div>
-                        <span class="ytc-perf-badge">Real-time</span>
-                    </div>
                     <div class="ytc-perf-grid">
                         <div class="ytc-perf-item">
                             <span class="ytc-perf-label" data-i18n="perf_ram">RAM (JS Heap)</span>
                             <span class="ytc-perf-value ytc-stat-accent" id="ytc-stat-ram">—</span>
                         </div>
                         <div class="ytc-perf-item">
-                            <span class="ytc-perf-label" data-i18n="perf_dom">Số lượng DOM</span>
-                            <span class="ytc-perf-value" id="ytc-stat-dom">—</span>
-                        </div>
-                        <div class="ytc-perf-item">
                             <span class="ytc-perf-label" data-i18n="perf_fps">Khung hình (FPS)</span>
                             <span class="ytc-perf-value ytc-stat-green" id="ytc-stat-fps">—</span>
                         </div>
                         <div class="ytc-perf-item">
-                            <span class="ytc-perf-label" data-i18n="perf_buffer">Buffer video</span>
-                            <span class="ytc-perf-value" id="ytc-stat-buffer">—</span>
-                        </div>
-                        <div class="ytc-perf-item">
-                            <span class="ytc-perf-label" data-i18n="perf_dropped">Khung hình rớt</span>
-                            <span class="ytc-perf-value" id="ytc-stat-dropped">—</span>
-                        </div>
-                        <div class="ytc-perf-item">
-                            <span class="ytc-perf-label" data-i18n="perf_resolution">Độ phân giải</span>
-                            <span class="ytc-perf-value" id="ytc-stat-resolution">—</span>
-                        </div>
-                        <div class="ytc-perf-item">
-                            <span class="ytc-perf-label" data-i18n="perf_resources">Tài nguyên nạp</span>
-                            <span class="ytc-perf-value" id="ytc-stat-resources">—</span>
-                        </div>
-                        <div class="ytc-perf-item">
                             <span class="ytc-perf-label" data-i18n="perf_network">Mạng / Ping</span>
                             <span class="ytc-perf-value" id="ytc-stat-network">—</span>
+                        </div>
+                        <div class="ytc-perf-item">
+                            <span class="ytc-perf-label" data-i18n="perf_dom">Số lượng DOM</span>
+                            <span class="ytc-perf-value" id="ytc-stat-dom">—</span>
                         </div>
                     </div>
                 </div>

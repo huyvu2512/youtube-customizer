@@ -36,18 +36,7 @@ export function updatePerfStats() {
         }
     }
 
-    // 2. Số lượng DOM Nodes
-    const elDom = document.getElementById('ytc-stat-dom');
-    if (elDom) {
-        try {
-            const count = document.getElementsByTagName('*').length;
-            elDom.textContent = `${count.toLocaleString()} thẻ`;
-        } catch (e) {
-            elDom.textContent = '—';
-        }
-    }
-
-    // 3. Tốc độ khung hình (FPS)
+    // 2. Tốc độ khung hình (FPS)
     const elFps = document.getElementById('ytc-stat-fps');
     if (elFps) {
         elFps.textContent = `${currentFps} FPS`;
@@ -60,80 +49,7 @@ export function updatePerfStats() {
         }
     }
 
-    // 4. Video Element: Buffer, Độ phân giải, Frame Drop
-    const video = document.querySelector('#movie_player video.html5-main-video') || document.querySelector('video');
-    const elBuffer = document.getElementById('ytc-stat-buffer');
-    const elDropped = document.getElementById('ytc-stat-dropped');
-    const elRes = document.getElementById('ytc-stat-resolution');
-
-    if (video) {
-        // Buffer
-        if (elBuffer) {
-            try {
-                if (video.buffered && video.buffered.length > 0) {
-                    const cur = video.currentTime;
-                    let bufEnd = 0;
-                    for (let i = 0; i < video.buffered.length; i++) {
-                        if (video.buffered.start(i) <= cur && cur <= video.buffered.end(i)) {
-                            bufEnd = video.buffered.end(i);
-                            break;
-                        }
-                    }
-                    if (!bufEnd && video.buffered.length > 0) {
-                        bufEnd = video.buffered.end(video.buffered.length - 1);
-                    }
-                    const diff = Math.max(0, bufEnd - cur);
-                    elBuffer.textContent = `${diff.toFixed(1)}s`;
-                } else {
-                    elBuffer.textContent = '0.0s';
-                }
-            } catch (e) {
-                elBuffer.textContent = '—';
-            }
-        }
-
-        // Dropped Frames
-        if (elDropped) {
-            try {
-                if (typeof video.getVideoPlaybackQuality === 'function') {
-                    const q = video.getVideoPlaybackQuality();
-                    if (q) {
-                        elDropped.textContent = `${q.droppedVideoFrames.toLocaleString()} / ${q.totalVideoFrames.toLocaleString()}`;
-                    }
-                } else {
-                    elDropped.textContent = '0 rớt';
-                }
-            } catch (e) {
-                elDropped.textContent = '—';
-            }
-        }
-
-        // Resolution
-        if (elRes) {
-            if (video.videoWidth && video.videoHeight) {
-                elRes.textContent = `${video.videoWidth}x${video.videoHeight}`;
-            } else {
-                elRes.textContent = 'Chưa phát';
-            }
-        }
-    } else {
-        if (elBuffer) elBuffer.textContent = 'Không có video';
-        if (elDropped) elDropped.textContent = '—';
-        if (elRes) elRes.textContent = '—';
-    }
-
-    // 5. Tài nguyên nạp (Resources)
-    const elResCount = document.getElementById('ytc-stat-resources');
-    if (elResCount) {
-        try {
-            const list = performance.getEntriesByType('resource');
-            elResCount.textContent = `${list.length} tệp`;
-        } catch (e) {
-            elResCount.textContent = '—';
-        }
-    }
-
-    // 6. Mạng & Ping (RTT)
+    // 3. Mạng & Ping (RTT)
     const elNet = document.getElementById('ytc-stat-network');
     if (elNet) {
         try {
@@ -148,6 +64,17 @@ export function updatePerfStats() {
             }
         } catch (e) {
             elNet.textContent = '—';
+        }
+    }
+
+    // 4. Số lượng DOM Nodes
+    const elDom = document.getElementById('ytc-stat-dom');
+    if (elDom) {
+        try {
+            const count = document.getElementsByTagName('*').length;
+            elDom.textContent = `${count.toLocaleString()} thẻ`;
+        } catch (e) {
+            elDom.textContent = '—';
         }
     }
 }
