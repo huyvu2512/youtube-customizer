@@ -122,6 +122,7 @@ export function setupPromoObserver() {
 
     // Observer toàn cục siêu nhạy bắt ngay các phần tử gián đoạn / popup
     const observer = new MutationObserver((mutations) => {
+        if (!currentConfig.autoDismissPromos) return;
         for (const m of mutations) {
             if (m.addedNodes.length === 0) continue;
             for (const node of m.addedNodes) {
@@ -140,10 +141,7 @@ export function setupPromoObserver() {
                     cls.includes('interrupt') ||
                     cls.includes('toast-button')
                 ) {
-                    dismissInterruptionPrompts(node.parentElement || document);
-                    if (currentConfig.autoDismissPromos) {
-                        dismissPromoBanners(node.parentElement || document);
-                    }
+                    dismissPromoBanners(node.parentElement || document);
                     return;
                 }
             }
@@ -156,11 +154,15 @@ export function setupPromoObserver() {
 
     // Quét bổ sung liên tục trong 8 giây đầu khi mở video để tiêu diệt ngay lúc 0:00
     window.addEventListener('yt-navigate-finish', () => {
+        if (!currentConfig.autoDismissPromos) return;
         let scans = 0;
         const interval = setInterval(() => {
             scans++;
+            if (!currentConfig.autoDismissPromos || scans >= 12) {
+                clearInterval(interval);
+                return;
+            }
             dismissPromoBanners(document);
-            if (scans >= 12) clearInterval(interval);
         }, 600);
     });
 }

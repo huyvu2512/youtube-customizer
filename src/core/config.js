@@ -17,7 +17,7 @@ export const DEFAULT_CONFIG = {
     unlockLiveDvr: false,   // Mở khóa tua lại Live Stream (mặc định tắt)
     chatOverlay: 'off',     // 'off', 'danmaku', 'streamer' (luôn mặc định tắt)
     chatOverlayHideOnRewind: false, // Tự động ẩn khi tua về quá khứ (mặc định tắt)
-    autoDismissPromos: true, // Tự động đóng banner khuyến mại & thông báo gián đoạn (mặc định bật)
+    autoDismissPromos: false,// Tự động đóng banner khuyến mại & thông báo gián đoạn (mặc định tắt)
     autoLiveSync: false,    // Tự động giữ mốc trực tiếp khi xem Live Stream (mặc định tắt)
     hideShopping: false,    // Ẩn bảng sản phẩm gắn thẻ (YouTube Shopping), nút túi xách mua sắm (mặc định tắt)
     premiumLogo: false,     // Logo YouTube Premium (mặc định tắt)

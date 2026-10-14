@@ -2487,12 +2487,12 @@ body.ytc-fs-locked .ytp-fullscreen-button {
 /* ==========================================================================
    TỰ ĐỘNG TRIỆT TIÊU THÔNG BÁO GIÁN ĐOẠN / BANNER PROMO (AUTO DISMISS)
    ========================================================================== */
-yt-bubble-hint-renderer,
-ytd-bubble-hint-renderer,
-.paper-toast-open.yt-notification-action-renderer,
-.toast-button.style-scope.yt-notification-action-renderer,
-.ytp-suggested-action-badge[data-tooltip-target-id*="interrupt" i],
-.ytp-suggested-action-badge-expanded,
+html.ytc-auto-dismiss yt-bubble-hint-renderer,
+html.ytc-auto-dismiss ytd-bubble-hint-renderer,
+html.ytc-auto-dismiss .paper-toast-open.yt-notification-action-renderer,
+html.ytc-auto-dismiss .toast-button.style-scope.yt-notification-action-renderer,
+html.ytc-auto-dismiss .ytp-suggested-action-badge[data-tooltip-target-id*="interrupt" i],
+html.ytc-auto-dismiss .ytp-suggested-action-badge-expanded,
 html.ytc-auto-dismiss tp-yt-paper-toast:has(yt-notification-action-renderer),
 html.ytc-auto-dismiss yt-notification-action-renderer:has(#toast),
 html.ytc-auto-dismiss ytd-mealbar-promo-renderer,
