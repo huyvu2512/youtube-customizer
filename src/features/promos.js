@@ -33,7 +33,10 @@ export function resumePlayerIfPaused() {
 export function dismissInterruptionPrompts(scope) {
     const root = scope && scope.querySelectorAll ? scope : document;
 
+    // 1. Quét trực tiếp các tag Snackbar mới của YouTube & Toast / Bubble truyền thống
     const candidates = root.querySelectorAll(
+        'snackbar-container, snackbar-view-model, .ytSnackbarContainerHost, .ytSnackbarContainerSnackbarContainer, ' +
+        '.snackbarViewModelHost, .snackbarViewModelTitle, .snackbarViewModelTitleSubtextWrapper, ' +
         'yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, #toast, ' +
         'yt-notification-action-renderer, ytd-notification-action-renderer, ' +
         '.ytp-suggested-action-badge, .ytp-suggested-action-badge-expanded, .ytp-bezel, .ytp-hint, ' +
@@ -42,7 +45,7 @@ export function dismissInterruptionPrompts(scope) {
     );
 
     candidates.forEach((el) => {
-        const text = (el.textContent || '').toLowerCase();
+        const text = (el.textContent || el.innerText || '').toLowerCase();
         if (
             text.includes('gián đoạn') || 
             text.includes('interruption') || 
@@ -51,23 +54,42 @@ export function dismissInterruptionPrompts(scope) {
             text.includes('tìm hiểu lý do') ||
             text.includes('find out why')
         ) {
-            const closeBtn = el.querySelector('button, #close-button, [aria-label*="Đóng" i], [aria-label*="Close" i], [aria-label*="Dismiss" i], .ytp-suggested-action-badge-dismiss-button, yt-button-renderer');
+            const target = el.closest('snackbar-container, .ytSnackbarContainerHost, snackbar-view-model, yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, yt-notification-action-renderer') || el;
+            const closeBtn = target.querySelector('button, #close-button, [aria-label*="Đóng" i], [aria-label*="Close" i], [aria-label*="Dismiss" i], .ytp-suggested-action-badge-dismiss-button, yt-button-renderer');
             if (closeBtn) {
                 try { closeBtn.click(); } catch(e) {}
             }
-            el.style.setProperty('display', 'none', 'important');
-            el.style.setProperty('opacity', '0', 'important');
-            el.style.setProperty('pointer-events', 'none', 'important');
-            el.style.setProperty('visibility', 'hidden', 'important');
+            target.style.setProperty('display', 'none', 'important');
+            target.style.setProperty('opacity', '0', 'important');
+            target.style.setProperty('pointer-events', 'none', 'important');
+            target.style.setProperty('visibility', 'hidden', 'important');
             try {
-                if (typeof el.close === 'function') el.close();
-                if (typeof el.hide === 'function') el.hide();
-                el.remove();
+                if (typeof target.close === 'function') target.close();
+                if (typeof target.hide === 'function') target.hide();
+                target.remove();
             } catch(e) {}
 
             resumePlayerIfPaused();
         }
     });
+
+    // 2. Quét XPath dự phòng toàn diện để không bỏ sót bất kỳ container nào chứa chữ gián đoạn
+    try {
+        const xpath = "//*[self::div or self::span or self::p or self::yt-formatted-string or self::snackbar-view-model or self::snackbar-container][contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'gián đoạn') or contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'interruption') or contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'tìm hiểu lý do') or contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'find out why')]";
+        const result = document.evaluate(xpath, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+        for (let i = 0; i < result.snapshotLength; i++) {
+            const node = result.snapshotItem(i);
+            if (node) {
+                const target = node.closest('snackbar-container, .ytSnackbarContainerHost, snackbar-view-model, yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, yt-notification-action-renderer, .paper-toast-open') || node;
+                target.style.setProperty('display', 'none', 'important');
+                target.style.setProperty('opacity', '0', 'important');
+                target.style.setProperty('visibility', 'hidden', 'important');
+                target.style.setProperty('pointer-events', 'none', 'important');
+                try { target.remove(); } catch(e) {}
+                resumePlayerIfPaused();
+            }
+        }
+    } catch(e) {}
 }
 
 export function dismissPromoBanners(scope) {
@@ -93,7 +115,7 @@ export function dismissPromoBanners(scope) {
         promo.style.setProperty('pointer-events', 'none', 'important');
     });
 
-    const toasts = root.querySelectorAll('tp-yt-paper-toast, #toast, yt-notification-action-renderer, ytd-notification-action-renderer, yt-bubble-hint-renderer, ytd-mealbar-promo-renderer');
+    const toasts = root.querySelectorAll('tp-yt-paper-toast, #toast, yt-notification-action-renderer, ytd-notification-action-renderer, yt-bubble-hint-renderer, ytd-mealbar-promo-renderer, snackbar-container, snackbar-view-model');
     toasts.forEach((toast) => {
         const text = (toast.textContent || '').toLowerCase();
         if (
@@ -118,31 +140,45 @@ export function setupPromoObserver() {
     if (promoObserverAttached) return;
     promoObserverAttached = true;
 
-    dismissPromoBanners(document);
+    dismissInterruptionPrompts(document);
+    if (currentConfig.autoDismissPromos) {
+        dismissPromoBanners(document);
+    }
 
-    // Observer toàn cục siêu nhạy bắt ngay các phần tử gián đoạn / popup
+    // Observer toàn cục bắt ngay các phần tử gián đoạn / snackbar / popup
+    let throttleTimer = null;
     const observer = new MutationObserver((mutations) => {
-        if (!currentConfig.autoDismissPromos) return;
-        for (const m of mutations) {
-            if (m.addedNodes.length === 0) continue;
-            for (const node of m.addedNodes) {
-                if (node.nodeType !== 1) continue;
-                const tag = node.tagName.toLowerCase();
-                const cls = (node.className || '').toString();
+        // Luôn quét triệt tiêu thông báo gián đoạn mà không gây lag
+        if (!throttleTimer) {
+            throttleTimer = requestAnimationFrame(() => {
+                throttleTimer = null;
+                dismissInterruptionPrompts(document);
+            });
+        }
 
-                if (
-                    tag.includes('bubble') ||
-                    tag.includes('toast') ||
-                    tag.includes('notification') ||
-                    tag.includes('mealbar') ||
-                    tag.includes('dialog') ||
-                    cls.includes('ytp-suggested') ||
-                    cls.includes('paper-toast') ||
-                    cls.includes('interrupt') ||
-                    cls.includes('toast-button')
-                ) {
-                    dismissPromoBanners(node.parentElement || document);
-                    return;
+        if (currentConfig.autoDismissPromos) {
+            for (const m of mutations) {
+                if (m.addedNodes.length === 0) continue;
+                for (const node of m.addedNodes) {
+                    if (node.nodeType !== 1) continue;
+                    const tag = node.tagName.toLowerCase();
+                    const cls = (node.className || '').toString();
+
+                    if (
+                        tag.includes('snackbar') ||
+                        tag.includes('bubble') ||
+                        tag.includes('toast') ||
+                        tag.includes('notification') ||
+                        tag.includes('mealbar') ||
+                        tag.includes('dialog') ||
+                        cls.includes('ytp-suggested') ||
+                        cls.includes('paper-toast') ||
+                        cls.includes('interrupt') ||
+                        cls.includes('toast-button')
+                    ) {
+                        dismissPromoBanners(node.parentElement || document);
+                        return;
+                    }
                 }
             }
         }
@@ -154,15 +190,17 @@ export function setupPromoObserver() {
 
     // Quét bổ sung liên tục trong 8 giây đầu khi mở video để tiêu diệt ngay lúc 0:00
     window.addEventListener('yt-navigate-finish', () => {
-        if (!currentConfig.autoDismissPromos) return;
         let scans = 0;
         const interval = setInterval(() => {
             scans++;
-            if (!currentConfig.autoDismissPromos || scans >= 12) {
+            if (scans >= 15) {
                 clearInterval(interval);
                 return;
             }
-            dismissPromoBanners(document);
-        }, 600);
+            dismissInterruptionPrompts(document);
+            if (currentConfig.autoDismissPromos) {
+                dismissPromoBanners(document);
+            }
+        }, 400);
     });
 }

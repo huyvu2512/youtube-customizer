@@ -2485,16 +2485,33 @@ body.ytc-fs-locked .ytp-fullscreen-button {
 }
 
 /* ==========================================================================
-   TỰ ĐỘNG TRIỆT TIÊU THÔNG BÁO GIÁN ĐOẠN / BANNER PROMO (AUTO DISMISS)
+   TRIỆT TIÊU THÔNG BÁO GIÁN ĐOẠN ANTI-ADBLOCK (YOUTUBE SNACKBAR & TOAST & BUBBLE)
    ========================================================================== */
-html.ytc-auto-dismiss yt-bubble-hint-renderer,
-html.ytc-auto-dismiss ytd-bubble-hint-renderer,
-html.ytc-auto-dismiss .paper-toast-open.yt-notification-action-renderer,
-html.ytc-auto-dismiss .toast-button.style-scope.yt-notification-action-renderer,
-html.ytc-auto-dismiss .ytp-suggested-action-badge[data-tooltip-target-id*="interrupt" i],
-html.ytc-auto-dismiss .ytp-suggested-action-badge-expanded,
-html.ytc-auto-dismiss tp-yt-paper-toast:has(yt-notification-action-renderer),
-html.ytc-auto-dismiss yt-notification-action-renderer:has(#toast),
+snackbar-container:has(.snackbarViewModelTitleSubtextWrapper),
+snackbar-container:has(.snackbarViewModelTitle),
+snackbar-container:has(a[href*="3037019"]),
+snackbar-view-model:has(a[href*="3037019"]),
+.ytSnackbarContainerHost:has(.snackbarViewModelTitle),
+.ytSnackbarContainerSnackbarContainer:has(.snackbarViewModelTitle),
+yt-bubble-hint-renderer,
+ytd-bubble-hint-renderer,
+.paper-toast-open.yt-notification-action-renderer,
+.toast-button.style-scope.yt-notification-action-renderer,
+.ytp-suggested-action-badge[data-tooltip-target-id*="interrupt" i],
+.ytp-suggested-action-badge-expanded,
+tp-yt-paper-toast:has(yt-notification-action-renderer),
+yt-notification-action-renderer:has(#toast) {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+
+/* Khi bật tính năng tự động đóng banner tiếp thị & khảo sát (autoDismissPromos) */
+html.ytc-auto-dismiss snackbar-container,
+html.ytc-auto-dismiss snackbar-view-model,
+html.ytc-auto-dismiss .ytSnackbarContainerHost,
+html.ytc-auto-dismiss .ytSnackbarContainerSnackbarContainer,
 html.ytc-auto-dismiss ytd-mealbar-promo-renderer,
 html.ytc-auto-dismiss yt-mealbar-promo-renderer,
 html.ytc-auto-dismiss ytd-upsell-dialog-renderer {
