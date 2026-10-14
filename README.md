@@ -9,7 +9,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.8.6-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.8.7-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -34,7 +34,7 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.8.6** khắc phục triệt để thông báo gián đoạn do YouTube cập nhật đối kháng tiện ích chặn quảng cáo (uBlock/AdBlock) với cơ chế đóng tự động 0ms và khôi phục video tức thì, đồng thời hoàn thiện cơ chế Khóa an toàn toàn màn hình khi nạp luồng phát (Buffering Fullscreen Lock) ngăn chặn triệt để lỗi phóng to nhầm toàn bộ trang web.
+Phiên bản **v3.8.7** khắc phục triệt để thông báo gián đoạn do YouTube cập nhật cấu trúc Lit Web Component mới (`<snackbar-container>` / `<snackbar-view-model>`) đối kháng tiện ích chặn quảng cáo (uBlock/AdBlock) với cơ chế đóng tự động 0ms và khôi phục video tức thì, đồng thời hoàn thiện cơ chế Khóa an toàn toàn màn hình khi nạp luồng phát (Buffering Fullscreen Lock) ngăn chặn triệt để lỗi phóng to nhầm toàn bộ trang web.
 
 ---
 
