@@ -91,18 +91,12 @@ export function showTipCard(btn, { badge, badgeBg, title, desc, btnText, onActio
 export async function fetchRemotePackage() {
     const now = Date.now();
 
-    // 1. raw.githubusercontent.com trực tiếp
+    // 1. Ưu tiên 1: GitHub API (Không bị dính 5 phút cache của Fastly CDN trên raw.githubusercontent.com)
     try {
-        const rawRes = await fetch(`https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?_t=${now}`);
-        if (rawRes.ok) {
-            const data = await rawRes.json();
-            if (data && data.version) return data;
-        }
-    } catch (e) {}
-
-    // 2. Dự phòng GitHub API
-    try {
-        const apiRes = await fetch('https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main');
+        const apiRes = await fetch(`https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main&_t=${now}`, {
+            headers: { 'Accept': 'application/vnd.github.v3+json' },
+            cache: 'no-store'
+        });
         if (apiRes.ok) {
             const data = await apiRes.json();
             if (data && data.version) {
@@ -116,9 +110,22 @@ export async function fetchRemotePackage() {
         }
     } catch (e) {}
 
+    // 2. Dự phòng: raw.githubusercontent.com trực tiếp
+    try {
+        const rawRes = await fetch(`https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?_t=${now}`, {
+            cache: 'no-store'
+        });
+        if (rawRes.ok) {
+            const data = await rawRes.json();
+            if (data && data.version) return data;
+        }
+    } catch (e) {}
+
     // 3. Dự phòng jsDelivr CDN
     try {
-        const jsdelivrRes = await fetch(`https://cdn.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/package.json?_t=${now}`);
+        const jsdelivrRes = await fetch(`https://cdn.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/package.json?_t=${now}`, {
+            cache: 'no-store'
+        });
         if (jsdelivrRes.ok) {
             const data = await jsdelivrRes.json();
             if (data && data.version) return data;

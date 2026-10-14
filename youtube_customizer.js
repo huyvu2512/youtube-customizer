@@ -2306,6 +2306,8 @@
           sub_autoupdate: "Tự gọi API và trỏ sang link cài bản mới khi vào YouTube",
           check_update: "Kiểm tra cập nhật",
           btn_check: "Kiểm tra",
+          btn_checking: "Đang kiểm tra...",
+          btn_updated: "Đã cập nhật",
           author: "Tác giả",
           report_bug: "Báo cáo & Góp ý",
           sub_report: "Báo lỗi hoặc đề xuất ý tưởng",
@@ -2318,14 +2320,9 @@
           chat_tip_off: "Tắt chat trên video",
           chat_tip_danmaku: "Chữ chạy ngang màn hình dạng Danmaku",
           chat_tip_streamer: "Khung chat nổi của streamer, kéo thả và co giãn tự do",
-          perf_monitor_title: "Thông số trang & Hệ thống",
           perf_ram: "RAM Video",
           perf_dom: "Số lượng DOM",
           perf_fps: "FPS Video",
-          perf_buffer: "Buffer video",
-          perf_dropped: "Khung hình rớt",
-          perf_resolution: "Độ phân giải",
-          perf_resources: "Tài nguyên web",
           perf_network: "Mạng / Ping"
         },
         en: {
@@ -2373,6 +2370,8 @@
           sub_autoupdate: "Automatically checks for updates on YouTube",
           check_update: "Check for Updates",
           btn_check: "Check",
+          btn_checking: "Checking...",
+          btn_updated: "Up to date",
           author: "Developer",
           report_bug: "Report Bug / Feedback",
           sub_report: "Report issues or suggest features",
@@ -2385,14 +2384,9 @@
           chat_tip_off: "Turn off chat overlay",
           chat_tip_danmaku: "Horizontal flying Danmaku comments",
           chat_tip_streamer: "Floating streamer chat window, resizable and draggable",
-          perf_monitor_title: "Web & System Vitals",
           perf_ram: "Video RAM",
           perf_dom: "DOM Nodes",
           perf_fps: "Video FPS",
-          perf_buffer: "Video Buffer",
-          perf_dropped: "Dropped Frames",
-          perf_resolution: "Resolution",
-          perf_resources: "Web Resources",
           perf_network: "Network / Ping"
         },
         ja: {
@@ -3520,15 +3514,10 @@
   async function fetchRemotePackage() {
     const now = Date.now();
     try {
-      const rawRes = await fetch(`https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?_t=${now}`);
-      if (rawRes.ok) {
-        const data = await rawRes.json();
-        if (data && data.version) return data;
-      }
-    } catch (e) {
-    }
-    try {
-      const apiRes = await fetch("https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main");
+      const apiRes = await fetch(`https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main&_t=${now}`, {
+        headers: { "Accept": "application/vnd.github.v3+json" },
+        cache: "no-store"
+      });
       if (apiRes.ok) {
         const data = await apiRes.json();
         if (data && data.version) {
@@ -3544,7 +3533,19 @@
     } catch (e) {
     }
     try {
-      const jsdelivrRes = await fetch(`https://cdn.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/package.json?_t=${now}`);
+      const rawRes = await fetch(`https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?_t=${now}`, {
+        cache: "no-store"
+      });
+      if (rawRes.ok) {
+        const data = await rawRes.json();
+        if (data && data.version) return data;
+      }
+    } catch (e) {
+    }
+    try {
+      const jsdelivrRes = await fetch(`https://cdn.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/package.json?_t=${now}`, {
+        cache: "no-store"
+      });
       if (jsdelivrRes.ok) {
         const data = await jsdelivrRes.json();
         if (data && data.version) return data;
@@ -4809,7 +4810,11 @@
           updateBtn.disabled = true;
           updateBtn.classList.remove("ytc-btn-success", "ytc-btn-has-update");
           updateBtn.classList.add("ytc-btn-loading");
-          if (updateBtnText) updateBtnText.textContent = "Đang kiểm tra...";
+          if (updateBtnText) updateBtnText.textContent = t("btn_checking") || "Đang kiểm tra...";
+          try {
+            localStorage.removeItem("ytc_remote_ver_cache");
+          } catch (e2) {
+          }
           try {
             const pkg = await fetchRemotePackage();
             if (pkg && pkg.version) {
@@ -4853,10 +4858,10 @@
               } else {
                 updateBtn.classList.remove("ytc-btn-loading");
                 updateBtn.classList.add("ytc-btn-success");
-                if (updateBtnText) updateBtnText.textContent = "Đã cập nhật";
+                if (updateBtnText) updateBtnText.textContent = t("btn_updated") || "Đã cập nhật";
                 setTimeout(() => {
                   updateBtn.classList.remove("ytc-btn-success");
-                  if (updateBtnText) updateBtnText.textContent = "Kiểm tra";
+                  if (updateBtnText) updateBtnText.textContent = t("btn_check") || "Kiểm tra";
                   updateBtn.disabled = false;
                   isChecking = false;
                 }, 2500);

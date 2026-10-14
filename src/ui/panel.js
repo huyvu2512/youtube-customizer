@@ -904,7 +904,10 @@ export function createSettingsPanel() {
                 updateBtn.disabled = true;
                 updateBtn.classList.remove('ytc-btn-success', 'ytc-btn-has-update');
                 updateBtn.classList.add('ytc-btn-loading');
-                if (updateBtnText) updateBtnText.textContent = 'Đang kiểm tra...';
+                if (updateBtnText) updateBtnText.textContent = t('btn_checking') || 'Đang kiểm tra...';
+
+                // Xóa cache kiểm tra phiên bản để luôn lấy trực tiếp bản mới nhất từ remote
+                try { localStorage.removeItem('ytc_remote_ver_cache'); } catch (e) {}
 
                 try {
                     const pkg = await fetchRemotePackage();
@@ -965,10 +968,10 @@ export function createSettingsPanel() {
                             // Đang ở phiên bản mới nhất -> Hiển thị "Đã cập nhật"
                             updateBtn.classList.remove('ytc-btn-loading');
                             updateBtn.classList.add('ytc-btn-success');
-                            if (updateBtnText) updateBtnText.textContent = 'Đã cập nhật';
+                            if (updateBtnText) updateBtnText.textContent = t('btn_updated') || 'Đã cập nhật';
                             setTimeout(() => {
                                 updateBtn.classList.remove('ytc-btn-success');
-                                if (updateBtnText) updateBtnText.textContent = 'Kiểm tra';
+                                if (updateBtnText) updateBtnText.textContent = t('btn_check') || 'Kiểm tra';
                                 updateBtn.disabled = false;
                                 isChecking = false;
                             }, 2500);
