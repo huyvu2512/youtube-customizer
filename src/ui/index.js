@@ -4,3 +4,4 @@
 export * from './sync.js';
 export * from './notifier.js';
 export * from './panel.js';
+export * from './perfMonitor.js';

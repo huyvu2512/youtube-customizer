@@ -84,7 +84,16 @@ const TRANSLATIONS = {
         chat_tip_disabled: 'Chỉ khả dụng khi xem Live Stream hoặc video có khung trò chuyện',
         chat_tip_off: 'Tắt chat trên video',
         chat_tip_danmaku: 'Chữ chạy ngang màn hình dạng Danmaku',
-        chat_tip_streamer: 'Khung chat nổi của streamer, kéo thả và co giãn tự do'
+        chat_tip_streamer: 'Khung chat nổi của streamer, kéo thả và co giãn tự do',
+        perf_monitor_title: 'Thông số trang & Hệ thống',
+        perf_ram: 'RAM (JS Heap)',
+        perf_dom: 'Số lượng DOM',
+        perf_fps: 'Khung hình (FPS)',
+        perf_buffer: 'Buffer video',
+        perf_dropped: 'Khung hình rớt',
+        perf_resolution: 'Độ phân giải',
+        perf_resources: 'Tài nguyên web',
+        perf_network: 'Mạng / Ping'
     },
     en: {
         tab_layout: 'Interface',
@@ -142,7 +151,16 @@ const TRANSLATIONS = {
         chat_tip_disabled: 'Only available during Live Streams or videos with chat',
         chat_tip_off: 'Turn off chat overlay',
         chat_tip_danmaku: 'Horizontal flying Danmaku comments',
-        chat_tip_streamer: 'Floating streamer chat window, resizable and draggable'
+        chat_tip_streamer: 'Floating streamer chat window, resizable and draggable',
+        perf_monitor_title: 'Web & System Vitals',
+        perf_ram: 'RAM (JS Heap)',
+        perf_dom: 'DOM Nodes',
+        perf_fps: 'Frame Rate (FPS)',
+        perf_buffer: 'Video Buffer',
+        perf_dropped: 'Dropped Frames',
+        perf_resolution: 'Resolution',
+        perf_resources: 'Web Resources',
+        perf_network: 'Network / Ping'
     },
     ja: {
         tab_layout: '画面',

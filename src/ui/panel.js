@@ -42,11 +42,13 @@ import {
     GIFT_SVG,
     EXTERNAL_LINK_SVG,
     SHOPPING_SVG,
-    AMBIENT_LIGHT_SVG
+    AMBIENT_LIGHT_SVG,
+    ACTIVITY_SVG
 } from '../core/constants.js';
 import { SUPPORTED_LANGUAGES, getLanguageInfo, t } from '../core/i18n.js';
 import { syncPanelState } from './sync.js';
 import { setupOnboardingAndUpdates, isNewerVersion, fetchRemotePackage } from './notifier.js';
+import { startPerfMonitoring, stopPerfMonitoring } from './perfMonitor.js';
 
 export function updatePanelLanguage(targetPanel) {
     const panel = targetPanel || document.getElementById('ytc-settings-panel');
@@ -91,6 +93,7 @@ export function bindGlobalMenuDismiss() {
         if (panel && panel.classList.contains('open')) {
             if (!e.target.closest('#ytc-settings-panel') && !e.target.closest('#ytc-settings-btn')) {
                 panel.classList.remove('open');
+                stopPerfMonitoring();
             }
         }
 
@@ -109,6 +112,7 @@ export function bindGlobalMenuDismiss() {
             const panel = document.getElementById('ytc-settings-panel');
             if (panel && panel.classList.contains('open')) {
                 panel.classList.remove('open');
+                stopPerfMonitoring();
             }
             const langMenu = document.getElementById('ytc-lang-menu');
             if (langMenu && langMenu.classList.contains('open')) {
@@ -195,28 +199,6 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
-                <div class="ytc-item" data-toggle="unlockLiveDvr" data-i18n-title="unlock_live_dvr">
-                    <div class="ytc-item-left">
-                        ${REWIND_SVG}
-                        <span data-i18n="unlock_live_dvr">Mở khóa tua Live Stream</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-livedvr">
-                        <input type="checkbox" id="ytc-chk-livedvr" name="unlockLiveDvr" aria-label="Mở khóa tua Live Stream" ${currentConfig.unlockLiveDvr ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
-                <div class="ytc-item" data-toggle="autoLiveSync" data-i18n-title="auto_live_sync">
-                    <div class="ytc-item-left">
-                        ${RADIO_SVG}
-                        <span data-i18n="auto_live_sync">Tự động trực tiếp (Auto Live)</span>
-                    </div>
-                    <label class="ytc-switch" for="ytc-chk-autolive">
-                        <input type="checkbox" id="ytc-chk-autolive" name="autoLiveSync" aria-label="Tự động trực tiếp (Auto Live)" ${currentConfig.autoLiveSync ? 'checked' : ''}>
-                        <span class="ytc-slider"></span>
-                    </label>
-                </div>
-
                 <div class="ytc-item" data-toggle="ambientLighting" data-i18n-title="ambient_lighting">
                     <div class="ytc-item-left">
                         ${AMBIENT_LIGHT_SVG}
@@ -250,6 +232,52 @@ export function createSettingsPanel() {
                         <button class="ytc-mode-btn ${(!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') ? 'active' : ''}" data-overlay="off" data-i18n="chat_off">Tắt</button>
                         <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'danmaku' ? 'active' : ''}" data-overlay="danmaku" data-i18n="chat_danmaku">Ngang</button>
                         <button class="ytc-mode-btn ${currentConfig.chatOverlay === 'streamer' ? 'active' : ''}" data-overlay="streamer" data-i18n="chat_streamer">Nổi</button>
+                    </div>
+                </div>
+
+                <!-- KHUNG THÔNG SỐ HIỆU NĂNG WEB & HỆ THỐNG (REAL-TIME PERFORMANCE MONITOR) -->
+                <div class="ytc-perf-card" id="ytc-perf-monitor">
+                    <div class="ytc-perf-header">
+                        <div class="ytc-perf-title">
+                            <span class="ytc-live-dot"></span>
+                            ${ACTIVITY_SVG}
+                            <span data-i18n="perf_monitor_title">Thông số trang & Hệ thống</span>
+                        </div>
+                        <span class="ytc-perf-badge">Real-time</span>
+                    </div>
+                    <div class="ytc-perf-grid">
+                        <div class="ytc-perf-item">
+                            <span class="ytc-perf-label" data-i18n="perf_ram">RAM (JS Heap)</span>
+                            <span class="ytc-perf-value ytc-stat-accent" id="ytc-stat-ram">—</span>
+                        </div>
+                        <div class="ytc-perf-item">
+                            <span class="ytc-perf-label" data-i18n="perf_dom">Số lượng DOM</span>
+                            <span class="ytc-perf-value" id="ytc-stat-dom">—</span>
+                        </div>
+                        <div class="ytc-perf-item">
+                            <span class="ytc-perf-label" data-i18n="perf_fps">Khung hình (FPS)</span>
+                            <span class="ytc-perf-value ytc-stat-green" id="ytc-stat-fps">—</span>
+                        </div>
+                        <div class="ytc-perf-item">
+                            <span class="ytc-perf-label" data-i18n="perf_buffer">Buffer video</span>
+                            <span class="ytc-perf-value" id="ytc-stat-buffer">—</span>
+                        </div>
+                        <div class="ytc-perf-item">
+                            <span class="ytc-perf-label" data-i18n="perf_dropped">Khung hình rớt</span>
+                            <span class="ytc-perf-value" id="ytc-stat-dropped">—</span>
+                        </div>
+                        <div class="ytc-perf-item">
+                            <span class="ytc-perf-label" data-i18n="perf_resolution">Độ phân giải</span>
+                            <span class="ytc-perf-value" id="ytc-stat-resolution">—</span>
+                        </div>
+                        <div class="ytc-perf-item">
+                            <span class="ytc-perf-label" data-i18n="perf_resources">Tài nguyên nạp</span>
+                            <span class="ytc-perf-value" id="ytc-stat-resources">—</span>
+                        </div>
+                        <div class="ytc-perf-item">
+                            <span class="ytc-perf-label" data-i18n="perf_network">Mạng / Ping</span>
+                            <span class="ytc-perf-value" id="ytc-stat-network">—</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -387,6 +415,28 @@ export function createSettingsPanel() {
                     </div>
                     <label class="ytc-switch" for="ytc-chk-hidenativechat">
                         <input type="checkbox" id="ytc-chk-hidenativechat" name="hideNativeLiveChat" aria-label="Tắt trò chuyện trực tiếp" ${currentConfig.hideNativeLiveChat ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="autoLiveSync" data-i18n-title="auto_live_sync">
+                    <div class="ytc-item-left">
+                        ${RADIO_SVG}
+                        <span data-i18n="auto_live_sync">Tự động trực tiếp (Auto Live)</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-autolive">
+                        <input type="checkbox" id="ytc-chk-autolive" name="autoLiveSync" aria-label="Tự động trực tiếp (Auto Live)" ${currentConfig.autoLiveSync ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="unlockLiveDvr" data-i18n-title="unlock_live_dvr">
+                    <div class="ytc-item-left">
+                        ${REWIND_SVG}
+                        <span data-i18n="unlock_live_dvr">Mở khóa tua Live Stream</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-livedvr">
+                        <input type="checkbox" id="ytc-chk-livedvr" name="unlockLiveDvr" aria-label="Mở khóa tua Live Stream" ${currentConfig.unlockLiveDvr ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -1043,7 +1093,12 @@ export function ensureSettingsElements() {
             e.stopPropagation();
             syncPanelState(panel);
             updatePosition();
-            panel.classList.toggle('open');
+            const isOpen = panel.classList.toggle('open');
+            if (isOpen) {
+                startPerfMonitoring();
+            } else {
+                stopPerfMonitoring();
+            }
         });
     }
 }
