@@ -88,7 +88,7 @@ export function checkForUpdates(btn) {
     if (!targetBtn) return;
     updateCheckInitiated = true;
 
-    const CHECK_URL = 'https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json';
+    const CHECK_URL = 'https://cdn.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/package.json';
     const CACHE_KEY = 'ytc_remote_ver_cache';
     const now = Date.now();
 
@@ -212,31 +212,30 @@ export async function checkAndAutoUpdate(force = false) {
     window.__ytc_auto_update_checked = true;
 
     const now = Date.now();
+    const JSDELIVR_URL = `https://cdn.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/package.json?_t=${now}`;
     const GITHUB_API = 'https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main';
-    const RAW_URL = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?_t=${now}_${Math.random().toString(36).slice(2)}`;
 
     try {
         let pkg = null;
         try {
-            const res = await fetch(GITHUB_API, {
-                headers: { 'Accept': 'application/vnd.github.v3.raw' },
-                cache: 'no-store'
-            });
+            const res = await fetch(JSDELIVR_URL);
             if (res.ok) {
-                const data = await res.json();
-                if (data && data.version) {
-                    pkg = data;
-                } else if (data && data.content && data.encoding === 'base64') {
-                    pkg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, '')))));
-                }
+                pkg = await res.json();
             }
         } catch (e) {}
 
         if (!pkg || !pkg.version) {
-            const rawRes = await fetch(RAW_URL, { cache: 'no-store' });
-            if (rawRes.ok) {
-                pkg = await rawRes.json();
-            }
+            try {
+                const apiRes = await fetch(GITHUB_API);
+                if (apiRes.ok) {
+                    const data = await apiRes.json();
+                    if (data && data.version) {
+                        pkg = data;
+                    } else if (data && data.content && data.encoding === 'base64') {
+                        pkg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, '')))));
+                    }
+                }
+            } catch (e) {}
         }
 
         if (pkg && pkg.version && isNewerVersion(pkg.version, APP_VERSION)) {

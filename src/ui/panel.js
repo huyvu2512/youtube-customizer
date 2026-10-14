@@ -884,29 +884,26 @@ export function createSettingsPanel() {
                 try {
                     let pkg = null;
                     try {
-                        const apiRes = await fetch('https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main', {
-                            headers: { 'Accept': 'application/vnd.github.v3.raw' },
-                            cache: 'no-store'
-                        });
-                        if (apiRes.ok) {
-                            const data = await apiRes.json();
-                            if (data && data.version) {
-                                pkg = data;
-                            } else if (data && data.content && data.encoding === 'base64') {
-                                try {
-                                    pkg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, '')))));
-                                } catch (err) {}
-                            }
+                        const jsdelivrRes = await fetch(`https://cdn.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/package.json?t=${Date.now()}`);
+                        if (jsdelivrRes.ok) {
+                            pkg = await jsdelivrRes.json();
                         }
                     } catch (e) {}
 
                     if (!pkg || !pkg.version) {
-                        const rawRes = await fetch(`https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?t=${Date.now()}`, {
-                            cache: 'no-store'
-                        });
-                        if (rawRes.ok) {
-                            pkg = await rawRes.json();
-                        }
+                        try {
+                            const apiRes = await fetch('https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main');
+                            if (apiRes.ok) {
+                                const data = await apiRes.json();
+                                if (data && data.version) {
+                                    pkg = data;
+                                } else if (data && data.content && data.encoding === 'base64') {
+                                    try {
+                                        pkg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, '')))));
+                                    } catch (err) {}
+                                }
+                            }
+                        } catch (e) {}
                     }
 
                     if (pkg && pkg.version) {
