@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.8.7
-// @description  YouTube Customizer v3.8.7 — Triệt tiêu thông báo gián đoạn video (Ad-block interruption prompt) & Khóa an toàn nút toàn màn hình khi đang nạp luồng phát.
+// @version      3.8.8
+// @description  YouTube Customizer v3.8.8 — Tích hợp bảng giám sát thông số hệ thống & web thời gian thực, sắp xếp lại tab Trình phát trực quan.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

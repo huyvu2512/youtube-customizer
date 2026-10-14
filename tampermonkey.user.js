@@ -1,28 +1,27 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.8.7
-// @description  YouTube Customizer v3.8.7 — Triệt tiêu thông báo gián đoạn video (Ad-block interruption prompt) & Khóa an toàn nút toàn màn hình khi đang nạp luồng phát.
+// @version      3.8.8
+// @description  YouTube Customizer v3.8.8 — Tích hợp bảng giám sát thông số hệ thống & web thời gian thực, sắp xếp lại tab Trình phát trực quan.
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.8.7
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.8.8
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.8.7
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.8.7
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.8.8
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.8.8
 // ==/UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.8.7:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.8.8:
  * ============================================================================
- * 1. [Khắc phục triệt để cấu trúc thông báo gián đoạn mới Lit Web Component]:
- *    - Chặn và xóa vĩnh viễn thẻ <snackbar-container> & <snackbar-view-model> "Bạn đang gặp sự cố gây gián đoạn?".
- *    - Áp dụng bộ lọc CSS 0ms độ trễ kết hợp MutationObserver + XPath tự động kích hoạt playVideo() khi bị tạm dừng.
- * 2. [Khóa an toàn nút Toàn màn hình khi nạp luồng phát (Buffering Fullscreen Lock)]:
- *    - Khi video đang xoay vòng tải (0:00), nút phóng to và thao tác nhấp đúp sẽ được tạm khóa an toàn
- *      ngăn chặn triệt để lỗi phóng to nhầm toàn bộ trang web trình duyệt thay vì khung video player.
- *    - Tự động mở khóa tức thì ngay khi video sẵn sàng phát (canplay/playing), kèm cơ chế timeout dự phòng 3 giây.
+ * 1. [Khung thông số hiệu năng Web & Hệ thống Real-time]:
+ *    - Tích hợp bảng đo đạc 8 thông số trực quan tại tab Giao diện (RAM JS Heap, DOM Nodes, FPS,
+ *      Video Buffer, Khung hình rớt, Độ phân giải, Tài nguyên nạp, Độ trễ mạng/Ping).
+ *    - Hoàn toàn 0% CPU khi đóng bảng cài đặt.
+ * 2. [Tái cấu trúc giao diện tab Trình phát]:
+ *    - Di chuyển "Tự động trực tiếp" và "Mở khóa tua Live Stream" sang tab Trình phát.
  * ============================================================================
  */
