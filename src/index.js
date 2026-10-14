@@ -19,6 +19,7 @@ import {
     scheduleFeedScan,
     setupFeedShelvesObserver,
     dismissPromoBanners,
+    setupPromoObserver,
     isHomeFeedPath,
     initMixFilter,
     initQualityManager,
@@ -107,6 +108,12 @@ if (window.self !== window.top) {
         updateChatOverlayVisibility();
         applyAudioOnlyState();
         applyPreferredQuality();
+        if (currentConfig.autoDismissPromos) {
+            dismissPromoBanners(document);
+        }
+        if (!currentConfig.autoLiveSync) {
+            resetAutoLiveState();
+        }
     });
 
     applyConfigToRoot();
@@ -185,6 +192,7 @@ if (window.self !== window.top) {
     setupLogoObserver();
     setupSettingsObserver();
     setupFeedShelvesObserver();
+    setupPromoObserver();
     setupFullscreenLock();
     initChatOverlay();
     initAutoLiveSync();

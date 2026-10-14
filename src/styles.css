@@ -2473,8 +2473,26 @@ html:not(.ytc-ambient-lighting) #ytc-ambient-wrapper {
     display: none !important;
 }
 
+/* ==========================================================================
+   KHÓA NÚT TOÀN MÀN HÌNH KHI ĐANG NẠP LUỒNG PHÁT (BUFFERING FULLSCREEN LOCK)
+   ========================================================================== */
+html.ytc-fs-locked .ytp-fullscreen-button,
+body.ytc-fs-locked .ytp-fullscreen-button {
+    pointer-events: none !important;
+    opacity: 0.35 !important;
+    cursor: not-allowed !important;
+    transition: opacity 0.2s ease;
+}
 
-
-
-
-
+/* ==========================================================================
+   TỰ ĐỘNG TRIỆT TIÊU THÔNG BÁO GIÁN ĐOẠN / BANNER PROMO (AUTO DISMISS)
+   ========================================================================== */
+html.ytc-auto-dismiss .ytp-suggested-action-badge[data-tooltip-target-id*="interrupt" i],
+html.ytc-auto-dismiss .ytp-suggested-action-badge-expanded,
+html.ytc-auto-dismiss ytd-mealbar-promo-renderer,
+html.ytc-auto-dismiss tp-yt-paper-toast:has([class*="interrupt" i]),
+html.ytc-auto-dismiss yt-bubble-hint-renderer:has([class*="interrupt" i]) {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
