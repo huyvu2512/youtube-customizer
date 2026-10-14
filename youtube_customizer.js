@@ -475,6 +475,10 @@
   }
   function dismissInterruptionPrompts(scope) {
     const root = scope && scope.querySelectorAll ? scope : document;
+    const hasCandidate = root.querySelector(
+      "snackbar-container, snackbar-view-model, .ytSnackbarContainerHost, yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, .paper-toast-open, .ytp-suggested-action-badge, .ytp-suggested-action-badge-expanded"
+    );
+    if (!hasCandidate) return;
     const candidates = root.querySelectorAll(
       'snackbar-container, snackbar-view-model, .ytSnackbarContainerHost, .ytSnackbarContainerSnackbarContainer, .snackbarViewModelHost, .snackbarViewModelTitle, .snackbarViewModelTitleSubtextWrapper, yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, #toast, yt-notification-action-renderer, ytd-notification-action-renderer, .ytp-suggested-action-badge, .ytp-suggested-action-badge-expanded, .ytp-bezel, .ytp-hint, div[class*="interrupt" i], div[class*="suggested-action" i], div[class*="ad-interrupt" i], .paper-toast-open, .toast-button'
     );
@@ -569,6 +573,14 @@
     }
     let throttleTimer = null;
     const observer = new MutationObserver((mutations) => {
+      let hasAddedNodes = false;
+      for (let i = 0; i < mutations.length; i++) {
+        if (mutations[i].addedNodes.length > 0) {
+          hasAddedNodes = true;
+          break;
+        }
+      }
+      if (!hasAddedNodes) return;
       if (!throttleTimer) {
         throttleTimer = requestAnimationFrame(() => {
           throttleTimer = null;

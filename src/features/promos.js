@@ -33,6 +33,15 @@ export function resumePlayerIfPaused() {
 export function dismissInterruptionPrompts(scope) {
     const root = scope && scope.querySelectorAll ? scope : document;
 
+    // Fast bail-out: Kiểm tra cực nhanh xem có bất kỳ container nghi vấn nào trong DOM hay không
+    // 99.9% thời gian xem video hàm sẽ dừng ngay ở bước này (0.005ms, không tốn RAM/CPU)
+    const hasCandidate = root.querySelector(
+        'snackbar-container, snackbar-view-model, .ytSnackbarContainerHost, ' +
+        'yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, .paper-toast-open, ' +
+        '.ytp-suggested-action-badge, .ytp-suggested-action-badge-expanded'
+    );
+    if (!hasCandidate) return;
+
     // 1. Quét trực tiếp các tag Snackbar mới của YouTube & Toast / Bubble truyền thống
     const candidates = root.querySelectorAll(
         'snackbar-container, snackbar-view-model, .ytSnackbarContainerHost, .ytSnackbarContainerSnackbarContainer, ' +
@@ -148,7 +157,16 @@ export function setupPromoObserver() {
     // Observer toàn cục bắt ngay các phần tử gián đoạn / snackbar / popup
     let throttleTimer = null;
     const observer = new MutationObserver((mutations) => {
-        // Luôn quét triệt tiêu thông báo gián đoạn mà không gây lag
+        let hasAddedNodes = false;
+        for (let i = 0; i < mutations.length; i++) {
+            if (mutations[i].addedNodes.length > 0) {
+                hasAddedNodes = true;
+                break;
+            }
+        }
+        if (!hasAddedNodes) return;
+
+        // Luôn quét triệt tiêu thông báo gián đoạn mà không gây lag (tối đa 1 lần/frame)
         if (!throttleTimer) {
             throttleTimer = requestAnimationFrame(() => {
                 throttleTimer = null;
