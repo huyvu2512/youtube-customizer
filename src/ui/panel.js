@@ -46,7 +46,7 @@ import {
 } from '../core/constants.js';
 import { SUPPORTED_LANGUAGES, getLanguageInfo, t } from '../core/i18n.js';
 import { syncPanelState } from './sync.js';
-import { setupOnboardingAndUpdates, isNewerVersion } from './notifier.js';
+import { setupOnboardingAndUpdates, isNewerVersion, fetchRemotePackage } from './notifier.js';
 
 export function updatePanelLanguage(targetPanel) {
     const panel = targetPanel || document.getElementById('ytc-settings-panel');
@@ -882,29 +882,7 @@ export function createSettingsPanel() {
                 if (updateBtnText) updateBtnText.textContent = 'Đang kiểm tra...';
 
                 try {
-                    let pkg = null;
-                    try {
-                        const jsdelivrRes = await fetch(`https://cdn.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/package.json?t=${Date.now()}`);
-                        if (jsdelivrRes.ok) {
-                            pkg = await jsdelivrRes.json();
-                        }
-                    } catch (e) {}
-
-                    if (!pkg || !pkg.version) {
-                        try {
-                            const apiRes = await fetch('https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main');
-                            if (apiRes.ok) {
-                                const data = await apiRes.json();
-                                if (data && data.version) {
-                                    pkg = data;
-                                } else if (data && data.content && data.encoding === 'base64') {
-                                    try {
-                                        pkg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, '')))));
-                                    } catch (err) {}
-                                }
-                            }
-                        } catch (e) {}
-                    }
+                    const pkg = await fetchRemotePackage();
 
                     if (pkg && pkg.version) {
                         if (isNewerVersion(pkg.version, APP_VERSION)) {

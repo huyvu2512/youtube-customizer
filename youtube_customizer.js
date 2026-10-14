@@ -3430,6 +3430,7 @@
   __export(notifier_exports, {
     checkAndAutoUpdate: () => checkAndAutoUpdate,
     checkForUpdates: () => checkForUpdates,
+    fetchRemotePackage: () => fetchRemotePackage,
     isNewerVersion: () => isNewerVersion,
     setupOnboardingAndUpdates: () => setupOnboardingAndUpdates,
     showTipCard: () => showTipCard
@@ -3498,12 +3499,47 @@
     }
     btn.addEventListener("click", dismissTip, { once: true });
   }
+  async function fetchRemotePackage() {
+    const now = Date.now();
+    try {
+      const rawRes = await fetch(`https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?_t=${now}`);
+      if (rawRes.ok) {
+        const data = await rawRes.json();
+        if (data && data.version) return data;
+      }
+    } catch (e) {
+    }
+    try {
+      const apiRes = await fetch("https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main");
+      if (apiRes.ok) {
+        const data = await apiRes.json();
+        if (data && data.version) {
+          return data;
+        } else if (data && data.content && data.encoding === "base64") {
+          try {
+            const parsed = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, "")))));
+            if (parsed && parsed.version) return parsed;
+          } catch (err) {
+          }
+        }
+      }
+    } catch (e) {
+    }
+    try {
+      const jsdelivrRes = await fetch(`https://cdn.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/package.json?_t=${now}`);
+      if (jsdelivrRes.ok) {
+        const data = await jsdelivrRes.json();
+        if (data && data.version) return data;
+      }
+    } catch (e) {
+    }
+    return null;
+  }
   function checkForUpdates(btn) {
     if (updateCheckInitiated) return;
     const targetBtn = document.getElementById("ytc-settings-btn") || btn;
     if (!targetBtn) return;
     updateCheckInitiated = true;
-    const CHECK_URL = "https://cdn.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/package.json";
     const CACHE_KEY = "ytc_remote_ver_cache";
     const now = Date.now();
     const renderUpdateNotification = (remoteVer) => {
@@ -3561,10 +3597,7 @@
       }
     } catch (e) {
     }
-    fetch(`${CHECK_URL}?_t=${now}_${Math.random().toString(36).slice(2)}`, {
-      cache: "no-store",
-      headers: { "Cache-Control": "no-cache", "Pragma": "no-cache" }
-    }).then((res) => res.json()).then((data) => {
+    fetchRemotePackage().then((data) => {
       if (data && data.version) {
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify({ version: data.version, time: Date.now() }));
@@ -3622,32 +3655,8 @@
     if (window.self !== window.top) return;
     if (window.__ytc_auto_update_checked && !force) return;
     window.__ytc_auto_update_checked = true;
-    const now = Date.now();
-    const JSDELIVR_URL = `https://cdn.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/package.json?_t=${now}`;
-    const GITHUB_API = "https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main";
     try {
-      let pkg = null;
-      try {
-        const res = await fetch(JSDELIVR_URL);
-        if (res.ok) {
-          pkg = await res.json();
-        }
-      } catch (e) {
-      }
-      if (!pkg || !pkg.version) {
-        try {
-          const apiRes = await fetch(GITHUB_API);
-          if (apiRes.ok) {
-            const data = await apiRes.json();
-            if (data && data.version) {
-              pkg = data;
-            } else if (data && data.content && data.encoding === "base64") {
-              pkg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, "")))));
-            }
-          }
-        } catch (e) {
-        }
-      }
+      const pkg = await fetchRemotePackage();
       if (pkg && pkg.version && isNewerVersion(pkg.version, APP_VERSION)) {
         const newVersion = pkg.version;
         const redirectKey = `ytc_auto_redirect_${newVersion.replace(/\./g, "_")}`;
@@ -4596,31 +4605,7 @@
           updateBtn.classList.add("ytc-btn-loading");
           if (updateBtnText) updateBtnText.textContent = "Đang kiểm tra...";
           try {
-            let pkg = null;
-            try {
-              const jsdelivrRes = await fetch(`https://cdn.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/package.json?t=${Date.now()}`);
-              if (jsdelivrRes.ok) {
-                pkg = await jsdelivrRes.json();
-              }
-            } catch (e2) {
-            }
-            if (!pkg || !pkg.version) {
-              try {
-                const apiRes = await fetch("https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main");
-                if (apiRes.ok) {
-                  const data = await apiRes.json();
-                  if (data && data.version) {
-                    pkg = data;
-                  } else if (data && data.content && data.encoding === "base64") {
-                    try {
-                      pkg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, "")))));
-                    } catch (err) {
-                    }
-                  }
-                }
-              } catch (e2) {
-              }
-            }
+            const pkg = await fetchRemotePackage();
             if (pkg && pkg.version) {
               if (isNewerVersion(pkg.version, APP_VERSION)) {
                 const newVersionUrl = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${pkg.version}`;

@@ -82,13 +82,58 @@ export function showTipCard(btn, { badge, badgeBg, title, desc, btnText, onActio
     btn.addEventListener('click', dismissTip, { once: true });
 }
 
+/**
+ * Tải file package.json từ GitHub với cơ chế 3 tầng:
+ * 1. raw.githubusercontent.com (không kèm custom headers để tránh CORS preflight)
+ * 2. api.github.com
+ * 3. cdn.jsdelivr.net (fallback)
+ */
+export async function fetchRemotePackage() {
+    const now = Date.now();
+
+    // 1. raw.githubusercontent.com trực tiếp
+    try {
+        const rawRes = await fetch(`https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/package.json?_t=${now}`);
+        if (rawRes.ok) {
+            const data = await rawRes.json();
+            if (data && data.version) return data;
+        }
+    } catch (e) {}
+
+    // 2. Dự phòng GitHub API
+    try {
+        const apiRes = await fetch('https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main');
+        if (apiRes.ok) {
+            const data = await apiRes.json();
+            if (data && data.version) {
+                return data;
+            } else if (data && data.content && data.encoding === 'base64') {
+                try {
+                    const parsed = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, '')))));
+                    if (parsed && parsed.version) return parsed;
+                } catch (err) {}
+            }
+        }
+    } catch (e) {}
+
+    // 3. Dự phòng jsDelivr CDN
+    try {
+        const jsdelivrRes = await fetch(`https://cdn.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/package.json?_t=${now}`);
+        if (jsdelivrRes.ok) {
+            const data = await jsdelivrRes.json();
+            if (data && data.version) return data;
+        }
+    } catch (e) {}
+
+    return null;
+}
+
 export function checkForUpdates(btn) {
     if (updateCheckInitiated) return;
     const targetBtn = document.getElementById('ytc-settings-btn') || btn;
     if (!targetBtn) return;
     updateCheckInitiated = true;
 
-    const CHECK_URL = 'https://cdn.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/package.json';
     const CACHE_KEY = 'ytc_remote_ver_cache';
     const now = Date.now();
 
@@ -144,11 +189,7 @@ export function checkForUpdates(btn) {
         }
     } catch (e) {}
 
-    fetch(`${CHECK_URL}?_t=${now}_${Math.random().toString(36).slice(2)}`, {
-        cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
-    })
-        .then(res => res.json())
+    fetchRemotePackage()
         .then(data => {
             if (data && data.version) {
                 try {
@@ -211,33 +252,8 @@ export async function checkAndAutoUpdate(force = false) {
     if (window.__ytc_auto_update_checked && !force) return;
     window.__ytc_auto_update_checked = true;
 
-    const now = Date.now();
-    const JSDELIVR_URL = `https://cdn.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/package.json?_t=${now}`;
-    const GITHUB_API = 'https://api.github.com/repos/huyvu2512/youtube-customizer/contents/package.json?ref=main';
-
     try {
-        let pkg = null;
-        try {
-            const res = await fetch(JSDELIVR_URL);
-            if (res.ok) {
-                pkg = await res.json();
-            }
-        } catch (e) {}
-
-        if (!pkg || !pkg.version) {
-            try {
-                const apiRes = await fetch(GITHUB_API);
-                if (apiRes.ok) {
-                    const data = await apiRes.json();
-                    if (data && data.version) {
-                        pkg = data;
-                    } else if (data && data.content && data.encoding === 'base64') {
-                        pkg = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, '')))));
-                    }
-                }
-            } catch (e) {}
-        }
-
+        const pkg = await fetchRemotePackage();
         if (pkg && pkg.version && isNewerVersion(pkg.version, APP_VERSION)) {
             const newVersion = pkg.version;
             const redirectKey = `ytc_auto_redirect_${newVersion.replace(/\./g, '_')}`;
