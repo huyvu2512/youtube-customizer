@@ -234,7 +234,7 @@ export function createSettingsPanel() {
                     </div>
                 </div>
 
-                <!-- THÔNG SỐ HIỆU NĂNG GỌN (RAM VIDEO, FPS VIDEO, MẠNG, DOM) -->
+                <!-- THÔNG SỐ HIỆU NĂNG GỌN (RAM VIDEO, FPS VIDEO, PING, TỐC ĐỘ TẢI) -->
                 <div class="ytc-perf-card" id="ytc-perf-monitor">
                     <div class="ytc-perf-grid">
                         <div class="ytc-perf-item">
@@ -246,12 +246,12 @@ export function createSettingsPanel() {
                             <span class="ytc-perf-value ytc-stat-green" id="ytc-stat-fps">—</span>
                         </div>
                         <div class="ytc-perf-item">
-                            <span class="ytc-perf-label" data-i18n="perf_network">Mạng / Ping</span>
-                            <span class="ytc-perf-value" id="ytc-stat-network">—</span>
+                            <span class="ytc-perf-label" data-i18n="perf_ping">Độ trễ (Ping)</span>
+                            <span class="ytc-perf-value" id="ytc-stat-ping">—</span>
                         </div>
                         <div class="ytc-perf-item">
-                            <span class="ytc-perf-label" data-i18n="perf_dom">Số lượng DOM</span>
-                            <span class="ytc-perf-value" id="ytc-stat-dom">—</span>
+                            <span class="ytc-perf-label" data-i18n="perf_speed">Tốc độ tải</span>
+                            <span class="ytc-perf-value" id="ytc-stat-speed">—</span>
                         </div>
                     </div>
                 </div>

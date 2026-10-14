@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.0
-// @description  YouTube Customizer v3.9.0 — Đo RAM Video thực tế, FPS Video chuẩn giải mã, và Ping mạng real-time chuẩn xác.
+// @version      3.9.1
+// @description  YouTube Customizer v3.9.1 — Tách biệt chỉ số Ping và Tốc độ tải, hỗ trợ hệ thống 3 màu trạng thái (Xanh lá - Vàng - Đỏ).
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

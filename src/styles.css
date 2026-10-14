@@ -2598,3 +2598,17 @@ html:not([dark]) .ytc-stat-accent {
     color: #2ba640 !important;
 }
 
+.ytc-stat-yellow {
+    color: #f1c40f !important;
+}
+html:not([dark]) .ytc-stat-yellow {
+    color: #b78103 !important;
+}
+
+.ytc-stat-red {
+    color: #ff4e45 !important;
+}
+html:not([dark]) .ytc-stat-red {
+    color: #cc0000 !important;
+}
+

@@ -88,9 +88,9 @@ const TRANSLATIONS = {
         chat_tip_danmaku: 'Chữ chạy ngang màn hình dạng Danmaku',
         chat_tip_streamer: 'Khung chat nổi của streamer, kéo thả và co giãn tự do',
         perf_ram: 'RAM Video',
-        perf_dom: 'Số lượng DOM',
         perf_fps: 'FPS Video',
-        perf_network: 'Mạng / Ping'
+        perf_ping: 'Độ trễ (Ping)',
+        perf_speed: 'Tốc độ tải'
     },
     en: {
         tab_layout: 'Interface',
@@ -152,9 +152,9 @@ const TRANSLATIONS = {
         chat_tip_danmaku: 'Horizontal flying Danmaku comments',
         chat_tip_streamer: 'Floating streamer chat window, resizable and draggable',
         perf_ram: 'Video RAM',
-        perf_dom: 'DOM Nodes',
         perf_fps: 'Video FPS',
-        perf_network: 'Network / Ping'
+        perf_ping: 'Latency (Ping)',
+        perf_speed: 'Download Speed'
     },
     ja: {
         tab_layout: '画面',

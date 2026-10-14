@@ -83,8 +83,16 @@ export function updatePerfStats() {
 
             const mb = Math.round(bufferSec * mbPerSec);
             elRam.textContent = `${mb} MB`;
+            if (mb >= 30) {
+                elRam.className = 'ytc-perf-value ytc-stat-green';
+            } else if (mb >= 10) {
+                elRam.className = 'ytc-perf-value ytc-stat-yellow';
+            } else {
+                elRam.className = 'ytc-perf-value ytc-stat-red';
+            }
         } else {
             elRam.textContent = '0 MB';
+            elRam.className = 'ytc-perf-value';
         }
     }
 
@@ -114,47 +122,65 @@ export function updatePerfStats() {
             }
             const fps = currentVideoFps || (video.playbackRate > 1 ? Math.round(60 * video.playbackRate) : 60);
             elFps.textContent = `${fps} FPS`;
-            elFps.className = fps >= 45 ? 'ytc-perf-value ytc-stat-green' : 'ytc-perf-value ytc-stat-accent';
+            if (fps >= 50) {
+                elFps.className = 'ytc-perf-value ytc-stat-green';
+            } else if (fps >= 24) {
+                elFps.className = 'ytc-perf-value ytc-stat-yellow';
+            } else {
+                elFps.className = 'ytc-perf-value ytc-stat-red';
+            }
         } else {
             elFps.textContent = '60 FPS';
             elFps.className = 'ytc-perf-value ytc-stat-green';
         }
     }
 
-    // 3. Mạng & Ping thật (Tự động đo ping tới máy chủ YouTube)
-    const elNet = document.getElementById('ytc-stat-network');
-    if (elNet) {
-        const now = performance.now();
-        if (now - lastPingTime >= 1500) {
-            lastPingTime = now;
-            measureRealPing();
-        }
+    // Định kỳ gửi lệnh đo ping tới YouTube
+    const now = performance.now();
+    if (now - lastPingTime >= 1500) {
+        lastPingTime = now;
+        measureRealPing();
+    }
+
+    // 3. Độ trễ (Ping)
+    const elPing = document.getElementById('ytc-stat-ping');
+    if (elPing) {
         if (currentPing !== null) {
-            if (currentSpeed) {
-                elNet.textContent = `${currentPing}ms • ${currentSpeed}Mbps`;
+            elPing.textContent = `${currentPing} ms`;
+            if (currentPing <= 50) {
+                elPing.className = 'ytc-perf-value ytc-stat-green';
+            } else if (currentPing <= 100) {
+                elPing.className = 'ytc-perf-value ytc-stat-yellow';
             } else {
-                elNet.textContent = `${currentPing}ms`;
-            }
-            if (currentPing < 60) {
-                elNet.className = 'ytc-perf-value ytc-stat-green';
-            } else if (currentPing < 120) {
-                elNet.className = 'ytc-perf-value ytc-stat-accent';
-            } else {
-                elNet.className = 'ytc-perf-value';
+                elPing.className = 'ytc-perf-value ytc-stat-red';
             }
         } else {
-            elNet.textContent = 'Đang đo...';
+            elPing.textContent = 'Đang đo...';
+            elPing.className = 'ytc-perf-value';
         }
     }
 
-    // 4. Số lượng DOM Nodes
-    const elDom = document.getElementById('ytc-stat-dom');
-    if (elDom) {
-        try {
-            const count = document.getElementsByTagName('*').length;
-            elDom.textContent = `${count.toLocaleString()} thẻ`;
-        } catch (e) {
-            elDom.textContent = '—';
+    // 4. Tốc độ tải (Download Speed)
+    const elSpeed = document.getElementById('ytc-stat-speed');
+    if (elSpeed) {
+        let speedVal = currentSpeed;
+        if (!speedVal) {
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (conn && conn.downlink) speedVal = conn.downlink;
+        }
+        if (speedVal) {
+            elSpeed.textContent = `${speedVal} Mbps`;
+            const numSpeed = parseFloat(speedVal) || 0;
+            if (numSpeed >= 20) {
+                elSpeed.className = 'ytc-perf-value ytc-stat-green';
+            } else if (numSpeed >= 5) {
+                elSpeed.className = 'ytc-perf-value ytc-stat-yellow';
+            } else {
+                elSpeed.className = 'ytc-perf-value ytc-stat-red';
+            }
+        } else {
+            elSpeed.textContent = 'Đang đo...';
+            elSpeed.className = 'ytc-perf-value';
         }
     }
 }
