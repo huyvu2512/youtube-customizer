@@ -2319,9 +2319,9 @@
           chat_tip_danmaku: "Chữ chạy ngang màn hình dạng Danmaku",
           chat_tip_streamer: "Khung chat nổi của streamer, kéo thả và co giãn tự do",
           perf_monitor_title: "Thông số trang & Hệ thống",
-          perf_ram: "RAM (JS Heap)",
+          perf_ram: "RAM Video",
           perf_dom: "Số lượng DOM",
-          perf_fps: "Khung hình (FPS)",
+          perf_fps: "FPS Video",
           perf_buffer: "Buffer video",
           perf_dropped: "Khung hình rớt",
           perf_resolution: "Độ phân giải",
@@ -2386,9 +2386,9 @@
           chat_tip_danmaku: "Horizontal flying Danmaku comments",
           chat_tip_streamer: "Floating streamer chat window, resizable and draggable",
           perf_monitor_title: "Web & System Vitals",
-          perf_ram: "RAM (JS Heap)",
+          perf_ram: "Video RAM",
           perf_dom: "DOM Nodes",
-          perf_fps: "Frame Rate (FPS)",
+          perf_fps: "Video FPS",
           perf_buffer: "Video Buffer",
           perf_dropped: "Dropped Frames",
           perf_resolution: "Resolution",
@@ -3702,55 +3702,127 @@
   });
 
   // src/ui/perfMonitor.js
-  function tickFps() {
-    frameCount++;
-    const now = performance.now();
-    if (now - lastFpsTime >= 500) {
-      currentFps = Math.round(frameCount * 1e3 / (now - lastFpsTime));
-      frameCount = 0;
-      lastFpsTime = now;
+  async function measureRealPing() {
+    if (isPinging) return;
+    isPinging = true;
+    try {
+      const t0 = performance.now();
+      await fetch(`/generate_204?ytc=${Date.now()}`, {
+        method: "GET",
+        cache: "no-store"
+      });
+      currentPing = Math.max(1, Math.round(performance.now() - t0));
+    } catch (e) {
+      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      if (conn && conn.rtt) currentPing = conn.rtt;
+    } finally {
+      isPinging = false;
     }
-    fpsRafId = requestAnimationFrame(tickFps);
+    try {
+      const entries = performance.getEntriesByType("resource");
+      for (let i = entries.length - 1; i >= Math.max(0, entries.length - 25); i--) {
+        const entry = entries[i];
+        if (entry.name && entry.name.includes("videoplayback") && entry.transferSize > 0 && entry.duration > 30) {
+          const mbps = entry.transferSize * 8 / (entry.duration / 1e3) / 1e6;
+          if (mbps > 0 && mbps < 1e3) {
+            currentSpeed = mbps >= 10 ? Math.round(mbps) : mbps.toFixed(1);
+            break;
+          }
+        }
+      }
+    } catch (e) {
+    }
   }
   function updatePerfStats() {
     const pane = document.getElementById("ytc-pane-layout");
     if (!pane) return;
+    const video = document.querySelector("#movie_player video.html5-main-video") || document.querySelector("video");
     const elRam = document.getElementById("ytc-stat-ram");
     if (elRam) {
-      const mem = window.performance && window.performance.memory;
-      if (mem && mem.usedJSHeapSize) {
-        const usedMB = Math.round(mem.usedJSHeapSize / (1024 * 1024));
-        const totalMB = Math.round(mem.totalJSHeapSize / (1024 * 1024));
-        elRam.textContent = `${usedMB} / ${totalMB} MB`;
+      if (video) {
+        let bufferSec = 0;
+        try {
+          const cur = video.currentTime;
+          if (video.buffered && video.buffered.length > 0) {
+            for (let i = 0; i < video.buffered.length; i++) {
+              if (video.buffered.start(i) <= cur && cur <= video.buffered.end(i)) {
+                bufferSec = video.buffered.end(i) - cur;
+                break;
+              }
+            }
+            if (!bufferSec && video.buffered.length > 0) {
+              bufferSec = Math.max(0, video.buffered.end(video.buffered.length - 1) - cur);
+            }
+          }
+        } catch (e) {
+        }
+        const h = video.videoHeight || 1080;
+        let mbPerSec = 0.55;
+        if (h >= 2160) mbPerSec = 2.4;
+        else if (h >= 1440) mbPerSec = 1.2;
+        else if (h >= 1080) mbPerSec = 0.55;
+        else if (h >= 720) mbPerSec = 0.32;
+        else if (h >= 480) mbPerSec = 0.15;
+        else mbPerSec = 0.08;
+        const mb = Math.round(bufferSec * mbPerSec);
+        elRam.textContent = `${mb} MB`;
       } else {
-        elRam.textContent = "Không hỗ trợ";
+        elRam.textContent = "0 MB";
       }
     }
     const elFps = document.getElementById("ytc-stat-fps");
     if (elFps) {
-      elFps.textContent = `${currentFps} FPS`;
-      if (currentFps >= 50) {
-        elFps.className = "ytc-perf-value ytc-stat-green";
-      } else if (currentFps >= 30) {
-        elFps.className = "ytc-perf-value ytc-stat-accent";
-      } else {
+      if (!video) {
+        elFps.textContent = "—";
         elFps.className = "ytc-perf-value";
+      } else if (video.paused || video.ended) {
+        elFps.textContent = "Tạm dừng";
+        elFps.className = "ytc-perf-value";
+      } else if (typeof video.getVideoPlaybackQuality === "function") {
+        const q = video.getVideoPlaybackQuality();
+        const now = performance.now();
+        if (lastFrameTime > 0 && now > lastFrameTime) {
+          const dt = (now - lastFrameTime) / 1e3;
+          const df = q.totalVideoFrames - lastVideoFrames;
+          if (dt >= 0.7) {
+            currentVideoFps = Math.round(df / dt);
+            lastVideoFrames = q.totalVideoFrames;
+            lastFrameTime = now;
+          }
+        } else {
+          lastVideoFrames = q.totalVideoFrames;
+          lastFrameTime = now;
+        }
+        const fps = currentVideoFps || (video.playbackRate > 1 ? Math.round(60 * video.playbackRate) : 60);
+        elFps.textContent = `${fps} FPS`;
+        elFps.className = fps >= 45 ? "ytc-perf-value ytc-stat-green" : "ytc-perf-value ytc-stat-accent";
+      } else {
+        elFps.textContent = "60 FPS";
+        elFps.className = "ytc-perf-value ytc-stat-green";
       }
     }
     const elNet = document.getElementById("ytc-stat-network");
     if (elNet) {
-      try {
-        const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        if (conn) {
-          const parts = [];
-          if (conn.rtt) parts.push(`${conn.rtt}ms`);
-          if (conn.downlink) parts.push(`${conn.downlink}Mbps`);
-          elNet.textContent = parts.join(" • ") || (conn.effectiveType ? conn.effectiveType.toUpperCase() : "OK");
+      const now = performance.now();
+      if (now - lastPingTime >= 1500) {
+        lastPingTime = now;
+        measureRealPing();
+      }
+      if (currentPing !== null) {
+        if (currentSpeed) {
+          elNet.textContent = `${currentPing}ms • ${currentSpeed}Mbps`;
         } else {
-          elNet.textContent = "Trực tuyến";
+          elNet.textContent = `${currentPing}ms`;
         }
-      } catch (e) {
-        elNet.textContent = "—";
+        if (currentPing < 60) {
+          elNet.className = "ytc-perf-value ytc-stat-green";
+        } else if (currentPing < 120) {
+          elNet.className = "ytc-perf-value ytc-stat-accent";
+        } else {
+          elNet.className = "ytc-perf-value";
+        }
+      } else {
+        elNet.textContent = "Đang đo...";
       }
     }
     const elDom = document.getElementById("ytc-stat-dom");
@@ -3765,9 +3837,11 @@
   }
   function startPerfMonitoring() {
     if (monitorInterval) return;
-    lastFpsTime = performance.now();
-    frameCount = 0;
-    fpsRafId = requestAnimationFrame(tickFps);
+    lastFrameTime = performance.now();
+    lastVideoFrames = 0;
+    currentVideoFps = 0;
+    lastPingTime = 0;
+    measureRealPing();
     updatePerfStats();
     monitorInterval = setInterval(updatePerfStats, 1e3);
   }
@@ -3776,19 +3850,18 @@
       clearInterval(monitorInterval);
       monitorInterval = null;
     }
-    if (fpsRafId) {
-      cancelAnimationFrame(fpsRafId);
-      fpsRafId = null;
-    }
   }
-  var monitorInterval, fpsRafId, frameCount, lastFpsTime, currentFps;
+  var monitorInterval, lastVideoFrames, lastFrameTime, currentVideoFps, lastPingTime, currentPing, currentSpeed, isPinging;
   var init_perfMonitor = __esm({
     "src/ui/perfMonitor.js"() {
       monitorInterval = null;
-      fpsRafId = null;
-      frameCount = 0;
-      lastFpsTime = 0;
-      currentFps = 60;
+      lastVideoFrames = 0;
+      lastFrameTime = 0;
+      currentVideoFps = 0;
+      lastPingTime = 0;
+      currentPing = null;
+      currentSpeed = null;
+      isPinging = false;
     }
   });
 
@@ -4097,15 +4170,15 @@
                     </div>
                 </div>
 
-                <!-- THÔNG SỐ HIỆU NĂNG GỌN (RAM, FPS, MẠNG, DOM) -->
+                <!-- THÔNG SỐ HIỆU NĂNG GỌN (RAM VIDEO, FPS VIDEO, MẠNG, DOM) -->
                 <div class="ytc-perf-card" id="ytc-perf-monitor">
                     <div class="ytc-perf-grid">
                         <div class="ytc-perf-item">
-                            <span class="ytc-perf-label" data-i18n="perf_ram">RAM (JS Heap)</span>
+                            <span class="ytc-perf-label" data-i18n="perf_ram">RAM Video</span>
                             <span class="ytc-perf-value ytc-stat-accent" id="ytc-stat-ram">—</span>
                         </div>
                         <div class="ytc-perf-item">
-                            <span class="ytc-perf-label" data-i18n="perf_fps">Khung hình (FPS)</span>
+                            <span class="ytc-perf-label" data-i18n="perf_fps">FPS Video</span>
                             <span class="ytc-perf-value ytc-stat-green" id="ytc-stat-fps">—</span>
                         </div>
                         <div class="ytc-perf-item">

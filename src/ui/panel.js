@@ -234,15 +234,15 @@ export function createSettingsPanel() {
                     </div>
                 </div>
 
-                <!-- THÔNG SỐ HIỆU NĂNG GỌN (RAM, FPS, MẠNG, DOM) -->
+                <!-- THÔNG SỐ HIỆU NĂNG GỌN (RAM VIDEO, FPS VIDEO, MẠNG, DOM) -->
                 <div class="ytc-perf-card" id="ytc-perf-monitor">
                     <div class="ytc-perf-grid">
                         <div class="ytc-perf-item">
-                            <span class="ytc-perf-label" data-i18n="perf_ram">RAM (JS Heap)</span>
+                            <span class="ytc-perf-label" data-i18n="perf_ram">RAM Video</span>
                             <span class="ytc-perf-value ytc-stat-accent" id="ytc-stat-ram">—</span>
                         </div>
                         <div class="ytc-perf-item">
-                            <span class="ytc-perf-label" data-i18n="perf_fps">Khung hình (FPS)</span>
+                            <span class="ytc-perf-label" data-i18n="perf_fps">FPS Video</span>
                             <span class="ytc-perf-value ytc-stat-green" id="ytc-stat-fps">—</span>
                         </div>
                         <div class="ytc-perf-item">
