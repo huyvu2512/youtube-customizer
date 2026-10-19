@@ -12,8 +12,6 @@ import { currentConfig } from '../core/config.js';
 let ambientWrapper = null;
 let ambientSpreadCanvas = null;
 let ambientSpreadCtx = null;
-let scrollbarAmbientCanvas = null;
-let scrollbarAmbientCtx = null;
 let animFrameId = null;
 let isRunning = false;
 let lastDrawTime = 0;
@@ -346,8 +344,6 @@ function drawFrame(video) {
             ambientSpreadCtx.drawImage(video, sX + sW - stripW, sY + sH - stripH, stripW, stripH, cvX + cvW - 1, bottomY - 1, rightW + 1, bottomH + 1);
         }
 
-        syncScrollbarAmbient();
-
         // 5. Kích hoạt trạng thái hiển thị CHỈ KHI tính năng thực sự được bật
         if (isAmbientEnabled()) {
             if (!hasDrawnFirstFrame) {
@@ -360,88 +356,6 @@ function drawFrame(video) {
     } catch (e) {
         // Không làm ngắt quãng vòng lặp
     }
-}
-
-function ensureScrollbarAmbientCanvas() {
-    if (!document.body) return false;
-    if (!scrollbarAmbientCanvas || !scrollbarAmbientCanvas.isConnected) {
-        scrollbarAmbientCanvas = document.createElement('canvas');
-        scrollbarAmbientCanvas.id = 'ytc-ambient-scrollbar-canvas';
-        scrollbarAmbientCanvas.setAttribute('aria-hidden', 'true');
-        document.body.appendChild(scrollbarAmbientCanvas);
-        scrollbarAmbientCtx = scrollbarAmbientCanvas.getContext('2d', { alpha: true });
-    }
-    return !!scrollbarAmbientCtx;
-}
-
-function scrollbarMaskOpacity(progress) {
-    const stops = [[0, 1], [0.65, 1], [0.80, 0.6], [0.92, 0.2], [1, 0]];
-    for (let i = 1; i < stops.length; i++) {
-        if (progress <= stops[i][0]) {
-            const [p0, a0] = stops[i - 1];
-            const [p1, a1] = stops[i];
-            const ratio = (progress - p0) / (p1 - p0);
-            return a0 + (a1 - a0) * Math.max(0, Math.min(1, ratio));
-        }
-    }
-    return 0;
-}
-
-function syncScrollbarAmbient() {
-    if (!isAmbientEnabled() || !ambientSpreadCanvas || !ambientWrapper || !ensureScrollbarAmbientCanvas()) return;
-
-    const root = document.documentElement;
-    const measuredGutterWidth = Math.max(0, window.innerWidth - root.clientWidth);
-    const gutterWidth = measuredGutterWidth || Math.min(14, window.innerWidth);
-    const viewportHeight = Math.max(1, window.innerHeight);
-    if (gutterWidth < 1) {
-        scrollbarAmbientCanvas.style.display = 'none';
-        return;
-    }
-
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const pixelWidth = Math.ceil(gutterWidth * dpr);
-    const pixelHeight = Math.ceil(viewportHeight * dpr);
-    if (scrollbarAmbientCanvas.width !== pixelWidth || scrollbarAmbientCanvas.height !== pixelHeight) {
-        scrollbarAmbientCanvas.width = pixelWidth;
-        scrollbarAmbientCanvas.height = pixelHeight;
-    }
-    scrollbarAmbientCanvas.style.display = 'block';
-    scrollbarAmbientCanvas.style.left = `${measuredGutterWidth ? root.clientWidth : window.innerWidth - gutterWidth}px`;
-    scrollbarAmbientCanvas.style.width = `${gutterWidth}px`;
-    scrollbarAmbientCanvas.style.height = `${viewportHeight}px`;
-
-    const wrapperRect = ambientWrapper.getBoundingClientRect();
-    const sourceCanvasHeight = wrapperRect.height + 60;
-    const sourceTop = Math.max(0, Math.min(CANVAS_HEIGHT, ((-wrapperRect.top + 30) / sourceCanvasHeight) * CANVAS_HEIGHT));
-    const sourceHeight = Math.max(0, Math.min(CANVAS_HEIGHT - sourceTop, (viewportHeight / sourceCanvasHeight) * CANVAS_HEIGHT));
-    const ctx = scrollbarAmbientCtx;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, gutterWidth, viewportHeight);
-    if (sourceHeight > 0) {
-        ctx.drawImage(ambientSpreadCanvas, CANVAS_WIDTH - 2, sourceTop, 2, sourceHeight, 0, 0, gutterWidth, viewportHeight);
-
-        const contentTop = wrapperRect.top - 30;
-        const maskStops = [[0, 1], [0.65, 1], [0.80, 0.6], [0.92, 0.2], [1, 0]];
-        const opacityAtY = y => scrollbarMaskOpacity((y - contentTop) / sourceCanvasHeight);
-        const gradient = ctx.createLinearGradient(0, 0, 0, viewportHeight);
-        gradient.addColorStop(0, `rgba(0,0,0,${opacityAtY(0)})`);
-        maskStops.forEach(([progress, opacity]) => {
-            const y = progress * sourceCanvasHeight + contentTop;
-            if (y > 0 && y < viewportHeight) gradient.addColorStop(y / viewportHeight, `rgba(0,0,0,${opacity})`);
-        });
-        gradient.addColorStop(1, `rgba(0,0,0,${opacityAtY(viewportHeight)})`);
-        ctx.globalCompositeOperation = 'destination-in';
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, gutterWidth, viewportHeight);
-        ctx.globalCompositeOperation = 'source-over';
-    }
-}
-
-function removeScrollbarAmbientCanvas() {
-    if (scrollbarAmbientCanvas) scrollbarAmbientCanvas.remove();
-    scrollbarAmbientCanvas = null;
-    scrollbarAmbientCtx = null;
 }
 
 /**
@@ -562,7 +476,6 @@ function handleScroll() {
     const scrollY = window.scrollY || window.pageYOffset || 0;
     const isScrolled = scrollY > 60;
     document.documentElement.classList.toggle('ytc-masthead-scrolled', isScrolled);
-    syncScrollbarAmbient();
 }
 
 function handleNavigation() {
@@ -582,7 +495,6 @@ function handleNavigation() {
         if (ambientWrapper) {
             ambientWrapper.classList.remove('ytc-ambient-active', 'ytc-ambient-shorts');
         }
-        removeScrollbarAmbientCanvas();
         if (currentVideo) {
             const events = ['play', 'playing', 'timeupdate', 'canplay', 'loadeddata', 'seeked', 'ratechange'];
             events.forEach(evt => currentVideo.removeEventListener(evt, handleVideoActivity));
@@ -634,7 +546,6 @@ export function applyAmbientLightingState() {
         if (ambientSpreadCtx) {
             ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         }
-        removeScrollbarAmbientCanvas();
         document.querySelectorAll('ytd-reel-video-renderer.ytc-ambient-shorts-host').forEach(el => {
             el.classList.remove('ytc-ambient-shorts-host');
         });

@@ -1,25 +1,25 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.15
-// @description  YouTube Customizer v3.9.15 — Làm trong scrollbar của trang video.
+// @version      3.9.16
+// @description  YouTube Customizer v3.9.16 — Gỡ bỏ hiệu ứng thử nghiệm trên thanh cuộn.
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.15
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.16
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.15
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.15
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.16
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.16
 // ==/UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.15:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.16:
  * ============================================================================
- * 1. [Ánh sáng phòng / Scrollbar]:
- *    - Áp dụng track trong suốt cho các vùng cuộn YouTube có thể sở hữu scrollbar.
- *    - Giữ nút kéo bán trong suốt và nhìn rõ trên cả theme sáng/tối.
+ * 1. [Ánh sáng phòng / Hiệu năng]:
+ *    - Gỡ bỏ canvas và CSS thử nghiệm tác động lên thanh cuộn.
+ *    - Giữ nguyên hiệu ứng Ambilight trên video thường; thanh cuộn trở về giao diện YouTube.
  * ============================================================================
  * CHANGELOG - v3.9.14:
  * ============================================================================
