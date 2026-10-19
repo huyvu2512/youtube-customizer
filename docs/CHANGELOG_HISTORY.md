@@ -1,6 +1,6 @@
 # Lịch sử thay đổi
 
-Tổng hợp thay đổi theo từng phiên bản, từ các commit ban đầu tới v3.9.19. Mỗi gạch đầu dòng nêu thay đổi; mã commit màu xanh là liên kết bấm được tới GitHub. Các commit cũ có subject chung chung được ghi rõ là thiếu mô tả, không suy đoán nội dung.
+Lịch sử thay đổi theo phiên bản. Mã commit liên kết tới GitHub.
 
 ## v3.9.19
 
