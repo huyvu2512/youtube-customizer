@@ -3,7 +3,9 @@
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
 
-let applyTimeoutIds = [];
+let applyTimeoutId = null;
+let applyGeneration = 0;
+let lastAppliedQualityKey = null;
 let isQualityManagerInitialized = false;
 
 function syncQualityToLocalStorage(pref, target) {
@@ -87,38 +89,85 @@ export function applyPreferredQuality() {
 }
 
 /**
- * Lên lịch kích hoạt đặt chất lượng — CHỈ thử 1 lần duy nhất khi manifest đã sẵn sàng.
- * Tránh gọi dồn dập 4 lần gây buffer flush / ngắt tải video.
+ * Schedule quality application for the active video, retrying until the player
+ * reports the requested level or the bounded retry window expires.
  */
 export function scheduleApplyQuality() {
+    if (applyTimeoutId !== null) {
+        clearTimeout(applyTimeoutId);
+        applyTimeoutId = null;
+    }
+    const generation = ++applyGeneration;
     if (!currentConfig.preferredQuality || currentConfig.preferredQuality === 'auto') return;
     if (!window.location.pathname.startsWith('/watch')) return;
 
-    applyTimeoutIds.forEach(id => clearTimeout(id));
-    applyTimeoutIds = [];
-
-    // Chờ manifest sẵn sàng rồi áp dụng 1 lần duy nhất (không dội lệnh liên tục)
+    const expectedVideoId = new URL(window.location.href).searchParams.get('v');
     let attempts = 0;
-    const maxAttempts = 8;
+    let applyIssued = false;
+    let retryIssued = false;
+    const maxAttempts = 30;
     const tryApply = () => {
+        if (generation !== applyGeneration) return;
         attempts++;
         const player = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
         if (player && typeof player.getAvailableQualityLevels === 'function') {
-            const levels = player.getAvailableQualityLevels();
-            if (Array.isArray(levels) && levels.filter(q => q && q !== 'auto').length > 0) {
-                applyPreferredQuality();
-                return; // Manifest đã sẵn sàng, áp dụng xong, DỪNG
-            }
+            try {
+                const playerVideoId = typeof player.getVideoData === 'function'
+                    ? player.getVideoData()?.video_id
+                    : null;
+                const videoId = playerVideoId || expectedVideoId;
+
+                // During SPA navigation the old player can remain alive briefly.
+                if (expectedVideoId && playerVideoId && playerVideoId !== expectedVideoId) {
+                    scheduleRetry();
+                    return;
+                }
+
+                const levels = player.getAvailableQualityLevels();
+                const available = Array.isArray(levels) ? levels.filter(q => q && q !== 'auto') : [];
+                const target = pickTargetQuality(available, currentConfig.preferredQuality);
+                if (target) {
+                    const qualityKey = `${videoId || 'watch'}:${currentConfig.preferredQuality}:${target}`;
+                    const current = typeof player.getPlaybackQuality === 'function'
+                        ? player.getPlaybackQuality()
+                        : null;
+                    const needsApply = current !== target || lastAppliedQualityKey !== qualityKey;
+
+                    if (needsApply && (!applyIssued || (attempts >= 6 && !retryIssued))) {
+                        if (typeof player.setPlaybackQualityRange === 'function') {
+                            player.setPlaybackQualityRange(target, target);
+                        }
+                        if (typeof player.setPlaybackQuality === 'function') {
+                            player.setPlaybackQuality(target);
+                        }
+                        syncQualityToLocalStorage(currentConfig.preferredQuality, target);
+                        lastAppliedQualityKey = qualityKey;
+                        if (applyIssued) retryIssued = true;
+                        applyIssued = true;
+                    }
+
+                    // Do not stop on a non-empty manifest; wait until the player reports the target.
+                    if (current === target && lastAppliedQualityKey === qualityKey) {
+                        applyTimeoutId = null;
+                        return;
+                    }
+                }
+            } catch (err) {}
         }
-        // Manifest chưa sẵn sàng, thử lại với backoff tăng dần
-        if (attempts < maxAttempts) {
-            const id = setTimeout(tryApply, Math.min(400 * attempts, 2000));
-            applyTimeoutIds.push(id);
-        }
+
+        scheduleRetry();
     };
-    // Bắt đầu sau 600ms — đủ thời gian cho YouTube khởi tạo player
-    const id = setTimeout(tryApply, 600);
-    applyTimeoutIds.push(id);
+
+    function scheduleRetry() {
+        if (attempts < maxAttempts && generation === applyGeneration) {
+            applyTimeoutId = setTimeout(tryApply, 400);
+        } else {
+            applyTimeoutId = null;
+        }
+    }
+
+    // Wait for the new video's data and quality list, then verify the requested level.
+    applyTimeoutId = setTimeout(tryApply, 400);
 }
 
 /**

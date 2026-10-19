@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.4
-// @description  YouTube Customizer v3.9.4 — Sửa phép đo FPS và hiển thị đúng các chỉ số buffer, HTTP, tốc độ tải.
+// @version      3.9.5
+// @description  YouTube Customizer v3.9.5 — Chờ và xác nhận áp dụng độ phân giải theo từng video.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -11,7 +11,14 @@
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.4:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.5:
+ * ============================================================================
+ * 1. [Độ phân giải video]:
+ *    - Chờ player nạp đúng video và xác nhận chất lượng yêu cầu đã áp dụng.
+ *    - Thử lại có giới hạn khi player cập nhật chất lượng chậm sau điều hướng.
+ *    - Hủy lượt áp dụng đang chờ khi người dùng chuyển về Tự động.
+ * ============================================================================
+ * CHANGELOG - v3.9.4:
  * ============================================================================
  * 1. [Độ chính xác chỉ số hiệu năng]:
  *    - Khởi tạo baseline trước khi tính FPS, đặt lại khi đổi video hoặc tạm dừng.
@@ -55,7 +62,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.4";
+      APP_VERSION = "3.9.5";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -843,29 +850,67 @@
     }
   }
   function scheduleApplyQuality() {
+    if (applyTimeoutId !== null) {
+      clearTimeout(applyTimeoutId);
+      applyTimeoutId = null;
+    }
+    const generation = ++applyGeneration;
     if (!currentConfig.preferredQuality || currentConfig.preferredQuality === "auto") return;
     if (!window.location.pathname.startsWith("/watch")) return;
-    applyTimeoutIds.forEach((id2) => clearTimeout(id2));
-    applyTimeoutIds = [];
+    const expectedVideoId = new URL(window.location.href).searchParams.get("v");
     let attempts = 0;
-    const maxAttempts = 8;
+    let applyIssued = false;
+    let retryIssued = false;
+    const maxAttempts = 30;
     const tryApply = () => {
+      if (generation !== applyGeneration) return;
       attempts++;
       const player = document.getElementById("movie_player") || document.querySelector(".html5-video-player");
       if (player && typeof player.getAvailableQualityLevels === "function") {
-        const levels = player.getAvailableQualityLevels();
-        if (Array.isArray(levels) && levels.filter((q) => q && q !== "auto").length > 0) {
-          applyPreferredQuality();
-          return;
+        try {
+          const playerVideoId = typeof player.getVideoData === "function" ? player.getVideoData()?.video_id : null;
+          const videoId = playerVideoId || expectedVideoId;
+          if (expectedVideoId && playerVideoId && playerVideoId !== expectedVideoId) {
+            scheduleRetry();
+            return;
+          }
+          const levels = player.getAvailableQualityLevels();
+          const available = Array.isArray(levels) ? levels.filter((q) => q && q !== "auto") : [];
+          const target = pickTargetQuality(available, currentConfig.preferredQuality);
+          if (target) {
+            const qualityKey = `${videoId || "watch"}:${currentConfig.preferredQuality}:${target}`;
+            const current = typeof player.getPlaybackQuality === "function" ? player.getPlaybackQuality() : null;
+            const needsApply = current !== target || lastAppliedQualityKey !== qualityKey;
+            if (needsApply && (!applyIssued || attempts >= 6 && !retryIssued)) {
+              if (typeof player.setPlaybackQualityRange === "function") {
+                player.setPlaybackQualityRange(target, target);
+              }
+              if (typeof player.setPlaybackQuality === "function") {
+                player.setPlaybackQuality(target);
+              }
+              syncQualityToLocalStorage(currentConfig.preferredQuality, target);
+              lastAppliedQualityKey = qualityKey;
+              if (applyIssued) retryIssued = true;
+              applyIssued = true;
+            }
+            if (current === target && lastAppliedQualityKey === qualityKey) {
+              applyTimeoutId = null;
+              return;
+            }
+          }
+        } catch (err) {
         }
       }
-      if (attempts < maxAttempts) {
-        const id2 = setTimeout(tryApply, Math.min(400 * attempts, 2e3));
-        applyTimeoutIds.push(id2);
-      }
+      scheduleRetry();
     };
-    const id = setTimeout(tryApply, 600);
-    applyTimeoutIds.push(id);
+    function scheduleRetry() {
+      if (attempts < maxAttempts && generation === applyGeneration) {
+        applyTimeoutId = setTimeout(tryApply, 400);
+      } else {
+        applyTimeoutId = null;
+      }
+    }
+    applyTimeoutId = setTimeout(tryApply, 400);
   }
   function initQualityManager() {
     if (isQualityManagerInitialized) return;
@@ -886,11 +931,13 @@
       scheduleApplyQuality();
     }
   }
-  var applyTimeoutIds, isQualityManagerInitialized;
+  var applyTimeoutId, applyGeneration, lastAppliedQualityKey, isQualityManagerInitialized;
   var init_qualityManager = __esm({
     "src/features/qualityManager.js"() {
       init_config();
-      applyTimeoutIds = [];
+      applyTimeoutId = null;
+      applyGeneration = 0;
+      lastAppliedQualityKey = null;
       isQualityManagerInitialized = false;
     }
   });
@@ -4526,8 +4573,8 @@
             labelBadge.textContent = labels[quality] || quality.toUpperCase();
           }
           Promise.resolve().then(() => (init_qualityManager(), qualityManager_exports)).then((m) => {
-            if (m && typeof m.applyPreferredQuality === "function") {
-              m.applyPreferredQuality();
+            if (m && typeof m.scheduleApplyQuality === "function") {
+              m.scheduleApplyQuality();
             }
           }).catch(() => {
           });

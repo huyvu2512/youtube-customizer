@@ -1,21 +1,28 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.4
-// @description  YouTube Customizer v3.9.4 — Sửa phép đo FPS và hiển thị đúng các chỉ số buffer, HTTP, tốc độ tải.
+// @version      3.9.5
+// @description  YouTube Customizer v3.9.5 — Chờ và xác nhận áp dụng độ phân giải theo từng video.
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.4
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.5
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.4
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.4
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.5
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.5
 // ==/UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.4:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.5:
+ * ============================================================================
+ * 1. [Độ phân giải video]:
+ *    - Chờ player nạp đúng video và xác nhận chất lượng yêu cầu đã áp dụng.
+ *    - Thử lại có giới hạn khi player cập nhật chất lượng chậm sau điều hướng.
+ *    - Hủy lượt áp dụng đang chờ khi người dùng chuyển về Tự động.
+ * ============================================================================
+ * CHANGELOG - v3.9.4:
  * ============================================================================
  * 1. [Độ chính xác chỉ số hiệu năng]:
  *    - Khởi tạo baseline trước khi tính FPS, đặt lại khi đổi video hoặc tạm dừng.
