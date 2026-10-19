@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.7
-// @description  YouTube Customizer v3.9.7 — Sửa Ambilight theo vùng video thực hiển thị khi khác tỉ lệ player.
+// @version      3.9.8
+// @description  YouTube Customizer v3.9.8 — Cho ánh sáng Ambilight phủ qua track thanh cuộn.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,7 +23,12 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.7:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.8:
+ * ============================================================================
+ * 1. [Ánh sáng phòng / Ambilight]:
+ *    - Làm trong track scrollbar để ánh sáng nền hiện xuyên qua ở cả theme sáng/tối.
+ * ============================================================================
+ * CHANGELOG - v3.9.7:
  * ============================================================================
  * 1. [Ánh sáng phòng / Ambilight]:
  *    - Tính vùng ảnh hiển thị theo object-fit và tỉ lệ thực của video.

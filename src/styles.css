@@ -2061,6 +2061,22 @@ html.ytc-ambient-lighting #ytc-ambient-wrapper.ytc-ambient-active {
     opacity: 1;
 }
 
+/* Để ánh sáng ambient xuyên qua track scrollbar, tránh dải đen/trắng theo theme. */
+html.ytc-ambient-lighting,
+html.ytc-ambient-lighting body,
+html.ytc-ambient-lighting ytd-app {
+    scrollbar-color: rgba(190, 190, 190, 0.72) transparent !important;
+}
+
+html.ytc-ambient-lighting::-webkit-scrollbar-track,
+html.ytc-ambient-lighting::-webkit-scrollbar-track-piece,
+html.ytc-ambient-lighting body::-webkit-scrollbar-track,
+html.ytc-ambient-lighting body::-webkit-scrollbar-track-piece,
+html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-track,
+html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-track-piece {
+    background: transparent !important;
+}
+
 /* Lớp Canvas Ambilight: Dải kéo giãn anamorphic mượt mà, giữ trọn vẹn đường nét vật thể và chuyển động mở rộng */
 #ytc-ambient-spread-canvas {
     position: absolute !important;
