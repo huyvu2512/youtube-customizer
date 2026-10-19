@@ -681,7 +681,7 @@ Lịch sử thay đổi theo phiên bản. Mã commit liên kết tới GitHub.
 - **[533b369](https://github.com/huyvu2512/youtube-customizer/commit/533b3692265fafd71542d0ab5867d427b782cd22)** Cập nhật tampermonkey.user.js.
 - **[4f878b6](https://github.com/huyvu2512/youtube-customizer/commit/4f878b65297673ad4b494425e020b9d26a430960)** Cập nhật and rename YouTube-Customizer.user.js to tampermonkey.user.js.
 
-## Trước khi đánh version
+## Giai đoạn khởi đầu
 
 - **[addc42f](https://github.com/huyvu2512/youtube-customizer/commit/addc42ff437892342d229102efe1f360d674a0cc)** Cập nhật URLs and maintain script metadata.
 - **[f293159](https://github.com/huyvu2512/youtube-customizer/commit/f293159515cf8160f6d5d0edbb0d83c0be0e424c)** Cập nhật YouTube-Customizer.user.js.
