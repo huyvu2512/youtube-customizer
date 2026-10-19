@@ -55,8 +55,11 @@ function updateShortsAmbientBounds(player) {
 
     const playerRect = player.getBoundingClientRect();
     const hostRect = host.getBoundingClientRect();
-    const padX = Math.max(56, Math.min(96, playerRect.width * 0.22));
-    const padY = Math.max(64, Math.min(112, playerRect.height * 0.12));
+    // Match YouTube's Shorts cinematic canvas scale (1.8x wide, 1.3x tall).
+    // YouTube's canvas is hidden while custom Ambilight is active, so extend our
+    // wrapper to the same bounds instead of leaving a black strip around it.
+    const padX = Math.max(48, playerRect.width * 0.4);
+    const padY = Math.max(48, playerRect.height * 0.15);
     ambientWrapper.style.setProperty('--ytc-shorts-ambient-left', `${playerRect.left - hostRect.left - padX}px`);
     ambientWrapper.style.setProperty('--ytc-shorts-ambient-top', `${playerRect.top - hostRect.top - padY}px`);
     ambientWrapper.style.setProperty('--ytc-shorts-ambient-width', `${playerRect.width + padX * 2}px`);

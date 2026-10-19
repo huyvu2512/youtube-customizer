@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.11
-// @description  YouTube Customizer v3.9.11 — Giữ nguyên bố cục Shorts khi bật Ambilight.
+// @version      3.9.12
+// @description  YouTube Customizer v3.9.12 — Mở rộng Ambilight Shorts theo nền điện ảnh.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -11,7 +11,13 @@
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.11:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.12:
+ * ============================================================================
+ * 1. [Ánh sáng phòng / Ambilight Shorts]:
+ *    - Mở rộng vùng sáng theo cùng tỷ lệ 1.8x ngang và 1.3x dọc của nền Shorts YouTube.
+ *    - Lấp dải đen do lớp nền điện ảnh gốc bị ẩn khi Ambilight bật.
+ * ============================================================================
+ * CHANGELOG - v3.9.11:
  * ============================================================================
  * 1. [Ánh sáng phòng / Ambilight Shorts]:
  *    - Giữ nguyên cách YouTube xếp chồng nội dung Shorts khi bật Ambilight.
@@ -99,7 +105,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.11";
+      APP_VERSION = "3.9.12";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -1004,8 +1010,8 @@
     if (!host) return;
     const playerRect = player.getBoundingClientRect();
     const hostRect = host.getBoundingClientRect();
-    const padX = Math.max(56, Math.min(96, playerRect.width * 0.22));
-    const padY = Math.max(64, Math.min(112, playerRect.height * 0.12));
+    const padX = Math.max(48, playerRect.width * 0.4);
+    const padY = Math.max(48, playerRect.height * 0.15);
     ambientWrapper.style.setProperty("--ytc-shorts-ambient-left", `${playerRect.left - hostRect.left - padX}px`);
     ambientWrapper.style.setProperty("--ytc-shorts-ambient-top", `${playerRect.top - hostRect.top - padY}px`);
     ambientWrapper.style.setProperty("--ytc-shorts-ambient-width", `${playerRect.width + padX * 2}px`);
