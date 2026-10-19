@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.10
-// @description  YouTube Customizer v3.9.10 — Thu gọn Ambilight Shorts quanh player.
+// @version      3.9.11
+// @description  YouTube Customizer v3.9.11 — Giữ nguyên bố cục Shorts khi bật Ambilight.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,7 +23,13 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.10:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.11:
+ * ============================================================================
+ * 1. [Ánh sáng phòng / Ambilight Shorts]:
+ *    - Giữ nguyên cách YouTube xếp chồng nội dung Shorts khi bật Ambilight.
+ *    - Đặt quầng sáng phía sau nội dung bằng stacking context của renderer.
+ * ============================================================================
+ * CHANGELOG - v3.9.10:
  * ============================================================================
  * 1. [Ánh sáng phòng / Ambilight Shorts]:
  *    - Giới hạn quầng sáng quanh player Shorts, không kéo màu thành dải ngang toàn trang.

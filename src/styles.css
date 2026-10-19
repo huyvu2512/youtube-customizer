@@ -2078,12 +2078,8 @@ html.ytc-ambient-lighting ytd-reel-video-renderer.ytc-ambient-shorts-host {
     isolation: isolate;
 }
 
-html.ytc-ambient-lighting ytd-reel-video-renderer.ytc-ambient-shorts-host > :not(#ytc-ambient-wrapper) {
-    position: relative !important;
-    z-index: 1 !important;
-}
-
 #ytc-ambient-wrapper.ytc-ambient-shorts {
+    z-index: -1 !important;
     top: var(--ytc-shorts-ambient-top, 0px) !important;
     left: var(--ytc-shorts-ambient-left, 0px) !important;
     right: auto !important;
