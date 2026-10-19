@@ -128,7 +128,8 @@ youtube-customizer/
 ├── package-lock.json             # Khóa phiên bản gói thư viện npm
 ├── tampermonkey.user.js          # Header metadata nạp Userscript
 ├── youtube_customizer.js         # Tệp bundle phân phối chính đã đóng gói
-├── docs/CHANGELOG_HISTORY.md     # Lịch sử thay đổi theo phiên bản`r`n├── SECURITY.md                   # Chính sách bảo mật và quy trình báo lỗi
+├── docs/CHANGELOG_HISTORY.md     # Lịch sử thay đổi theo phiên bản
+├── SECURITY.md                   # Chính sách bảo mật và quy trình báo lỗi
 ├── LICENSE                       # Giấy phép mã nguồn mở MIT
 ├── README.md                     # Tài liệu hướng dẫn sử dụng tiếng Việt
 └── README_EN.md                  # English documentation & user guide
@@ -208,7 +209,8 @@ Trên các trình duyệt nhân Chromium phiên bản mới chạy chuẩn Manif
 
 | Tài liệu | Nội dung |
 | :--- | :--- |
-| [CHANGELOG_HISTORY.md](./docs/CHANGELOG_HISTORY.md) | Lịch sử thay đổi theo phiên bản |`r`n| [SECURITY.md](./SECURITY.md) | Chính sách bảo mật cho Userscript, an toàn dữ liệu và quy trình báo lỗi |
+| [CHANGELOG_HISTORY.md](./docs/CHANGELOG_HISTORY.md) | Lịch sử thay đổi theo phiên bản |
+| [SECURITY.md](./SECURITY.md) | Chính sách bảo mật cho Userscript, an toàn dữ liệu và quy trình báo lỗi |
 | [LICENSE](./LICENSE) | Giấy phép mã nguồn mở MIT |
 
 ---

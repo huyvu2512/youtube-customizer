@@ -128,7 +128,8 @@ youtube-customizer/
 ├── package-lock.json             # npm lockfile
 ├── tampermonkey.user.js          # Userscript metadata header
 ├── youtube_customizer.js         # Production bundled distribution script
-├── docs/CHANGELOG_HISTORY.md     # Version-by-version change history`r`n├── SECURITY.md                   # Security policy & vulnerability reporting
+├── docs/CHANGELOG_HISTORY.md     # Version-by-version change history
+├── SECURITY.md                   # Security policy & vulnerability reporting
 ├── LICENSE                       # MIT Open Source License
 ├── README.md                     # Vietnamese documentation
 └── README_EN.md                  # English documentation & user guide
@@ -208,7 +209,8 @@ On recent Chromium-based browsers running Manifest V3, you **must enable user sc
 
 | Document | Description |
 | :--- | :--- |
-| [CHANGELOG_HISTORY.md](./docs/CHANGELOG_HISTORY.md) | Version-by-version change history |`r`n| [SECURITY.md](./SECURITY.md) | Security policy, DOM data privacy, and vulnerability disclosure |
+| [CHANGELOG_HISTORY.md](./docs/CHANGELOG_HISTORY.md) | Version-by-version change history |
+| [SECURITY.md](./SECURITY.md) | Security policy, DOM data privacy, and vulnerability disclosure |
 | [LICENSE](./LICENSE) | MIT Open Source License |
 
 ---
