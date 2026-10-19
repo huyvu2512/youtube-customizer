@@ -2084,13 +2084,13 @@ html.ytc-ambient-lighting ytd-reel-video-renderer.ytc-ambient-shorts-host > :not
 }
 
 #ytc-ambient-wrapper.ytc-ambient-shorts {
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    mask-image: linear-gradient(to bottom, #000 0%, #000 65%, rgba(0, 0, 0, 0.6) 80%, rgba(0, 0, 0, 0.2) 92%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 65%, rgba(0, 0, 0, 0.6) 80%, rgba(0, 0, 0, 0.2) 92%, transparent 100%);
+    top: var(--ytc-shorts-ambient-top, 0px) !important;
+    left: var(--ytc-shorts-ambient-left, 0px) !important;
+    right: auto !important;
+    width: var(--ytc-shorts-ambient-width, 100%) !important;
+    height: var(--ytc-shorts-ambient-height, 100%) !important;
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
 }
 
 /* Để ánh sáng ambient xuyên qua track scrollbar, tránh dải đen/trắng theo theme. */
@@ -2100,13 +2100,20 @@ html.ytc-ambient-lighting ytd-app {
     scrollbar-color: rgba(190, 190, 190, 0.72) transparent !important;
 }
 
+html.ytc-ambient-lighting::-webkit-scrollbar,
 html.ytc-ambient-lighting::-webkit-scrollbar-track,
 html.ytc-ambient-lighting::-webkit-scrollbar-track-piece,
+html.ytc-ambient-lighting::-webkit-scrollbar-corner,
+html.ytc-ambient-lighting body::-webkit-scrollbar,
 html.ytc-ambient-lighting body::-webkit-scrollbar-track,
 html.ytc-ambient-lighting body::-webkit-scrollbar-track-piece,
+html.ytc-ambient-lighting body::-webkit-scrollbar-corner,
+html.ytc-ambient-lighting ytd-app::-webkit-scrollbar,
 html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-track,
-html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-track-piece {
+html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-track-piece,
+html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-corner {
     background: transparent !important;
+    background-color: transparent !important;
 }
 
 /* Lớp Canvas Ambilight: Dải kéo giãn anamorphic mượt mà, giữ trọn vẹn đường nét vật thể và chuyển động mở rộng */

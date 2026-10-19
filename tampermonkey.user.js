@@ -1,21 +1,27 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.9
-// @description  YouTube Customizer v3.9.9 — Bổ sung Ambilight cho Shorts và thanh cuộn.
+// @version      3.9.10
+// @description  YouTube Customizer v3.9.10 — Thu gọn Ambilight Shorts quanh player.
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.9
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.10
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.9
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.9
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.10
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.10
 // ==/UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.9:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.10:
+ * ============================================================================
+ * 1. [Ánh sáng phòng / Ambilight Shorts]:
+ *    - Giới hạn quầng sáng quanh player Shorts, không kéo màu thành dải ngang toàn trang.
+ *    - Giữ nguyên kích thước và tỉ lệ player.
+ * ============================================================================
+ * CHANGELOG - v3.9.9:
  * ============================================================================
  * 1. [Ánh sáng phòng / Ambilight]:
  *    - Bổ sung hỗ trợ player Shorts riêng.

@@ -48,6 +48,21 @@ function findActivePlayer() {
         document.querySelector('.html5-video-player');
 }
 
+function updateShortsAmbientBounds(player) {
+    if (!ambientWrapper || !ambientWrapper.classList.contains('ytc-ambient-shorts') || !player) return;
+    const host = ambientWrapper.parentElement;
+    if (!host) return;
+
+    const playerRect = player.getBoundingClientRect();
+    const hostRect = host.getBoundingClientRect();
+    const padX = Math.max(56, Math.min(96, playerRect.width * 0.22));
+    const padY = Math.max(64, Math.min(112, playerRect.height * 0.12));
+    ambientWrapper.style.setProperty('--ytc-shorts-ambient-left', `${playerRect.left - hostRect.left - padX}px`);
+    ambientWrapper.style.setProperty('--ytc-shorts-ambient-top', `${playerRect.top - hostRect.top - padY}px`);
+    ambientWrapper.style.setProperty('--ytc-shorts-ambient-width', `${playerRect.width + padX * 2}px`);
+    ambientWrapper.style.setProperty('--ytc-shorts-ambient-height', `${playerRect.height + padY * 2}px`);
+}
+
 /**
  * Tìm phần tử Video đang phát
  */
@@ -65,6 +80,7 @@ function updateCachedRects(force = false) {
     const activePlayer = findActivePlayer();
     if (!activePlayer || !ambientWrapper) return;
     cachedPlayerRect = activePlayer.getBoundingClientRect();
+    updateShortsAmbientBounds(activePlayer);
     cachedWrapperRect = ambientWrapper.getBoundingClientRect();
     const video = findActiveVideo();
     if (video) {
@@ -414,7 +430,8 @@ function syncScrollbarAmbient() {
     if (!isAmbientEnabled() || !ambientSpreadCanvas || !ambientWrapper || !ensureScrollbarAmbientCanvas()) return;
 
     const root = document.documentElement;
-    const gutterWidth = Math.max(0, window.innerWidth - root.clientWidth);
+    const measuredGutterWidth = Math.max(0, window.innerWidth - root.clientWidth);
+    const gutterWidth = measuredGutterWidth || Math.min(14, window.innerWidth);
     const viewportHeight = Math.max(1, window.innerHeight);
     if (gutterWidth < 1) {
         scrollbarAmbientCanvas.style.display = 'none';
@@ -429,7 +446,7 @@ function syncScrollbarAmbient() {
         scrollbarAmbientCanvas.height = pixelHeight;
     }
     scrollbarAmbientCanvas.style.display = 'block';
-    scrollbarAmbientCanvas.style.left = `${root.clientWidth}px`;
+    scrollbarAmbientCanvas.style.left = `${measuredGutterWidth ? root.clientWidth : window.innerWidth - gutterWidth}px`;
     scrollbarAmbientCanvas.style.width = `${gutterWidth}px`;
     scrollbarAmbientCanvas.style.height = `${viewportHeight}px`;
 
