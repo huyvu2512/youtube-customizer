@@ -9,7 +9,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.9.20-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.9.21-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -34,13 +34,12 @@
 
 **YouTube Customizer** is a high-performance Userscript running on Tampermonkey / Violentmonkey, engineered to deliver a clean, distraction-free, and immersive YouTube viewing experience. Designed and developed by Huy Vũ (@huyvu2512), this project serves as an in-depth exploration of advanced DOM manipulation, video player rendering pipeline optimization, and fine-tuned browser event interactions on YouTube.
 
-Release **v3.9.20** introduces Real-Time Live Stream Preview (360p, sliding window of up to 5 cards); the full commit history is in [CHANGELOG.md](CHANGELOG.md).
+Release **v3.9.21** restores stable behavior and keeps the userscript changelog to the 10 latest versions; the full commit history is in [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
 ## Key Features
 
-- **Live Stream Real-Time Preview** - Automatically detects live stream cards on Home and Search feeds, displaying real-time 360p snapshots for up to 5 cards in viewport with ultra-light sequential queue.
 - **Ambient lighting (Ambilight)** - Adds a frame-based glow on standard video watch pages. It is off by default and does not run on Shorts.
 - **Five-tab settings panel** - Settings for layout, filters, player, optimization, and project information, with a choice of interface language.
 - **Interface languages** - 20 languages plus automatic selection.

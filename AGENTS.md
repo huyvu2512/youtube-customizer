@@ -7,8 +7,9 @@
   1. `package.json` -> `"version": "x.y.z"`
   2. `src/core/constants.js` -> `export const APP_VERSION = 'x.y.z';`
   3. `scripts/build.js` -> `// @version x.y.z` và `@description`
-  4. `tampermonkey.user.js` -> Cập nhật `@version`, query param `?v=x.y.z` ở `@require`, `@updateURL`, `@downloadURL`, và nhật ký Changelog.
+  4. `tampermonkey.user.js` -> Cập nhật `@version`, query param `?v=x.y.z` ở `@require`, `@updateURL`, `@downloadURL`, và nhật ký Changelog (giới hạn 10 version gần nhất).
   5. `README.md` & `README_EN.md` -> Cập nhật badge version và đoạn giới thiệu phiên bản mới.
+  6. `CHANGELOG.md` -> Thêm mục `## vx.y.z — DD/MM/YYYY HH:MM` và ghi lại chi tiết các thay đổi.
 
 ## 2. QUY TRÌNH BUILD & DEPLOY CHUẨN
 1. Chạy lệnh đóng gói: `npm run build`

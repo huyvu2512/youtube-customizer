@@ -23,8 +23,7 @@ import {
     isHomeFeedPath,
     initMixFilter,
     initQualityManager,
-    applyPreferredQuality,
-    initLivePreview
+    applyPreferredQuality
 } from './features/index.js';
 import {
     bindGlobalKeys,
@@ -201,7 +200,6 @@ if (window.self !== window.top) {
     initQualityManager();
     initTimeLock();
     initAmbientLight();
-    initLivePreview();
 
     if (location.pathname.startsWith('/watch')) {
         setWatchLoading(true);
