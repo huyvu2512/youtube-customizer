@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.19
-// @description  YouTube Customizer v3.9.19 — Thêm ảnh xem trước Live Stream thời gian thực 360p trên trang chủ và tìm kiếm.
+// @version      3.9.20
+// @description  YouTube Customizer v3.9.20 — Thêm ảnh xem trước Live Stream thời gian thực 360p trên trang chủ và tìm kiếm.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

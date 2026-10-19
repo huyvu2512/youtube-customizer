@@ -1,23 +1,24 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.19
-// @description  YouTube Customizer v3.9.19 — Thêm ảnh xem trước Live Stream thời gian thực 360p trên trang chủ và tìm kiếm.
+// @version      3.9.20
+// @description  YouTube Customizer v3.9.20 — Thêm ảnh xem trước Live Stream thời gian thực 360p trên trang chủ và tìm kiếm.
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.19
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.20
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.19
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.19
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.20
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.20
 // ==/UserScript==
 
 /*
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
- * v3.9.19 — Thêm tính năng Ảnh xem trước Live Stream (360p, tối đa 5 thẻ trong tầm nhìn, cập nhật tuần tự siêu nhẹ).
+ * v3.9.20 — Thêm tính năng Ảnh xem trước Live Stream (360p, tối đa 5 thẻ trong tầm nhìn, cập nhật tuần tự siêu nhẹ).
+ * v3.9.19 — Tách tài liệu CHANGELOG.md và giới hạn nhật ký nhúng ở 10 bản gần nhất.
  * v3.9.18 — Gỡ huy hiệu ngôi sao khỏi mục Ánh sáng phòng (Ambilight).
  * v3.9.17 — Thay emoji ngôi sao bằng SVG riêng; bỏ animation nhấp nháy.
  * v3.9.16 — Gỡ canvas/CSS thử nghiệm trên scrollbar, bỏ cập nhật canvas theo từng frame và khi cuộn.
@@ -26,6 +27,5 @@
  * v3.9.13 — Làm trong track scrollbar riêng của Shorts, giữ thumb dễ nhận biết.
  * v3.9.12 — Mở rộng vùng Ambilight Shorts theo nền điện ảnh của YouTube.
  * v3.9.11 — Giữ nguyên stacking/layout Shorts, đặt quầng sáng phía sau nội dung.
- * v3.9.10 — Giới hạn quầng Ambilight quanh player Shorts, giữ nguyên kích thước player.
  * ============================================================================
  */
