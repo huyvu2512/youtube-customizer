@@ -12,7 +12,6 @@ import { currentConfig } from '../core/config.js';
 let ambientWrapper = null;
 let ambientSpreadCanvas = null;
 let ambientSpreadCtx = null;
-let ambientShortsHost = null;
 let scrollbarAmbientCanvas = null;
 let scrollbarAmbientCtx = null;
 let animFrameId = null;
@@ -31,7 +30,7 @@ const TARGET_INTERVAL = 1000 / 30; // 30 FPS mượt mà & siêu nhẹ
  * Kiểm tra xem tính năng Ambilight có đang được phép chạy hay không
  */
 function isAmbientEnabled() {
-    return !!currentConfig.ambientLighting && !currentConfig.audioOnlyMode;
+    return !!currentConfig.ambientLighting && !currentConfig.audioOnlyMode && !isShortsPage();
 }
 
 function isShortsPage() {
@@ -39,31 +38,9 @@ function isShortsPage() {
 }
 
 function findActivePlayer() {
-    if (isShortsPage()) {
-        const shortsPlayer = document.getElementById('shorts-player');
-        if (shortsPlayer) return shortsPlayer;
-    }
     return document.querySelector('#movie_player:not(#inline-preview-player)') ||
         document.getElementById('movie_player') ||
         document.querySelector('.html5-video-player');
-}
-
-function updateShortsAmbientBounds(player) {
-    if (!ambientWrapper || !ambientWrapper.classList.contains('ytc-ambient-shorts') || !player) return;
-    const host = ambientWrapper.parentElement;
-    if (!host) return;
-
-    const playerRect = player.getBoundingClientRect();
-    const hostRect = host.getBoundingClientRect();
-    // Match YouTube's Shorts cinematic canvas scale (1.8x wide, 1.3x tall).
-    // YouTube's canvas is hidden while custom Ambilight is active, so extend our
-    // wrapper to the same bounds instead of leaving a black strip around it.
-    const padX = Math.max(48, playerRect.width * 0.4);
-    const padY = Math.max(48, playerRect.height * 0.15);
-    ambientWrapper.style.setProperty('--ytc-shorts-ambient-left', `${playerRect.left - hostRect.left - padX}px`);
-    ambientWrapper.style.setProperty('--ytc-shorts-ambient-top', `${playerRect.top - hostRect.top - padY}px`);
-    ambientWrapper.style.setProperty('--ytc-shorts-ambient-width', `${playerRect.width + padX * 2}px`);
-    ambientWrapper.style.setProperty('--ytc-shorts-ambient-height', `${playerRect.height + padY * 2}px`);
 }
 
 /**
@@ -83,7 +60,6 @@ function updateCachedRects(force = false) {
     const activePlayer = findActivePlayer();
     if (!activePlayer || !ambientWrapper) return;
     cachedPlayerRect = activePlayer.getBoundingClientRect();
-    updateShortsAmbientBounds(activePlayer);
     cachedWrapperRect = ambientWrapper.getBoundingClientRect();
     const video = findActiveVideo();
     if (video) {
@@ -139,24 +115,8 @@ function ensureAmbientCanvas() {
     const activePlayer = findActivePlayer();
     if (!watchFlexy && !activePlayer) return false;
 
-    const shortsRenderer = isShortsPage() && activePlayer
-        ? activePlayer.closest('ytd-reel-video-renderer')
-        : null;
-    const targetParent = shortsRenderer || watchFlexy || (activePlayer ? activePlayer.parentElement : null);
+    const targetParent = watchFlexy || (activePlayer ? activePlayer.parentElement : null);
     if (!targetParent) return false;
-
-    if (ambientShortsHost && ambientShortsHost !== shortsRenderer) {
-        ambientShortsHost.classList.remove('ytc-ambient-shorts-host');
-        ambientShortsHost = null;
-    }
-    if (shortsRenderer) {
-        shortsRenderer.classList.add('ytc-ambient-shorts-host');
-        ambientShortsHost = shortsRenderer;
-    } else if (ambientShortsHost) {
-        ambientShortsHost.classList.remove('ytc-ambient-shorts-host');
-        ambientShortsHost = null;
-    }
-    if (ambientWrapper) ambientWrapper.classList.toggle('ytc-ambient-shorts', !!shortsRenderer);
 
     if (!ambientWrapper || !ambientWrapper.isConnected || ambientWrapper.parentElement !== targetParent) {
         const existing = document.getElementById('ytc-ambient-wrapper');
@@ -178,12 +138,10 @@ function ensureAmbientCanvas() {
             ambientWrapper.appendChild(ambientSpreadCanvas);
         }
 
-        ambientWrapper.classList.toggle('ytc-ambient-shorts', !!shortsRenderer);
-
         ambientWrapper.style.display = '';
 
         // Luôn gắn làm con đầu tiên (firstChild) để nằm dưới tất cả các phần tử video và cột nội dung
-        if (watchFlexy && !shortsRenderer) {
+        if (watchFlexy) {
             watchFlexy.insertBefore(ambientWrapper, watchFlexy.firstChild);
         } else {
             targetParent.insertBefore(ambientWrapper, targetParent.firstChild);
@@ -615,7 +573,6 @@ function handleNavigation() {
 
     const isWatchPage = location.pathname.startsWith('/watch') ||
                         location.pathname.startsWith('/live') ||
-                        isShortsPage() ||
                         document.querySelector('ytd-watch-flexy') !== null;
 
     if (!isWatchPage) {
@@ -626,10 +583,6 @@ function handleNavigation() {
             ambientWrapper.classList.remove('ytc-ambient-active', 'ytc-ambient-shorts');
         }
         removeScrollbarAmbientCanvas();
-        if (ambientShortsHost) {
-            ambientShortsHost.classList.remove('ytc-ambient-shorts-host');
-            ambientShortsHost = null;
-        }
         if (currentVideo) {
             const events = ['play', 'playing', 'timeupdate', 'canplay', 'loadeddata', 'seeked', 'ratechange'];
             events.forEach(evt => currentVideo.removeEventListener(evt, handleVideoActivity));
@@ -670,22 +623,21 @@ export function applyAmbientLightingState() {
             document.body.classList.remove('ytc-ambient-lighting');
         }
         if (ambientWrapper) {
-            ambientWrapper.classList.remove('ytc-ambient-active');
+            ambientWrapper.classList.remove('ytc-ambient-active', 'ytc-ambient-shorts');
             ambientWrapper.style.display = 'none';
         }
         const existing = document.getElementById('ytc-ambient-wrapper');
         if (existing) {
-            existing.classList.remove('ytc-ambient-active');
+            existing.classList.remove('ytc-ambient-active', 'ytc-ambient-shorts');
             existing.style.display = 'none';
         }
         if (ambientSpreadCtx) {
             ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         }
         removeScrollbarAmbientCanvas();
-        if (ambientShortsHost) {
-            ambientShortsHost.classList.remove('ytc-ambient-shorts-host');
-            ambientShortsHost = null;
-        }
+        document.querySelectorAll('ytd-reel-video-renderer.ytc-ambient-shorts-host').forEach(el => {
+            el.classList.remove('ytc-ambient-shorts-host');
+        });
         if (currentVideo) {
             const events = ['play', 'playing', 'timeupdate', 'canplay', 'loadeddata', 'seeked', 'ratechange'];
             events.forEach(evt => currentVideo.removeEventListener(evt, handleVideoActivity));

@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.13
-// @description  YouTube Customizer v3.9.13 — Làm trong scrollbar Shorts khi bật Ambilight.
+// @version      3.9.14
+// @description  YouTube Customizer v3.9.14 — Giới hạn Ambilight ở video thường.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,7 +23,13 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.13:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.14:
+ * ============================================================================
+ * 1. [Ánh sáng phòng / Ambilight]:
+ *    - Tắt Ambilight trên Shorts để giữ nguyên bố cục và thanh cuộn gốc của YouTube.
+ *    - Tiếp tục áp dụng Ambilight cho các trang video thường.
+ * ============================================================================
+ * CHANGELOG - v3.9.13:
  * ============================================================================
  * 1. [Ánh sáng phòng / Ambilight Shorts]:
  *    - Làm trong track scrollbar riêng của #shorts-container khi Ambilight bật.

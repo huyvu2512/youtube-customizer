@@ -2071,34 +2071,10 @@ html.ytc-ambient-lighting #ytc-ambient-wrapper.ytc-ambient-active {
     opacity: 0.95;
 }
 
-/* Shorts dùng renderer riêng; tạo lớp nền cùng kích thước renderer mà không đổi khung video. */
-html.ytc-ambient-lighting ytd-reel-video-renderer.ytc-ambient-shorts-host {
-    position: relative !important;
-    overflow: visible !important;
-    isolation: isolate;
-}
-
-/* Keep YouTube's original positioning; only order positioned layers above the glow. */
-html.ytc-ambient-lighting ytd-reel-video-renderer.ytc-ambient-shorts-host > :not(#ytc-ambient-wrapper) {
-    z-index: 1 !important;
-}
-
-#ytc-ambient-wrapper.ytc-ambient-shorts {
-    z-index: 0 !important;
-    top: var(--ytc-shorts-ambient-top, 0px) !important;
-    left: var(--ytc-shorts-ambient-left, 0px) !important;
-    right: auto !important;
-    width: var(--ytc-shorts-ambient-width, 100%) !important;
-    height: var(--ytc-shorts-ambient-height, 100%) !important;
-    mask-image: none !important;
-    -webkit-mask-image: none !important;
-}
-
 /* Để ánh sáng ambient xuyên qua track scrollbar, tránh dải đen/trắng theo theme. */
 html.ytc-ambient-lighting,
 html.ytc-ambient-lighting body,
-html.ytc-ambient-lighting ytd-app,
-html.ytc-ambient-lighting ytd-shorts #shorts-container {
+html.ytc-ambient-lighting ytd-app {
     scrollbar-color: rgba(190, 190, 190, 0.72) transparent !important;
 }
 
@@ -2113,11 +2089,7 @@ html.ytc-ambient-lighting body::-webkit-scrollbar-corner,
 html.ytc-ambient-lighting ytd-app::-webkit-scrollbar,
 html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-track,
 html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-track-piece,
-html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-corner,
-html.ytc-ambient-lighting ytd-shorts #shorts-container::-webkit-scrollbar,
-html.ytc-ambient-lighting ytd-shorts #shorts-container::-webkit-scrollbar-track,
-html.ytc-ambient-lighting ytd-shorts #shorts-container::-webkit-scrollbar-track-piece,
-html.ytc-ambient-lighting ytd-shorts #shorts-container::-webkit-scrollbar-corner {
+html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-corner {
     background: transparent !important;
     background-color: transparent !important;
 }
