@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.1
-// @description  YouTube Customizer v3.9.1 — Tách biệt chỉ số Ping và Tốc độ tải, hỗ trợ hệ thống 3 màu trạng thái (Xanh lá - Vàng - Đỏ).
+// @version      3.9.3
+// @description  YouTube Customizer v3.9.3 — Dừng timer tính năng khi tắt và lọc mutation không liên quan.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -11,7 +11,14 @@
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.7.3:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.3:
+ * ============================================================================
+ * 1. [Quản lý tác vụ nền]:
+ *    - Chỉ chạy timer Auto Live Sync và Chat Memory GC khi tính năng bật trên trang xem.
+ *    - Bỏ qua mutation trong vùng bình luận và overlay chat; giữ nguyên theo dõi trong player.
+ *    - Chỉ đọc textContent khi kiểm tra thông báo gián đoạn.
+ * ============================================================================
+ * CHANGELOG - v3.7.3:
  * ============================================================================
  * 1. [Tính năng mới: Công tắc gạt Tự động cập nhật]:
  *    - Thêm công tắc gạt "Tự động cập nhật" trong Tab Thông tin (Menu bánh răng).
@@ -41,7 +48,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.1";
+      APP_VERSION = "3.9.3";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -451,173 +458,6 @@
     }
   });
 
-  // src/features/promos.js
-  function resumePlayerIfPaused() {
-    try {
-      const player = document.querySelector("#movie_player:not(#inline-preview-player)") || document.getElementById("movie_player");
-      if (player) {
-        if (typeof player.getPlayerState === "function") {
-          const state = player.getPlayerState();
-          if (state === 2 || state === -1) {
-            if (typeof player.playVideo === "function") {
-              player.playVideo();
-            }
-          }
-        }
-        const video = player.querySelector("video.html5-main-video") || player.querySelector("video");
-        if (video && video.paused) {
-          video.play().catch(() => {
-          });
-        }
-      }
-    } catch (e) {
-    }
-  }
-  function dismissInterruptionPrompts(scope) {
-    const root = scope && scope.querySelectorAll ? scope : document;
-    const candidates = root.querySelectorAll(
-      'snackbar-container, snackbar-view-model, .ytSnackbarContainerHost, .ytSnackbarContainerSnackbarContainer, .snackbarViewModelHost, .snackbarViewModelTitle, .snackbarViewModelTitleSubtextWrapper, yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, #toast, yt-notification-action-renderer, ytd-notification-action-renderer, .ytp-suggested-action-badge, .ytp-suggested-action-badge-expanded, .ytp-bezel, .ytp-hint, div[class*="interrupt" i], div[class*="suggested-action" i], div[class*="ad-interrupt" i], .paper-toast-open, .toast-button'
-    );
-    candidates.forEach((el) => {
-      const text = (el.textContent || el.innerText || "").toLowerCase();
-      if (text.includes("gián đoạn") || text.includes("interruption") || text.includes("sự cố") || text.includes("troubleshoot") || text.includes("tìm hiểu lý do") || text.includes("find out why")) {
-        const target = el.closest("snackbar-container, .ytSnackbarContainerHost, snackbar-view-model, yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, yt-notification-action-renderer") || el;
-        const closeBtn = target.querySelector('button, #close-button, [aria-label*="Đóng" i], [aria-label*="Close" i], [aria-label*="Dismiss" i], .ytp-suggested-action-badge-dismiss-button, yt-button-renderer');
-        if (closeBtn) {
-          try {
-            closeBtn.click();
-          } catch (e) {
-          }
-        }
-        target.style.setProperty("display", "none", "important");
-        target.style.setProperty("opacity", "0", "important");
-        target.style.setProperty("pointer-events", "none", "important");
-        target.style.setProperty("visibility", "hidden", "important");
-        try {
-          if (typeof target.close === "function") target.close();
-          if (typeof target.hide === "function") target.hide();
-          target.remove();
-        } catch (e) {
-        }
-        resumePlayerIfPaused();
-      }
-    });
-    try {
-      const xpath = "//*[self::div or self::span or self::p or self::yt-formatted-string or self::snackbar-view-model or self::snackbar-container][contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'gián đoạn') or contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'interruption') or contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'tìm hiểu lý do') or contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'find out why')]";
-      const result = document.evaluate(xpath, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
-      for (let i = 0; i < result.snapshotLength; i++) {
-        const node = result.snapshotItem(i);
-        if (node) {
-          const target = node.closest("snackbar-container, .ytSnackbarContainerHost, snackbar-view-model, yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, yt-notification-action-renderer, .paper-toast-open") || node;
-          target.style.setProperty("display", "none", "important");
-          target.style.setProperty("opacity", "0", "important");
-          target.style.setProperty("visibility", "hidden", "important");
-          target.style.setProperty("pointer-events", "none", "important");
-          try {
-            target.remove();
-          } catch (e) {
-          }
-          resumePlayerIfPaused();
-        }
-      }
-    } catch (e) {
-    }
-  }
-  function dismissPromoBanners(scope) {
-    if (currentConfig.hideShopping) {
-      dismissShoppingPanels(scope);
-    }
-    dismissInterruptionPrompts(scope);
-    if (!currentConfig.autoDismissPromos) return;
-    const root = scope && scope.querySelectorAll ? scope : document;
-    const promos = root.querySelectorAll("ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer, ytd-upsell-dialog-renderer, ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer");
-    promos.forEach((promo) => {
-      const dismissBtn = promo.querySelector('#dismiss-button button, yt-button-renderer#dismiss-button button, yt-button-renderer#dismiss-button, #dismiss-button, button[aria-label*="Không"], button[aria-label*="Dismiss"], button[aria-label*="No thanks"]');
-      if (dismissBtn) {
-        try {
-          dismissBtn.click();
-        } catch (e) {
-        }
-      }
-      promo.style.setProperty("display", "none", "important");
-      promo.style.setProperty("opacity", "0", "important");
-      promo.style.setProperty("pointer-events", "none", "important");
-    });
-    const toasts = root.querySelectorAll("tp-yt-paper-toast, #toast, yt-notification-action-renderer, ytd-notification-action-renderer, yt-bubble-hint-renderer, ytd-mealbar-promo-renderer, snackbar-container, snackbar-view-model");
-    toasts.forEach((toast) => {
-      const text = (toast.textContent || "").toLowerCase();
-      if (text.includes("premium") || text.includes("dùng thử") || text.includes("khảo sát") || text.includes("survey")) {
-        const closeBtn = toast.querySelector('button, #close-button, [aria-label*="Đóng"], [aria-label*="Close"], [aria-label*="Dismiss"], yt-button-renderer');
-        if (closeBtn) {
-          try {
-            closeBtn.click();
-          } catch (e) {
-          }
-        }
-        toast.style.setProperty("display", "none", "important");
-        toast.style.setProperty("opacity", "0", "important");
-        toast.style.setProperty("pointer-events", "none", "important");
-      }
-    });
-  }
-  function setupPromoObserver() {
-    if (promoObserverAttached) return;
-    promoObserverAttached = true;
-    dismissInterruptionPrompts(document);
-    if (currentConfig.autoDismissPromos) {
-      dismissPromoBanners(document);
-    }
-    let throttleTimer = null;
-    const observer = new MutationObserver((mutations) => {
-      if (!throttleTimer) {
-        throttleTimer = requestAnimationFrame(() => {
-          throttleTimer = null;
-          dismissInterruptionPrompts(document);
-        });
-      }
-      if (currentConfig.autoDismissPromos) {
-        for (const m of mutations) {
-          if (m.addedNodes.length === 0) continue;
-          for (const node of m.addedNodes) {
-            if (node.nodeType !== 1) continue;
-            const tag = node.tagName.toLowerCase();
-            const cls = (node.className || "").toString();
-            if (tag.includes("snackbar") || tag.includes("bubble") || tag.includes("toast") || tag.includes("notification") || tag.includes("mealbar") || tag.includes("dialog") || cls.includes("ytp-suggested") || cls.includes("paper-toast") || cls.includes("interrupt") || cls.includes("toast-button")) {
-              dismissPromoBanners(node.parentElement || document);
-              return;
-            }
-          }
-        }
-      }
-    });
-    whenElement("body", (body) => {
-      observer.observe(body, { childList: true, subtree: true });
-    });
-    window.addEventListener("yt-navigate-finish", () => {
-      let scans = 0;
-      const interval = setInterval(() => {
-        scans++;
-        if (scans >= 15) {
-          clearInterval(interval);
-          return;
-        }
-        dismissInterruptionPrompts(document);
-        if (currentConfig.autoDismissPromos) {
-          dismissPromoBanners(document);
-        }
-      }, 400);
-    });
-  }
-  var promoObserverAttached;
-  var init_promos = __esm({
-    "src/features/promos.js"() {
-      init_config();
-      init_utils();
-      init_shoppingFilter();
-      promoObserverAttached = false;
-    }
-  });
-
   // src/features/feedFilter.js
   var feedFilter_exports = {};
   __export(feedFilter_exports, {
@@ -712,11 +552,9 @@
   function setupFeedShelvesObserver() {
     scheduleFeedScan(document);
     applyHomeGridColumns();
-    dismissPromoBanners(document);
     const attach = (container) => {
       scheduleFeedScan(container);
       applyHomeGridColumns();
-      dismissPromoBanners(container);
       new MutationObserver((mutations) => {
         let hasRelevantChanges = false;
         for (const mutation of mutations) {
@@ -747,20 +585,6 @@
     const target = document.getElementById("page-manager") || document.querySelector("ytd-page-manager") || document.body;
     if (target) attach(target);
     else whenElement("#page-manager", attach);
-    const attachPopup = (popupContainer2) => {
-      dismissPromoBanners(popupContainer2);
-      new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-          if (mutation.addedNodes.length) {
-            dismissPromoBanners(popupContainer2);
-            break;
-          }
-        }
-      }).observe(popupContainer2, { childList: true, subtree: true });
-    };
-    const popupContainer = document.querySelector("ytd-popup-container");
-    if (popupContainer) attachPopup(popupContainer);
-    else whenElement("ytd-popup-container", attachPopup);
   }
   var scheduleFeedScan;
   var init_feedFilter = __esm({
@@ -768,11 +592,9 @@
       init_utils();
       init_config();
       init_grid();
-      init_promos();
       scheduleFeedScan = rafThrottle((root) => {
         scanAndTagFeedContent(root);
         applyHomeGridColumns();
-        dismissPromoBanners(root);
       });
     }
   });
@@ -3965,6 +3787,9 @@
     performChatMemoryGc: () => performChatMemoryGc,
     stopChatMemoryGc: () => stopChatMemoryGc
   });
+  function isWatchRoute() {
+    return location.pathname.startsWith("/watch") || location.pathname.startsWith("/live");
+  }
   function cleanChatContainer(itemsContainer) {
     if (!itemsContainer || !itemsContainer.children) return;
     const count = itemsContainer.children.length;
@@ -3998,12 +3823,21 @@
     });
   }
   function initChatMemoryGc() {
-    if (gcInterval) return;
-    gcInterval = setInterval(() => {
-      if (currentConfig.chatMemoryGc) {
-        performChatMemoryGc();
-      }
-    }, 1e4);
+    if (!gcInitialized) {
+      gcInitialized = true;
+      onConfigChange(syncChatMemoryGcTimer);
+      document.addEventListener("yt-navigate-start", stopChatMemoryGc);
+      document.addEventListener("yt-navigate-finish", syncChatMemoryGcTimer);
+      window.addEventListener("popstate", syncChatMemoryGcTimer);
+    }
+    syncChatMemoryGcTimer();
+  }
+  function syncChatMemoryGcTimer() {
+    if (currentConfig.chatMemoryGc && isWatchRoute()) {
+      if (!gcInterval) gcInterval = setInterval(performChatMemoryGc, 1e4);
+      return;
+    }
+    stopChatMemoryGc();
   }
   function stopChatMemoryGc() {
     if (gcInterval) {
@@ -4011,11 +3845,12 @@
       gcInterval = null;
     }
   }
-  var gcInterval, MAX_CHAT_ITEMS;
+  var gcInterval, gcInitialized, MAX_CHAT_ITEMS;
   var init_chatMemoryGc = __esm({
     "src/optimization/chatMemoryGc.js"() {
       init_config();
       gcInterval = null;
+      gcInitialized = false;
       MAX_CHAT_ITEMS = 100;
     }
   });
@@ -6379,8 +6214,145 @@
     }
   }, true);
 
+  // src/features/promos.js
+  init_config();
+  init_utils();
+  init_shoppingFilter();
+  var INTERRUPTION_SELECTOR = 'snackbar-container, snackbar-view-model, .ytSnackbarContainerHost, .ytSnackbarContainerSnackbarContainer, .snackbarViewModelHost, .snackbarViewModelTitle, .snackbarViewModelTitleSubtextWrapper, yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, #toast, yt-notification-action-renderer, ytd-notification-action-renderer, .ytp-suggested-action-badge, .ytp-suggested-action-badge-expanded, .ytp-bezel, .ytp-hint, div[class*="interrupt" i], div[class*="suggested-action" i], div[class*="ad-interrupt" i], .paper-toast-open, .toast-button';
+  var PROMO_SELECTOR = "ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer, ytd-upsell-dialog-renderer, ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer";
+  var IGNORED_MUTATION_ZONES = "#comments, ytd-comments, #ytc-danmaku-container, #ytc-streamer-box, ytd-moving-thumbnail-renderer";
+  function queryIncludingRoot(root, selector) {
+    const matches = Array.from(root.querySelectorAll(selector));
+    if (root.nodeType === 1 && root.matches(selector)) matches.unshift(root);
+    return matches;
+  }
+  function resumePlayerIfPaused() {
+    try {
+      const player = document.querySelector("#movie_player:not(#inline-preview-player)") || document.getElementById("movie_player");
+      if (player) {
+        if (typeof player.getPlayerState === "function") {
+          const state = player.getPlayerState();
+          if (state === 2 || state === -1) {
+            if (typeof player.playVideo === "function") {
+              player.playVideo();
+            }
+          }
+        }
+        const video = player.querySelector("video.html5-main-video") || player.querySelector("video");
+        if (video && video.paused) {
+          video.play().catch(() => {
+          });
+        }
+      }
+    } catch (e) {
+    }
+  }
+  function dismissInterruptionPrompts(scope) {
+    const root = scope && scope.querySelectorAll ? scope : document;
+    const candidates = queryIncludingRoot(root, INTERRUPTION_SELECTOR);
+    candidates.forEach((el) => {
+      const text = (el.textContent || "").toLowerCase();
+      if (text.includes("gián đoạn") || text.includes("interruption") || text.includes("sự cố") || text.includes("troubleshoot") || text.includes("tìm hiểu lý do") || text.includes("find out why")) {
+        const target = el.closest("snackbar-container, .ytSnackbarContainerHost, snackbar-view-model, yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, yt-notification-action-renderer") || el;
+        const closeBtn = target.querySelector('button, #close-button, [aria-label*="Đóng" i], [aria-label*="Close" i], [aria-label*="Dismiss" i], .ytp-suggested-action-badge-dismiss-button, yt-button-renderer');
+        if (closeBtn) {
+          try {
+            closeBtn.click();
+          } catch (e) {
+          }
+        }
+        target.style.setProperty("display", "none", "important");
+        target.style.setProperty("opacity", "0", "important");
+        target.style.setProperty("pointer-events", "none", "important");
+        target.style.setProperty("visibility", "hidden", "important");
+        try {
+          if (typeof target.close === "function") target.close();
+          if (typeof target.hide === "function") target.hide();
+          target.remove();
+        } catch (e) {
+        }
+        resumePlayerIfPaused();
+      }
+    });
+  }
+  function dismissPromoBanners(scope) {
+    if (currentConfig.hideShopping) {
+      dismissShoppingPanels(scope);
+    }
+    dismissInterruptionPrompts(scope);
+    if (!currentConfig.autoDismissPromos) return;
+    const root = scope && scope.querySelectorAll ? scope : document;
+    const promos = queryIncludingRoot(root, PROMO_SELECTOR);
+    promos.forEach((promo) => {
+      const dismissBtn = promo.querySelector('#dismiss-button button, yt-button-renderer#dismiss-button button, yt-button-renderer#dismiss-button, #dismiss-button, button[aria-label*="Không"], button[aria-label*="Dismiss"], button[aria-label*="No thanks"]');
+      if (dismissBtn) {
+        try {
+          dismissBtn.click();
+        } catch (e) {
+        }
+      }
+      promo.style.setProperty("display", "none", "important");
+      promo.style.setProperty("opacity", "0", "important");
+      promo.style.setProperty("pointer-events", "none", "important");
+    });
+    const toasts = queryIncludingRoot(root, "tp-yt-paper-toast, #toast, yt-notification-action-renderer, ytd-notification-action-renderer, yt-bubble-hint-renderer, ytd-mealbar-promo-renderer, snackbar-container, snackbar-view-model");
+    toasts.forEach((toast) => {
+      const text = (toast.textContent || "").toLowerCase();
+      if (text.includes("premium") || text.includes("dùng thử") || text.includes("khảo sát") || text.includes("survey")) {
+        const closeBtn = toast.querySelector('button, #close-button, [aria-label*="Đóng"], [aria-label*="Close"], [aria-label*="Dismiss"], yt-button-renderer');
+        if (closeBtn) {
+          try {
+            closeBtn.click();
+          } catch (e) {
+          }
+        }
+        toast.style.setProperty("display", "none", "important");
+        toast.style.setProperty("opacity", "0", "important");
+        toast.style.setProperty("pointer-events", "none", "important");
+      }
+    });
+  }
+  var promoObserverAttached = false;
+  function setupPromoObserver() {
+    if (promoObserverAttached) return;
+    promoObserverAttached = true;
+    const pendingScopes = /* @__PURE__ */ new Set();
+    let scheduledFrame = 0;
+    const relevantSelector = `${INTERRUPTION_SELECTOR}, ${PROMO_SELECTOR}`;
+    const observer = new MutationObserver((mutations) => {
+      const queueTarget = (node) => {
+        if (!node || node.nodeType !== 1) return;
+        const related = node.closest(relevantSelector);
+        if (related) pendingScopes.add(related);
+        if (node.matches(relevantSelector)) pendingScopes.add(node);
+      };
+      const queueAddedNode = (node) => {
+        queueTarget(node);
+        if (!node || node.nodeType !== 1) return;
+        node.querySelectorAll(relevantSelector).forEach((el) => pendingScopes.add(el));
+      };
+      for (const mutation of mutations) {
+        if (mutation.target.closest?.(IGNORED_MUTATION_ZONES)) continue;
+        queueTarget(mutation.target);
+        for (const node of mutation.addedNodes) queueAddedNode(node);
+      }
+      if (pendingScopes.size && !scheduledFrame) {
+        scheduledFrame = requestAnimationFrame(() => {
+          scheduledFrame = 0;
+          const scopes = Array.from(pendingScopes);
+          pendingScopes.clear();
+          for (const scope of scopes) {
+            if (scope.isConnected) dismissPromoBanners(scope);
+          }
+        });
+      }
+    });
+    whenElement("body", (body) => {
+      observer.observe(body, { childList: true, subtree: true });
+    });
+  }
+
   // src/features/index.js
-  init_promos();
   init_feedFilter();
   init_mixFilter();
   init_qualityManager();
@@ -6485,6 +6457,8 @@
   // src/player/autoLive.js
   init_config();
   var autoLiveSyncTimer = null;
+  var autoLiveSyncInitialized = false;
+  var initialSnapTimer = null;
   var lastSnapTime = 0;
   var lastUserSeekTime = 0;
   var userIsRewound = false;
@@ -6599,10 +6573,7 @@
     return 0;
   }
   function checkLiveSync() {
-    if (!currentConfig.autoLiveSync) {
-      resetAutoLiveState();
-      return;
-    }
+    if (!currentConfig.autoLiveSync) return;
     if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
     const player = document.querySelector("#movie_player:not(#inline-preview-player)");
     if (!player) return;
@@ -6652,7 +6623,6 @@
       video.playbackRate = 1;
     }
   }
-  var initialSnapTimer = null;
   function checkInitialLiveSnap() {
     if (!currentConfig.autoLiveSync) return;
     if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
@@ -6703,9 +6673,29 @@
       }
     }, 500);
   }
+  function stopAutoLiveSyncTimer() {
+    if (autoLiveSyncTimer) {
+      clearInterval(autoLiveSyncTimer);
+      autoLiveSyncTimer = null;
+    }
+    if (initialSnapTimer) {
+      clearInterval(initialSnapTimer);
+      initialSnapTimer = null;
+    }
+  }
+  function syncAutoLiveSyncTimer() {
+    const isWatchRoute2 = location.pathname.startsWith("/watch") || location.pathname.startsWith("/live");
+    if (currentConfig.autoLiveSync && isWatchRoute2) {
+      if (!autoLiveSyncTimer) autoLiveSyncTimer = setInterval(checkLiveSync, 3e3);
+      return;
+    }
+    stopAutoLiveSyncTimer();
+  }
   function initAutoLiveSync() {
-    if (autoLiveSyncTimer) return;
-    autoLiveSyncTimer = setInterval(checkLiveSync, 3e3);
+    if (autoLiveSyncInitialized) return;
+    autoLiveSyncInitialized = true;
+    onConfigChange(syncAutoLiveSyncTimer);
+    syncAutoLiveSyncTimer();
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden && currentConfig.autoLiveSync) {
         setTimeout(checkLiveSync, 1e3);
@@ -6728,11 +6718,16 @@
         recordUserSeek();
       }
     }, true);
-    document.addEventListener("yt-navigate-start", resetAutoLiveState);
+    document.addEventListener("yt-navigate-start", () => {
+      stopAutoLiveSyncTimer();
+      resetAutoLiveState();
+    });
     document.addEventListener("yt-navigate-finish", () => {
       resetAutoLiveState();
+      syncAutoLiveSyncTimer();
       checkInitialLiveSnap();
     });
+    window.addEventListener("popstate", syncAutoLiveSyncTimer);
   }
 
   // src/player/shortcuts.js

@@ -1,10 +1,15 @@
 // ==========================================================================
 // CHAT DOM MEMORY CLEANER (CAPS CHAT DOM MESSAGES AT ~100 TO PREVENT RAM LEAKS)
 // ==========================================================================
-import { currentConfig } from '../core/config.js';
+import { currentConfig, onConfigChange } from '../core/config.js';
 
 let gcInterval = null;
+let gcInitialized = false;
 const MAX_CHAT_ITEMS = 100;
+
+function isWatchRoute() {
+    return location.pathname.startsWith('/watch') || location.pathname.startsWith('/live');
+}
 
 function cleanChatContainer(itemsContainer) {
     if (!itemsContainer || !itemsContainer.children) return;
@@ -45,14 +50,24 @@ export function performChatMemoryGc() {
 }
 
 export function initChatMemoryGc() {
-    if (gcInterval) return;
+    if (!gcInitialized) {
+        gcInitialized = true;
+        onConfigChange(syncChatMemoryGcTimer);
+        document.addEventListener('yt-navigate-start', stopChatMemoryGc);
+        document.addEventListener('yt-navigate-finish', syncChatMemoryGcTimer);
+        window.addEventListener('popstate', syncChatMemoryGcTimer);
+    }
 
-    // Chạy dọn rác định kỳ mỗi 10 giây
-    gcInterval = setInterval(() => {
-        if (currentConfig.chatMemoryGc) {
-            performChatMemoryGc();
-        }
-    }, 10000);
+    syncChatMemoryGcTimer();
+}
+
+function syncChatMemoryGcTimer() {
+    if (currentConfig.chatMemoryGc && isWatchRoute()) {
+        if (!gcInterval) gcInterval = setInterval(performChatMemoryGc, 10000);
+        return;
+    }
+
+    stopChatMemoryGc();
 }
 
 export function stopChatMemoryGc() {

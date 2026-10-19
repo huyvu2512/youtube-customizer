@@ -1,9 +1,11 @@
 // ==========================================================================
 // TỰ ĐỘNG GIỮ MỐC TRỰC TIẾP (AUTO LIVE SYNC) - PHIÊN BẢN ZERO-LAG KHÔNG GIẬT BUFFER
 // ==========================================================================
-import { currentConfig } from '../core/config.js';
+import { currentConfig, onConfigChange } from '../core/config.js';
 
 let autoLiveSyncTimer = null;
+let autoLiveSyncInitialized = false;
+let initialSnapTimer = null;
 let lastSnapTime = 0;
 let lastUserSeekTime = 0;
 let userIsRewound = false;
@@ -146,10 +148,7 @@ function getLiveDelay(player, video) {
 }
 
 function checkLiveSync() {
-    if (!currentConfig.autoLiveSync) {
-        resetAutoLiveState();
-        return;
-    }
+    if (!currentConfig.autoLiveSync) return;
     if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
 
     const player = document.querySelector('#movie_player:not(#inline-preview-player)');
@@ -230,7 +229,6 @@ function checkLiveSync() {
  * - CHỈ snap nếu bị kẹt ở mốc cực xa (> 60s) và user không chủ động tua lại
  * - Tuyệt đối KHÔNG giật video khi mở trang bình thường
  */
-let initialSnapTimer = null;
 export function checkInitialLiveSnap() {
     if (!currentConfig.autoLiveSync) return;
     if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
@@ -286,10 +284,33 @@ export function checkInitialLiveSnap() {
     }, 500);
 }
 
-export function initAutoLiveSync() {
-    if (autoLiveSyncTimer) return;
+function stopAutoLiveSyncTimer() {
+    if (autoLiveSyncTimer) {
+        clearInterval(autoLiveSyncTimer);
+        autoLiveSyncTimer = null;
+    }
+    if (initialSnapTimer) {
+        clearInterval(initialSnapTimer);
+        initialSnapTimer = null;
+    }
+}
 
-    autoLiveSyncTimer = setInterval(checkLiveSync, 3000);
+function syncAutoLiveSyncTimer() {
+    const isWatchRoute = location.pathname.startsWith('/watch') || location.pathname.startsWith('/live');
+    if (currentConfig.autoLiveSync && isWatchRoute) {
+        if (!autoLiveSyncTimer) autoLiveSyncTimer = setInterval(checkLiveSync, 3000);
+        return;
+    }
+
+    stopAutoLiveSyncTimer();
+}
+
+export function initAutoLiveSync() {
+    if (autoLiveSyncInitialized) return;
+    autoLiveSyncInitialized = true;
+
+    onConfigChange(syncAutoLiveSyncTimer);
+    syncAutoLiveSyncTimer();
 
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden && currentConfig.autoLiveSync) {
@@ -320,10 +341,15 @@ export function initAutoLiveSync() {
         }
     }, true);
 
-    document.addEventListener('yt-navigate-start', resetAutoLiveState);
+    document.addEventListener('yt-navigate-start', () => {
+        stopAutoLiveSyncTimer();
+        resetAutoLiveState();
+    });
     document.addEventListener('yt-navigate-finish', () => {
         resetAutoLiveState();
+        syncAutoLiveSyncTimer();
         checkInitialLiveSnap();
     });
+    window.addEventListener('popstate', syncAutoLiveSyncTimer);
 }
 

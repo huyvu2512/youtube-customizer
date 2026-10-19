@@ -5,6 +5,27 @@ import { currentConfig } from '../core/config.js';
 import { whenElement } from '../core/utils.js';
 import { dismissShoppingPanels } from './shoppingFilter.js';
 
+const INTERRUPTION_SELECTOR =
+    'snackbar-container, snackbar-view-model, .ytSnackbarContainerHost, .ytSnackbarContainerSnackbarContainer, ' +
+    '.snackbarViewModelHost, .snackbarViewModelTitle, .snackbarViewModelTitleSubtextWrapper, ' +
+    'yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, #toast, ' +
+    'yt-notification-action-renderer, ytd-notification-action-renderer, ' +
+    '.ytp-suggested-action-badge, .ytp-suggested-action-badge-expanded, .ytp-bezel, .ytp-hint, ' +
+    'div[class*="interrupt" i], div[class*="suggested-action" i], div[class*="ad-interrupt" i], ' +
+    '.paper-toast-open, .toast-button';
+
+const PROMO_SELECTOR =
+    'ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer, ytd-upsell-dialog-renderer, ' +
+    'ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer';
+const IGNORED_MUTATION_ZONES =
+    '#comments, ytd-comments, #ytc-danmaku-container, #ytc-streamer-box, ytd-moving-thumbnail-renderer';
+
+function queryIncludingRoot(root, selector) {
+    const matches = Array.from(root.querySelectorAll(selector));
+    if (root.nodeType === 1 && root.matches(selector)) matches.unshift(root);
+    return matches;
+}
+
 export function resumePlayerIfPaused() {
     try {
         const player = document.querySelector('#movie_player:not(#inline-preview-player)') || document.getElementById('movie_player');
@@ -33,19 +54,10 @@ export function resumePlayerIfPaused() {
 export function dismissInterruptionPrompts(scope) {
     const root = scope && scope.querySelectorAll ? scope : document;
 
-    // 1. Quét trực tiếp các tag Snackbar mới của YouTube & Toast / Bubble truyền thống
-    const candidates = root.querySelectorAll(
-        'snackbar-container, snackbar-view-model, .ytSnackbarContainerHost, .ytSnackbarContainerSnackbarContainer, ' +
-        '.snackbarViewModelHost, .snackbarViewModelTitle, .snackbarViewModelTitleSubtextWrapper, ' +
-        'yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, #toast, ' +
-        'yt-notification-action-renderer, ytd-notification-action-renderer, ' +
-        '.ytp-suggested-action-badge, .ytp-suggested-action-badge-expanded, .ytp-bezel, .ytp-hint, ' +
-        'div[class*="interrupt" i], div[class*="suggested-action" i], div[class*="ad-interrupt" i], ' +
-        '.paper-toast-open, .toast-button'
-    );
+    const candidates = queryIncludingRoot(root, INTERRUPTION_SELECTOR);
 
     candidates.forEach((el) => {
-        const text = (el.textContent || el.innerText || '').toLowerCase();
+        const text = (el.textContent || '').toLowerCase();
         if (
             text.includes('gián đoạn') || 
             text.includes('interruption') || 
@@ -73,23 +85,6 @@ export function dismissInterruptionPrompts(scope) {
         }
     });
 
-    // 2. Quét XPath dự phòng toàn diện để không bỏ sót bất kỳ container nào chứa chữ gián đoạn
-    try {
-        const xpath = "//*[self::div or self::span or self::p or self::yt-formatted-string or self::snackbar-view-model or self::snackbar-container][contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'gián đoạn') or contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'interruption') or contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'tìm hiểu lý do') or contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'find out why')]";
-        const result = document.evaluate(xpath, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
-        for (let i = 0; i < result.snapshotLength; i++) {
-            const node = result.snapshotItem(i);
-            if (node) {
-                const target = node.closest('snackbar-container, .ytSnackbarContainerHost, snackbar-view-model, yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, yt-notification-action-renderer, .paper-toast-open') || node;
-                target.style.setProperty('display', 'none', 'important');
-                target.style.setProperty('opacity', '0', 'important');
-                target.style.setProperty('visibility', 'hidden', 'important');
-                target.style.setProperty('pointer-events', 'none', 'important');
-                try { target.remove(); } catch(e) {}
-                resumePlayerIfPaused();
-            }
-        }
-    } catch(e) {}
 }
 
 export function dismissPromoBanners(scope) {
@@ -104,7 +99,7 @@ export function dismissPromoBanners(scope) {
     if (!currentConfig.autoDismissPromos) return;
     const root = scope && scope.querySelectorAll ? scope : document;
 
-    const promos = root.querySelectorAll('ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer, ytd-upsell-dialog-renderer, ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer');
+    const promos = queryIncludingRoot(root, PROMO_SELECTOR);
     promos.forEach((promo) => {
         const dismissBtn = promo.querySelector('#dismiss-button button, yt-button-renderer#dismiss-button button, yt-button-renderer#dismiss-button, #dismiss-button, button[aria-label*="Không"], button[aria-label*="Dismiss"], button[aria-label*="No thanks"]');
         if (dismissBtn) {
@@ -115,7 +110,7 @@ export function dismissPromoBanners(scope) {
         promo.style.setProperty('pointer-events', 'none', 'important');
     });
 
-    const toasts = root.querySelectorAll('tp-yt-paper-toast, #toast, yt-notification-action-renderer, ytd-notification-action-renderer, yt-bubble-hint-renderer, ytd-mealbar-promo-renderer, snackbar-container, snackbar-view-model');
+    const toasts = queryIncludingRoot(root, 'tp-yt-paper-toast, #toast, yt-notification-action-renderer, ytd-notification-action-renderer, yt-bubble-hint-renderer, ytd-mealbar-promo-renderer, snackbar-container, snackbar-view-model');
     toasts.forEach((toast) => {
         const text = (toast.textContent || '').toLowerCase();
         if (
@@ -140,47 +135,39 @@ export function setupPromoObserver() {
     if (promoObserverAttached) return;
     promoObserverAttached = true;
 
-    dismissInterruptionPrompts(document);
-    if (currentConfig.autoDismissPromos) {
-        dismissPromoBanners(document);
-    }
-
-    // Observer toàn cục bắt ngay các phần tử gián đoạn / snackbar / popup
-    let throttleTimer = null;
+    // Theo dõi thay đổi để chỉ kiểm tra các node vừa được thêm và tổ tiên liên quan.
+    // Không quét lại toàn bộ DOM của YouTube sau mỗi đợt cập nhật giao diện.
+    const pendingScopes = new Set();
+    let scheduledFrame = 0;
+    const relevantSelector = `${INTERRUPTION_SELECTOR}, ${PROMO_SELECTOR}`;
     const observer = new MutationObserver((mutations) => {
-        // Quét triệt tiêu thông báo gián đoạn
-        if (!throttleTimer) {
-            throttleTimer = requestAnimationFrame(() => {
-                throttleTimer = null;
-                dismissInterruptionPrompts(document);
-            });
+        const queueTarget = (node) => {
+            if (!node || node.nodeType !== 1) return;
+            const related = node.closest(relevantSelector);
+            if (related) pendingScopes.add(related);
+            if (node.matches(relevantSelector)) pendingScopes.add(node);
+        };
+        const queueAddedNode = (node) => {
+            queueTarget(node);
+            if (!node || node.nodeType !== 1) return;
+            node.querySelectorAll(relevantSelector).forEach((el) => pendingScopes.add(el));
+        };
+
+        for (const mutation of mutations) {
+            if (mutation.target.closest?.(IGNORED_MUTATION_ZONES)) continue;
+            queueTarget(mutation.target);
+            for (const node of mutation.addedNodes) queueAddedNode(node);
         }
 
-        if (currentConfig.autoDismissPromos) {
-            for (const m of mutations) {
-                if (m.addedNodes.length === 0) continue;
-                for (const node of m.addedNodes) {
-                    if (node.nodeType !== 1) continue;
-                    const tag = node.tagName.toLowerCase();
-                    const cls = (node.className || '').toString();
-
-                    if (
-                        tag.includes('snackbar') ||
-                        tag.includes('bubble') ||
-                        tag.includes('toast') ||
-                        tag.includes('notification') ||
-                        tag.includes('mealbar') ||
-                        tag.includes('dialog') ||
-                        cls.includes('ytp-suggested') ||
-                        cls.includes('paper-toast') ||
-                        cls.includes('interrupt') ||
-                        cls.includes('toast-button')
-                    ) {
-                        dismissPromoBanners(node.parentElement || document);
-                        return;
-                    }
+        if (pendingScopes.size && !scheduledFrame) {
+            scheduledFrame = requestAnimationFrame(() => {
+                scheduledFrame = 0;
+                const scopes = Array.from(pendingScopes);
+                pendingScopes.clear();
+                for (const scope of scopes) {
+                    if (scope.isConnected) dismissPromoBanners(scope);
                 }
-            }
+            });
         }
     });
 
@@ -188,19 +175,4 @@ export function setupPromoObserver() {
         observer.observe(body, { childList: true, subtree: true });
     });
 
-    // Quét bổ sung liên tục trong 8 giây đầu khi mở video để tiêu diệt ngay lúc 0:00
-    window.addEventListener('yt-navigate-finish', () => {
-        let scans = 0;
-        const interval = setInterval(() => {
-            scans++;
-            if (scans >= 15) {
-                clearInterval(interval);
-                return;
-            }
-            dismissInterruptionPrompts(document);
-            if (currentConfig.autoDismissPromos) {
-                dismissPromoBanners(document);
-            }
-        }, 400);
-    });
 }

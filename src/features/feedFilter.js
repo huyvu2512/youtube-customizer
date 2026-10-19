@@ -4,7 +4,6 @@
 import { rafThrottle, whenElement } from '../core/utils.js';
 import { currentConfig } from '../core/config.js';
 import { applyHomeGridColumns } from './grid.js';
-import { dismissPromoBanners } from './promos.js';
 
 export function scanAndTagFeedContent(scope) {
     if (!currentConfig.hideMembersOnly && !currentConfig.hideExploreTopics && !currentConfig.hideCommunity && !currentConfig.hideMixes) return;
@@ -137,18 +136,15 @@ export function scanAndTagFeedContent(scope) {
 export const scheduleFeedScan = rafThrottle((root) => {
     scanAndTagFeedContent(root);
     applyHomeGridColumns();
-    dismissPromoBanners(root);
 });
 
 export function setupFeedShelvesObserver() {
     scheduleFeedScan(document);
     applyHomeGridColumns();
-    dismissPromoBanners(document);
 
     const attach = (container) => {
         scheduleFeedScan(container);
         applyHomeGridColumns();
-        dismissPromoBanners(container);
         new MutationObserver((mutations) => {
             let hasRelevantChanges = false;
             for (const mutation of mutations) {
@@ -187,21 +183,4 @@ export function setupFeedShelvesObserver() {
     const target = document.getElementById('page-manager') || document.querySelector('ytd-page-manager') || document.body;
     if (target) attach(target);
     else whenElement('#page-manager', attach);
-
-    // Theo dõi trực tiếp ytd-popup-container để đóng tức thì các toast cảnh báo gián đoạn khi vừa chèn vào DOM
-    const attachPopup = (popupContainer) => {
-        dismissPromoBanners(popupContainer);
-        new MutationObserver((mutations) => {
-            for (const mutation of mutations) {
-                if (mutation.addedNodes.length) {
-                    dismissPromoBanners(popupContainer);
-                    break;
-                }
-            }
-        }).observe(popupContainer, { childList: true, subtree: true });
-    };
-
-    const popupContainer = document.querySelector('ytd-popup-container');
-    if (popupContainer) attachPopup(popupContainer);
-    else whenElement('ytd-popup-container', attachPopup);
 }

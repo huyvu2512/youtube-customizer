@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.1
-// @description  YouTube Customizer v3.9.1 — Tách biệt chỉ số Ping và Tốc độ tải, hỗ trợ hệ thống 3 màu trạng thái (Xanh lá - Vàng - Đỏ).
+// @version      3.9.3
+// @description  YouTube Customizer v3.9.3 — Dừng timer tính năng khi tắt và lọc mutation không liên quan.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,7 +23,14 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.7.3:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.3:
+ * ============================================================================
+ * 1. [Quản lý tác vụ nền]:
+ *    - Chỉ chạy timer Auto Live Sync và Chat Memory GC khi tính năng bật trên trang xem.
+ *    - Bỏ qua mutation trong vùng bình luận và overlay chat; giữ nguyên theo dõi trong player.
+ *    - Chỉ đọc textContent khi kiểm tra thông báo gián đoạn.
+ * ============================================================================
+ * CHANGELOG - v3.7.3:
  * ============================================================================
  * 1. [Tính năng mới: Công tắc gạt Tự động cập nhật]:
  *    - Thêm công tắc gạt "Tự động cập nhật" trong Tab Thông tin (Menu bánh răng).
