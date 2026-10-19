@@ -49,8 +49,6 @@ import { syncPanelState } from './sync.js';
 import { setupOnboardingAndUpdates, isNewerVersion, fetchRemotePackage } from './notifier.js';
 import { startPerfMonitoring, stopPerfMonitoring } from './perfMonitor.js';
 
-const AMBIENT_STAR_BADGE = `<span class="ytc-star-badge" title="${t('special_feature')}" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><defs><linearGradient id="ytc-ambient-star-gradient" x1="4" y1="3" x2="20" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#fff2a6"/><stop offset=".48" stop-color="#ffc83d"/><stop offset="1" stop-color="#f28b16"/></linearGradient></defs><path d="M12 2.7 14.8 8.4l6.3.9-4.55 4.45 1.08 6.27L12 17.06l-5.63 2.96 1.08-6.27L2.9 9.3l6.3-.9L12 2.7Z" fill="url(#ytc-ambient-star-gradient)" stroke="#ffda67" stroke-width=".8" stroke-linejoin="round"/><path d="m18.9 2 .55 1.45L21 4l-1.55.55L18.9 6l-.55-1.45L16.9 4l1.45-.55L18.9 2Z" fill="#fff4c2"/></svg></span>`;
-
 export function updatePanelLanguage(targetPanel) {
     const panel = targetPanel || document.getElementById('ytc-settings-panel');
     if (!panel) return;
@@ -59,11 +57,7 @@ export function updatePanelLanguage(targetPanel) {
         const key = el.getAttribute('data-i18n');
         if (!key) return;
         const translated = t(key);
-        if (key === 'ambient_lighting' || el.querySelector('.ytc-star-badge')) {
-            el.innerHTML = `${translated}${AMBIENT_STAR_BADGE}`;
-        } else {
-            el.textContent = translated;
-        }
+        el.textContent = translated;
     });
 
     panel.querySelectorAll('[data-i18n-title]').forEach((el) => {
@@ -203,7 +197,7 @@ export function createSettingsPanel() {
                 <div class="ytc-item" data-toggle="ambientLighting" data-i18n-title="ambient_lighting">
                     <div class="ytc-item-left">
                         ${AMBIENT_LIGHT_SVG}
-                        <span data-i18n="ambient_lighting">Ánh sáng phòng (Ambilight)${AMBIENT_STAR_BADGE}</span>
+                        <span data-i18n="ambient_lighting">Ánh sáng phòng (Ambilight)</span>
                     </div>
                     <label class="ytc-switch" for="ytc-chk-ambient-light">
                         <input type="checkbox" id="ytc-chk-ambient-light" name="ambientLighting" aria-label="Ánh sáng phòng (Ambilight)" ${currentConfig.ambientLighting ? 'checked' : ''}>

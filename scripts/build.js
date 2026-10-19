@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.17
-// @description  YouTube Customizer v3.9.17 — Vẽ lại biểu tượng ngôi sao Ambilight bằng SVG.
+// @version      3.9.18
+// @description  YouTube Customizer v3.9.18 — Bỏ huy hiệu ngôi sao cạnh Ambilight.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,11 +23,10 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.17:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.18:
  * ============================================================================
  * 1. [Giao diện]:
- *    - Thay emoji ngôi sao Ambilight bằng biểu tượng SVG vẽ riêng, sắc nét và đồng bộ đa nền tảng.
- *    - Bỏ hiệu ứng nhấp nháy liên tục của biểu tượng.
+ *    - Gỡ hoàn toàn huy hiệu ngôi sao khỏi mục Ánh sáng phòng (Ambilight).
  * ============================================================================
  * CHANGELOG - v3.9.14:
  * ============================================================================
