@@ -14,7 +14,7 @@ const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
 // @version      3.9.19
-// @description  YouTube Customizer v3.9.19 — Lưu lịch sử đầy đủ, giới hạn nhật ký nhúng trong userscript ở 10 phiên bản mới nhất.
+// @description  YouTube Customizer v3.9.19 — Thêm ảnh xem trước Live Stream thời gian thực 360p trên trang chủ và tìm kiếm.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start

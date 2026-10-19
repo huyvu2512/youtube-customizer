@@ -1,8 +1,12 @@
 # Lịch sử thay đổi
 
-## v3.9.19 — 19/10/2026 17:53
+## v3.9.19 — 19/10/2026 20:55
 
-- **[8dc8707](https://github.com/huyvu2512/youtube-customizer/commit/8dc8707a59cb59946b6066069d13aecdb626663d)** Tách lịch sử đầy đủ thành tài liệu Markdown dễ đọc và giới hạn nhật ký nhúng trong Tampermonkey ở 10 phiên bản gần nhất.
+- Thêm tính năng **Ảnh xem trước Live Stream thời gian thực (360p)** trên Trang chủ và Tìm kiếm:
+  - Tự động nhận diện các thẻ Live Stream và chụp khung hình 360p phản ánh diễn biến thực tế của buổi phát.
+  - Cơ chế **Sliding Window tối đa 5 thẻ trong tầm nhìn**: Chỉ nạp thẻ hiển thị trên màn hình, tự động hủy theo dõi khi cuộn khuất để tiết kiệm 100% tài nguyên.
+  - Xử lý hàng đợi tuần tự 1 luồng siêu tốc, chụp xong hủy ngay tiến trình để tránh chạy ngầm, ngủ đông hoàn toàn giữa các chu kỳ.
+- Tách lịch sử đầy đủ thành tài liệu Markdown dễ đọc và giới hạn nhật ký nhúng trong Tampermonkey ở 10 phiên bản gần nhất.
 
 ## v3.9.18 — 19/10/2026 17:37
 

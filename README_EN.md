@@ -34,12 +34,13 @@
 
 **YouTube Customizer** is a high-performance Userscript running on Tampermonkey / Violentmonkey, engineered to deliver a clean, distraction-free, and immersive YouTube viewing experience. Designed and developed by Huy Vũ (@huyvu2512), this project serves as an in-depth exploration of advanced DOM manipulation, video player rendering pipeline optimization, and fine-tuned browser event interactions on YouTube.
 
-Release **v3.9.19** keeps the userscript changelog to the 10 latest versions; the full commit history is in [CHANGELOG.md](CHANGELOG.md).
+Release **v3.9.19** introduces Real-Time Live Stream Preview (360p, sliding window of up to 5 cards); the full commit history is in [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
 ## Key Features
 
+- **Live Stream Real-Time Preview** - Automatically detects live stream cards on Home and Search feeds, displaying real-time 360p snapshots for up to 5 cards in viewport with ultra-light sequential queue.
 - **Ambient lighting (Ambilight)** - Adds a frame-based glow on standard video watch pages. It is off by default and does not run on Shorts.
 - **Five-tab settings panel** - Settings for layout, filters, player, optimization, and project information, with a choice of interface language.
 - **Interface languages** - 20 languages plus automatic selection.

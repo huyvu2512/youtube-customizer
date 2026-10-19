@@ -34,12 +34,13 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.9.19** giữ changelog trong userscript ở 10 phiên bản gần nhất; lịch sử commit đầy đủ nằm trong [CHANGELOG.md](CHANGELOG.md).
+Phiên bản **v3.9.19** bổ sung tính năng Ảnh xem trước Live Stream thời gian thực (360p, sliding window tối đa 5 thẻ); toàn bộ lịch sử thay đổi nằm trong [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
 ## Tính năng chính
 
+- **Ảnh xem trước Live Stream** - Tự động nhận diện và hiển thị khung hình 360p thực tế của tối đa 5 thẻ phát trực tiếp trong tầm nhìn trên Trang chủ và Tìm kiếm, cập nhật tuần tự định kỳ siêu nhẹ.
 - **Ánh sáng phòng (Ambilight)** - Tạo ánh sáng nền theo khung hình trên trang xem video thông thường. Tính năng mặc định tắt và không áp dụng trên Shorts.
 - **Bảng cài đặt 5 tab** - Quản lý giao diện, bộ lọc, trình phát, tối ưu và thông tin; hỗ trợ chọn giao diện bằng tiếng Việt, tiếng Anh và các ngôn ngữ khác.
 - **Ngôn ngữ giao diện** - Có 20 ngôn ngữ và chế độ tự động.

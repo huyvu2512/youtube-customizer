@@ -149,8 +149,8 @@ export function setupFeedShelvesObserver() {
             let hasRelevantChanges = false;
             for (const mutation of mutations) {
                 if (!mutation.addedNodes.length) continue;
-                // Bỏ qua các mutation phát sinh từ preview player, video player hoặc chat overlay
-                if (mutation.target.closest && mutation.target.closest('#preview, ytd-video-preview, #inline-preview-player, .html5-video-player, #ytc-streamer-box, #ytc-danmaku-container, ytd-moving-thumbnail-renderer')) {
+                // Bỏ qua các mutation phát sinh từ preview player, video player, chat overlay hoặc live snapshot
+                if (mutation.target.closest && mutation.target.closest('#preview, ytd-video-preview, #inline-preview-player, .html5-video-player, #ytc-streamer-box, #ytc-danmaku-container, ytd-moving-thumbnail-renderer, .ytc-live-snapshot-overlay, .ytc-live-snapshot-worker')) {
                     continue;
                 }
                 for (const node of mutation.addedNodes) {

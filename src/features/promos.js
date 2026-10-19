@@ -18,7 +18,7 @@ const PROMO_SELECTOR =
     'ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer, ytd-upsell-dialog-renderer, ' +
     'ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer';
 const IGNORED_MUTATION_ZONES =
-    '#comments, ytd-comments, #ytc-danmaku-container, #ytc-streamer-box, ytd-moving-thumbnail-renderer';
+    '#comments, ytd-comments, #ytc-danmaku-container, #ytc-streamer-box, ytd-moving-thumbnail-renderer, .ytc-live-snapshot-overlay, .ytc-live-snapshot-worker';
 
 function queryIncludingRoot(root, selector) {
     const matches = Array.from(root.querySelectorAll(selector));

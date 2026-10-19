@@ -8,3 +8,4 @@ export * from './feedFilter.js';
 export * from './mixFilter.js';
 export * from './qualityManager.js';
 export * from './shoppingFilter.js';
+export * from './livePreview.js';

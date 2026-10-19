@@ -205,6 +205,17 @@ export function createSettingsPanel() {
                     </label>
                 </div>
 
+                <div class="ytc-item" data-toggle="livePreview" data-i18n-title="live_preview">
+                    <div class="ytc-item-left">
+                        ${RADIO_SVG}
+                        <span data-i18n="live_preview">Ảnh xem trước Live Stream</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-live-preview">
+                        <input type="checkbox" id="ytc-chk-live-preview" name="livePreview" aria-label="Ảnh xem trước Live Stream" ${currentConfig.livePreview ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
                 <!-- CHỌN NGÔN NGỮ GIAO DIỆN SCRIPT (KHÔNG ICON, GIAO DIỆN NỔI ĐỘC LẬP) -->
                 <div class="ytc-item ytc-item-lang" id="ytc-row-language" data-i18n-title="script_language">
                     <div class="ytc-item-left">
@@ -789,6 +800,13 @@ export function createSettingsPanel() {
                     import('../player/ambientLight.js').then(m => {
                         if (m && typeof m.applyAmbientLightingState === 'function') {
                             m.applyAmbientLightingState();
+                        }
+                    }).catch(() => {});
+                }
+                if (key === 'livePreview') {
+                    import('../features/livePreview.js').then(m => {
+                        if (m && typeof m.syncLivePreviewState === 'function') {
+                            m.syncLivePreviewState();
                         }
                     }).catch(() => {});
                 }
