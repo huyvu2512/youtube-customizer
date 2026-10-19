@@ -605,95 +605,95 @@
 ## v2.0 — 16/09/2026 18:56
 
 - **[6a9ff02](https://github.com/huyvu2512/youtube-customizer/commit/6a9ff023dad8d1d40533e835098b50fc21473bc9)** Tối ưu hiệu năng, cập nhật giao diện lưới bốn cột và gỡ tính năng bỏ qua quảng cáo.
-- **[2bb85bb](https://github.com/huyvu2512/youtube-customizer/commit/2bb85bbb5beb403adf8a786b678da10799abaa59)** Cập nhật youtube_customizer.js.
-- **[3d1cddb](https://github.com/huyvu2512/youtube-customizer/commit/3d1cddb844e269e6c5896f9b246eeb6c5c6a52eb)** Cập nhật tampermonkey.user.js.
-- **[d72726b](https://github.com/huyvu2512/youtube-customizer/commit/d72726b9b7b6ebd7566a14b12738b2fbbc46256a)** Cập nhật youtube_customizer.js.
-- **[67b6d79](https://github.com/huyvu2512/youtube-customizer/commit/67b6d795bbdb4d962494c0bcb81ee609b849da51)** Cập nhật youtube_customizer.js.
-- **[518bc98](https://github.com/huyvu2512/youtube-customizer/commit/518bc98c99ec5e1f3aee8c8ee81743d0a168064e)** Cập nhật README.md.
-- **[25b3e5f](https://github.com/huyvu2512/youtube-customizer/commit/25b3e5f8d36cea22a6c3fe0f35bef41bf748a36c)** Cập nhật youtube_customizer.js.
-- **[e10e393](https://github.com/huyvu2512/youtube-customizer/commit/e10e393cf8d1bbce169ca3e715e07a9cad5ccfb4)** Cập nhật tampermonkey.user.js.
-- **[d234455](https://github.com/huyvu2512/youtube-customizer/commit/d23445548dd7daf5954a3777f29dca17f14c9363)** Cập nhật README.md.
+- **[2bb85bb](https://github.com/huyvu2512/youtube-customizer/commit/2bb85bbb5beb403adf8a786b678da10799abaa59)** Cải tiến cơ chế cuộn cưỡng bức khi tìm kiếm để khắc phục triệt để hiện tượng trôi trang.
+- **[3d1cddb](https://github.com/huyvu2512/youtube-customizer/commit/3d1cddb844e269e6c5896f9b246eeb6c5c6a52eb)** Dọn dẹp dòng trống thừa ở cuối tệp `tampermonkey.user.js`.
+- **[d72726b](https://github.com/huyvu2512/youtube-customizer/commit/d72726b9b7b6ebd7566a14b12738b2fbbc46256a)** Tối ưu lắng nghe sự kiện tìm kiếm định kỳ để duy trì tính năng cuộn ổn định.
+- **[67b6d79](https://github.com/huyvu2512/youtube-customizer/commit/67b6d795bbdb4d962494c0bcb81ee609b849da51)** Bổ sung tự động cuộn lên đầu trang khi nhấn Enter trong ô tìm kiếm.
+- **[518bc98](https://github.com/huyvu2512/youtube-customizer/commit/518bc98c99ec5e1f3aee8c8ee81743d0a168064e)** Cập nhật tài liệu README.md mô tả tính năng cuộn khi tìm kiếm và ẩn chuột khi tua video.
+- **[25b3e5f](https://github.com/huyvu2512/youtube-customizer/commit/25b3e5f8d36cea22a6c3fe0f35bef41bf748a36c)** Ẩn con trỏ chuột khi tua video và thêm tự động cuộn lên đầu khi nhấp nút tìm kiếm.
+- **[e10e393](https://github.com/huyvu2512/youtube-customizer/commit/e10e393cf8d1bbce169ca3e715e07a9cad5ccfb4)** Cập nhật biểu tượng tập lệnh sang favicon chính thức của YouTube qua Google Favicon API.
+- **[d234455](https://github.com/huyvu2512/youtube-customizer/commit/d23445548dd7daf5954a3777f29dca17f14c9363)** Thêm khuyến nghị và hướng dẫn cài đặt uBlock Origin Lite vào README.md.
 - **[f61fb61](https://github.com/huyvu2512/youtube-customizer/commit/f61fb61014e6fa5ebb142137a433a6ca047c9903)** Chỉnh sửa README, bổ sung thông tin về YouTube Customizer.
-- **[b5a81e1](https://github.com/huyvu2512/youtube-customizer/commit/b5a81e1b1198977ff3be33bb917abd4777c5f44f)** Cập nhật tampermonkey.user.js.
+- **[b5a81e1](https://github.com/huyvu2512/youtube-customizer/commit/b5a81e1b1198977ff3be33bb917abd4777c5f44f)** Nâng số phiên bản lên 2.0 và đổi tên chính thức thành YouTube Customizer trong metadata.
 
 ## v1.7 — 18/05/2026 21:52
 
-- **[57614d1](https://github.com/huyvu2512/youtube-customizer/commit/57614d191b74feb676ff22a7319e53051e5b0e1b)** Cập nhật youtube_customizer.js.
-- **[54153df](https://github.com/huyvu2512/youtube-customizer/commit/54153df725847d55b2282996a4e074510e842b26)** Cập nhật youtube_customizer.js.
+- **[57614d1](https://github.com/huyvu2512/youtube-customizer/commit/57614d191b74feb676ff22a7319e53051e5b0e1b)** Hoàn thiện hệ thống CSS chống tụt FPS, tối ưu cuộn trang và kích hoạt sự kiện qua CSS Animation.
+- **[54153df](https://github.com/huyvu2512/youtube-customizer/commit/54153df725847d55b2282996a4e074510e842b26)** Tinh chỉnh tài liệu README và chuẩn hóa cơ chế điều khiển phím tắt 2 tay kết hợp Zero-Overhead.
 
 ## v1.6 — 18/05/2026 22:10
 
-- **[4827533](https://github.com/huyvu2512/youtube-customizer/commit/482753337a275e39affcfa2830ebb537354d8cd9)** Cập nhật youtube_customizer.js.
-- **[a2ddee0](https://github.com/huyvu2512/youtube-customizer/commit/a2ddee02ac1800c9048fed597729b1862e8e2c3d)** Cập nhật youtube_customizer.js.
-- **[f15ae08](https://github.com/huyvu2512/youtube-customizer/commit/f15ae08613573bceb9ff8e37ea19e21115d280b3)** Cập nhật youtube_customizer.js.
+- **[4827533](https://github.com/huyvu2512/youtube-customizer/commit/482753337a275e39affcfa2830ebb537354d8cd9)** Bổ sung phím tắt tay trái A-S-D, ép tắt Ambient Mode chống lag và tích hợp công nghệ Zero-Overhead.
+- **[a2ddee0](https://github.com/huyvu2512/youtube-customizer/commit/a2ddee02ac1800c9048fed597729b1862e8e2c3d)** Tinh chỉnh bộ chọn (selector) phần tử logo để khôi phục logo Premium chính xác hơn.
+- **[f15ae08](https://github.com/huyvu2512/youtube-customizer/commit/f15ae08613573bceb9ff8e37ea19e21115d280b3)** Bổ sung tính năng tự động ẩn khu vực video Shorts và banner quảng cáo trên trang chủ.
 
 ## v1.5 — 12/04/2026 23:33
 
-- **[04829d6](https://github.com/huyvu2512/youtube-customizer/commit/04829d67f4721b378c1aca9fc9304fe9b58fd050)** Cập nhật youtube_customizer.js.
-- **[dece510](https://github.com/huyvu2512/youtube-customizer/commit/dece5106c82bc46047bde61d68593f09309f951d)** Cập nhật youtube_customizer.js.
-- **[43231ed](https://github.com/huyvu2512/youtube-customizer/commit/43231edcfd0c830afff620a4c2bacb1d5ef9f7bf)** Cập nhật youtube_customizer.js.
+- **[04829d6](https://github.com/huyvu2512/youtube-customizer/commit/04829d67f4721b378c1aca9fc9304fe9b58fd050)** Tái cấu trúc hàm khởi tạo logo chạy độc lập ngay khi nạp script.
+- **[dece510](https://github.com/huyvu2512/youtube-customizer/commit/dece5106c82bc46047bde61d68593f09309f951d)** Tự động dọn dẹp các thông báo khuyến mãi, khảo sát rác và đề xuất mua YouTube Premium.
+- **[43231ed](https://github.com/huyvu2512/youtube-customizer/commit/43231edcfd0c830afff620a4c2bacb1d5ef9f7bf)** Thêm hiệu ứng chống nháy logo, chế độ ẩn màn hình quảng cáo tàng hình và tự dẹp cảnh báo chặn quảng cáo.
 
 ## v1.4 — 12/04/2026 22:55
 
-- **[bec64bf](https://github.com/huyvu2512/youtube-customizer/commit/bec64bf3919a05cb5ae5a3bf16f3862638ab6309)** Cập nhật youtube_customizer.js.
-- **[2f9a0aa](https://github.com/huyvu2512/youtube-customizer/commit/2f9a0aa4ae29742083177f0d5d843faf817c40cc)** Cập nhật youtube_customizer.js.
-- **[2b75442](https://github.com/huyvu2512/youtube-customizer/commit/2b75442632606a8ddfdaea8045e0259b0fe9423d)** Cập nhật youtube_customizer.js.
+- **[bec64bf](https://github.com/huyvu2512/youtube-customizer/commit/bec64bf3919a05cb5ae5a3bf16f3862638ab6309)** Tối ưu hóa điều khiển âm lượng qua API YouTube Player và cải tiến cơ chế bỏ qua quảng cáo an toàn.
+- **[2f9a0aa](https://github.com/huyvu2512/youtube-customizer/commit/2f9a0aa4ae29742083177f0d5d843faf817c40cc)** Mở rộng cụm phím Numpad điều khiển âm lượng, phát/dừng và nâng cấp thuật toán bỏ qua quảng cáo siêu tốc.
+- **[2b75442](https://github.com/huyvu2512/youtube-customizer/commit/2b75442632606a8ddfdaea8045e0259b0fe9423d)** Nâng số phiên bản lên 1.4 và cập nhật mô tả tính năng mới trong `tampermonkey.user.js`.
 
 ## v1.3 — 12/04/2026 22:30
 
-- **[8df8449](https://github.com/huyvu2512/youtube-customizer/commit/8df8449a5ad6ee2f4aa7d23df351fff6d9442d2d)** Cập nhật youtube_customizer.js.
-- **[dee7d79](https://github.com/huyvu2512/youtube-customizer/commit/dee7d7908a3871c82072f5fb3e4dc232bcbd4b8e)** Cập nhật phiên bản YouTube Customizer.
+- **[8df8449](https://github.com/huyvu2512/youtube-customizer/commit/8df8449a5ad6ee2f4aa7d23df351fff6d9442d2d)** Bổ sung tính năng tự động nhấn "Có" khi YouTube hiển thị thông báo tạm dừng "Tiếp tục xem?".
+- **[dee7d79](https://github.com/huyvu2512/youtube-customizer/commit/dee7d7908a3871c82072f5fb3e4dc232bcbd4b8e)** Nâng số phiên bản lên 1.3 trong tệp nạp `tampermonkey.user.js`.
 
 ## v1.2 — 24/10/2025 14:18
 
-- **[b9544f4](https://github.com/huyvu2512/youtube-customizer/commit/b9544f4323f76dc1565c9885917f4143e4937402)** Cập nhật youtube_customizer.js.
-- **[8901a13](https://github.com/huyvu2512/youtube-customizer/commit/8901a1306725c99ff432e6e04684d8ec9578a23b)** Cập nhật README.md.
-- **[de558d1](https://github.com/huyvu2512/youtube-customizer/commit/de558d1370e155301a80bd979e63de32ecbb2d5b)** Cập nhật README.md.
-- **[a60167d](https://github.com/huyvu2512/youtube-customizer/commit/a60167dc36fdc9b8c2c6e5c37cabbd1e498314f2)** Cập nhật README.md.
-- **[491f6ba](https://github.com/huyvu2512/youtube-customizer/commit/491f6baeb0ee6f8666afa5d65d730f98f6933d3b)** Cập nhật README.md.
-- **[233fa6b](https://github.com/huyvu2512/youtube-customizer/commit/233fa6b430ed0894a795a509694c9412d9a8050f)** Cập nhật youtube_customizer.js.
-- **[4f4ab64](https://github.com/huyvu2512/youtube-customizer/commit/4f4ab649c89e884a6bde35618dce2d051d7d2fa5)** Cập nhật youtube_customizer.js.
+- **[b9544f4](https://github.com/huyvu2512/youtube-customizer/commit/b9544f4323f76dc1565c9885917f4143e4937402)** Đồng bộ lại số phiên bản 1.2 trong metadata của `youtube_customizer.js`.
+- **[8901a13](https://github.com/huyvu2512/youtube-customizer/commit/8901a1306725c99ff432e6e04684d8ec9578a23b)** Thêm mục ủng hộ tác giả và lời kêu gọi đóng góp sao GitHub vào README.md.
+- **[de558d1](https://github.com/huyvu2512/youtube-customizer/commit/de558d1370e155301a80bd979e63de32ecbb2d5b)** Lược bỏ phần giải thích kỹ thuật và cam kết phi lợi nhuận để tinh gọn README.md.
+- **[a60167d](https://github.com/huyvu2512/youtube-customizer/commit/a60167dc36fdc9b8c2c6e5c37cabbd1e498314f2)** Cập nhật lại liên kết ảnh minh họa giao diện bằng tệp đính kèm người dùng trong README.md.
+- **[491f6ba](https://github.com/huyvu2512/youtube-customizer/commit/491f6baeb0ee6f8666afa5d65d730f98f6933d3b)** Cập nhật đường dẫn ảnh chụp màn hình minh họa giao diện trong README.md.
+- **[233fa6b](https://github.com/huyvu2512/youtube-customizer/commit/233fa6b430ed0894a795a509694c9412d9a8050f)** Đồng bộ và xác nhận mã nguồn `youtube_customizer.js`.
+- **[4f4ab64](https://github.com/huyvu2512/youtube-customizer/commit/4f4ab649c89e884a6bde35618dce2d051d7d2fa5)** Chờ sự kiện DOMContentLoaded trước khi áp dụng CSS lưới 4 cột để tránh lỗi tải trang.
 
 ## v1.1 — 21/10/2025 15:15
 
-- **[0dda497](https://github.com/huyvu2512/youtube-customizer/commit/0dda49748fd411e3dce9fb574acdcab749c3bd4e)** Cập nhật youtube_customizer.js.
+- **[0dda497](https://github.com/huyvu2512/youtube-customizer/commit/0dda49748fd411e3dce9fb574acdcab749c3bd4e)** Tích hợp đồng thời logo Premium và cơ chế chèn CSS lưới 4 cột video ngay khi tải trang.
 
 ## v1.0 — 09/12/2025 14:53
 
-- **[541fc31](https://github.com/huyvu2512/youtube-customizer/commit/541fc3133f71b4031e40c80f7cf1d8d48ec417b8)** Cập nhật youtube_customizer.js.
-- **[6ae932c](https://github.com/huyvu2512/youtube-customizer/commit/6ae932c88384c97dc131ee44f927e295d17d9551)** Cập nhật README.md.
-- **[d8eefae](https://github.com/huyvu2512/youtube-customizer/commit/d8eefaef5dbf734d4c605c06f384059709330146)** Cập nhật tampermonkey.user.js.
-- **[8c9e916](https://github.com/huyvu2512/youtube-customizer/commit/8c9e9166ef65a7db30f8c07b962367dfc9e8e89d)** Cập nhật youtube_customizer.js.
-- **[d37ce87](https://github.com/huyvu2512/youtube-customizer/commit/d37ce87a8c69ee94a8b9851203c258cfc1a364ea)** Cập nhật youtube_customizer.js.
-- **[a9b131f](https://github.com/huyvu2512/youtube-customizer/commit/a9b131f19b55d7ac0421b8a53e38979d64cd327c)** Cập nhật README.md.
-- **[ac9619d](https://github.com/huyvu2512/youtube-customizer/commit/ac9619d0334ef1166f8b230af1913d01a23a24a7)** Cập nhật README.md.
-- **[6b4125e](https://github.com/huyvu2512/youtube-customizer/commit/6b4125e66a56dbd084b7866f907848bc9cc9f16a)** Thay đổi URL biểu tượng trong tập lệnh YouTube.
-- **[0854bed](https://github.com/huyvu2512/youtube-customizer/commit/0854bedf2bd4a8f2020913c049483e16d268d7d6)** Cập nhật tampermonkey.user.js.
-- **[2355e8f](https://github.com/huyvu2512/youtube-customizer/commit/2355e8fb966629bd1fbdbe318281308abce03a23)** Thay đổi URL biểu tượng trong tập lệnh YouTube.
-- **[d82c3af](https://github.com/huyvu2512/youtube-customizer/commit/d82c3af0c72a2a0f0e0390d5bb6cc6ba4140f6af)** Cập nhật tampermonkey.user.js.
-- **[42fa28c](https://github.com/huyvu2512/youtube-customizer/commit/42fa28c24a6c5a48f653b8d00343da0f52e23d0e)** Cập nhật youtube_customizer.js.
-- **[1f7100f](https://github.com/huyvu2512/youtube-customizer/commit/1f7100fd96060f85d09cc5fe9d10caa8b7c947af)** Cập nhật youtube_customizer.js.
-- **[35ce903](https://github.com/huyvu2512/youtube-customizer/commit/35ce903a03d7f9feb742da92996a6b3e282f86ee)** Cập nhật youtube_customizer.js.
-- **[503fb8a](https://github.com/huyvu2512/youtube-customizer/commit/503fb8a3e2cad2f47534007cd9164168c5d36af6)** Cập nhật youtube_customizer.js.
-- **[32c33b6](https://github.com/huyvu2512/youtube-customizer/commit/32c33b64dce478be7f6d75d9d13fd4923e9b3153)** Cập nhật README với thông tin và hướng dẫn dự án.
-- **[708a683](https://github.com/huyvu2512/youtube-customizer/commit/708a6835086eaf437d07e21f16c8713e7fd73a32)** Cập nhật README.md.
-- **[2681023](https://github.com/huyvu2512/youtube-customizer/commit/26810239c6834cc7db44dfe8b8333361c671d045)** Cập nhật youtube_customizer.js.
-- **[3069a38](https://github.com/huyvu2512/youtube-customizer/commit/3069a38abcd02120e05708cfad874a85c3633e00)** Cập nhật README.md.
-- **[425663d](https://github.com/huyvu2512/youtube-customizer/commit/425663d2e6075315fdc807f4245b2160d4fc9880)** Cập nhật tampermonkey.user.js.
-- **[27aaf14](https://github.com/huyvu2512/youtube-customizer/commit/27aaf148014dc0d415256da299802e0d9d247b7f)** Cập nhật README.md.
-- **[533b369](https://github.com/huyvu2512/youtube-customizer/commit/533b3692265fafd71542d0ab5867d427b782cd22)** Cập nhật tampermonkey.user.js.
+- **[541fc31](https://github.com/huyvu2512/youtube-customizer/commit/541fc3133f71b4031e40c80f7cf1d8d48ec417b8)** Thêm tính năng tua video bằng Numpad, ẩn thanh điều khiển khi tua, tự động bỏ qua quảng cáo và chống kẹt toàn màn hình.
+- **[6ae932c](https://github.com/huyvu2512/youtube-customizer/commit/6ae932c88384c97dc131ee44f927e295d17d9551)** Cập nhật liên kết cài đặt script thành chữ thường đồng bộ trong README.md.
+- **[d8eefae](https://github.com/huyvu2512/youtube-customizer/commit/d8eefaef5dbf734d4c605c06f384059709330146)** Sửa chữ hoa thành chữ thường trong đường dẫn URL @require của `tampermonkey.user.js`.
+- **[8c9e916](https://github.com/huyvu2512/youtube-customizer/commit/8c9e9166ef65a7db30f8c07b962367dfc9e8e89d)** Tạm gỡ bỏ xử lý cuộn trang khi click logo để tối ưu độ tương thích.
+- **[d37ce87](https://github.com/huyvu2512/youtube-customizer/commit/d37ce87a8c69ee94a8b9851203c258cfc1a364ea)** Thêm tính năng tự động cuộn lên đầu trang khi nhấp vào logo YouTube.
+- **[a9b131f](https://github.com/huyvu2512/youtube-customizer/commit/a9b131f19b55d7ac0421b8a53e38979d64cd327c)** Bổ sung lại phần hướng dẫn cài đặt và sử dụng vào README.md.
+- **[ac9619d](https://github.com/huyvu2512/youtube-customizer/commit/ac9619d0334ef1166f8b230af1913d01a23a24a7)** Dọn dẹp và tổ chức lại nội dung tài liệu trong README.md.
+- **[6b4125e](https://github.com/huyvu2512/youtube-customizer/commit/6b4125e66a56dbd084b7866f907848bc9cc9f16a)** Chuẩn hóa URL biểu tượng chính thức cho tập lệnh trong `tampermonkey.user.js`.
+- **[0854bed](https://github.com/huyvu2512/youtube-customizer/commit/0854bedf2bd4a8f2020913c049483e16d268d7d6)** Cập nhật lại đường dẫn biểu tượng script trong `tampermonkey.user.js`.
+- **[2355e8f](https://github.com/huyvu2512/youtube-customizer/commit/2355e8fb966629bd1fbdbe318281308abce03a23)** Thay đổi URL biểu tượng script sang avatar tài khoản GitHub của tác giả.
+- **[d82c3af](https://github.com/huyvu2512/youtube-customizer/commit/d82c3af0c72a2a0f0e0390d5bb6cc6ba4140f6af)** Cập nhật URL biểu tượng script sang kho lưu trữ ảnh đính kèm GitHub.
+- **[42fa28c](https://github.com/huyvu2512/youtube-customizer/commit/42fa28c24a6c5a48f653b8d00343da0f52e23d0e)** Khôi phục logic thay thế logo YouTube Premium dạng userscript độc lập.
+- **[1f7100f](https://github.com/huyvu2512/youtube-customizer/commit/1f7100fd96060f85d09cc5fe9d10caa8b7c947af)** Tạm thời tinh gọn tập lệnh, chỉ giữ lại định kiểu hiển thị lưới 4 cột bằng GM_addStyle.
+- **[35ce903](https://github.com/huyvu2512/youtube-customizer/commit/35ce903a03d7f9feb742da92996a6b3e282f86ee)** Tích hợp cơ chế thay thế logo YouTube Premium dạng SVG và kiểm tra trạng thái đăng nhập.
+- **[503fb8a](https://github.com/huyvu2512/youtube-customizer/commit/503fb8a3e2cad2f47534007cd9164168c5d36af6)** Tối ưu xử lý TrustedHTML bypass tránh xung đột trên trình duyệt nhân Chromium.
+- **[32c33b6](https://github.com/huyvu2512/youtube-customizer/commit/32c33b64dce478be7f6d75d9d13fd4923e9b3153)** Cập nhật README với thông tin và hướng dẫn chi tiết về dự án.
+- **[708a683](https://github.com/huyvu2512/youtube-customizer/commit/708a6835086eaf437d07e21f16c8713e7fd73a32)** Chỉnh sửa nút cài đặt trong README.md trỏ về tệp loader `tampermonkey.user.js`.
+- **[2681023](https://github.com/huyvu2512/youtube-customizer/commit/26810239c6834cc7db44dfe8b8333361c671d045)** Khắc phục lỗi Trusted Types trên Chrome/Chromium và chuẩn hóa hàm thay đổi logo.
+- **[3069a38](https://github.com/huyvu2512/youtube-customizer/commit/3069a38abcd02120e05708cfad874a85c3633e00)** Cập nhật liên kết cài đặt script và thông tin liên hệ tác giả trong README.md.
+- **[425663d](https://github.com/huyvu2512/youtube-customizer/commit/425663d2e6075315fdc807f4245b2160d4fc9880)** Sửa lại URL @require trong `tampermonkey.user.js` trỏ chính xác về `youtube_customizer.js`.
+- **[27aaf14](https://github.com/huyvu2512/youtube-customizer/commit/27aaf148014dc0d415256da299802e0d9d247b7f)** Cập nhật thông tin tác giả, badge phiên bản 1.0 và liên kết cài đặt trong README.md.
+- **[533b369](https://github.com/huyvu2512/youtube-customizer/commit/533b3692265fafd71542d0ab5867d427b782cd22)** Tối giản metadata trong `tampermonkey.user.js` và điều chỉnh đường dẫn @require.
 - **[4f878b6](https://github.com/huyvu2512/youtube-customizer/commit/4f878b65297673ad4b494425e020b9d26a430960)** Đổi tên `YouTube-Customizer.user.js` thành `tampermonkey.user.js`.
 
-## Giai đoạn khởi đầu
+## Giai đoạn khởi đầu — 16/10/2025 17:29
 
-- **[addc42f](https://github.com/huyvu2512/youtube-customizer/commit/addc42ff437892342d229102efe1f360d674a0cc)** Cập nhật URL và duy trì thông tin tập lệnh.
-- **[f293159](https://github.com/huyvu2512/youtube-customizer/commit/f293159515cf8160f6d5d0edbb0d83c0be0e424c)** Cập nhật YouTube-Customizer.user.js.
-- **[960c5f1](https://github.com/huyvu2512/youtube-customizer/commit/960c5f1e3b239c76f65e2ffdfb279c7c123b43e6)** Cập nhật youtube_customizer.js.
-- **[e11f44f](https://github.com/huyvu2512/youtube-customizer/commit/e11f44f8c22153e6166d1319cefdaf3427f190ed)** Cải thiện YouTube Customizer với nhật ký và tùy chọn số cột.
-- **[6e37772](https://github.com/huyvu2512/youtube-customizer/commit/6e3777215e1af8156410f0845267c7c03eb58d1b)** Cập nhật YouTube-Customizer.user.js.
-- **[9402bbd](https://github.com/huyvu2512/youtube-customizer/commit/9402bbd1e896d0b1653fe85427fd2cfab1bd7733)** Đổi tên `youtube_customizer.js` thành `YouTube-Customizer.user.js`.
+- **[addc42f](https://github.com/huyvu2512/youtube-customizer/commit/addc42ff437892342d229102efe1f360d674a0cc)** Cập nhật đường dẫn URL kho lưu trữ và metadata trong tập lệnh tải `YouTube-Customizer.user.js`.
+- **[f293159](https://github.com/huyvu2512/youtube-customizer/commit/f293159515cf8160f6d5d0edbb0d83c0be0e424c)** Xác nhận và đồng bộ tệp tải `YouTube-Customizer.user.js`.
+- **[960c5f1](https://github.com/huyvu2512/youtube-customizer/commit/960c5f1e3b239c76f65e2ffdfb279c7c123b43e6)** Cập nhật phần mô tả chức năng của tệp logic `youtube_customizer.js`.
+- **[e11f44f](https://github.com/huyvu2512/youtube-customizer/commit/e11f44f8c22153e6166d1319cefdaf3427f190ed)** Bổ sung ghi log hệ thống và tùy chọn số cột hiển thị cho YouTube Customizer.
+- **[6e37772](https://github.com/huyvu2512/youtube-customizer/commit/6e3777215e1af8156410f0845267c7c03eb58d1b)** Điều chỉnh lại số phiên bản về 1.0 trong metadata của `YouTube-Customizer.user.js`.
+- **[9402bbd](https://github.com/huyvu2512/youtube-customizer/commit/9402bbd1e896d0b1653fe85427fd2cfab1bd7733)** Tách riêng file nạp `YouTube-Customizer.user.js` dạng loader và xóa mã gộp cũ.
 - **[36ca9d0](https://github.com/huyvu2512/youtube-customizer/commit/36ca9d0c9ab5e2d53485f900f0865d79f9a3ed48)** Đổi tên `tampermonkey.user.js` thành `youtube_customizer.js`.
-- **[3fa8d9a](https://github.com/huyvu2512/youtube-customizer/commit/3fa8d9ae7dd6203a82072c9980cf8e1cd957f777)** Cải thiện tùy chỉnh logo YouTube và khả năng gỡ lỗi.
-- **[c602a2f](https://github.com/huyvu2512/youtube-customizer/commit/c602a2f0e94bf037ab58311b3f22aa87735bfd42)** Cập nhật youtube.js.
-- **[7afd5cd](https://github.com/huyvu2512/youtube-customizer/commit/7afd5cd89e890c4de089caa2256b6909d6a0f0d4)** Cập nhật youtube_customizer.js.
+- **[3fa8d9a](https://github.com/huyvu2512/youtube-customizer/commit/3fa8d9ae7dd6203a82072c9980cf8e1cd957f777)** Cải thiện tùy biến logo YouTube và bổ sung debug logging.
+- **[c602a2f](https://github.com/huyvu2512/youtube-customizer/commit/c602a2f0e94bf037ab58311b3f22aa87735bfd42)** Chuyển đổi `youtube.js` thành loader nạp script ngoài qua @require và cập nhật version 2.0.
+- **[7afd5cd](https://github.com/huyvu2512/youtube-customizer/commit/7afd5cd89e890c4de089caa2256b6909d6a0f0d4)** Tải lên mã nguồn ban đầu của tập lệnh đổi logo Premium và hiển thị lưới 4 cột video.
 - **[44dcb53](https://github.com/huyvu2512/youtube-customizer/commit/44dcb53eb9ae279e8da83dcf68d4c52d6a20dc85)** Khởi tạo kho mã nguồn.
