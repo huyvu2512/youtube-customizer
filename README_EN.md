@@ -4,11 +4,11 @@
 
 **Comprehensive Userscript for YouTube UI Customization, Performance Optimization & Intelligent Player Controls**
 
-[🇻🇳 Tiếng Việt](README.md) · [🇺🇸 English](README_EN.md)
+[Tiếng Việt](README.md) · [English](README_EN.md)
 
-[![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
-[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6?logo=css3&logoColor=white)](https://www.w3.org/Style/CSS/)
+[![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6)](https://www.w3.org/Style/CSS/)
 [![Version](https://img.shields.io/badge/Version-3.9.19-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
@@ -40,24 +40,19 @@ Release **v3.9.19** keeps the userscript changelog to the 10 latest versions; th
 
 ## Key Features
 
-- **Ambient Lighting (Ambilight 2.0 Cinema) ⭐** - Cinema-grade real-time ambient glow matching video frames. Features automatic black-bar detection (Letterbox skip), 100% four-corner edge coverage, and a smooth 2200px vertical diffusion extending down into comments. GPU-accelerated with auto-pause during video pause or hidden background tabs.
-- **Multilingual Support (21 Languages)** - Built-in floating selector with instant panel localization across all 5 tabs and fail-safe fallback to YouTube / system locale.
-- **Intuitive 5-Tab Control Panel** - Clean, organized settings divided into Interface, Clean Feed Filter, Video Player, System Optimization, and About, styled in elegant translucent dark mode.
-- **Zero-Lag Performance & Smooth Layout** - Solves hitbox desynchronization, eliminates expensive `:has()` hover style recalculations, and offloads CPU main thread bottlenecks.
-- **Hide Tagged Products (YouTube Shopping)** - Automatically collapses and hides the right-hand shopping panel (`engagement-panel-shopping-panel`), the shopping bag player icon, and affiliate product shelves.
-- **Buffer-Safe Video Quality Preference** - Select from 5 resolution modes: Auto, Maximum (Max / 4K / 8K), 2K (1440p), 1080p (Full HD), and 720p (HD). Enforces quality once upon manifest load to prevent buffer starvation.
-- **On-Screen Live Chat Overlay** - Displays live stream chat comments directly overlaid on the video: Danmaku (bullet scrolling) or Draggable Translucent Streamer Box, compatible with both active streams and Live Replays.
-- **Force Live DVR (Unlock Rewind)** - Unlocks the rewind timeline slider on live streams where channel owners disabled rewinding, safely intercepting stream playback.
-- **Auto Live Sync** - Locks live playback to the real-time broadcast head, mitigating lag accumulation and auto-snapping back to live upon returning from background tabs.
-- **Live Chat Memory Garbage Collector** - Caps live chat DOM nodes to 100 items, periodically flushing stale memory to eliminate browser slowdowns during long streams.
-- **Block AV1 / Force Hardware Codec** - Disables CPU-heavy AV1 decoding on systems without hardware acceleration, enforcing lightweight H.264 / VP9 hardware codecs to keep laptops cool and save battery.
-- **Prevent Auto-Pause** - Automatically dismisses the annoying *"Video paused. Continue watching?"* dialog with debounce MutationObservers.
-- **Radio Mode (Audio-Only)** - Cuts video canvas rendering while maintaining the audio stream to drastically minimize CPU, GPU, and battery consumption for podcasts and music.
-- **Smart Keyboard Shortcuts** - Fast forward / rewind 10s via A / D or Numpad 4 / 6, pause / play with S or Numpad 5, volume adjustment with Numpad 8 / 2 (immune to input fields and IME conflicts).
-- **Comprehensive Feed Cleanup** - Progressively strips Shorts shelves, Playables games, Members-only teasers, Community posts, and Sponsored search ads without stutter.
-- **Hide Watermarks & Endscreen Overlays** - Automatically strips channel watermark logos in the lower-right corner, outro endscreen recommendation cards, and intrusive info cards.
-- **Auto-Dismiss Promos** - Automatically closes YouTube Premium trial banners, surveys, and interruption prompts.
-- **Custom Homepage Video Grid** - Locks the homepage and channel grid layout to 3, 4, or 5 columns persistently across page reloads.
+- **Ambient lighting (Ambilight)** - Adds a frame-based glow on standard video watch pages. It is off by default and does not run on Shorts.
+- **Five-tab settings panel** - Settings for layout, filters, player, optimization, and project information, with a choice of interface language.
+- **Interface languages** - 20 languages plus automatic selection.
+- **Video grid** - Choose 3, 4, or 5 columns on Home and channel pages.
+- **Content filters** - Optional filters for Shorts, Playables, members-only videos, Community posts, Explore topics, Mixes/playlists, tagged products, and sponsored search results.
+- **Player options** - Hide channel watermarks, end screens, and info cards; dismiss banners or interruption prompts; hide native Live Chat and its emoji/stickers.
+- **Live playback tools** - Unlock Live DVR seeking and use Auto Live Sync to return toward the live edge.
+- **Live Chat overlay** - Show chat as Danmaku or in a floating Streamer box. The overlay is off by default.
+- **Video quality preference** - Choose Auto, Maximum, 1440p, 1080p, or 720p. The available result still depends on each video and YouTube playback support.
+- **Optional optimization controls** - Audio-only mode lowers playback quality to the lowest level; other controls block AV1, clean up Live Chat DOM, or dismiss the continue-watching prompt. These controls are off by default.
+- **Playback statistics** - The settings panel can show video FPS, buffered seconds, HTTP response latency to YouTube, and estimated download speed.
+- **Keyboard shortcuts** - When enabled, A/D seek and S toggles playback while the pointer is over the player or in fullscreen; Numpad 4/6 seek, 5 toggles playback, and 8/2 adjust volume.
+- **Elapsed-time display** - Normalizes elapsed-time display on standard videos and leaves live streams alone.
 
 ---
 
@@ -67,79 +62,48 @@ Release **v3.9.19** keeps the userscript changelog to the 10 latest versions; th
 | :--- | :--- |
 | Platform | Userscript (Tampermonkey, Violentmonkey) |
 | Language | Vanilla JavaScript (ES6+, IIFE Bundle) |
-| Styling | Vanilla CSS3 (Custom Design System, Dark Mode) |
+| Styling | Vanilla CSS3 |
 | Packaging & Build | Node.js, esbuild |
-| DOM Security | Trusted Types, Safe HTML Sanitization |
-| Supported Browsers | Google Chrome, Microsoft Edge, Mozilla Firefox, Brave, Opera, Arc |
+| DOM Handling | Trusted Types and helpers for safe content insertion |
+| Supported Browsers | Browsers that support a compatible userscript manager |
 
 ---
 
 ## Directory Structure
 
+Source modules live in `src/`; `youtube_customizer.js` is the generated distribution bundle.
+
 ```text
-youtube-customizer/
-├── assets/                       # Image assets and preview screenshots
-│   └── preview.png               # Control panel screenshot
-├── scripts/                      # Build and packaging automation
-│   └── build.js                  # esbuild IIFE bundler script
-├── src/                          # Modular source code
-│   ├── chat/                     # Live Chat Overlay (Danmaku & Streamer Box)
-│   │   ├── chatObserver.js       # Chat DOM observer
-│   │   ├── chatParser.js         # Message parser, avatar, and emoji handling
-│   │   ├── chatState.js          # Chat queue and state management
-│   │   ├── danmaku.js            # Bullet chat overlay engine
-│   │   ├── index.js              # Chat module entry point
-│   │   └── streamerBox.js        # Draggable streamer chat box
-│   ├── core/                     # Core configs, constants, and utilities
-│   │   ├── config.js             # Configuration & localStorage manager
-│   │   ├── constants.js          # SVG icons, versioning, and constants
-│   │   ├── i18n.js               # Localization dictionary (20+ languages)
-│   │   └── utils.js              # Trusted Types & DOM helper utilities
-│   ├── features/                 # Customization and cleanup features
-│   │   ├── feedFilter.js         # Shorts, Playables, Members, Community filter
-│   │   ├── grid.js               # Grid layout controller (3, 4, 5 columns)
-│   │   ├── index.js              # Features module entry point
-│   │   ├── logo.js               # YouTube Premium logo replacer
-│   │   ├── mixFilter.js          # Mixes & Radio playlist filter
-│   │   ├── promos.js             # Promo & survey auto-dismisser
-│   │   ├── qualityManager.js     # Video resolution preference manager
-│   │   └── shoppingFilter.js     # YouTube Shopping shelf & drawer remover
-│   ├── optimization/             # Hardware, RAM, and GPU optimizations
-│   │   ├── audioOnly.js          # Audio-only Radio mode (power saver)
-│   │   ├── chatMemoryGc.js       # Chat DOM memory garbage collector
-│   │   ├── codecBlocker.js       # AV1 blocker & H.264/VP9 enforcer
-│   │   ├── index.js              # Optimization module entry point
-│   │   └── preventAutoPause.js   # "Continue watching?" auto-confirmer
-│   ├── player/                   # Player controls and video enhancements
-│   │   ├── ambientLight.js       # Ambient Lighting 2.0 Cinema engine
-│   │   ├── autoLive.js           # Live stream sync & lag compensator
-│   │   ├── fullscreenLock.js     # Fullscreen lock and aspect ratio handler
-│   │   ├── index.js              # Player module entry point
-│   │   ├── liveDvr.js            # Force Live DVR (unlock rewind)
-│   │   └── shortcuts.js          # Keyboard shortcut handlers
-│   ├── ui/                       # Settings panel and user interface
-│   │   ├── index.js              # UI module entry point
-│   │   ├── notifier.js           # GitHub version checker & notifications
-│   │   ├── panel.js              # 5-tab glassmorphic settings panel
-│   │   └── sync.js               # UI state synchronizer
-│   ├── index.js                  # Script bootstrap & lifecycle orchestrator
-│   └── styles.css                # Complete custom CSS design system
-├── package.json                  # npm package configuration & build scripts
-├── package-lock.json             # npm lockfile
-├── tampermonkey.user.js          # Userscript metadata header
-├── youtube_customizer.js         # Production bundled distribution script
-├── docs/CHANGELOG_HISTORY.md     # Version-by-version change history
-├── SECURITY.md                   # Security policy & vulnerability reporting
-├── LICENSE                       # MIT Open Source License
-├── README.md                     # Vietnamese documentation
-└── README_EN.md                  # English documentation & user guide
+ youtube-customizer/
+ ├── assets/preview.png
+ ├── docs/CHANGELOG_HISTORY.md
+ ├── scripts/build.js
+ ├── src/
+ │   ├── chat.js              # Chat module exports
+ │   ├── features.js          # Feature/player module exports
+ │   ├── ui.js                # UI module exports
+ │   ├── chat/                 # Live Chat overlay
+ │   ├── core/                 # Config, constants, localization, utilities
+ │   ├── features/             # Filters, video grid, quality manager
+ │   ├── optimization/         # Audio mode, codec, chat cleanup, auto-pause
+ │   ├── player/               # Ambilight and player controls
+ │   ├── ui/                   # Settings panel and performance display
+ │   ├── index.js
+ │   └── styles.css
+ ├── package.json
+ ├── tampermonkey.user.js
+ ├── youtube_customizer.js
+ ├── README.md
+ ├── README_EN.md
+ ├── SECURITY.md
+ └── LICENSE
 ```
 
 ### Building from Source (For Developers)
 
-- **Install dependencies:** `npm install`
-- **Build production bundle:** `npm run build` (outputs `youtube_customizer.js`)
-- **Development watch mode:** `npm run dev`
+- Install dependencies: `npm install`
+- Build the bundle: `npm run build`
+- Watch source files and rebuild: `npm run dev`
 
 ---
 
@@ -163,11 +127,11 @@ youtube-customizer/
 
 ### Step 1: Install Tampermonkey Extension
 
-Install Tampermonkey for your preferred web browser:
+Install Tampermonkey from your browser’s extension store:
 
-[![Download Tampermonkey](https://img.shields.io/badge/DOWNLOAD-TAMPERMONKEY-black?style=for-the-badge&logo=tampermonkey)](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+[![Download Tampermonkey](https://img.shields.io/badge/DOWNLOAD-TAMPERMONKEY-black?style=for-the-badge)](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
 
-> Supports: Google Chrome, Microsoft Edge, Brave, Mozilla Firefox, Opera, Arc.
+> Use a browser that supports Tampermonkey or another compatible userscript manager.
 
 ---
 
@@ -175,7 +139,7 @@ Install Tampermonkey for your preferred web browser:
 
 On recent Chromium-based browsers running Manifest V3, you **must enable user scripts execution permission** for Tampermonkey:
 
-[![Enable User Scripts](https://img.shields.io/badge/ENABLE-USER%20SCRIPTS-1a73e8?style=for-the-badge&logo=googlechrome&logoColor=white)](chrome://extensions/?id=dhdgffkkebhmkfjojejmpbldmpobfkfo)
+[![Enable User Scripts](https://img.shields.io/badge/ENABLE-USER%20SCRIPTS-1a73e8?style=for-the-badge)](chrome://extensions/?id=dhdgffkkebhmkfjojejmpbldmpobfkfo)
 
 1. Open the following URL in your browser address bar:
    ```text
@@ -189,7 +153,7 @@ On recent Chromium-based browsers running Manifest V3, you **must enable user sc
 
 #### Method 1: One-Click Installation (Recommended)
 
-[![Install Script](https://img.shields.io/badge/INSTALL-SCRIPT-2ea44f?style=for-the-badge&logo=tampermonkey)](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)
+[![Install Script](https://img.shields.io/badge/INSTALL-SCRIPT-2ea44f?style=for-the-badge)](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)
 
 1. Click the **INSTALL SCRIPT** button above (or open the [direct script link](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js)).
 2. Tampermonkey will open the installation window; click **Install** (or **Update**).

@@ -1,7 +1,5 @@
 # Lịch sử thay đổi
 
-Lịch sử thay đổi theo phiên bản. Mã commit liên kết tới GitHub.
-
 ## v3.9.19
 
 - **[8dc8707](https://github.com/huyvu2512/youtube-customizer/commit/8dc8707a59cb59946b6066069d13aecdb626663d)** Tách lịch sử đầy đủ thành tài liệu Markdown dễ đọc và giới hạn changelog nhúng trong Tampermonkey ở 10 version gần nhất.
