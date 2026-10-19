@@ -1,21 +1,28 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.5
-// @description  YouTube Customizer v3.9.5 — Chờ và xác nhận áp dụng độ phân giải theo từng video.
+// @version      3.9.6
+// @description  YouTube Customizer v3.9.6 — Cải thiện Auto Live catch-up và tránh seek khi player đang tải.
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.5
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.6
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.5
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.5
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.6
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.6
 // ==/UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.5:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.6:
+ * ============================================================================
+ * 1. [Auto Live]:
+ *    - Kiểm tra trạng thái mỗi giây và bắt kịp với tốc độ tăng dần theo độ trễ.
+ *    - Chỉ snap khi trễ trên 120 giây và player đã sẵn sàng ổn định.
+ *    - Bỏ snap ban đầu khi video đang buffer hoặc player đang loading.
+ * ============================================================================
+ * CHANGELOG - v3.9.5:
  * ============================================================================
  * 1. [Độ phân giải video]:
  *    - Chờ player nạp đúng video và xác nhận chất lượng yêu cầu đã áp dụng.

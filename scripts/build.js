@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.5
-// @description  YouTube Customizer v3.9.5 — Chờ và xác nhận áp dụng độ phân giải theo từng video.
+// @version      3.9.6
+// @description  YouTube Customizer v3.9.6 — Cải thiện Auto Live catch-up và tránh seek khi player đang tải.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,7 +23,14 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.5:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.6:
+ * ============================================================================
+ * 1. [Auto Live]:
+ *    - Kiểm tra trạng thái mỗi giây và bắt kịp với tốc độ tăng dần theo độ trễ.
+ *    - Chỉ snap khi trễ trên 120 giây và player đã sẵn sàng ổn định.
+ *    - Bỏ snap ban đầu khi video đang buffer hoặc player đang loading.
+ * ============================================================================
+ * CHANGELOG - v3.9.5:
  * ============================================================================
  * 1. [Độ phân giải video]:
  *    - Chờ player nạp đúng video và xác nhận chất lượng yêu cầu đã áp dụng.

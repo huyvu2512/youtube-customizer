@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.5
-// @description  YouTube Customizer v3.9.5 — Chờ và xác nhận áp dụng độ phân giải theo từng video.
+// @version      3.9.6
+// @description  YouTube Customizer v3.9.6 — Cải thiện Auto Live catch-up và tránh seek khi player đang tải.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -11,7 +11,14 @@
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.5:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.6:
+ * ============================================================================
+ * 1. [Auto Live]:
+ *    - Kiểm tra trạng thái mỗi giây và bắt kịp với tốc độ tăng dần theo độ trễ.
+ *    - Chỉ snap khi trễ trên 120 giây và player đã sẵn sàng ổn định.
+ *    - Bỏ snap ban đầu khi video đang buffer hoặc player đang loading.
+ * ============================================================================
+ * CHANGELOG - v3.9.5:
  * ============================================================================
  * 1. [Độ phân giải video]:
  *    - Chờ player nạp đúng video và xác nhận chất lượng yêu cầu đã áp dụng.
@@ -62,7 +69,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.5";
+      APP_VERSION = "3.9.6";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -6530,10 +6537,16 @@
   var lastSnapTime = 0;
   var lastUserSeekTime = 0;
   var userIsRewound = false;
+  var snapReadySince = 0;
+  var LIVE_EDGE_TOLERANCE_SECONDS = 1;
+  var LIVE_SNAP_THRESHOLD_SECONDS = 120;
+  var LIVE_SNAP_STABLE_MS = 1500;
+  var MAX_CATCH_UP_RATE = 1.18;
   function resetAutoLiveState() {
     userIsRewound = false;
     lastUserSeekTime = 0;
     lastSnapTime = 0;
+    snapReadySince = 0;
     try {
       const player = document.querySelector("#movie_player:not(#inline-preview-player)");
       if (player) {
@@ -6644,26 +6657,39 @@
     if (!currentConfig.autoLiveSync) return;
     if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
     const player = document.querySelector("#movie_player:not(#inline-preview-player)");
-    if (!player) return;
+    if (!player) {
+      snapReadySince = 0;
+      return;
+    }
     if (!isCurrentlyActiveLive(player)) {
+      snapReadySince = 0;
       return;
     }
     const video = player.querySelector("video");
-    if (!video || video.paused || video.ended) return;
+    if (!video || video.paused || video.ended) {
+      snapReadySince = 0;
+      return;
+    }
     if (isAtLiveEdge(player)) {
+      snapReadySince = 0;
       if (video.playbackRate !== 1) {
         video.playbackRate = 1;
       }
       return;
     }
     if (userIsRewound) {
+      snapReadySince = 0;
       if (video.playbackRate !== 1) {
         video.playbackRate = 1;
       }
       return;
     }
-    if (Date.now() - lastUserSeekTime < 8e3) return;
+    if (Date.now() - lastUserSeekTime < 8e3) {
+      snapReadySince = 0;
+      return;
+    }
     if (video.readyState < 3 || player.classList.contains("ytp-loading")) {
+      snapReadySince = 0;
       if (video.playbackRate !== 1) {
         video.playbackRate = 1;
       }
@@ -6671,20 +6697,20 @@
     }
     const delay = getLiveDelay(player, video);
     const now = Date.now();
-    if (delay > 45) {
-      if (now - lastSnapTime > 3e4) {
+    if (delay > LIVE_SNAP_THRESHOLD_SECONDS) {
+      if (!snapReadySince) snapReadySince = now;
+      if (now - snapReadySince >= LIVE_SNAP_STABLE_MS && now - lastSnapTime > 3e4) {
         lastSnapTime = now;
+        snapReadySince = 0;
         snapToLive(player);
-        if (video.playbackRate !== 1) {
-          video.playbackRate = 1;
-        }
+        video.playbackRate = 1;
       }
       return;
     }
-    if (delay > 6) {
-      if (video.playbackRate !== 1.08) {
-        video.playbackRate = 1.08;
-      }
+    snapReadySince = 0;
+    if (delay > LIVE_EDGE_TOLERANCE_SECONDS) {
+      const rate = Math.min(MAX_CATCH_UP_RATE, Math.round((1.02 + delay * 5e-3) * 100) / 100);
+      if (Math.abs(video.playbackRate - rate) >= 0.01) video.playbackRate = rate;
       return;
     }
     if (video.playbackRate !== 1) {
@@ -6699,9 +6725,11 @@
       initialSnapTimer = null;
     }
     let attempts = 0;
+    let stableReadySince = 0;
     initialSnapTimer = setInterval(() => {
       attempts++;
       const player = document.querySelector("#movie_player:not(#inline-preview-player)");
+      if (!player) stableReadySince = 0;
       if (player) {
         if (typeof player.getVideoData === "function") {
           const vd = player.getVideoData();
@@ -6713,29 +6741,44 @@
         }
         if (isCurrentlyActiveLive(player)) {
           if (isAtLiveEdge(player)) {
+            stableReadySince = 0;
             clearInterval(initialSnapTimer);
             initialSnapTimer = null;
             return;
           }
           const video = player.querySelector("video");
           if (video && !video.paused) {
+            if (video.readyState < 3 || player.classList.contains("ytp-loading")) {
+              stableReadySince = 0;
+              if (attempts >= 30) {
+                clearInterval(initialSnapTimer);
+                initialSnapTimer = null;
+              }
+              return;
+            }
             const delay = getLiveDelay(player, video);
-            if (!userIsRewound && delay > 60) {
+            if (!userIsRewound && delay > LIVE_SNAP_THRESHOLD_SECONDS) {
+              if (!stableReadySince) stableReadySince = Date.now();
+              if (Date.now() - stableReadySince >= LIVE_SNAP_STABLE_MS) {
+                clearInterval(initialSnapTimer);
+                initialSnapTimer = null;
+                lastSnapTime = Date.now();
+                snapToLive(player);
+                return;
+              }
+            } else {
               clearInterval(initialSnapTimer);
               initialSnapTimer = null;
-              lastSnapTime = Date.now();
-              snapToLive(player);
               return;
             }
-            if (delay <= 60) {
-              clearInterval(initialSnapTimer);
-              initialSnapTimer = null;
-              return;
-            }
+          } else {
+            stableReadySince = 0;
           }
+        } else {
+          stableReadySince = 0;
         }
       }
-      if (attempts >= 15) {
+      if (attempts >= 30) {
         clearInterval(initialSnapTimer);
         initialSnapTimer = null;
       }
@@ -6750,11 +6793,12 @@
       clearInterval(initialSnapTimer);
       initialSnapTimer = null;
     }
+    snapReadySince = 0;
   }
   function syncAutoLiveSyncTimer() {
     const isWatchRoute2 = location.pathname.startsWith("/watch") || location.pathname.startsWith("/live");
     if (currentConfig.autoLiveSync && isWatchRoute2) {
-      if (!autoLiveSyncTimer) autoLiveSyncTimer = setInterval(checkLiveSync, 3e3);
+      if (!autoLiveSyncTimer) autoLiveSyncTimer = setInterval(checkLiveSync, 1e3);
       return;
     }
     stopAutoLiveSyncTimer();
