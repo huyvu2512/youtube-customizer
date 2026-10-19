@@ -18,6 +18,7 @@
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
  * v3.9.21 — Khôi phục trạng thái ổn định từ v3.9.19 và cập nhật quy tắc phát triển trong AGENTS.md.
+ * v3.9.20 — Thử nghiệm tính năng xem trước Live Stream thời gian thực (360p) với cơ chế Sliding Window.
  * v3.9.19 — Lịch sử đầy đủ được tổng hợp tại CHANGELOG.md; phần này giới hạn 10 phiên bản gần nhất.
  * v3.9.18 — Gỡ huy hiệu ngôi sao khỏi mục Ánh sáng phòng (Ambilight).
  * v3.9.17 — Thay emoji ngôi sao bằng SVG riêng; bỏ animation nhấp nháy.
@@ -26,6 +27,5 @@
  * v3.9.14 — Tắt Ambilight trên Shorts, giữ Ambilight cho video thường.
  * v3.9.13 — Làm trong track scrollbar riêng của Shorts, giữ thumb dễ nhận biết.
  * v3.9.12 — Mở rộng vùng Ambilight Shorts theo nền điện ảnh của YouTube.
- * v3.9.11 — Giữ nguyên stacking/layout Shorts, đặt quầng sáng phía sau nội dung.
  * ============================================================================
  */
