@@ -14,7 +14,7 @@ const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
 // @version      3.9.19
-// @description  YouTube Customizer v3.9.19 — Lưu lịch sử đầy đủ, giữ changelog userscript gọn 10 version.
+// @description  YouTube Customizer v3.9.19 — Lưu lịch sử đầy đủ, giới hạn nhật ký nhúng trong userscript ở 10 phiên bản mới nhất.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -25,7 +25,7 @@ const banner = `// ==UserScript==
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
- * v3.9.19 — Lịch sử đầy đủ được tổng hợp tại docs/CHANGELOG_HISTORY.md; phần này giới hạn 10 version gần nhất.
+ * v3.9.19 — Lịch sử đầy đủ được tổng hợp tại CHANGELOG.md; phần này giới hạn 10 phiên bản gần nhất.
  * v3.9.18 — Gỡ huy hiệu ngôi sao khỏi mục Ánh sáng phòng (Ambilight).
  * v3.9.17 — Thay emoji ngôi sao bằng SVG riêng; bỏ animation nhấp nháy.
  * v3.9.16 — Gỡ canvas/CSS thử nghiệm trên scrollbar, bỏ cập nhật canvas theo từng frame và khi cuộn.

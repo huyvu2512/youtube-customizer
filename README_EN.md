@@ -18,7 +18,7 @@
 [![Last Commit](https://img.shields.io/github/last-commit/huyvu2512/youtube-customizer?style=flat-square&label=Last%20Commit&color=3fb950)](https://github.com/huyvu2512/youtube-customizer/commits/main)
 ![Visitors](https://visitor-badge.laobi.icu/badge?page_id=huyvu2512.youtube-customizer&left_text=Visitors&left_color=6e7681&right_color=FF0000)
 
-[Install Script](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js) · [Report Bug](https://github.com/huyvu2512/youtube-customizer/issues) · [Request Feature](https://github.com/huyvu2512/youtube-customizer/issues)
+[Install Script](https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js) · [Changelog](CHANGELOG.md) · [Report Bug](https://github.com/huyvu2512/youtube-customizer/issues) · [Request Feature](https://github.com/huyvu2512/youtube-customizer/issues)
 
 </div>
 
@@ -34,7 +34,7 @@
 
 **YouTube Customizer** is a high-performance Userscript running on Tampermonkey / Violentmonkey, engineered to deliver a clean, distraction-free, and immersive YouTube viewing experience. Designed and developed by Huy Vũ (@huyvu2512), this project serves as an in-depth exploration of advanced DOM manipulation, video player rendering pipeline optimization, and fine-tuned browser event interactions on YouTube.
 
-Release **v3.9.19** keeps the userscript changelog to the 10 latest versions; the full commit history is in [docs/CHANGELOG_HISTORY.md](docs/CHANGELOG_HISTORY.md).
+Release **v3.9.19** keeps the userscript changelog to the 10 latest versions; the full commit history is in [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
@@ -76,7 +76,7 @@ Source modules live in `src/`; `youtube_customizer.js` is the generated distribu
 ```text
  youtube-customizer/
  ├── assets/preview.png
- ├── docs/CHANGELOG_HISTORY.md
+ ├── CHANGELOG.md
  ├── scripts/build.js
  ├── src/
  │   ├── chat.js              # Chat module exports
@@ -173,7 +173,7 @@ On recent Chromium-based browsers running Manifest V3, you **must enable user sc
 
 | Document | Description |
 | :--- | :--- |
-| [CHANGELOG_HISTORY.md](./docs/CHANGELOG_HISTORY.md) | Version-by-version change history |
+| [CHANGELOG.md](./CHANGELOG.md) | Version-by-version change history |
 | [SECURITY.md](./SECURITY.md) | Security policy, DOM data privacy, and vulnerability disclosure |
 | [LICENSE](./LICENSE) | MIT Open Source License |
 
