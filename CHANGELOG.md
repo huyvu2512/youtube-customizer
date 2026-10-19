@@ -3,14 +3,11 @@
 ## v3.9.21 — 19/10/2026 21:58
 
 - **[db9069c](https://github.com/huyvu2512/youtube-customizer/commit/db9069c0d3811e9f1a04ec78621e25e98f79fbc9)** Khôi phục trạng thái ổn định từ v3.9.19 (hủy bỏ tính năng xem trước Live Stream theo yêu cầu).
-- Cập nhật quy tắc phát triển trong `AGENTS.md`, bổ sung `CHANGELOG.md` vào danh sách tệp bắt buộc đồng bộ phiên bản.
+- **[6a9c5c4](https://github.com/huyvu2512/youtube-customizer/commit/6a9c5c4d9ef8d7e541abdd52eee47636dda9d0d8)** Cập nhật quy tắc phát triển trong `AGENTS.md`, bổ sung `CHANGELOG.md` vào danh sách tệp bắt buộc đồng bộ phiên bản.
 
 ## v3.9.20 — 19/10/2026 21:45
 
-- **[410f6a5](https://github.com/huyvu2512/youtube-customizer/commit/410f6a54aa633b065e478845477d22546a6fb635)** Thử nghiệm tính năng **Ảnh xem trước Live Stream thời gian thực (360p)** trên Trang chủ và Tìm kiếm:
-  - Tự động nhận diện các thẻ Live Stream và chụp khung hình 360p phản ánh diễn biến thực tế của buổi phát.
-  - Cơ chế **Sliding Window tối đa 5 thẻ trong tầm nhìn**: Chỉ nạp thẻ hiển thị trên màn hình, tự động hủy theo dõi khi cuộn khuất để tiết kiệm tài nguyên.
-  - Xử lý hàng đợi tuần tự 1 luồng siêu tốc, chụp xong hủy ngay tiến trình để tránh chạy ngầm.
+- **[410f6a5](https://github.com/huyvu2512/youtube-customizer/commit/410f6a54aa633b065e478845477d22546a6fb635)** Thử nghiệm tính năng ảnh xem trước Live Stream thời gian thực (360p) với cơ chế Sliding Window tối đa 5 thẻ hiển thị.
 
 ## v3.9.19 — 19/10/2026 17:53
 
