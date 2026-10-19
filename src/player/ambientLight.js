@@ -36,7 +36,11 @@ function isAmbientEnabled() {
  */
 let cachedPlayerRect = null;
 let cachedWrapperRect = null;
+let cachedVideoRect = null;
+let cachedObjectFit = 'contain';
+let cachedObjectPosition = '50% 50%';
 let lastRectUpdateTime = 0;
+let lastVideoDimensions = '';
 
 function updateCachedRects(force = false) {
     const now = Date.now();
@@ -45,7 +49,30 @@ function updateCachedRects(force = false) {
     if (!moviePlayer || !ambientWrapper) return;
     cachedPlayerRect = moviePlayer.getBoundingClientRect();
     cachedWrapperRect = ambientWrapper.getBoundingClientRect();
+    const video = findActiveVideo();
+    if (video) {
+        cachedVideoRect = video.getBoundingClientRect();
+        const videoStyle = window.getComputedStyle(video);
+        cachedObjectFit = videoStyle.objectFit || 'contain';
+        cachedObjectPosition = videoStyle.objectPosition || '50% 50%';
+    }
     lastRectUpdateTime = now;
+}
+
+function getObjectPositionOffset(availableSpace, position) {
+    const value = String(position || '50%').trim().toLowerCase();
+    if (value === 'left' || value === 'top') return 0;
+    if (value === 'right' || value === 'bottom') return availableSpace;
+    if (value === 'center') return availableSpace / 2;
+    if (value.endsWith('%')) {
+        const percent = Number.parseFloat(value);
+        return Number.isFinite(percent) ? availableSpace * percent / 100 : availableSpace / 2;
+    }
+    if (value.endsWith('px')) {
+        const pixels = Number.parseFloat(value);
+        return Number.isFinite(pixels) ? pixels : availableSpace / 2;
+    }
+    return availableSpace / 2;
 }
 
 /**
@@ -141,6 +168,13 @@ function drawFrame(video) {
         const vH = video.videoHeight;
         if (!vW || !vH || vW < 10 || vH < 10) return;
 
+        const dimensions = `${vW}x${vH}`;
+        if (dimensions !== lastVideoDimensions) {
+            cachedPlayerRect = null;
+            cachedVideoRect = null;
+            lastVideoDimensions = dimensions;
+        }
+
         if (!cachedPlayerRect || !cachedWrapperRect) {
             updateCachedRects(true);
         } else if (Date.now() - lastRectUpdateTime > 2000) {
@@ -149,7 +183,8 @@ function drawFrame(video) {
 
         const playerRect = cachedPlayerRect;
         const wrapperRect = cachedWrapperRect;
-        if (!playerRect || !wrapperRect) return;
+        const videoRect = cachedVideoRect || video.getBoundingClientRect();
+        if (!playerRect || !wrapperRect || !videoRect) return;
 
         const pW = playerRect.width;
         const pH = playerRect.height;
@@ -158,35 +193,63 @@ function drawFrame(video) {
         const wrapW = wrapperRect.width || window.innerWidth || 1920;
         const wrapH = wrapperRect.height || 2200;
 
-        // Tọa độ tương đối của player trong không gian wrapper
-        const relX = Math.max(0, playerRect.left - wrapperRect.left);
-        const relY = Math.max(0, playerRect.top - wrapperRect.top);
+        // Match the actual rendered media box inside YouTube's video element.
+        // Portrait and letterboxed videos usually use object-fit: contain, so do not crop them
+        // to the wider player aspect ratio.
+        const boxW = videoRect.width || pW;
+        const boxH = videoRect.height || pH;
+        if (boxW < 10 || boxH < 10) return;
+        const videoAspect = vW / vH;
+        const boxAspect = boxW / boxH;
+        let sourceX = 0, sourceY = 0, sourceW = vW, sourceH = vH;
+        let displayW = boxW, displayH = boxH;
+        const fit = cachedObjectFit;
 
-        // Quy đổi sang hệ tọa độ Canvas (CANVAS_WIDTH x CANVAS_HEIGHT)
+        if (fit === 'contain' || fit === 'scale-down') {
+            let scale = Math.min(boxW / vW, boxH / vH);
+            if (fit === 'scale-down') scale = Math.min(1, scale);
+            displayW = vW * scale;
+            displayH = vH * scale;
+        } else if (fit === 'cover') {
+            const coverScale = Math.max(boxW / vW, boxH / vH);
+            const renderedW = vW * coverScale;
+            const renderedH = vH * coverScale;
+            const positions = cachedObjectPosition.trim().split(/\s+/);
+            const offsetX = getObjectPositionOffset(boxW - renderedW, positions[0]);
+            const offsetY = getObjectPositionOffset(boxH - renderedH, positions[1] || '50%');
+            sourceX = Math.max(0, Math.min(vW, -offsetX / coverScale));
+            sourceY = Math.max(0, Math.min(vH, -offsetY / coverScale));
+            sourceW = Math.max(1, Math.min(vW - sourceX, boxW / coverScale));
+            sourceH = Math.max(1, Math.min(vH - sourceY, boxH / coverScale));
+        }
+
+        if (fit === 'contain' || fit === 'scale-down') {
+            const positions = cachedObjectPosition.trim().split(/\s+/);
+            displayW = Math.min(boxW, displayW);
+            displayH = Math.min(boxH, displayH);
+            const offsetX = getObjectPositionOffset(boxW - displayW, positions[0]);
+            const offsetY = getObjectPositionOffset(boxH - displayH, positions[1] || '50%');
+            cachedVideoRect = {
+                left: videoRect.left + offsetX,
+                top: videoRect.top + offsetY,
+                width: displayW,
+                height: displayH
+            };
+        } else {
+            cachedVideoRect = videoRect;
+        }
+
+        const mediaRect = cachedVideoRect;
         const scaleX = CANVAS_WIDTH / wrapW;
         const scaleY = CANVAS_HEIGHT / wrapH;
-
-        const cvX = Math.round(relX * scaleX);
-        const cvY = Math.round(relY * scaleY);
-        const cvW = Math.round(pW * scaleX);
-        const cvH = Math.round(pH * scaleY);
-
-        // Tính toán vùng hiển thị thực của video (bỏ qua viền đen Cinematic Letterbox / Pillarbox nếu có)
-        const videoAspect = vW / vH;
-        const playerAspect = pW / pH;
-
-        let sX = 0, sY = 0, sW = vW, sH = vH;
-        if (videoAspect > playerAspect + 0.05) {
-            // Letterbox (viền đen trên/dưới)
-            const targetW = vH * playerAspect;
-            sX = Math.round((vW - targetW) / 2);
-            sW = Math.round(targetW);
-        } else if (videoAspect < playerAspect - 0.05) {
-            // Pillarbox (viền đen trái/phải)
-            const targetH = vW / playerAspect;
-            sY = Math.round((vH - targetH) / 2);
-            sH = Math.round(targetH);
-        }
+        const cvX = Math.round((mediaRect.left - wrapperRect.left) * scaleX);
+        const cvY = Math.round((mediaRect.top - wrapperRect.top) * scaleY);
+        const cvW = Math.round(mediaRect.width * scaleX);
+        const cvH = Math.round(mediaRect.height * scaleY);
+        const sX = Math.round(sourceX);
+        const sY = Math.round(sourceY);
+        const sW = Math.max(1, Math.round(sourceW));
+        const sH = Math.max(1, Math.round(sourceH));
 
         // Độ dày dải mép lấy mẫu (sát mép video chuẩn xác 100%, không thụt sâu làm sai lệch màu)
         const stripW = Math.max(4, Math.round(sW * 0.016));

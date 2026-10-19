@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.6
-// @description  YouTube Customizer v3.9.6 — Cải thiện Auto Live catch-up và tránh seek khi player đang tải.
+// @version      3.9.7
+// @description  YouTube Customizer v3.9.7 — Sửa Ambilight theo vùng video thực hiển thị khi khác tỉ lệ player.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -11,7 +11,14 @@
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.6:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.7:
+ * ============================================================================
+ * 1. [Ánh sáng phòng / Ambilight]:
+ *    - Tính vùng ảnh hiển thị theo object-fit và tỉ lệ thực của video.
+ *    - Không crop nhầm video dọc vào tỉ lệ ngang của player khi kéo ánh sáng.
+ *    - Làm mới tọa độ khi kích thước nguồn video thay đổi.
+ * ============================================================================
+ * CHANGELOG - v3.9.6:
  * ============================================================================
  * 1. [Auto Live]:
  *    - Kiểm tra trạng thái mỗi giây và bắt kịp với tốc độ tăng dần theo độ trễ.
@@ -69,7 +76,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.6";
+      APP_VERSION = "3.9.7";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -965,7 +972,29 @@
     if (!moviePlayer || !ambientWrapper) return;
     cachedPlayerRect = moviePlayer.getBoundingClientRect();
     cachedWrapperRect = ambientWrapper.getBoundingClientRect();
+    const video = findActiveVideo();
+    if (video) {
+      cachedVideoRect = video.getBoundingClientRect();
+      const videoStyle = window.getComputedStyle(video);
+      cachedObjectFit = videoStyle.objectFit || "contain";
+      cachedObjectPosition = videoStyle.objectPosition || "50% 50%";
+    }
     lastRectUpdateTime = now;
+  }
+  function getObjectPositionOffset(availableSpace, position) {
+    const value = String(position || "50%").trim().toLowerCase();
+    if (value === "left" || value === "top") return 0;
+    if (value === "right" || value === "bottom") return availableSpace;
+    if (value === "center") return availableSpace / 2;
+    if (value.endsWith("%")) {
+      const percent = Number.parseFloat(value);
+      return Number.isFinite(percent) ? availableSpace * percent / 100 : availableSpace / 2;
+    }
+    if (value.endsWith("px")) {
+      const pixels = Number.parseFloat(value);
+      return Number.isFinite(pixels) ? pixels : availableSpace / 2;
+    }
+    return availableSpace / 2;
   }
   function findActiveVideo() {
     const moviePlayer = document.querySelector("#movie_player:not(#inline-preview-player)") || document.getElementById("movie_player");
@@ -1034,6 +1063,12 @@
       const vW = video.videoWidth;
       const vH = video.videoHeight;
       if (!vW || !vH || vW < 10 || vH < 10) return;
+      const dimensions = `${vW}x${vH}`;
+      if (dimensions !== lastVideoDimensions) {
+        cachedPlayerRect = null;
+        cachedVideoRect = null;
+        lastVideoDimensions = dimensions;
+      }
       if (!cachedPlayerRect || !cachedWrapperRect) {
         updateCachedRects(true);
       } else if (Date.now() - lastRectUpdateTime > 2e3) {
@@ -1041,32 +1076,64 @@
       }
       const playerRect = cachedPlayerRect;
       const wrapperRect = cachedWrapperRect;
-      if (!playerRect || !wrapperRect) return;
+      const videoRect = cachedVideoRect || video.getBoundingClientRect();
+      if (!playerRect || !wrapperRect || !videoRect) return;
       const pW = playerRect.width;
       const pH = playerRect.height;
       if (pW < 10 || pH < 10) return;
       const wrapW = wrapperRect.width || window.innerWidth || 1920;
       const wrapH = wrapperRect.height || 2200;
-      const relX = Math.max(0, playerRect.left - wrapperRect.left);
-      const relY = Math.max(0, playerRect.top - wrapperRect.top);
+      const boxW = videoRect.width || pW;
+      const boxH = videoRect.height || pH;
+      if (boxW < 10 || boxH < 10) return;
+      const videoAspect = vW / vH;
+      const boxAspect = boxW / boxH;
+      let sourceX = 0, sourceY = 0, sourceW = vW, sourceH = vH;
+      let displayW = boxW, displayH = boxH;
+      const fit = cachedObjectFit;
+      if (fit === "contain" || fit === "scale-down") {
+        let scale = Math.min(boxW / vW, boxH / vH);
+        if (fit === "scale-down") scale = Math.min(1, scale);
+        displayW = vW * scale;
+        displayH = vH * scale;
+      } else if (fit === "cover") {
+        const coverScale = Math.max(boxW / vW, boxH / vH);
+        const renderedW = vW * coverScale;
+        const renderedH = vH * coverScale;
+        const positions = cachedObjectPosition.trim().split(/\s+/);
+        const offsetX = getObjectPositionOffset(boxW - renderedW, positions[0]);
+        const offsetY = getObjectPositionOffset(boxH - renderedH, positions[1] || "50%");
+        sourceX = Math.max(0, Math.min(vW, -offsetX / coverScale));
+        sourceY = Math.max(0, Math.min(vH, -offsetY / coverScale));
+        sourceW = Math.max(1, Math.min(vW - sourceX, boxW / coverScale));
+        sourceH = Math.max(1, Math.min(vH - sourceY, boxH / coverScale));
+      }
+      if (fit === "contain" || fit === "scale-down") {
+        const positions = cachedObjectPosition.trim().split(/\s+/);
+        displayW = Math.min(boxW, displayW);
+        displayH = Math.min(boxH, displayH);
+        const offsetX = getObjectPositionOffset(boxW - displayW, positions[0]);
+        const offsetY = getObjectPositionOffset(boxH - displayH, positions[1] || "50%");
+        cachedVideoRect = {
+          left: videoRect.left + offsetX,
+          top: videoRect.top + offsetY,
+          width: displayW,
+          height: displayH
+        };
+      } else {
+        cachedVideoRect = videoRect;
+      }
+      const mediaRect = cachedVideoRect;
       const scaleX = CANVAS_WIDTH / wrapW;
       const scaleY = CANVAS_HEIGHT / wrapH;
-      const cvX = Math.round(relX * scaleX);
-      const cvY = Math.round(relY * scaleY);
-      const cvW = Math.round(pW * scaleX);
-      const cvH = Math.round(pH * scaleY);
-      const videoAspect = vW / vH;
-      const playerAspect = pW / pH;
-      let sX = 0, sY = 0, sW = vW, sH = vH;
-      if (videoAspect > playerAspect + 0.05) {
-        const targetW = vH * playerAspect;
-        sX = Math.round((vW - targetW) / 2);
-        sW = Math.round(targetW);
-      } else if (videoAspect < playerAspect - 0.05) {
-        const targetH = vW / playerAspect;
-        sY = Math.round((vH - targetH) / 2);
-        sH = Math.round(targetH);
-      }
+      const cvX = Math.round((mediaRect.left - wrapperRect.left) * scaleX);
+      const cvY = Math.round((mediaRect.top - wrapperRect.top) * scaleY);
+      const cvW = Math.round(mediaRect.width * scaleX);
+      const cvH = Math.round(mediaRect.height * scaleY);
+      const sX = Math.round(sourceX);
+      const sY = Math.round(sourceY);
+      const sW = Math.max(1, Math.round(sourceW));
+      const sH = Math.max(1, Math.round(sourceH));
       const stripW = Math.max(4, Math.round(sW * 0.016));
       const stripH = Math.max(4, Math.round(sH * 0.02));
       ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -1369,7 +1436,7 @@
     });
     applyAmbientLightingState();
   }
-  var ambientWrapper, ambientSpreadCanvas, ambientSpreadCtx, animFrameId, isRunning, lastDrawTime, currentVideo, hasDrawnFirstFrame, isPausedAndDrawn, CANVAS_WIDTH, CANVAS_HEIGHT, TARGET_INTERVAL, cachedPlayerRect, cachedWrapperRect, lastRectUpdateTime, ambientInitialized;
+  var ambientWrapper, ambientSpreadCanvas, ambientSpreadCtx, animFrameId, isRunning, lastDrawTime, currentVideo, hasDrawnFirstFrame, isPausedAndDrawn, CANVAS_WIDTH, CANVAS_HEIGHT, TARGET_INTERVAL, cachedPlayerRect, cachedWrapperRect, cachedVideoRect, cachedObjectFit, cachedObjectPosition, lastRectUpdateTime, lastVideoDimensions, ambientInitialized;
   var init_ambientLight = __esm({
     "src/player/ambientLight.js"() {
       init_config();
@@ -1387,7 +1454,11 @@
       TARGET_INTERVAL = 1e3 / 30;
       cachedPlayerRect = null;
       cachedWrapperRect = null;
+      cachedVideoRect = null;
+      cachedObjectFit = "contain";
+      cachedObjectPosition = "50% 50%";
       lastRectUpdateTime = 0;
+      lastVideoDimensions = "";
       ambientInitialized = false;
     }
   });
