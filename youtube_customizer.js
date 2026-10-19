@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.18
-// @description  YouTube Customizer v3.9.18 — Bỏ huy hiệu ngôi sao cạnh Ambilight.
+// @version      3.9.19
+// @description  YouTube Customizer v3.9.19 — Lưu lịch sử đầy đủ, giữ changelog userscript gọn 10 version.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -11,95 +11,18 @@
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.18:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
- * 1. [Giao diện]:
- *    - Gỡ hoàn toàn huy hiệu ngôi sao khỏi mục Ánh sáng phòng (Ambilight).
- * ============================================================================
- * CHANGELOG - v3.9.14:
- * ============================================================================
- * 1. [Ánh sáng phòng / Ambilight]:
- *    - Tắt Ambilight trên Shorts để giữ nguyên bố cục và thanh cuộn gốc của YouTube.
- *    - Tiếp tục áp dụng Ambilight cho các trang video thường.
- * ============================================================================
- * CHANGELOG - v3.9.13:
- * ============================================================================
- * 1. [Ánh sáng phòng / Ambilight Shorts]:
- *    - Làm trong track scrollbar riêng của #shorts-container khi Ambilight bật.
- *    - Giữ thumb scrollbar đủ tương phản để nhận biết và kéo được.
- * ============================================================================
- * CHANGELOG - v3.9.12:
- * ============================================================================
- * 1. [Ánh sáng phòng / Ambilight Shorts]:
- *    - Mở rộng vùng sáng theo cùng tỷ lệ 1.8x ngang và 1.3x dọc của nền Shorts YouTube.
- *    - Lấp dải đen do lớp nền điện ảnh gốc bị ẩn khi Ambilight bật.
- * ============================================================================
- * CHANGELOG - v3.9.11:
- * ============================================================================
- * 1. [Ánh sáng phòng / Ambilight Shorts]:
- *    - Giữ nguyên cách YouTube xếp chồng nội dung Shorts khi bật Ambilight.
- *    - Đặt quầng sáng phía sau nội dung bằng stacking context của renderer.
- * ============================================================================
- * CHANGELOG - v3.9.10:
- * ============================================================================
- * 1. [Ánh sáng phòng / Ambilight Shorts]:
- *    - Giới hạn quầng sáng quanh player Shorts, không kéo màu thành dải ngang toàn trang.
- *    - Giữ nguyên kích thước và tỉ lệ player.
- * ============================================================================
- * CHANGELOG - v3.9.9:
- * ============================================================================
- * 1. [Ánh sáng phòng / Ambilight]:
- *    - Bổ sung hỗ trợ player Shorts riêng.
- *    - Vẽ dải ambient vào gutter scrollbar mà không đổi kích thước player.
- * ============================================================================
- * CHANGELOG - v3.9.8:
- * ============================================================================
- * 1. [Ánh sáng phòng / Ambilight]:
- *    - Làm trong track scrollbar để ánh sáng nền hiện xuyên qua ở cả theme sáng/tối.
- * ============================================================================
- * CHANGELOG - v3.9.7:
- * ============================================================================
- * 1. [Ánh sáng phòng / Ambilight]:
- *    - Tính vùng ảnh hiển thị theo object-fit và tỉ lệ thực của video.
- *    - Không crop nhầm video dọc vào tỉ lệ ngang của player khi kéo ánh sáng.
- *    - Làm mới tọa độ khi kích thước nguồn video thay đổi.
- * ============================================================================
- * CHANGELOG - v3.9.6:
- * ============================================================================
- * 1. [Auto Live]:
- *    - Kiểm tra trạng thái mỗi giây và bắt kịp với tốc độ tăng dần theo độ trễ.
- *    - Chỉ snap khi trễ trên 120 giây và player đã sẵn sàng ổn định.
- *    - Bỏ snap ban đầu khi video đang buffer hoặc player đang loading.
- * ============================================================================
- * CHANGELOG - v3.9.5:
- * ============================================================================
- * 1. [Độ phân giải video]:
- *    - Chờ player nạp đúng video và xác nhận chất lượng yêu cầu đã áp dụng.
- *    - Thử lại có giới hạn khi player cập nhật chất lượng chậm sau điều hướng.
- *    - Hủy lượt áp dụng đang chờ khi người dùng chuyển về Tự động.
- * ============================================================================
- * CHANGELOG - v3.9.4:
- * ============================================================================
- * 1. [Độ chính xác chỉ số hiệu năng]:
- *    - Khởi tạo baseline trước khi tính FPS, đặt lại khi đổi video hoặc tạm dừng.
- *    - Hiển thị thời lượng buffer thay cho ước lượng RAM không thể đo từ API video.
- *    - Ghi rõ độ trễ HTTP tới YouTube và tốc độ tải ước tính.
- * ============================================================================
- * CHANGELOG - v3.9.3:
- * ============================================================================
- * 1. [Quản lý tác vụ nền]:
- *    - Chỉ chạy timer Auto Live Sync và Chat Memory GC khi tính năng bật trên trang xem.
- *    - Bỏ qua mutation trong vùng bình luận và overlay chat; giữ nguyên theo dõi trong player.
- *    - Chỉ đọc textContent khi kiểm tra thông báo gián đoạn.
- * ============================================================================
- * CHANGELOG - v3.7.3:
- * ============================================================================
- * 1. [Tính năng mới: Công tắc gạt Tự động cập nhật]:
- *    - Thêm công tắc gạt "Tự động cập nhật" trong Tab Thông tin (Menu bánh răng).
- *    - Mỗi khi vào YouTube, script tự động gọi GitHub API kiểm tra phiên bản mới; nếu phát hiện bản mới sẽ lập tức tự động trỏ sang link cập nhật Tampermonkey.
- *    - Tích hợp Session Guard chống lặp chuyển hướng khi người dùng nhấn Back.
- * 2. [Thiết kế Frameless & Trong suốt 100%]:
- *    - Playlist & Khung mô tả (Description box) trong suốt hoàn toàn, không hiện khung viền.
+ * v3.9.19 — Lịch sử đầy đủ được tổng hợp tại docs/CHANGELOG_HISTORY.md; phần này giới hạn 10 version gần nhất.
+ * v3.9.18 — Gỡ huy hiệu ngôi sao khỏi mục Ánh sáng phòng (Ambilight).
+ * v3.9.17 — Thay emoji ngôi sao bằng SVG riêng; bỏ animation nhấp nháy.
+ * v3.9.16 — Gỡ canvas/CSS thử nghiệm trên scrollbar, bỏ cập nhật canvas theo từng frame và khi cuộn.
+ * v3.9.15 — Nhắm đúng scrollbar trang YouTube để áp dụng hiệu ứng track.
+ * v3.9.14 — Tắt Ambilight trên Shorts, giữ Ambilight cho video thường.
+ * v3.9.13 — Làm trong track scrollbar riêng của Shorts, giữ thumb dễ nhận biết.
+ * v3.9.12 — Mở rộng vùng Ambilight Shorts theo nền điện ảnh của YouTube.
+ * v3.9.11 — Giữ nguyên stacking/layout Shorts, đặt quầng sáng phía sau nội dung.
+ * v3.9.10 — Giới hạn quầng Ambilight quanh player Shorts, giữ nguyên kích thước player.
  * ============================================================================
  */
 (() => {
@@ -122,7 +45,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.18";
+      APP_VERSION = "3.9.19";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
