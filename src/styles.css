@@ -2061,6 +2061,38 @@ html.ytc-ambient-lighting #ytc-ambient-wrapper.ytc-ambient-active {
     opacity: 1;
 }
 
+/* Dải ambient riêng chỉ nằm trong gutter scrollbar, bên dưới thumb cuộn. */
+#ytc-ambient-scrollbar-canvas {
+    position: fixed !important;
+    top: 0 !important;
+    z-index: 2147483646 !important;
+    pointer-events: none !important;
+    filter: blur(16px) saturate(135%) brightness(103%);
+    opacity: 0.95;
+}
+
+/* Shorts dùng renderer riêng; tạo lớp nền cùng kích thước renderer mà không đổi khung video. */
+html.ytc-ambient-lighting ytd-reel-video-renderer.ytc-ambient-shorts-host {
+    position: relative !important;
+    overflow: visible !important;
+    isolation: isolate;
+}
+
+html.ytc-ambient-lighting ytd-reel-video-renderer.ytc-ambient-shorts-host > :not(#ytc-ambient-wrapper) {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+#ytc-ambient-wrapper.ytc-ambient-shorts {
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    mask-image: linear-gradient(to bottom, #000 0%, #000 65%, rgba(0, 0, 0, 0.6) 80%, rgba(0, 0, 0, 0.2) 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 65%, rgba(0, 0, 0, 0.6) 80%, rgba(0, 0, 0, 0.2) 92%, transparent 100%);
+}
+
 /* Để ánh sáng ambient xuyên qua track scrollbar, tránh dải đen/trắng theo theme. */
 html.ytc-ambient-lighting,
 html.ytc-ambient-lighting body,

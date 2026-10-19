@@ -12,6 +12,9 @@ import { currentConfig } from '../core/config.js';
 let ambientWrapper = null;
 let ambientSpreadCanvas = null;
 let ambientSpreadCtx = null;
+let ambientShortsHost = null;
+let scrollbarAmbientCanvas = null;
+let scrollbarAmbientCtx = null;
 let animFrameId = null;
 let isRunning = false;
 let lastDrawTime = 0;
@@ -31,6 +34,20 @@ function isAmbientEnabled() {
     return !!currentConfig.ambientLighting && !currentConfig.audioOnlyMode;
 }
 
+function isShortsPage() {
+    return location.pathname.startsWith('/shorts');
+}
+
+function findActivePlayer() {
+    if (isShortsPage()) {
+        const shortsPlayer = document.getElementById('shorts-player');
+        if (shortsPlayer) return shortsPlayer;
+    }
+    return document.querySelector('#movie_player:not(#inline-preview-player)') ||
+        document.getElementById('movie_player') ||
+        document.querySelector('.html5-video-player');
+}
+
 /**
  * Tìm phần tử Video đang phát
  */
@@ -45,9 +62,9 @@ let lastVideoDimensions = '';
 function updateCachedRects(force = false) {
     const now = Date.now();
     if (!force && now - lastRectUpdateTime < 1500 && cachedPlayerRect && cachedWrapperRect) return;
-    const moviePlayer = document.querySelector('#movie_player:not(#inline-preview-player)') || document.getElementById('movie_player');
-    if (!moviePlayer || !ambientWrapper) return;
-    cachedPlayerRect = moviePlayer.getBoundingClientRect();
+    const activePlayer = findActivePlayer();
+    if (!activePlayer || !ambientWrapper) return;
+    cachedPlayerRect = activePlayer.getBoundingClientRect();
     cachedWrapperRect = ambientWrapper.getBoundingClientRect();
     const video = findActiveVideo();
     if (video) {
@@ -79,9 +96,9 @@ function getObjectPositionOffset(availableSpace, position) {
  * Tìm phần tử Video đang phát (Bỏ qua 100% inline-preview-player để không lag preview thumbnail)
  */
 function findActiveVideo() {
-    const moviePlayer = document.querySelector('#movie_player:not(#inline-preview-player)') || document.getElementById('movie_player');
-    if (moviePlayer) {
-        const v = moviePlayer.querySelector('video.html5-main-video') || moviePlayer.querySelector('video');
+    const activePlayer = findActivePlayer();
+    if (activePlayer) {
+        const v = activePlayer.querySelector('video.html5-main-video') || activePlayer.querySelector('video');
         if (v && (!v.closest || !v.closest('#inline-preview-player, #preview, ytd-video-preview'))) return v;
     }
     return null;
@@ -100,11 +117,27 @@ function ensureAmbientCanvas() {
     }
 
     const watchFlexy = document.querySelector('ytd-watch-flexy');
-    const moviePlayer = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
-    if (!watchFlexy && !moviePlayer) return false;
+    const activePlayer = findActivePlayer();
+    if (!watchFlexy && !activePlayer) return false;
 
-    const targetParent = watchFlexy || (moviePlayer ? moviePlayer.parentElement : null);
+    const shortsRenderer = isShortsPage() && activePlayer
+        ? activePlayer.closest('ytd-reel-video-renderer')
+        : null;
+    const targetParent = shortsRenderer || watchFlexy || (activePlayer ? activePlayer.parentElement : null);
     if (!targetParent) return false;
+
+    if (ambientShortsHost && ambientShortsHost !== shortsRenderer) {
+        ambientShortsHost.classList.remove('ytc-ambient-shorts-host');
+        ambientShortsHost = null;
+    }
+    if (shortsRenderer) {
+        shortsRenderer.classList.add('ytc-ambient-shorts-host');
+        ambientShortsHost = shortsRenderer;
+    } else if (ambientShortsHost) {
+        ambientShortsHost.classList.remove('ytc-ambient-shorts-host');
+        ambientShortsHost = null;
+    }
+    if (ambientWrapper) ambientWrapper.classList.toggle('ytc-ambient-shorts', !!shortsRenderer);
 
     if (!ambientWrapper || !ambientWrapper.isConnected || ambientWrapper.parentElement !== targetParent) {
         const existing = document.getElementById('ytc-ambient-wrapper');
@@ -126,13 +159,15 @@ function ensureAmbientCanvas() {
             ambientWrapper.appendChild(ambientSpreadCanvas);
         }
 
+        ambientWrapper.classList.toggle('ytc-ambient-shorts', !!shortsRenderer);
+
         ambientWrapper.style.display = '';
 
         // Luôn gắn làm con đầu tiên (firstChild) để nằm dưới tất cả các phần tử video và cột nội dung
-        if (watchFlexy) {
+        if (watchFlexy && !shortsRenderer) {
             watchFlexy.insertBefore(ambientWrapper, watchFlexy.firstChild);
-        } else if (moviePlayer && moviePlayer.parentElement) {
-            moviePlayer.parentElement.insertBefore(ambientWrapper, moviePlayer);
+        } else {
+            targetParent.insertBefore(ambientWrapper, targetParent.firstChild);
         }
 
         ambientSpreadCtx = ambientSpreadCanvas.getContext('2d', {
@@ -160,8 +195,8 @@ function drawFrame(video) {
     if (!ensureAmbientCanvas()) return;
     if (!ambientSpreadCtx) return;
 
-    const moviePlayer = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
-    if (!moviePlayer) return;
+    const activePlayer = findActivePlayer();
+    if (!activePlayer) return;
 
     try {
         const vW = video.videoWidth;
@@ -334,6 +369,8 @@ function drawFrame(video) {
             ambientSpreadCtx.drawImage(video, sX + sW - stripW, sY + sH - stripH, stripW, stripH, cvX + cvW - 1, bottomY - 1, rightW + 1, bottomH + 1);
         }
 
+        syncScrollbarAmbient();
+
         // 5. Kích hoạt trạng thái hiển thị CHỈ KHI tính năng thực sự được bật
         if (isAmbientEnabled()) {
             if (!hasDrawnFirstFrame) {
@@ -346,6 +383,87 @@ function drawFrame(video) {
     } catch (e) {
         // Không làm ngắt quãng vòng lặp
     }
+}
+
+function ensureScrollbarAmbientCanvas() {
+    if (!document.body) return false;
+    if (!scrollbarAmbientCanvas || !scrollbarAmbientCanvas.isConnected) {
+        scrollbarAmbientCanvas = document.createElement('canvas');
+        scrollbarAmbientCanvas.id = 'ytc-ambient-scrollbar-canvas';
+        scrollbarAmbientCanvas.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(scrollbarAmbientCanvas);
+        scrollbarAmbientCtx = scrollbarAmbientCanvas.getContext('2d', { alpha: true });
+    }
+    return !!scrollbarAmbientCtx;
+}
+
+function scrollbarMaskOpacity(progress) {
+    const stops = [[0, 1], [0.65, 1], [0.80, 0.6], [0.92, 0.2], [1, 0]];
+    for (let i = 1; i < stops.length; i++) {
+        if (progress <= stops[i][0]) {
+            const [p0, a0] = stops[i - 1];
+            const [p1, a1] = stops[i];
+            const ratio = (progress - p0) / (p1 - p0);
+            return a0 + (a1 - a0) * Math.max(0, Math.min(1, ratio));
+        }
+    }
+    return 0;
+}
+
+function syncScrollbarAmbient() {
+    if (!isAmbientEnabled() || !ambientSpreadCanvas || !ambientWrapper || !ensureScrollbarAmbientCanvas()) return;
+
+    const root = document.documentElement;
+    const gutterWidth = Math.max(0, window.innerWidth - root.clientWidth);
+    const viewportHeight = Math.max(1, window.innerHeight);
+    if (gutterWidth < 1) {
+        scrollbarAmbientCanvas.style.display = 'none';
+        return;
+    }
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const pixelWidth = Math.ceil(gutterWidth * dpr);
+    const pixelHeight = Math.ceil(viewportHeight * dpr);
+    if (scrollbarAmbientCanvas.width !== pixelWidth || scrollbarAmbientCanvas.height !== pixelHeight) {
+        scrollbarAmbientCanvas.width = pixelWidth;
+        scrollbarAmbientCanvas.height = pixelHeight;
+    }
+    scrollbarAmbientCanvas.style.display = 'block';
+    scrollbarAmbientCanvas.style.left = `${root.clientWidth}px`;
+    scrollbarAmbientCanvas.style.width = `${gutterWidth}px`;
+    scrollbarAmbientCanvas.style.height = `${viewportHeight}px`;
+
+    const wrapperRect = ambientWrapper.getBoundingClientRect();
+    const sourceCanvasHeight = wrapperRect.height + 60;
+    const sourceTop = Math.max(0, Math.min(CANVAS_HEIGHT, ((-wrapperRect.top + 30) / sourceCanvasHeight) * CANVAS_HEIGHT));
+    const sourceHeight = Math.max(0, Math.min(CANVAS_HEIGHT - sourceTop, (viewportHeight / sourceCanvasHeight) * CANVAS_HEIGHT));
+    const ctx = scrollbarAmbientCtx;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, gutterWidth, viewportHeight);
+    if (sourceHeight > 0) {
+        ctx.drawImage(ambientSpreadCanvas, CANVAS_WIDTH - 2, sourceTop, 2, sourceHeight, 0, 0, gutterWidth, viewportHeight);
+
+        const contentTop = wrapperRect.top - 30;
+        const maskStops = [[0, 1], [0.65, 1], [0.80, 0.6], [0.92, 0.2], [1, 0]];
+        const opacityAtY = y => scrollbarMaskOpacity((y - contentTop) / sourceCanvasHeight);
+        const gradient = ctx.createLinearGradient(0, 0, 0, viewportHeight);
+        gradient.addColorStop(0, `rgba(0,0,0,${opacityAtY(0)})`);
+        maskStops.forEach(([progress, opacity]) => {
+            const y = progress * sourceCanvasHeight + contentTop;
+            if (y > 0 && y < viewportHeight) gradient.addColorStop(y / viewportHeight, `rgba(0,0,0,${opacity})`);
+        });
+        gradient.addColorStop(1, `rgba(0,0,0,${opacityAtY(viewportHeight)})`);
+        ctx.globalCompositeOperation = 'destination-in';
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, gutterWidth, viewportHeight);
+        ctx.globalCompositeOperation = 'source-over';
+    }
+}
+
+function removeScrollbarAmbientCanvas() {
+    if (scrollbarAmbientCanvas) scrollbarAmbientCanvas.remove();
+    scrollbarAmbientCanvas = null;
+    scrollbarAmbientCtx = null;
 }
 
 /**
@@ -466,6 +584,7 @@ function handleScroll() {
     const scrollY = window.scrollY || window.pageYOffset || 0;
     const isScrolled = scrollY > 60;
     document.documentElement.classList.toggle('ytc-masthead-scrolled', isScrolled);
+    syncScrollbarAmbient();
 }
 
 function handleNavigation() {
@@ -476,13 +595,26 @@ function handleNavigation() {
 
     const isWatchPage = location.pathname.startsWith('/watch') ||
                         location.pathname.startsWith('/live') ||
+                        isShortsPage() ||
                         document.querySelector('ytd-watch-flexy') !== null;
 
     if (!isWatchPage) {
         stopLoop();
         hasDrawnFirstFrame = false;
         document.documentElement.classList.remove('ytc-ambient-ready');
-        if (ambientWrapper) ambientWrapper.classList.remove('ytc-ambient-active');
+        if (ambientWrapper) {
+            ambientWrapper.classList.remove('ytc-ambient-active', 'ytc-ambient-shorts');
+        }
+        removeScrollbarAmbientCanvas();
+        if (ambientShortsHost) {
+            ambientShortsHost.classList.remove('ytc-ambient-shorts-host');
+            ambientShortsHost = null;
+        }
+        if (currentVideo) {
+            const events = ['play', 'playing', 'timeupdate', 'canplay', 'loadeddata', 'seeked', 'ratechange'];
+            events.forEach(evt => currentVideo.removeEventListener(evt, handleVideoActivity));
+            currentVideo = null;
+        }
         return;
     }
 
@@ -528,6 +660,11 @@ export function applyAmbientLightingState() {
         }
         if (ambientSpreadCtx) {
             ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        }
+        removeScrollbarAmbientCanvas();
+        if (ambientShortsHost) {
+            ambientShortsHost.classList.remove('ytc-ambient-shorts-host');
+            ambientShortsHost = null;
         }
         if (currentVideo) {
             const events = ['play', 'playing', 'timeupdate', 'canplay', 'loadeddata', 'seeked', 'ratechange'];
