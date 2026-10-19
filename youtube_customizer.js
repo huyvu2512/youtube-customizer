@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.3
-// @description  YouTube Customizer v3.9.3 — Dừng timer tính năng khi tắt và lọc mutation không liên quan.
+// @version      3.9.4
+// @description  YouTube Customizer v3.9.4 — Sửa phép đo FPS và hiển thị đúng các chỉ số buffer, HTTP, tốc độ tải.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -11,7 +11,14 @@
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.3:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.4:
+ * ============================================================================
+ * 1. [Độ chính xác chỉ số hiệu năng]:
+ *    - Khởi tạo baseline trước khi tính FPS, đặt lại khi đổi video hoặc tạm dừng.
+ *    - Hiển thị thời lượng buffer thay cho ước lượng RAM không thể đo từ API video.
+ *    - Ghi rõ độ trễ HTTP tới YouTube và tốc độ tải ước tính.
+ * ============================================================================
+ * CHANGELOG - v3.9.3:
  * ============================================================================
  * 1. [Quản lý tác vụ nền]:
  *    - Chỉ chạy timer Auto Live Sync và Chat Memory GC khi tính năng bật trên trang xem.
@@ -48,7 +55,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.3";
+      APP_VERSION = "3.9.4";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -2142,10 +2149,10 @@
           chat_tip_off: "Tắt chat trên video",
           chat_tip_danmaku: "Chữ chạy ngang màn hình dạng Danmaku",
           chat_tip_streamer: "Khung chat nổi của streamer, kéo thả và co giãn tự do",
-          perf_ram: "RAM Video",
+          perf_ram: "Buffer video",
           perf_fps: "FPS Video",
-          perf_ping: "Độ trễ (Ping)",
-          perf_speed: "Tốc độ tải"
+          perf_ping: "Trễ HTTP",
+          perf_speed: "Tốc độ tải ước tính"
         },
         en: {
           tab_layout: "Interface",
@@ -2206,10 +2213,10 @@
           chat_tip_off: "Turn off chat overlay",
           chat_tip_danmaku: "Horizontal flying Danmaku comments",
           chat_tip_streamer: "Floating streamer chat window, resizable and draggable",
-          perf_ram: "Video RAM",
+          perf_ram: "Video Buffer",
           perf_fps: "Video FPS",
-          perf_ping: "Latency (Ping)",
-          perf_speed: "Download Speed"
+          perf_ping: "HTTP Latency",
+          perf_speed: "Est. Download Speed"
         },
         ja: {
           tab_layout: "画面",
@@ -3536,8 +3543,7 @@
       });
       currentPing = Math.max(1, Math.round(performance.now() - t0));
     } catch (e) {
-      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-      if (conn && conn.rtt) currentPing = conn.rtt;
+      currentPing = null;
     } finally {
       isPinging = false;
     }
@@ -3548,7 +3554,8 @@
         if (entry.name && entry.name.includes("videoplayback") && entry.transferSize > 0 && entry.duration > 30) {
           const mbps = entry.transferSize * 8 / (entry.duration / 1e3) / 1e6;
           if (mbps > 0 && mbps < 1e3) {
-            currentSpeed = mbps >= 10 ? Math.round(mbps) : mbps.toFixed(1);
+            currentSpeed = mbps >= 10 ? Math.round(mbps) : Number(mbps.toFixed(1));
+            currentSpeedTime = performance.now();
             break;
           }
         }
@@ -3573,31 +3580,19 @@
                 break;
               }
             }
-            if (!bufferSec && video.buffered.length > 0) {
-              bufferSec = Math.max(0, video.buffered.end(video.buffered.length - 1) - cur);
-            }
           }
         } catch (e) {
         }
-        const h = video.videoHeight || 1080;
-        let mbPerSec = 0.55;
-        if (h >= 2160) mbPerSec = 2.4;
-        else if (h >= 1440) mbPerSec = 1.2;
-        else if (h >= 1080) mbPerSec = 0.55;
-        else if (h >= 720) mbPerSec = 0.32;
-        else if (h >= 480) mbPerSec = 0.15;
-        else mbPerSec = 0.08;
-        const mb = Math.round(bufferSec * mbPerSec);
-        elRam.textContent = `${mb} MB`;
-        if (mb >= 30) {
+        elRam.textContent = `${bufferSec.toFixed(1)} s`;
+        if (bufferSec >= 30) {
           elRam.className = "ytc-perf-value ytc-stat-green";
-        } else if (mb >= 10) {
+        } else if (bufferSec >= 10) {
           elRam.className = "ytc-perf-value ytc-stat-yellow";
         } else {
           elRam.className = "ytc-perf-value ytc-stat-red";
         }
       } else {
-        elRam.textContent = "0 MB";
+        elRam.textContent = "—";
         elRam.className = "ytc-perf-value";
       }
     }
@@ -3607,35 +3602,54 @@
         elFps.textContent = "—";
         elFps.className = "ytc-perf-value";
       } else if (video.paused || video.ended) {
+        lastVideoFrames = null;
+        lastFrameTime = null;
+        lastVideoIdentity = null;
+        currentVideoFps = null;
         elFps.textContent = "Tạm dừng";
         elFps.className = "ytc-perf-value";
       } else if (typeof video.getVideoPlaybackQuality === "function") {
         const q = video.getVideoPlaybackQuality();
         const now2 = performance.now();
-        if (lastFrameTime > 0 && now2 > lastFrameTime) {
-          const dt = (now2 - lastFrameTime) / 1e3;
-          const df = q.totalVideoFrames - lastVideoFrames;
-          if (dt >= 0.7) {
-            currentVideoFps = Math.round(df / dt);
-            lastVideoFrames = q.totalVideoFrames;
+        const identity = `${video.currentSrc || video.src}|${video.videoWidth}x${video.videoHeight}`;
+        const frames = q.totalVideoFrames;
+        if (!Number.isFinite(frames)) {
+          elFps.textContent = "Không hỗ trợ";
+          elFps.className = "ytc-perf-value";
+        } else {
+          if (identity !== lastVideoIdentity || lastFrameTime === null || frames < lastVideoFrames) {
+            lastVideoIdentity = identity;
+            lastVideoFrames = frames;
             lastFrameTime = now2;
+            currentVideoFps = null;
+          } else if (now2 > lastFrameTime) {
+            const dt = (now2 - lastFrameTime) / 1e3;
+            const df = frames - lastVideoFrames;
+            if (dt >= 0.7) {
+              const measuredFps = df / dt;
+              currentVideoFps = measuredFps <= 240 ? Math.round(measuredFps) : null;
+              lastVideoFrames = frames;
+              lastFrameTime = now2;
+            }
           }
-        } else {
-          lastVideoFrames = q.totalVideoFrames;
-          lastFrameTime = now2;
-        }
-        const fps = currentVideoFps || (video.playbackRate > 1 ? Math.round(60 * video.playbackRate) : 60);
-        elFps.textContent = `${fps} FPS`;
-        if (fps >= 50) {
-          elFps.className = "ytc-perf-value ytc-stat-green";
-        } else if (fps >= 24) {
-          elFps.className = "ytc-perf-value ytc-stat-yellow";
-        } else {
-          elFps.className = "ytc-perf-value ytc-stat-red";
+          if (currentVideoFps === null) {
+            elFps.textContent = "Đang đo...";
+            elFps.className = "ytc-perf-value";
+          } else {
+            const fps = currentVideoFps;
+            elFps.textContent = `${fps} FPS`;
+            if (fps >= 50) {
+              elFps.className = "ytc-perf-value ytc-stat-green";
+            } else if (fps >= 24) {
+              elFps.className = "ytc-perf-value ytc-stat-yellow";
+            } else {
+              elFps.className = "ytc-perf-value ytc-stat-red";
+            }
+          }
         }
       } else {
-        elFps.textContent = "60 FPS";
-        elFps.className = "ytc-perf-value ytc-stat-green";
+        elFps.textContent = "Không hỗ trợ";
+        elFps.className = "ytc-perf-value";
       }
     }
     const now = performance.now();
@@ -3661,8 +3675,8 @@
     }
     const elSpeed = document.getElementById("ytc-stat-speed");
     if (elSpeed) {
-      let speedVal = currentSpeed;
-      if (!speedVal) {
+      let speedVal = currentSpeed && now - currentSpeedTime < 15e3 ? currentSpeed : null;
+      if (speedVal === null) {
         const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         if (conn && conn.downlink) speedVal = conn.downlink;
       }
@@ -3684,9 +3698,10 @@
   }
   function startPerfMonitoring() {
     if (monitorInterval) return;
-    lastFrameTime = performance.now();
-    lastVideoFrames = 0;
-    currentVideoFps = 0;
+    lastFrameTime = null;
+    lastVideoFrames = null;
+    lastVideoIdentity = null;
+    currentVideoFps = null;
     lastPingTime = 0;
     measureRealPing();
     updatePerfStats();
@@ -3697,17 +3712,23 @@
       clearInterval(monitorInterval);
       monitorInterval = null;
     }
+    lastFrameTime = null;
+    lastVideoFrames = null;
+    lastVideoIdentity = null;
+    currentVideoFps = null;
   }
-  var monitorInterval, lastVideoFrames, lastFrameTime, currentVideoFps, lastPingTime, currentPing, currentSpeed, isPinging;
+  var monitorInterval, lastVideoFrames, lastFrameTime, lastVideoIdentity, currentVideoFps, lastPingTime, currentPing, currentSpeed, currentSpeedTime, isPinging;
   var init_perfMonitor = __esm({
     "src/ui/perfMonitor.js"() {
       monitorInterval = null;
-      lastVideoFrames = 0;
-      lastFrameTime = 0;
-      currentVideoFps = 0;
+      lastVideoFrames = null;
+      lastFrameTime = null;
+      lastVideoIdentity = null;
+      currentVideoFps = null;
       lastPingTime = 0;
       currentPing = null;
       currentSpeed = null;
+      currentSpeedTime = 0;
       isPinging = false;
     }
   });
@@ -4030,7 +4051,7 @@
                     </div>
                 </div>
 
-                <!-- THÔNG SỐ HIỆU NĂNG GỌN (RAM VIDEO, FPS VIDEO, PING, TỐC ĐỘ TẢI) -->
+                <!-- THÔNG SỐ HIỆU NĂNG (BUFFER, FPS, HTTP LATENCY, TỐC ĐỘ ƯỚC TÍNH) -->
                 <div class="ytc-perf-card" id="ytc-perf-monitor">
                     <div class="ytc-perf-grid">
                         <div class="ytc-perf-item">

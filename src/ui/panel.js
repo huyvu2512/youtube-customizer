@@ -234,7 +234,7 @@ export function createSettingsPanel() {
                     </div>
                 </div>
 
-                <!-- THÔNG SỐ HIỆU NĂNG GỌN (RAM VIDEO, FPS VIDEO, PING, TỐC ĐỘ TẢI) -->
+                <!-- THÔNG SỐ HIỆU NĂNG (BUFFER, FPS, HTTP LATENCY, TỐC ĐỘ ƯỚC TÍNH) -->
                 <div class="ytc-perf-card" id="ytc-perf-monitor">
                     <div class="ytc-perf-grid">
                         <div class="ytc-perf-item">

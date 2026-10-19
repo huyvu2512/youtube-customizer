@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.3
-// @description  YouTube Customizer v3.9.3 — Dừng timer tính năng khi tắt và lọc mutation không liên quan.
+// @version      3.9.4
+// @description  YouTube Customizer v3.9.4 — Sửa phép đo FPS và hiển thị đúng các chỉ số buffer, HTTP, tốc độ tải.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,7 +23,14 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.3:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.4:
+ * ============================================================================
+ * 1. [Độ chính xác chỉ số hiệu năng]:
+ *    - Khởi tạo baseline trước khi tính FPS, đặt lại khi đổi video hoặc tạm dừng.
+ *    - Hiển thị thời lượng buffer thay cho ước lượng RAM không thể đo từ API video.
+ *    - Ghi rõ độ trễ HTTP tới YouTube và tốc độ tải ước tính.
+ * ============================================================================
+ * CHANGELOG - v3.9.3:
  * ============================================================================
  * 1. [Quản lý tác vụ nền]:
  *    - Chỉ chạy timer Auto Live Sync và Chat Memory GC khi tính năng bật trên trang xem.
