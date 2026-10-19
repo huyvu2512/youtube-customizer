@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.16
-// @description  YouTube Customizer v3.9.16 — Gỡ bỏ hiệu ứng thử nghiệm trên thanh cuộn.
+// @version      3.9.17
+// @description  YouTube Customizer v3.9.17 — Vẽ lại biểu tượng ngôi sao Ambilight bằng SVG.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,11 +23,11 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.16:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.17:
  * ============================================================================
- * 1. [Ánh sáng phòng / Hiệu năng]:
- *    - Gỡ bỏ canvas và CSS thử nghiệm tác động lên thanh cuộn.
- *    - Giữ nguyên hiệu ứng Ambilight trên video thường; thanh cuộn trở về giao diện YouTube.
+ * 1. [Giao diện]:
+ *    - Thay emoji ngôi sao Ambilight bằng biểu tượng SVG vẽ riêng, sắc nét và đồng bộ đa nền tảng.
+ *    - Bỏ hiệu ứng nhấp nháy liên tục của biểu tượng.
  * ============================================================================
  * CHANGELOG - v3.9.14:
  * ============================================================================
