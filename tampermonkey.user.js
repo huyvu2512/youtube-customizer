@@ -1,21 +1,27 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.12
-// @description  YouTube Customizer v3.9.12 — Mở rộng Ambilight Shorts theo nền điện ảnh.
+// @version      3.9.13
+// @description  YouTube Customizer v3.9.13 — Làm trong scrollbar Shorts khi bật Ambilight.
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.12
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.13
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.12
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.12
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.13
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.13
 // ==/UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.12:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.13:
+ * ============================================================================
+ * 1. [Ánh sáng phòng / Ambilight Shorts]:
+ *    - Làm trong track scrollbar riêng của #shorts-container khi Ambilight bật.
+ *    - Giữ thumb scrollbar đủ tương phản để nhận biết và kéo được.
+ * ============================================================================
+ * CHANGELOG - v3.9.12:
  * ============================================================================
  * 1. [Ánh sáng phòng / Ambilight Shorts]:
  *    - Mở rộng vùng sáng theo cùng tỷ lệ 1.8x ngang và 1.3x dọc của nền Shorts YouTube.

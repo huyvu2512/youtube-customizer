@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.12
-// @description  YouTube Customizer v3.9.12 — Mở rộng Ambilight Shorts theo nền điện ảnh.
+// @version      3.9.13
+// @description  YouTube Customizer v3.9.13 — Làm trong scrollbar Shorts khi bật Ambilight.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -23,7 +23,13 @@ const banner = `// ==UserScript==
 
 /*
  * ============================================================================
- * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.12:
+ * NHẬT KÝ CẬP NHẬT / CHANGELOG - v3.9.13:
+ * ============================================================================
+ * 1. [Ánh sáng phòng / Ambilight Shorts]:
+ *    - Làm trong track scrollbar riêng của #shorts-container khi Ambilight bật.
+ *    - Giữ thumb scrollbar đủ tương phản để nhận biết và kéo được.
+ * ============================================================================
+ * CHANGELOG - v3.9.12:
  * ============================================================================
  * 1. [Ánh sáng phòng / Ambilight Shorts]:
  *    - Mở rộng vùng sáng theo cùng tỷ lệ 1.8x ngang và 1.3x dọc của nền Shorts YouTube.

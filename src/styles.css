@@ -2097,7 +2097,8 @@ html.ytc-ambient-lighting ytd-reel-video-renderer.ytc-ambient-shorts-host > :not
 /* Để ánh sáng ambient xuyên qua track scrollbar, tránh dải đen/trắng theo theme. */
 html.ytc-ambient-lighting,
 html.ytc-ambient-lighting body,
-html.ytc-ambient-lighting ytd-app {
+html.ytc-ambient-lighting ytd-app,
+html.ytc-ambient-lighting ytd-shorts #shorts-container {
     scrollbar-color: rgba(190, 190, 190, 0.72) transparent !important;
 }
 
@@ -2112,7 +2113,11 @@ html.ytc-ambient-lighting body::-webkit-scrollbar-corner,
 html.ytc-ambient-lighting ytd-app::-webkit-scrollbar,
 html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-track,
 html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-track-piece,
-html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-corner {
+html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-corner,
+html.ytc-ambient-lighting ytd-shorts #shorts-container::-webkit-scrollbar,
+html.ytc-ambient-lighting ytd-shorts #shorts-container::-webkit-scrollbar-track,
+html.ytc-ambient-lighting ytd-shorts #shorts-container::-webkit-scrollbar-track-piece,
+html.ytc-ambient-lighting ytd-shorts #shorts-container::-webkit-scrollbar-corner {
     background: transparent !important;
     background-color: transparent !important;
 }
