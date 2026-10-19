@@ -2074,7 +2074,11 @@ html.ytc-ambient-lighting #ytc-ambient-wrapper.ytc-ambient-active {
 /* Để ánh sáng ambient xuyên qua track scrollbar, tránh dải đen/trắng theo theme. */
 html.ytc-ambient-lighting,
 html.ytc-ambient-lighting body,
-html.ytc-ambient-lighting ytd-app {
+html.ytc-ambient-lighting ytd-app,
+html.ytc-ambient-lighting #content,
+html.ytc-ambient-lighting #page-manager,
+html.ytc-ambient-lighting ytd-page-manager,
+html.ytc-ambient-lighting ytd-watch-flexy {
     scrollbar-color: rgba(190, 190, 190, 0.72) transparent !important;
 }
 
@@ -2089,9 +2093,36 @@ html.ytc-ambient-lighting body::-webkit-scrollbar-corner,
 html.ytc-ambient-lighting ytd-app::-webkit-scrollbar,
 html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-track,
 html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-track-piece,
-html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-corner {
+html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-corner,
+html.ytc-ambient-lighting #content::-webkit-scrollbar,
+html.ytc-ambient-lighting #content::-webkit-scrollbar-track,
+html.ytc-ambient-lighting #content::-webkit-scrollbar-track-piece,
+html.ytc-ambient-lighting #content::-webkit-scrollbar-corner,
+html.ytc-ambient-lighting #page-manager::-webkit-scrollbar,
+html.ytc-ambient-lighting #page-manager::-webkit-scrollbar-track,
+html.ytc-ambient-lighting #page-manager::-webkit-scrollbar-track-piece,
+html.ytc-ambient-lighting #page-manager::-webkit-scrollbar-corner,
+html.ytc-ambient-lighting ytd-page-manager::-webkit-scrollbar,
+html.ytc-ambient-lighting ytd-page-manager::-webkit-scrollbar-track,
+html.ytc-ambient-lighting ytd-page-manager::-webkit-scrollbar-track-piece,
+html.ytc-ambient-lighting ytd-page-manager::-webkit-scrollbar-corner,
+html.ytc-ambient-lighting ytd-watch-flexy::-webkit-scrollbar,
+html.ytc-ambient-lighting ytd-watch-flexy::-webkit-scrollbar-track,
+html.ytc-ambient-lighting ytd-watch-flexy::-webkit-scrollbar-track-piece,
+html.ytc-ambient-lighting ytd-watch-flexy::-webkit-scrollbar-corner {
     background: transparent !important;
     background-color: transparent !important;
+}
+
+html.ytc-ambient-lighting::-webkit-scrollbar-thumb,
+html.ytc-ambient-lighting body::-webkit-scrollbar-thumb,
+html.ytc-ambient-lighting ytd-app::-webkit-scrollbar-thumb,
+html.ytc-ambient-lighting #content::-webkit-scrollbar-thumb,
+html.ytc-ambient-lighting #page-manager::-webkit-scrollbar-thumb,
+html.ytc-ambient-lighting ytd-page-manager::-webkit-scrollbar-thumb,
+html.ytc-ambient-lighting ytd-watch-flexy::-webkit-scrollbar-thumb {
+    background-color: rgba(190, 190, 190, 0.72) !important;
+    border-radius: 999px !important;
 }
 
 /* Lớp Canvas Ambilight: Dải kéo giãn anamorphic mượt mà, giữ trọn vẹn đường nét vật thể và chuyển động mở rộng */
