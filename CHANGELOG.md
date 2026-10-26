@@ -2,8 +2,8 @@
 
 ## v3.9.23 — 26/10/2026 15:03
 
-- **[fa1954e](https://github.com/huyvu2512/youtube-customizer/commit/fa1954e68b40b376593e64e22c4f770f94ce0a84)** Sửa tua khi giữ Numpad 4/6 theo nhịp lặp bàn phím, tránh giới hạn cố định làm video tua chậm.
-- **[fa1954e](https://github.com/huyvu2512/youtube-customizer/commit/fa1954e68b40b376593e64e22c4f770f94ce0a84)** Mở rộng nhận diện iframe Live Chat theo URL để tiếp tục theo dõi tin nhắn khi YouTube đổi cấu trúc khung chat.
+- **[fa1954e](https://github.com/huyvu2512/youtube-customizer/commit/fa1954e68b40b376593e64e22c4f770f94ce0a84)** Tăng tốc tua khi giữ Numpad 4/6 theo nhịp phím.
+- **[fa1954e](https://github.com/huyvu2512/youtube-customizer/commit/fa1954e68b40b376593e64e22c4f770f94ce0a84)** Sửa nhận diện iframe Live Chat để tin nhắn tiếp tục chạy ngầm.
 
 ## v3.9.22 — 26/10/2026 14:37
 

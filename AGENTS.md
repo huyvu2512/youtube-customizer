@@ -11,7 +11,7 @@
   5. `README.md` & `README_EN.md` -> Cập nhật badge version và đoạn giới thiệu phiên bản mới.
   6. `CHANGELOG.md` -> Thêm mục `## vx.y.z — DD/MM/YYYY HH:MM` và ghi lại chi tiết các thay đổi.
 - Trước mỗi lần push, rà soát và cập nhật `README.md`, `README_EN.md` và `CHANGELOG.md` để tài liệu khớp với thay đổi được đẩy lên.
-- Viết `CHANGELOG.md` ngắn gọn: mỗi ý nêu thay đổi chính trong một dòng, tránh giải thích triển khai dài dòng hoặc tách một sửa lỗi thành nhiều ý vụn.
+- Viết `CHANGELOG.md` theo độ dài các mục phát hành gần nhất: mỗi gạch đầu dòng là một câu ngắn nêu tính năng và thay đổi chính (thường khoảng 6–12 từ), không quá cụt và không giải thích triển khai dài dòng.
 
 ## 2. QUY TRÌNH BUILD & DEPLOY CHUẨN
 1. Chạy lệnh đóng gói: `npm run build`
