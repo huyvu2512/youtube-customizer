@@ -46,7 +46,7 @@ import {
 } from '../core/constants.js';
 import { SUPPORTED_LANGUAGES, getLanguageInfo, t } from '../core/i18n.js';
 import { syncPanelState } from './sync.js';
-import { setupOnboardingAndUpdates, isNewerVersion, fetchRemotePackage } from './notifier.js';
+import { setupOnboardingAndUpdates, isNewerVersion, fetchRemotePackage, openUpdatePage } from './notifier.js';
 import { startPerfMonitoring, stopPerfMonitoring } from './perfMonitor.js';
 
 export function updatePanelLanguage(targetPanel) {
@@ -860,35 +860,14 @@ export function createSettingsPanel() {
             });
         }
 
-        // Tab 5: Nút Kiểm tra cập nhật (Tự mở link cập nhật, tự F5 thông minh khi quay lại tab hoặc sau 10s)
+        // Tab 5: Chỉ mở trang cập nhật sau thao tác kiểm tra rõ ràng.
         const updateBtn = panel.querySelector('#ytc-btn-update');
         const updateBtnText = panel.querySelector('#ytc-update-btn-text');
         if (updateBtn) {
             let isChecking = false;
-            let isCountingDown = false;
-            let countdownInterval = null;
-            let reloadTriggered = false;
-
-            const triggerReload = () => {
-                if (reloadTriggered) return;
-                reloadTriggered = true;
-                if (countdownInterval) {
-                    clearInterval(countdownInterval);
-                    countdownInterval = null;
-                }
-                if (updateBtnText) updateBtnText.textContent = 'Đang tải lại...';
-                location.reload();
-            };
 
             updateBtn.addEventListener('click', async (e) => {
                 e.stopPropagation();
-
-                // Nếu đang trong trạng thái đếm ngược F5, bấm vào sẽ tải lại trang ngay lập tức
-                if (isCountingDown) {
-                    triggerReload();
-                    return;
-                }
-
                 if (isChecking) return;
                 isChecking = true;
 
@@ -906,54 +885,25 @@ export function createSettingsPanel() {
                     if (pkg && pkg.version) {
                         if (isNewerVersion(pkg.version, APP_VERSION)) {
                             const newVersionUrl = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${pkg.version}`;
-
-                            // 1. Tự động mở trang cài đặt bản mới Tampermonkey trong tab mới
-                            window.open(newVersionUrl, '_blank');
-
-                            // 2. Chuyển nút sang trạng thái đếm ngược F5
-                            isChecking = false;
-                            isCountingDown = true;
-                            updateBtn.disabled = false;
+                            const opened = openUpdatePage(newVersionUrl);
                             updateBtn.classList.remove('ytc-btn-loading');
-                            updateBtn.classList.add('ytc-btn-has-update');
-                            updateBtn.title = `Đã mở trang cập nhật v${pkg.version}. Bấm để tải lại trang ngay!`;
-
-                            let countdown = 10;
-                            if (updateBtnText) updateBtnText.textContent = 'F5 sau 10s';
-
-                            const openedTime = Date.now();
-
-                            // 3. Cơ chế thông minh: Tự động F5 ngay khi người dùng cập nhật xong và quay lại tab YouTube
-                            const onReturnToTab = () => {
-                                // Người dùng đã chuyển sang tab Tampermonkey >= 1.2s rồi quay lại tab YouTube
-                                if (Date.now() - openedTime >= 1200) {
-                                    window.removeEventListener('focus', onReturnToTab);
-                                    document.removeEventListener('visibilitychange', handleVisibilityChange);
-                                    triggerReload();
-                                }
-                            };
-
-                            const handleVisibilityChange = () => {
-                                if (document.visibilityState === 'visible') {
-                                    onReturnToTab();
-                                }
-                            };
-
-                            window.addEventListener('focus', onReturnToTab);
-                            document.addEventListener('visibilitychange', handleVisibilityChange);
-
-                            // 4. Đếm ngược 10 giây tự F5 nếu người dùng không chuyển tab
-                            countdownInterval = setInterval(() => {
-                                countdown--;
-                                if (countdown <= 0) {
-                                    window.removeEventListener('focus', onReturnToTab);
-                                    document.removeEventListener('visibilitychange', handleVisibilityChange);
-                                    triggerReload();
-                                } else {
-                                    if (updateBtnText) updateBtnText.textContent = `F5 sau ${countdown}s`;
-                                }
-                            }, 1000);
-
+                            updateBtn.disabled = false;
+                            isChecking = false;
+                            if (opened) {
+                                updateBtn.classList.add('ytc-btn-has-update');
+                                updateBtn.title = `Đã mở trang cập nhật v${pkg.version} trong tab mới.`;
+                                if (updateBtnText) updateBtnText.textContent = `Đã mở v${pkg.version}`;
+                                showToast(`Đã mở Tampermonkey để cập nhật v${pkg.version}. YouTube chỉ tải lại khi bạn quay lại tab này.`);
+                                setTimeout(() => {
+                                    updateBtn.classList.remove('ytc-btn-has-update');
+                                    updateBtn.title = '';
+                                    if (updateBtnText) updateBtnText.textContent = t('btn_check') || 'Kiểm tra';
+                                }, 8000);
+                            } else {
+                                window.open('https://github.com/huyvu2512/youtube-customizer/releases', '_blank');
+                                if (updateBtnText) updateBtnText.textContent = t('btn_check') || 'Kiểm tra';
+                                showToast('Không mở được tab cập nhật. Hãy cho phép cửa sổ bật lên rồi thử lại.');
+                            }
                             return;
                         } else {
                             // Đang ở phiên bản mới nhất -> Hiển thị "Đã cập nhật"

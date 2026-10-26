@@ -33,7 +33,7 @@ export const DEFAULT_CONFIG = {
     lockElapsedTime: true,     // Cố định thời gian đã phát, chống tự nhảy sang thời gian còn lại (mặc định bật)
     ambientLighting: false,    // Hiệu ứng ánh sáng phòng (Ambilight) phản chiếu viền video (mặc định tắt)
     language: 'auto',          // Ngôn ngữ hiển thị giao diện của Script (mặc định 'auto' theo YouTube/trình duyệt)
-    autoUpdate: false,         // Tự động kiểm tra & trỏ đến bản cập nhật mới khi vào YouTube (mặc định tắt)
+    autoUpdate: false,         // Tự động kiểm tra phiên bản; không tự mở trang cập nhật (mặc định tắt)
 };
 
 export function loadConfig() {

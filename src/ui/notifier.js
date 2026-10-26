@@ -21,6 +21,39 @@ export function isNewerVersion(remote, current) {
     return false;
 }
 
+/** Open the userscript update page only after an explicit user action.
+ * Reload YouTube only after this tab was backgrounded and then revisited.
+ */
+export function openUpdatePage(url) {
+    const updateTab = window.open(url, '_blank');
+    if (!updateTab) return false;
+
+    let leftYouTubeTab = false;
+    let completed = false;
+    const cleanup = () => {
+        if (completed) return;
+        completed = true;
+        document.removeEventListener('visibilitychange', onVisibilityChange);
+        clearTimeout(expireTimer);
+    };
+    const onVisibilityChange = () => {
+        if (document.visibilityState === 'hidden') {
+            leftYouTubeTab = true;
+            return;
+        }
+        if (leftYouTubeTab && document.visibilityState === 'visible') {
+            cleanup();
+            // Give Tampermonkey a moment to finish applying the accepted update.
+            setTimeout(() => location.reload(), 500);
+        }
+    };
+
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    // A stale update attempt must not make an unrelated tab switch reload YouTube later.
+    const expireTimer = setTimeout(cleanup, 5 * 60 * 1000);
+    return true;
+}
+
 export function showTipCard(btn, { badge, badgeBg, title, desc, btnText, onAction, onClose, tipId = 'ytc-onboarding-tip' }) {
     if (!btn || document.getElementById(tipId)) return;
 
@@ -162,19 +195,11 @@ export function checkForUpdates(btn) {
             desc: `YouTube Customizer v${remoteVer} đã sẵn sàng trên GitHub với các tính năng mới và bản sửa lỗi tối ưu.`,
             btnText: 'Cập nhật ngay',
             onAction: () => {
-                window.open('https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js', '_blank');
+                const updateUrl = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${remoteVer}`;
+                if (!openUpdatePage(updateUrl)) {
+                    window.open('https://github.com/huyvu2512/youtube-customizer/releases', '_blank');
+                }
                 try { localStorage.setItem(dismissedKey, 'true'); } catch (e) {}
-                const openTime = Date.now();
-                const reloadOnReturn = () => {
-                    if (Date.now() - openTime >= 1200) {
-                        location.reload();
-                    }
-                };
-                window.addEventListener('focus', reloadOnReturn, { once: true });
-                document.addEventListener('visibilitychange', () => {
-                    if (document.visibilityState === 'visible') reloadOnReturn();
-                });
-                setTimeout(() => location.reload(), 10000);
             },
             onClose: () => {
                 try { localStorage.setItem(dismissedKey, 'true'); } catch (e) {}
@@ -249,8 +274,7 @@ export function setupOnboardingAndUpdates(btn) {
 }
 
 /**
- * Tự động gọi API kiểm tra phiên bản mới mỗi khi vào YouTube
- * Nếu có bản mới: Tự động trỏ sang link cập nhật Tampermonkey
+ * Kiểm tra phiên bản nền; không tự mở trang cập nhật hoặc tải lại YouTube.
  */
 export async function checkAndAutoUpdate(force = false) {
     if (!currentConfig.autoUpdate && !force) return;
@@ -262,18 +286,7 @@ export async function checkAndAutoUpdate(force = false) {
     try {
         const pkg = await fetchRemotePackage();
         if (pkg && pkg.version && isNewerVersion(pkg.version, APP_VERSION)) {
-            const newVersion = pkg.version;
-            const redirectKey = `ytc_auto_redirect_${newVersion.replace(/\./g, '_')}`;
-
-            if (sessionStorage.getItem(redirectKey) === 'true' && !force) {
-                return;
-            }
-            sessionStorage.setItem(redirectKey, 'true');
-
-            const updateUrl = `https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=${newVersion}`;
-            console.log(`[YouTube Customizer] Phát hiện phiên bản mới v${newVersion}, tự động trỏ sang link cập nhật:`, updateUrl);
-
-            window.location.href = updateUrl;
+            console.info(`[YouTube Customizer] Có phiên bản mới v${pkg.version}; hãy dùng nút Kiểm tra cập nhật để mở Tampermonkey.`);
         }
     } catch (err) {
         console.warn('[YouTube Customizer] Tự động kiểm tra cập nhật thất bại:', err);
