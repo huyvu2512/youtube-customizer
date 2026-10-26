@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.21
-// @description  YouTube Customizer v3.9.21 — Lưu lịch sử đầy đủ trong CHANGELOG.md, giới hạn nhật ký nhúng trong userscript ở 10 phiên bản gần nhất.
+// @version      3.9.22
+// @description  YouTube Customizer v3.9.22 — Sửa phím tua Numpad khi giữ và khôi phục kết nối Live Chat nền.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -25,6 +25,9 @@ const banner = `// ==UserScript==
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.22 — Sửa tua liên tục bằng Numpad 4/6 và thử kết nối lại Live Chat nền khi iframe không phản hồi.
+ * v3.9.21 — Khôi phục trạng thái ổn định từ v3.9.19 và cập nhật quy tắc phát triển trong AGENTS.md.
+ * v3.9.20 — Thử nghiệm ảnh xem trước Live Stream theo thời gian thực.
  * v3.9.19 — Lịch sử đầy đủ được tổng hợp tại CHANGELOG.md; phần này giới hạn 10 phiên bản gần nhất.
  * v3.9.18 — Gỡ huy hiệu ngôi sao khỏi mục Ánh sáng phòng (Ambilight).
  * v3.9.17 — Thay emoji ngôi sao bằng SVG riêng; bỏ animation nhấp nháy.
@@ -32,9 +35,6 @@ const banner = `// ==UserScript==
  * v3.9.15 — Nhắm đúng scrollbar trang YouTube để áp dụng hiệu ứng track.
  * v3.9.14 — Tắt Ambilight trên Shorts, giữ Ambilight cho video thường.
  * v3.9.13 — Làm trong track scrollbar riêng của Shorts, giữ thumb dễ nhận biết.
- * v3.9.12 — Mở rộng vùng Ambilight Shorts theo nền điện ảnh của YouTube.
- * v3.9.11 — Giữ nguyên stacking/layout Shorts, đặt quầng sáng phía sau nội dung.
- * v3.9.10 — Giới hạn quầng Ambilight quanh player Shorts, giữ nguyên kích thước player.
  * ============================================================================
  */`;
 

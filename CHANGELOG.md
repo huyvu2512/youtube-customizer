@@ -1,5 +1,10 @@
 # Lịch sử thay đổi
 
+## v3.9.22 — 26/10/2026 14:37
+
+- Sửa phím Numpad 4/6: khi giữ phím, sự kiện lặp được giới hạn nhịp tua 10 giây và không lọt sang YouTube để nhảy theo phần trăm video.
+- Sửa Live Chat nền: xác nhận iframe đã nạp danh sách chat; nếu khung còn tồn tại nhưng không phản hồi, thử khởi tạo tối đa ba lượt (gồm lần đầu và hai lần thử lại), ưu tiên URL chat gốc và có URL nhúng dự phòng.
+
 ## v3.9.21 — 19/10/2026 21:58
 
 - **[db9069c](https://github.com/huyvu2512/youtube-customizer/commit/db9069c0d3811e9f1a04ec78621e25e98f79fbc9)** Khôi phục trạng thái ổn định từ v3.9.19 (hủy bỏ tính năng xem trước Live Stream theo yêu cầu).

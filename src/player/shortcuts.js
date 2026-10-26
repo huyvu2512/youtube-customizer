@@ -3,6 +3,10 @@
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
 import { recordUserSeek } from './autoLive.js';
+import { createNumpadSeekGate } from './numpadSeekGate.js';
+
+const NUMPAD_SEEK_REPEAT_INTERVAL = 300;
+const numpadSeekGate = createNumpadSeekGate(NUMPAD_SEEK_REPEAT_INTERVAL);
 
 export function triggerCleanSeek(player) {
     // Không ẩn controls hoặc con trỏ chuột khi tua để giữ trải nghiệm mượt mà, không bị giật chớp HUD
@@ -109,12 +113,12 @@ export function bindGlobalKeys() {
                          (e.keyCode >= 96 && e.keyCode <= 111) || 
                          (e.keyCode === 12);
 
-        // Bỏ qua sự kiện lặp phím khi giữ phím (chống spam/kích đúp seek & pause)
+        // Cho phép chỉnh âm lượng lặp; các phím tắt khác vẫn phải chặn repeat để YouTube không hiểu thành nhảy phần trăm.
         const isVolumeAction = isNumpad && (
             code === 'Numpad8' || e.key === '8' || e.key === 'ArrowUp' || e.keyCode === 104 || e.keyCode === 38 ||
             code === 'Numpad2' || e.key === '2' || e.key === 'ArrowDown' || e.keyCode === 98 || e.keyCode === 40
         );
-        if (e.repeat && !isVolumeAction) {
+        if (e.repeat && !isNumpad && !isVolumeAction) {
             return;
         }
 
@@ -138,17 +142,21 @@ export function bindGlobalKeys() {
             }
             // Numpad 4: Tua lùi 10 giây (J)
             else if (code === 'Numpad4' || e.key === '4' || e.key === 'ArrowLeft' || e.keyCode === 100 || e.keyCode === 37) {
-                dispatchYtSeek('j');
-                isSeekAction = true;
+                if (numpadSeekGate.shouldDispatch('backward', e.repeat, performance.now())) {
+                    dispatchYtSeek('j');
+                    isSeekAction = true;
+                }
             }
             // Numpad 6: Tua tiến 10 giây (L)
             else if (code === 'Numpad6' || e.key === '6' || e.key === 'ArrowRight' || e.keyCode === 102 || e.keyCode === 39) {
-                dispatchYtSeek('l');
-                isSeekAction = true;
+                if (numpadSeekGate.shouldDispatch('forward', e.repeat, performance.now())) {
+                    dispatchYtSeek('l');
+                    isSeekAction = true;
+                }
             }
             // Numpad 5: Tạm dừng / phát tiếp (K)
             else if (code === 'Numpad5' || e.key === '5' || e.key === 'Clear' || e.keyCode === 101 || e.keyCode === 12) {
-                dispatchYtSeek('k');
+                if (!e.repeat) dispatchYtSeek('k');
             }
         }
         // --- ĐIỀU KHIỂN BẰNG A / S / D ---
@@ -192,6 +200,10 @@ export function bindGlobalKeys() {
                          (e.keyCode >= 96 && e.keyCode <= 111) || 
                          (e.keyCode === 12);
         if (isNumpad) {
+            if (code === 'Numpad4' || e.key === '4' || e.key === 'ArrowLeft' || e.keyCode === 100 || e.keyCode === 37 ||
+                code === 'Numpad6' || e.key === '6' || e.key === 'ArrowRight' || e.keyCode === 102 || e.keyCode === 39) {
+                numpadSeekGate.reset();
+            }
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();

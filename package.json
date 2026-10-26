@@ -1,11 +1,12 @@
 {
   "name": "youtube-customizer",
-  "version": "3.9.21",
+  "version": "3.9.22",
   "description": "YouTube Customizer — Userscript Tampermonkey tùy biến giao diện YouTube, tối ưu hiệu năng và điều khiển video thông minh",
   "type": "module",
   "scripts": {
     "build": "node scripts/build.js",
-    "dev": "node scripts/build.js --watch"
+    "dev": "node scripts/build.js --watch",
+    "test": "node --test"
   },
   "repository": {
     "type": "git",

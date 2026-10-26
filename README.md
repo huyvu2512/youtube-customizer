@@ -9,7 +9,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.9.21-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.9.22-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -34,7 +34,7 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.9.21** khôi phục trạng thái ổn định và giữ changelog trong userscript ở 10 phiên bản gần nhất; lịch sử commit đầy đủ nằm trong [CHANGELOG.md](CHANGELOG.md).
+Phiên bản **v3.9.22** sửa thao tác tua khi giữ Numpad 4/6 và thử khôi phục kết nối Live Chat nền nếu khung chat không phản hồi. Xem [CHANGELOG.md](CHANGELOG.md) để biết chi tiết.
 
 ---
 
@@ -51,7 +51,7 @@ Phiên bản **v3.9.21** khôi phục trạng thái ổn định và giữ chang
 - **Ưu tiên độ phân giải** - Chọn Tự động, Cao nhất, 1440p, 1080p hoặc 720p. Chất lượng cuối cùng còn phụ thuộc video và khả năng phát của YouTube.
 - **Tùy chọn tối ưu** - Chế độ chỉ phát âm thanh hạ chất lượng xuống mức thấp nhất; các tùy chọn khác có thể chặn AV1, dọn DOM Live Chat hoặc đóng hộp thoại hỏi tiếp tục xem. Các tùy chọn này mặc định tắt.
 - **Thông số phát video** - Bảng cài đặt có thể hiển thị FPS, thời lượng buffer, độ trễ phản hồi HTTP tới YouTube và tốc độ tải ước tính.
-- **Phím tắt** - Khi bật, A/D tua lùi/tiến và S phát/tạm dừng khi con trỏ ở trên trình phát hoặc đang toàn màn hình; Numpad 4/6 tua, 5 phát/tạm dừng, 8/2 chỉnh âm lượng.
+- **Phím tắt** - Khi bật, A/D tua lùi/tiến và S phát/tạm dừng khi con trỏ ở trên trình phát hoặc đang toàn màn hình; Numpad 4/6 tua 10 giây mỗi nhịp khi giữ phím, 5 phát/tạm dừng, 8/2 chỉnh âm lượng.
 - **Khóa thời gian đã phát** - Chuẩn hóa hiển thị thời gian đã xem trên video thường; không áp dụng cho livestream.
 
 ---

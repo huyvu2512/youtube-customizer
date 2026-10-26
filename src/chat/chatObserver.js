@@ -14,6 +14,7 @@ import {
     syncPlayerFullscreenSize,
     ensureChatOverlayContainers
 } from './chatState.js';
+import { getBackgroundChatRetryAction } from './backgroundChatRetry.js';
 import { applyChatBoxPos, showInitialBox, setupChatBoxInteractions } from './streamerBox.js';
 import {
     danmakuQueue,
@@ -674,6 +675,30 @@ export function requestExistingMessages() {
 // --------------------------------------------------------------------------
 let bgChatIframe = null;
 let currentBgVideoId = null;
+let bgChatIframeStartedAt = 0;
+let bgChatIframeAttempts = 0;
+let bgChatIframeReady = false;
+
+const BACKGROUND_CHAT_RETRY_MS = 10000;
+const MAX_BACKGROUND_CHAT_ATTEMPTS = 3;
+
+function clearBackgroundChatState() {
+    if (bgChatIframe) bgChatIframe.remove();
+    bgChatIframe = null;
+    currentBgVideoId = null;
+    bgChatIframeStartedAt = 0;
+    bgChatIframeAttempts = 0;
+    bgChatIframeReady = false;
+}
+
+function getBackgroundChatItems(frame) {
+    try {
+        const doc = frame?.contentDocument || frame?.contentWindow?.document;
+        return doc?.querySelector('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #chat #items, #items') || null;
+    } catch (e) {
+        return null;
+    }
+}
 
 export function getCurrentLiveVideoId() {
     const params = new URLSearchParams(window.location.search);
@@ -694,11 +719,7 @@ export function getCurrentLiveVideoId() {
 
 export function ensureBackgroundLiveChat() {
     if (!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') {
-        if (bgChatIframe) {
-            bgChatIframe.remove();
-            bgChatIframe = null;
-            currentBgVideoId = null;
-        }
+        clearBackgroundChatState();
         return;
     }
 
@@ -713,30 +734,48 @@ export function ensureBackgroundLiveChat() {
     const videoId = getCurrentLiveVideoId();
     if (!videoId) return;
 
-    if (bgChatIframe && currentBgVideoId === videoId && document.body.contains(bgChatIframe)) {
-        return;
+    if (currentBgVideoId !== videoId) {
+        clearBackgroundChatState();
+        currentBgVideoId = videoId;
     }
 
-    if (bgChatIframe) {
+    if (bgChatIframe && currentBgVideoId === videoId && document.body.contains(bgChatIframe)) {
+        const hasItems = !!getBackgroundChatItems(bgChatIframe);
+        const retryAction = getBackgroundChatRetryAction({
+            ready: bgChatIframeReady || hasItems,
+            elapsedMs: Date.now() - bgChatIframeStartedAt,
+            attempts: bgChatIframeAttempts,
+            retryAfterMs: BACKGROUND_CHAT_RETRY_MS,
+            maxAttempts: MAX_BACKGROUND_CHAT_ATTEMPTS
+        });
+        if (retryAction === 'keep') {
+            bgChatIframeReady = true;
+            return;
+        }
+        // A present-but-unresponsive iframe is not proof that Live Chat is connected.
+        if (retryAction !== 'retry') return;
         bgChatIframe.remove();
         bgChatIframe = null;
     }
+    if (bgChatIframe && !document.body.contains(bgChatIframe)) {
+        bgChatIframe = null;
+        bgChatIframeReady = false;
+    }
+    if (bgChatIframeAttempts >= MAX_BACKGROUND_CHAT_ATTEMPTS) return;
 
-    currentBgVideoId = videoId;
+    const attempt = bgChatIframeAttempts;
     bgChatIframe = document.createElement('iframe');
     bgChatIframe.id = 'ytc-bg-live-chat';
 
-    // Ưu tiên lấy src từ native frame nếu có (chứa continuation token cho replay/DVR chuẩn xác)
+    // Ưu tiên URL của khung YouTube gốc (có thể chứa continuation cho chat phát lại).
     const nativeFrame = document.querySelector('iframe#chatframe, ytd-live-chat-frame iframe');
-    let targetSrc = `https://www.youtube.com/live_chat?v=${videoId}`;
-    if (nativeFrame && nativeFrame.src && nativeFrame.src.includes('live_chat')) {
+    let targetSrc = `https://www.youtube.com/live_chat?v=${videoId}&embed_domain=${encodeURIComponent(location.hostname)}`;
+    if (attempt === 0 && nativeFrame && nativeFrame.src && nativeFrame.src.includes('live_chat')) {
         targetSrc = nativeFrame.src;
+    } else if (attempt > 1) {
+        targetSrc += '&is_popout=1';
     }
-    if (targetSrc.includes('?')) {
-        targetSrc += '&ytc_bg=1';
-    } else {
-        targetSrc += '?ytc_bg=1';
-    }
+    targetSrc += `${targetSrc.includes('?') ? '&' : '?'}ytc_bg=1`;
     bgChatIframe.src = targetSrc;
     // Đặt ở góc dưới màn hình kích thước 2x2px, trong viewport (intersectionRatio > 0) để Chromium & YouTube không bao giờ đóng băng polling
     bgChatIframe.style.cssText = 'position:fixed !important;bottom:0 !important;right:0 !important;width:2px !important;height:2px !important;opacity:0.001 !important;pointer-events:none !important;z-index:-9999 !important;border:none !important;';
@@ -746,6 +785,9 @@ export function ensureBackgroundLiveChat() {
         setTimeout(findAndObserveItems, 800);
     });
 
+    bgChatIframeStartedAt = Date.now();
+    bgChatIframeAttempts++;
+    bgChatIframeReady = false;
     document.body.appendChild(bgChatIframe);
 }
 
@@ -754,11 +796,7 @@ export function stopAllLiveChatIfDisabled() {
 
     // Khi người dùng tắt Live Chat Overlay: dọn dẹp iframe chạy ngầm để giải phóng 100% tài nguyên
     if (!isOverlayOn) {
-        if (bgChatIframe) {
-            bgChatIframe.remove();
-            bgChatIframe = null;
-            currentBgVideoId = null;
-        }
+        clearBackgroundChatState();
     }
 }
 
@@ -978,6 +1016,7 @@ export function initIframeChatSender() {
         const items = document.querySelector('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #chat #items, #items');
         if (items) {
             attach(items);
+            try { window.top.postMessage({ type: 'YTC_LIVE_CHAT_READY' }, '*'); } catch (e) {}
             return true;
         }
         return false;
@@ -1254,6 +1293,7 @@ function findAndObserveItems() {
                 }
                 const iframeItems = doc.querySelectorAll('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer, #item-scroller #items, #items');
                 if (iframeItems.length > 0) {
+                    if (frame.id === 'ytc-bg-live-chat') bgChatIframeReady = true;
                     iframeItems.forEach(items => observeItemsElement(items));
                 } else if (!doc._ytcDocObserverAttached) {
                     doc._ytcDocObserverAttached = true;
@@ -1326,6 +1366,9 @@ export function initChatOverlay() {
     });
 
     window.addEventListener('message', (e) => {
+        if (e.data && e.data.type === 'YTC_LIVE_CHAT_READY' && bgChatIframe && e.source === bgChatIframe.contentWindow) {
+            bgChatIframeReady = true;
+        }
         if (e.data && e.data.type === 'YTC_LIVE_CHAT_MSG' && e.data.payload) {
             const isBacklog = !!e.data.isBacklog || !!e.data.payload.isBacklog;
             displayChatMessage(e.data.payload, isBacklog);
