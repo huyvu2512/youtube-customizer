@@ -10,13 +10,16 @@
   4. `tampermonkey.user.js` -> Cập nhật `@version`, query param `?v=x.y.z` ở `@require`, `@updateURL`, `@downloadURL`, và nhật ký Changelog (giới hạn 10 version gần nhất).
   5. `README.md` & `README_EN.md` -> Cập nhật badge version và đoạn giới thiệu phiên bản mới.
   6. `CHANGELOG.md` -> Thêm mục `## vx.y.z — DD/MM/YYYY HH:MM` và ghi lại chi tiết các thay đổi.
+- Trước mỗi lần push, rà soát và cập nhật `README.md`, `README_EN.md` và `CHANGELOG.md` để tài liệu khớp với thay đổi được đẩy lên.
+- Viết `CHANGELOG.md` ngắn gọn: mỗi ý nêu thay đổi chính trong một dòng, tránh giải thích triển khai dài dòng hoặc tách một sửa lỗi thành nhiều ý vụn.
 
 ## 2. QUY TRÌNH BUILD & DEPLOY CHUẨN
 1. Chạy lệnh đóng gói: `npm run build`
 2. Kiểm tra cú pháp an toàn: `node -c youtube_customizer.js`
-3. Commit và push lên GitHub nhánh `main`:
+3. Trước khi commit, rà soát `README.md`, `README_EN.md` và `CHANGELOG.md`; cập nhật nội dung liên quan, giữ CHANGELOG ngắn gọn theo quy tắc trên.
+4. Commit và push lên GitHub nhánh `main`:
    `git add .; git commit -m "..."; git push origin main`
-4. Xóa bộ nhớ đệm CDN jsDelivr:
+5. Xóa bộ nhớ đệm CDN jsDelivr:
    `node -e "fetch('https://purge.jsdelivr.net/gh/huyvu2512/youtube-customizer@main/youtube_customizer.js').then(r => r.json()).then(console.log)"`
 
 ## 3. NGUYÊN TẮC THIẾT KẾ & TỐI ƯU
