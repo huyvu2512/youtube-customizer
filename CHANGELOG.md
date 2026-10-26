@@ -1,5 +1,9 @@
 # Lịch sử thay đổi
 
+## v3.9.25 — 26/10/2026 16:39
+
+- **[d84cbe1](https://github.com/huyvu2512/youtube-customizer/commit/d84cbe1cc704f02112ebc5104f1e07fb9876e416)** Giữ xử lý bấm gốc của YouTube trong Chế độ Chỉ Âm Thanh.
+
 ## v3.9.24 — 26/10/2026 16:25
 
 - **[b209b4a](https://github.com/huyvu2512/youtube-customizer/commit/b209b4a2755eda2e31fe364f26c7019bf89dad3a)** Bổ sung bấm phát/tạm dừng trong Chế độ Chỉ Âm Thanh.
