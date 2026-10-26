@@ -8,13 +8,22 @@ let applyGeneration = 0;
 let lastAppliedQualityKey = null;
 let isQualityManagerInitialized = false;
 
-function syncQualityToLocalStorage(pref, target) {
+function syncQualityToLocalStorage(target) {
     try {
-        let qualityNum = 1080;
-        if (pref === 'max') qualityNum = 2160;
-        else if (pref === '1440p') qualityNum = 1440;
-        else if (pref === '1080p') qualityNum = 1080;
-        else if (pref === '720p') qualityNum = 720;
+        const qualityNumbers = {
+            highres: 4320,
+            hd2880: 2880,
+            hd2160: 2160,
+            hd1440: 1440,
+            hd1080: 1080,
+            hd720: 720,
+            large: 480,
+            medium: 360,
+            small: 240,
+            tiny: 144
+        };
+        const qualityNum = qualityNumbers[target];
+        if (!qualityNum) return;
 
         const payload = {
             data: JSON.stringify({ quality: qualityNum, previousQuality: qualityNum }),
@@ -30,6 +39,11 @@ function syncQualityToLocalStorage(pref, target) {
  */
 function pickTargetQuality(available, pref) {
     if (!available || available.length === 0) return null;
+
+    if (currentConfig.audioOnlyMode) {
+        // Prefer YouTube's lowest rung; fall back to the lowest available rung.
+        return available.includes('tiny') ? 'tiny' : available[available.length - 1];
+    }
 
     if (pref === 'max') {
         // available được YouTube sắp xếp theo thứ tự giảm dần
@@ -58,13 +72,22 @@ function pickTargetQuality(available, pref) {
  * Ép độ phân giải mong muốn vào trình phát YouTube
  */
 export function applyPreferredQuality() {
-    if (!currentConfig.preferredQuality || currentConfig.preferredQuality === 'auto') return;
     if (!window.location.pathname.startsWith('/watch')) return;
 
     const player = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
     if (!player || typeof player.getAvailableQualityLevels !== 'function') return;
 
     try {
+        if (!currentConfig.audioOnlyMode && (!currentConfig.preferredQuality || currentConfig.preferredQuality === 'auto')) {
+            if (typeof player.setPlaybackQualityRange === 'function') {
+                player.setPlaybackQualityRange('auto', 'default');
+            }
+            if (typeof player.setPlaybackQuality === 'function') player.setPlaybackQuality('auto');
+            const videoId = player.getVideoData?.()?.video_id || new URL(window.location.href).searchParams.get('v');
+            lastAppliedQualityKey = `${videoId || 'watch'}:auto:auto`;
+            return;
+        }
+
         const rawLevels = player.getAvailableQualityLevels();
         if (!Array.isArray(rawLevels) || rawLevels.length === 0) return;
 
@@ -75,7 +98,7 @@ export function applyPreferredQuality() {
         if (!target) return;
 
         const current = typeof player.getPlaybackQuality === 'function' ? player.getPlaybackQuality() : null;
-        if (current === target) return;
+        if (current === target && !currentConfig.audioOnlyMode) return;
 
         if (typeof player.setPlaybackQualityRange === 'function') {
             player.setPlaybackQualityRange(target, target);
@@ -84,7 +107,11 @@ export function applyPreferredQuality() {
             player.setPlaybackQuality(target);
         }
 
-        syncQualityToLocalStorage(currentConfig.preferredQuality, target);
+        if (!currentConfig.audioOnlyMode) {
+            syncQualityToLocalStorage(target);
+        }
+        const videoId = player.getVideoData?.()?.video_id || new URL(window.location.href).searchParams.get('v');
+        lastAppliedQualityKey = `${videoId || 'watch'}:${currentConfig.preferredQuality || 'auto'}:${target}`;
     } catch (err) {}
 }
 
@@ -98,8 +125,14 @@ export function scheduleApplyQuality() {
         applyTimeoutId = null;
     }
     const generation = ++applyGeneration;
-    if (!currentConfig.preferredQuality || currentConfig.preferredQuality === 'auto') return;
     if (!window.location.pathname.startsWith('/watch')) return;
+    if (!currentConfig.audioOnlyMode && (!currentConfig.preferredQuality || currentConfig.preferredQuality === 'auto')) {
+        const player = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
+        const videoId = player?.getVideoData?.()?.video_id || new URL(window.location.href).searchParams.get('v');
+        const qualityKey = `${videoId || 'watch'}:auto:auto`;
+        if (lastAppliedQualityKey !== qualityKey) applyPreferredQuality();
+        return;
+    }
 
     const expectedVideoId = new URL(window.location.href).searchParams.get('v');
     let attempts = 0;
@@ -140,7 +173,9 @@ export function scheduleApplyQuality() {
                         if (typeof player.setPlaybackQuality === 'function') {
                             player.setPlaybackQuality(target);
                         }
-                        syncQualityToLocalStorage(currentConfig.preferredQuality, target);
+                        if (!currentConfig.audioOnlyMode) {
+                            syncQualityToLocalStorage(target);
+                        }
                         lastAppliedQualityKey = qualityKey;
                         if (applyIssued) retryIssued = true;
                         applyIssued = true;

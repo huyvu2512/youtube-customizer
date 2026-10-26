@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.23
-// @description  YouTube Customizer v3.9.23 — Tăng tốc tua Numpad và nhận diện iframe Live Chat mới.
+// @version      3.9.24
+// @description  YouTube Customizer v3.9.24 — Cải thiện Chỉ Âm Thanh và khôi phục chất lượng video.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -13,6 +13,7 @@
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.24 — Bổ sung bấm phát/tạm dừng; ép chất lượng thấp nhất và khôi phục mức ưu tiên.
  * v3.9.23 — Tăng tốc tua Numpad 4/6 và mở rộng nhận diện iframe Live Chat.
  * v3.9.22 — Tăng tốc tua khi giữ Numpad 4/6; khôi phục kết nối Live Chat nền.
  * v3.9.21 — Khôi phục trạng thái ổn định từ v3.9.19 và cập nhật quy tắc phát triển trong AGENTS.md.
@@ -22,8 +23,6 @@
  * v3.9.17 — Thay emoji ngôi sao bằng SVG riêng; bỏ animation nhấp nháy.
  * v3.9.16 — Gỡ canvas/CSS thử nghiệm trên scrollbar, bỏ cập nhật canvas theo từng frame và khi cuộn.
  * v3.9.15 — Nhắm đúng scrollbar trang YouTube để áp dụng hiệu ứng track.
- * v3.9.14 — Tắt Ambilight trên Shorts, giữ Ambilight cho video thường.
- * v3.9.13 — Làm trong track scrollbar riêng của Shorts, giữ thumb dễ nhận biết.
  * ============================================================================
  */
 (() => {
@@ -46,7 +45,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.23";
+      APP_VERSION = "3.9.24";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -774,13 +773,22 @@
     initQualityManager: () => initQualityManager,
     scheduleApplyQuality: () => scheduleApplyQuality
   });
-  function syncQualityToLocalStorage(pref, target) {
+  function syncQualityToLocalStorage(target) {
     try {
-      let qualityNum = 1080;
-      if (pref === "max") qualityNum = 2160;
-      else if (pref === "1440p") qualityNum = 1440;
-      else if (pref === "1080p") qualityNum = 1080;
-      else if (pref === "720p") qualityNum = 720;
+      const qualityNumbers = {
+        highres: 4320,
+        hd2880: 2880,
+        hd2160: 2160,
+        hd1440: 1440,
+        hd1080: 1080,
+        hd720: 720,
+        large: 480,
+        medium: 360,
+        small: 240,
+        tiny: 144
+      };
+      const qualityNum = qualityNumbers[target];
+      if (!qualityNum) return;
       const payload = {
         data: JSON.stringify({ quality: qualityNum, previousQuality: qualityNum }),
         creation: Date.now(),
@@ -792,6 +800,9 @@
   }
   function pickTargetQuality(available, pref) {
     if (!available || available.length === 0) return null;
+    if (currentConfig.audioOnlyMode) {
+      return available.includes("tiny") ? "tiny" : available[available.length - 1];
+    }
     if (pref === "max") {
       return available[0];
     }
@@ -810,11 +821,19 @@
     return null;
   }
   function applyPreferredQuality() {
-    if (!currentConfig.preferredQuality || currentConfig.preferredQuality === "auto") return;
     if (!window.location.pathname.startsWith("/watch")) return;
     const player = document.getElementById("movie_player") || document.querySelector(".html5-video-player");
     if (!player || typeof player.getAvailableQualityLevels !== "function") return;
     try {
+      if (!currentConfig.audioOnlyMode && (!currentConfig.preferredQuality || currentConfig.preferredQuality === "auto")) {
+        if (typeof player.setPlaybackQualityRange === "function") {
+          player.setPlaybackQualityRange("auto", "default");
+        }
+        if (typeof player.setPlaybackQuality === "function") player.setPlaybackQuality("auto");
+        const videoId2 = player.getVideoData?.()?.video_id || new URL(window.location.href).searchParams.get("v");
+        lastAppliedQualityKey = `${videoId2 || "watch"}:auto:auto`;
+        return;
+      }
       const rawLevels = player.getAvailableQualityLevels();
       if (!Array.isArray(rawLevels) || rawLevels.length === 0) return;
       const available = rawLevels.filter((q) => q && q !== "auto");
@@ -822,14 +841,18 @@
       const target = pickTargetQuality(available, currentConfig.preferredQuality);
       if (!target) return;
       const current = typeof player.getPlaybackQuality === "function" ? player.getPlaybackQuality() : null;
-      if (current === target) return;
+      if (current === target && !currentConfig.audioOnlyMode) return;
       if (typeof player.setPlaybackQualityRange === "function") {
         player.setPlaybackQualityRange(target, target);
       }
       if (typeof player.setPlaybackQuality === "function") {
         player.setPlaybackQuality(target);
       }
-      syncQualityToLocalStorage(currentConfig.preferredQuality, target);
+      if (!currentConfig.audioOnlyMode) {
+        syncQualityToLocalStorage(target);
+      }
+      const videoId = player.getVideoData?.()?.video_id || new URL(window.location.href).searchParams.get("v");
+      lastAppliedQualityKey = `${videoId || "watch"}:${currentConfig.preferredQuality || "auto"}:${target}`;
     } catch (err) {
     }
   }
@@ -839,8 +862,14 @@
       applyTimeoutId = null;
     }
     const generation = ++applyGeneration;
-    if (!currentConfig.preferredQuality || currentConfig.preferredQuality === "auto") return;
     if (!window.location.pathname.startsWith("/watch")) return;
+    if (!currentConfig.audioOnlyMode && (!currentConfig.preferredQuality || currentConfig.preferredQuality === "auto")) {
+      const player = document.getElementById("movie_player") || document.querySelector(".html5-video-player");
+      const videoId = player?.getVideoData?.()?.video_id || new URL(window.location.href).searchParams.get("v");
+      const qualityKey = `${videoId || "watch"}:auto:auto`;
+      if (lastAppliedQualityKey !== qualityKey) applyPreferredQuality();
+      return;
+    }
     const expectedVideoId = new URL(window.location.href).searchParams.get("v");
     let attempts = 0;
     let applyIssued = false;
@@ -872,7 +901,9 @@
               if (typeof player.setPlaybackQuality === "function") {
                 player.setPlaybackQuality(target);
               }
-              syncQualityToLocalStorage(currentConfig.preferredQuality, target);
+              if (!currentConfig.audioOnlyMode) {
+                syncQualityToLocalStorage(target);
+              }
               lastAppliedQualityKey = qualityKey;
               if (applyIssued) retryIssued = true;
               applyIssued = true;
@@ -3856,74 +3887,6 @@
     }
   });
 
-  // src/optimization/audioOnly.js
-  var audioOnly_exports = {};
-  __export(audioOnly_exports, {
-    applyAudioOnlyState: () => applyAudioOnlyState,
-    initAudioOnly: () => initAudioOnly
-  });
-  function getPlayer() {
-    return document.querySelector("#movie_player:not(#inline-preview-player)");
-  }
-  function ensureAudioBadge(player) {
-    if (!player) return;
-    if (document.getElementById("ytc-audio-only-badge")) return;
-    audioBadgeElement = document.createElement("div");
-    audioBadgeElement.id = "ytc-audio-only-badge";
-    audioBadgeElement.innerHTML = `
-        <div class="ytc-audio-badge-title">Đang phát ở Chế độ Chỉ Âm Thanh</div>
-        <div class="ytc-audio-badge-sub">Đã tắt video để tiết kiệm tài nguyên</div>
-    `;
-    player.appendChild(audioBadgeElement);
-  }
-  function applyAudioOnlyState() {
-    const isAudioOnly = !!currentConfig.audioOnlyMode;
-    const root = document.documentElement;
-    const body = document.body;
-    root.classList.toggle("ytc-audio-only", isAudioOnly);
-    if (body) body.classList.toggle("ytc-audio-only", isAudioOnly);
-    const player = getPlayer();
-    if (isAudioOnly) {
-      if (player) {
-        ensureAudioBadge(player);
-        try {
-          if (typeof player.setPlaybackQualityRange === "function") {
-            player.setPlaybackQualityRange("tiny", "tiny");
-          }
-          if (typeof player.setPlaybackQuality === "function") {
-            player.setPlaybackQuality("tiny");
-          }
-        } catch (e) {
-        }
-      }
-    } else {
-      const badge = document.getElementById("ytc-audio-only-badge");
-      if (badge) badge.remove();
-      audioBadgeElement = null;
-      if (player) {
-        try {
-          if (typeof player.setPlaybackQualityRange === "function") {
-            player.setPlaybackQualityRange("auto", "default");
-          }
-          if (typeof player.setPlaybackQuality === "function") {
-            player.setPlaybackQuality("auto");
-          }
-        } catch (e) {
-        }
-      }
-    }
-  }
-  function initAudioOnly() {
-    applyAudioOnlyState();
-  }
-  var audioBadgeElement;
-  var init_audioOnly = __esm({
-    "src/optimization/audioOnly.js"() {
-      init_config();
-      audioBadgeElement = null;
-    }
-  });
-
   // src/optimization/chatMemoryGc.js
   var chatMemoryGc_exports = {};
   __export(chatMemoryGc_exports, {
@@ -4707,12 +4670,6 @@
             });
           }
           if (key === "audioOnlyMode") {
-            Promise.resolve().then(() => (init_audioOnly(), audioOnly_exports)).then((m) => {
-              if (m && typeof m.applyAudioOnlyState === "function") {
-                m.applyAudioOnlyState();
-              }
-            }).catch(() => {
-            });
             Promise.resolve().then(() => (init_ambientLight(), ambientLight_exports)).then((m) => {
               if (m && typeof m.applyAmbientLightingState === "function") {
                 m.applyAmbientLightingState();
@@ -7307,7 +7264,74 @@
 
   // src/optimization/index.js
   init_chatMemoryGc();
-  init_audioOnly();
+
+  // src/optimization/audioOnly.js
+  init_config();
+  init_qualityManager();
+  var audioBadgeElement = null;
+  var audioOnlyClickHandlerInitialized = false;
+  function getPlayer() {
+    return document.querySelector("#movie_player:not(#inline-preview-player)");
+  }
+  function ensureAudioBadge(player) {
+    if (!player) return;
+    if (document.getElementById("ytc-audio-only-badge")) return;
+    audioBadgeElement = document.createElement("div");
+    audioBadgeElement.id = "ytc-audio-only-badge";
+    audioBadgeElement.innerHTML = `
+        <div class="ytc-audio-badge-title">Đang phát ở Chế độ Chỉ Âm Thanh</div>
+        <div class="ytc-audio-badge-sub">Đã tắt video để tiết kiệm tài nguyên</div>
+    `;
+    player.appendChild(audioBadgeElement);
+  }
+  function applyAudioOnlyState() {
+    const isAudioOnly = !!currentConfig.audioOnlyMode;
+    const root = document.documentElement;
+    const body = document.body;
+    root.classList.toggle("ytc-audio-only", isAudioOnly);
+    if (body) body.classList.toggle("ytc-audio-only", isAudioOnly);
+    const player = getPlayer();
+    if (isAudioOnly) {
+      if (player) {
+        ensureAudioBadge(player);
+      }
+      applyPreferredQuality();
+      scheduleApplyQuality();
+    } else {
+      const badge = document.getElementById("ytc-audio-only-badge");
+      if (badge) badge.remove();
+      audioBadgeElement = null;
+      applyPreferredQuality();
+      scheduleApplyQuality();
+    }
+  }
+  function handleAudioOnlyPlayerClick(event) {
+    if (!currentConfig.audioOnlyMode || event.defaultPrevented || event.button !== 0) return;
+    const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+    const player = target?.closest("#movie_player:not(#inline-preview-player)");
+    if (!target || !player) return;
+    if (target.closest(".ytp-chrome-controls, .ytp-chrome-top, .ytp-button, .ytp-popup, .ytp-tooltip, .ytp-panel, .ytp-settings-menu, .ytp-cards-teaser, .ytp-ce-element")) return;
+    const playerRect = player.getBoundingClientRect();
+    if (event.clientY >= playerRect.bottom - 64) return;
+    event.preventDefault();
+    event.stopPropagation();
+    try {
+      const state = typeof player.getPlayerState === "function" ? player.getPlayerState() : null;
+      if (state === 1) player.pauseVideo?.();
+      else player.playVideo?.();
+    } catch (e) {
+      const video = player.querySelector("video");
+      if (video) video.paused ? video.play().catch(() => {
+      }) : video.pause();
+    }
+  }
+  function initAudioOnly() {
+    if (!audioOnlyClickHandlerInitialized) {
+      document.addEventListener("click", handleAudioOnlyPlayerClick, true);
+      audioOnlyClickHandlerInitialized = true;
+    }
+    applyAudioOnlyState();
+  }
 
   // src/optimization/preventAutoPause.js
   init_config();
@@ -7369,7 +7393,6 @@
 
   // src/optimization/index.js
   init_chatMemoryGc();
-  init_audioOnly();
   var isOptInitialized = false;
   function initOptimization() {
     initCodecBlocker();

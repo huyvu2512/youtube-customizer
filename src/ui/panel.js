@@ -793,11 +793,6 @@ export function createSettingsPanel() {
                     }).catch(() => {});
                 }
                 if (key === 'audioOnlyMode') {
-                    import('../optimization/audioOnly.js').then(m => {
-                        if (m && typeof m.applyAudioOnlyState === 'function') {
-                            m.applyAudioOnlyState();
-                        }
-                    }).catch(() => {});
                     import('../player/ambientLight.js').then(m => {
                         if (m && typeof m.applyAmbientLightingState === 'function') {
                             m.applyAmbientLightingState();
