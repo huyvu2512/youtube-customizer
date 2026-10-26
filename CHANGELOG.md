@@ -1,5 +1,9 @@
 # Lịch sử thay đổi
 
+## v3.9.26 — 26/10/2026 16:52
+
+- **[2be26af](https://github.com/huyvu2512/youtube-customizer/commit/2be26af01729b3fd1aae12970f4287f9f0fa2388)** Chỉ mở trang cập nhật sau yêu cầu; bỏ F5 tự động.
+
 ## v3.9.25 — 26/10/2026 16:39
 
 - **[d84cbe1](https://github.com/huyvu2512/youtube-customizer/commit/d84cbe1cc704f02112ebc5104f1e07fb9876e416)** Giữ xử lý bấm gốc của YouTube trong Chế độ Chỉ Âm Thanh.
