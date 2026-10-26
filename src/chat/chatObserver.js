@@ -768,7 +768,11 @@ export function ensureBackgroundLiveChat() {
     bgChatIframe.id = 'ytc-bg-live-chat';
 
     // Ưu tiên URL của khung YouTube gốc (có thể chứa continuation cho chat phát lại).
-    const nativeFrame = document.querySelector('iframe#chatframe, ytd-live-chat-frame iframe');
+    const nativeFrame = document.querySelector(
+        'iframe#chatframe:not(#ytc-bg-live-chat), ' +
+        'ytd-live-chat-frame iframe:not(#ytc-bg-live-chat), ' +
+        'iframe[src*="/live_chat"]:not(#ytc-bg-live-chat)'
+    );
     let targetSrc = `https://www.youtube.com/live_chat?v=${videoId}&embed_domain=${encodeURIComponent(location.hostname)}`;
     if (attempt === 0 && nativeFrame && nativeFrame.src && nativeFrame.src.includes('live_chat')) {
         targetSrc = nativeFrame.src;

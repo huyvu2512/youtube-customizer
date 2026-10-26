@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.22
-// @description  YouTube Customizer v3.9.22 — Sửa phím tua Numpad khi giữ và khôi phục kết nối Live Chat nền.
+// @version      3.9.23
+// @description  YouTube Customizer v3.9.23 — Tăng tốc tua Numpad và nhận diện iframe Live Chat mới.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -25,7 +25,8 @@ const banner = `// ==UserScript==
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
- * v3.9.22 — Sửa tua liên tục bằng Numpad 4/6 và thử kết nối lại Live Chat nền khi iframe không phản hồi.
+ * v3.9.23 — Tăng tốc tua Numpad 4/6 và mở rộng nhận diện iframe Live Chat.
+ * v3.9.22 — Tăng tốc tua khi giữ Numpad 4/6; khôi phục kết nối Live Chat nền.
  * v3.9.21 — Khôi phục trạng thái ổn định từ v3.9.19 và cập nhật quy tắc phát triển trong AGENTS.md.
  * v3.9.20 — Thử nghiệm ảnh xem trước Live Stream theo thời gian thực.
  * v3.9.19 — Lịch sử đầy đủ được tổng hợp tại CHANGELOG.md; phần này giới hạn 10 phiên bản gần nhất.

@@ -3,10 +3,6 @@
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
 import { recordUserSeek } from './autoLive.js';
-import { createNumpadSeekGate } from './numpadSeekGate.js';
-
-const NUMPAD_SEEK_REPEAT_INTERVAL = 300;
-const numpadSeekGate = createNumpadSeekGate(NUMPAD_SEEK_REPEAT_INTERVAL);
 
 export function triggerCleanSeek(player) {
     // Không ẩn controls hoặc con trỏ chuột khi tua để giữ trải nghiệm mượt mà, không bị giật chớp HUD
@@ -142,17 +138,13 @@ export function bindGlobalKeys() {
             }
             // Numpad 4: Tua lùi 10 giây (J)
             else if (code === 'Numpad4' || e.key === '4' || e.key === 'ArrowLeft' || e.keyCode === 100 || e.keyCode === 37) {
-                if (numpadSeekGate.shouldDispatch('backward', e.repeat, performance.now())) {
-                    dispatchYtSeek('j');
-                    isSeekAction = true;
-                }
+                dispatchYtSeek('j');
+                isSeekAction = true;
             }
             // Numpad 6: Tua tiến 10 giây (L)
             else if (code === 'Numpad6' || e.key === '6' || e.key === 'ArrowRight' || e.keyCode === 102 || e.keyCode === 39) {
-                if (numpadSeekGate.shouldDispatch('forward', e.repeat, performance.now())) {
-                    dispatchYtSeek('l');
-                    isSeekAction = true;
-                }
+                dispatchYtSeek('l');
+                isSeekAction = true;
             }
             // Numpad 5: Tạm dừng / phát tiếp (K)
             else if (code === 'Numpad5' || e.key === '5' || e.key === 'Clear' || e.keyCode === 101 || e.keyCode === 12) {
@@ -200,10 +192,6 @@ export function bindGlobalKeys() {
                          (e.keyCode >= 96 && e.keyCode <= 111) || 
                          (e.keyCode === 12);
         if (isNumpad) {
-            if (code === 'Numpad4' || e.key === '4' || e.key === 'ArrowLeft' || e.keyCode === 100 || e.keyCode === 37 ||
-                code === 'Numpad6' || e.key === '6' || e.key === 'ArrowRight' || e.keyCode === 102 || e.keyCode === 39) {
-                numpadSeekGate.reset();
-            }
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();
