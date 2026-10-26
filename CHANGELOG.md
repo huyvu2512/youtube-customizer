@@ -1,5 +1,10 @@
 # Lịch sử thay đổi
 
+## v3.9.24 — 26/10/2026 16:25
+
+- **[b209b4a](https://github.com/huyvu2512/youtube-customizer/commit/b209b4a2755eda2e31fe364f26c7019bf89dad3a)** Bổ sung bấm phát/tạm dừng trong Chế độ Chỉ Âm Thanh.
+- **[b209b4a](https://github.com/huyvu2512/youtube-customizer/commit/b209b4a2755eda2e31fe364f26c7019bf89dad3a)** Ép chất lượng thấp nhất và khôi phục mức ưu tiên khi tắt.
+
 ## v3.9.23 — 26/10/2026 15:03
 
 - **[fa1954e](https://github.com/huyvu2512/youtube-customizer/commit/fa1954e68b40b376593e64e22c4f770f94ce0a84)** Tăng tốc tua khi giữ Numpad 4/6 theo nhịp phím.
