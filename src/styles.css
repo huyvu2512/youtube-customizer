@@ -1804,7 +1804,8 @@ body[light] #ytc-toast-notification {
    -------------------------------------------------------------------------- */
 html.ytc-audio-only #movie_player video,
 body.ytc-audio-only #movie_player video {
-    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: auto !important;
 }
 
 #ytc-audio-only-badge {

@@ -1,22 +1,23 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.24
-// @description  YouTube Customizer v3.9.24 — Cải thiện Chỉ Âm Thanh và khôi phục chất lượng video.
+// @version      3.9.25
+// @description  YouTube Customizer v3.9.25 — Dùng xử lý phát/tạm dừng gốc của YouTube.
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.24
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.25
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.24
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.24
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.25
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.25
 // ==/UserScript==
 
 /*
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.25 — Giữ xử lý bấm gốc của YouTube trong Chế độ Chỉ Âm Thanh.
  * v3.9.24 — Bổ sung bấm phát/tạm dừng; ép chất lượng thấp nhất và khôi phục mức ưu tiên.
  * v3.9.23 — Tăng tốc tua Numpad 4/6 và mở rộng nhận diện iframe Live Chat.
  * v3.9.22 — Tăng tốc tua khi giữ Numpad 4/6; khôi phục kết nối Live Chat nền.
@@ -26,7 +27,6 @@
  * v3.9.18 — Gỡ huy hiệu ngôi sao khỏi mục Ánh sáng phòng (Ambilight).
  * v3.9.17 — Thay emoji ngôi sao bằng SVG riêng; bỏ animation nhấp nháy.
  * v3.9.16 — Gỡ canvas/CSS thử nghiệm trên scrollbar, bỏ cập nhật canvas theo từng frame và khi cuộn.
- * v3.9.15 — Nhắm đúng scrollbar trang YouTube để áp dụng hiệu ứng track.
  * v3.9.13 — Làm trong track scrollbar riêng của Shorts, giữ thumb dễ nhận biết.
  * ============================================================================
  */

@@ -5,7 +5,6 @@ import { currentConfig } from '../core/config.js';
 import { applyPreferredQuality, scheduleApplyQuality } from '../features/qualityManager.js';
 
 let audioBadgeElement = null;
-let audioOnlyClickHandlerInitialized = false;
 
 function getPlayer() {
     return document.querySelector('#movie_player:not(#inline-preview-player)');
@@ -49,34 +48,6 @@ export function applyAudioOnlyState() {
     }
 }
 
-function handleAudioOnlyPlayerClick(event) {
-    if (!currentConfig.audioOnlyMode || event.defaultPrevented || event.button !== 0) return;
-    const target = event.target instanceof Element ? event.target : event.target?.parentElement;
-    const player = target?.closest('#movie_player:not(#inline-preview-player)');
-    if (!target || !player) return;
-
-    // Let the YouTube controls keep their native behavior (seekbar, settings, buttons).
-    if (target.closest('.ytp-chrome-controls, .ytp-chrome-top, .ytp-button, .ytp-popup, .ytp-tooltip, .ytp-panel, .ytp-settings-menu, .ytp-cards-teaser, .ytp-ce-element')) return;
-
-    const playerRect = player.getBoundingClientRect();
-    if (event.clientY >= playerRect.bottom - 64) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-    try {
-        const state = typeof player.getPlayerState === 'function' ? player.getPlayerState() : null;
-        if (state === 1) player.pauseVideo?.();
-        else player.playVideo?.();
-    } catch (e) {
-        const video = player.querySelector('video');
-        if (video) video.paused ? video.play().catch(() => {}) : video.pause();
-    }
-}
-
 export function initAudioOnly() {
-    if (!audioOnlyClickHandlerInitialized) {
-        document.addEventListener('click', handleAudioOnlyPlayerClick, true);
-        audioOnlyClickHandlerInitialized = true;
-    }
     applyAudioOnlyState();
 }
