@@ -1,5 +1,10 @@
 # Lịch sử thay đổi
 
+## v3.9.23 — 26/10/2026 15:03
+
+- **[fa1954e](https://github.com/huyvu2512/youtube-customizer/commit/fa1954e68b40b376593e64e22c4f770f94ce0a84)** Đồng bộ tua Numpad với nhịp lặp bàn phím.
+- **[fa1954e](https://github.com/huyvu2512/youtube-customizer/commit/fa1954e68b40b376593e64e22c4f770f94ce0a84)** Mở rộng nhận diện iframe Live Chat.
+
 ## v3.9.22 — 26/10/2026 14:37
 
 - **[be9757c](https://github.com/huyvu2512/youtube-customizer/commit/be9757cbb37f06d55b01d3ac844f419028762c14)** Tăng tốc tua khi giữ Numpad 4/6.
