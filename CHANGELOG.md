@@ -1,5 +1,11 @@
 # Lịch sử thay đổi
 
+## v3.9.27 — 29/10/2026 22:21
+
+- **[3c2a951](https://github.com/huyvu2512/youtube-customizer/commit/3c2a951)** Chỉ áp độ phân giải ưu tiên một lần sau khi video tải đủ dữ liệu.
+- **[3c2a951](https://github.com/huyvu2512/youtube-customizer/commit/3c2a951)** Dùng khung chat gốc cho Live Chat Replay, tránh tạo iframe nền trùng.
+- **[3c2a951](https://github.com/huyvu2512/youtube-customizer/commit/3c2a951)** Ẩn tùy chọn Live Chat khi video không có khung trò chuyện.
+
 ## v3.9.26 — 26/10/2026 16:52
 
 - **[2be26af](https://github.com/huyvu2512/youtube-customizer/commit/2be26af01729b3fd1aae12970f4287f9f0fa2388)** Chỉ mở trang cập nhật sau yêu cầu; bỏ F5 tự động.
