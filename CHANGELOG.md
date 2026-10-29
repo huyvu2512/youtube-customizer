@@ -1,3 +1,7 @@
+## v3.9.33 — 29/10/2026 23:32
+
+- Áp chất lượng ban đầu rồi cho phép đổi thủ công trong YouTube.
+
 ## v3.9.32 — 29/10/2026 23:08
 
 - **[207eaf1](https://github.com/huyvu2512/youtube-customizer/commit/207eaf196d5ce6e6897582c0c378a7a4442ee54c)** Phủ khoảng đen khi phóng to mà không cắt khung hình.
