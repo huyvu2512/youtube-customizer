@@ -1,5 +1,9 @@
 # Lịch sử thay đổi
 
+## v3.9.29 — 29/10/2026 22:42
+
+- **[7cef95e](https://github.com/huyvu2512/youtube-customizer/commit/7cef95e)** Bấm nút Replay gốc để khởi tạo iframe chat đang ẩn.
+
 ## v3.9.28 — 29/10/2026 22:35
 
 - **[5b2e360](https://github.com/huyvu2512/youtube-customizer/commit/5b2e360)** Tự mở bảng điều khiển để khởi tạo Live Chat Replay.
