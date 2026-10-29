@@ -17,7 +17,7 @@ export function syncPanelState(targetPanel) {
     const hasChat = hasLiveOrChatSupport();
     const chatRow = panel.querySelector('#ytc-row-chatoverlay');
     if (chatRow) {
-        chatRow.style.display = hasChat ? '' : 'none';
+        chatRow.classList.toggle('ytc-disabled', !hasChat);
         const allBtns = chatRow.querySelectorAll('.ytc-mode-btn');
         allBtns.forEach(btn => {
             if (!hasChat) {

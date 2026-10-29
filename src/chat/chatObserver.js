@@ -45,6 +45,17 @@ function isReplayChatOverlayActive() {
 
 let chatAutoCloseObserver = null;
 let chatAutoCloseTimeout = null;
+let replayNativeOpenRequestedVideoId = null;
+
+function isPlayerFullscreen() {
+    return !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen'));
+}
+
+function syncReplayNativeChatPresentation() {
+    const shouldHideNativeUi = isReplayChatOverlayActive() && isPlayerFullscreen();
+    document.documentElement?.classList.toggle('ytc-hide-replay-native-chat', shouldHideNativeUi);
+    document.body?.classList.toggle('ytc-hide-replay-native-chat', shouldHideNativeUi);
+}
 
 export function resetChatCollapseState() {
     setUserManuallyOpenedChat(false);
@@ -87,6 +98,8 @@ if (typeof window !== 'undefined') {
     });
 
     document.addEventListener('yt-navigate-finish', () => {
+        replayNativeOpenRequestedVideoId = null;
+        syncReplayNativeChatPresentation();
         if (currentConfig.hideNativeLiveChat && !userManuallyOpenedChat && !isReplayChatOverlayActive()) {
             autoCollapseNativeChatIfOpen();
             setTimeout(() => autoCollapseNativeChatIfOpen(), 100);
@@ -199,31 +212,70 @@ export function findNativeChatCloseButton() {
 export function openNativeChatForReplayOverlay() {
     if (!isReplayChatOverlayActive()) return false;
     setNativeChatHiddenState(false);
+    syncReplayNativeChatPresentation();
     if (chatAutoCloseObserver) {
         chatAutoCloseObserver.disconnect();
         chatAutoCloseObserver = null;
     }
 
     const chatFrame = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy, #chat-container ytd-live-chat-frame');
+    const nativeReplayFrame = Array.from(document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]'))
+        .some(frame => {
+            try {
+                const src = frame.src || frame.getAttribute('src') || '';
+                const doc = frame.contentDocument || frame.contentWindow?.document;
+                return src.includes('/live_chat_replay') || !!doc?.querySelector('yt-live-chat-item-list-renderer #items, #items.yt-live-chat-item-list-renderer');
+            } catch (e) { return false; }
+        });
+    if (nativeReplayFrame) return true;
+
+    // Premiere replay cards expose this button before creating #chatframe.
+    // Use that explicit entry point first; the collapsed-frame button can be
+    // present but only toggle an empty shell on some YouTube layouts.
+    const openControlButton = Array.from(document.querySelectorAll(
+        'ytd-watch-flexy button, ytd-watch-flexy [role="button"], ytd-watch-flexy yt-button-shape'
+    )).find(el => {
+        if (!el.getClientRects().length) return false;
+        const label = `${el.innerText || el.textContent || ''} ${el.getAttribute('aria-label') || ''} ${el.getAttribute('title') || ''}`;
+        return /mở bảng điều khiển|open control panel/i.test(label);
+    });
+    const videoId = getCurrentLiveVideoId();
+    if (openControlButton && replayNativeOpenRequestedVideoId !== videoId) {
+        replayNativeOpenRequestedVideoId = videoId;
+        openControlButton.click();
+        [250, 700, 1500].forEach(delay => setTimeout(() => {
+            findAndObserveItems();
+            ensureBackgroundLiveChat();
+        }, delay));
+        return true;
+    }
+
     const isCollapsed = !!(chatFrame && (chatFrame.hasAttribute('collapsed') || chatFrame.collapsed === true));
+
     if (isCollapsed) {
         const showButton = chatFrame.querySelector(
             '#show-hide-button yt-button-shape button, #show-hide-button button, #show-hide-button, ' +
             '[aria-label*="Hiện" i], [aria-label*="Show" i], [aria-label*="Mở" i], [aria-label*="Open" i]'
         );
-        if (showButton) showButton.click();
-        else if (typeof chatFrame.expand === 'function') chatFrame.expand();
-        return true;
+        if (showButton) {
+            showButton.click();
+            return true;
+        }
+        if (typeof chatFrame.expand === 'function') {
+            chatFrame.expand();
+            return true;
+        }
     }
 
-    if (!chatFrame) {
+    if (!openControlButton) {
         const playerChatButton = document.querySelector('.ytp-live-chat-button, .ytp-chat-button');
-        if (playerChatButton && playerChatButton.getClientRects().length) {
+        if (playerChatButton && playerChatButton.getClientRects().length && replayNativeOpenRequestedVideoId !== videoId) {
+            replayNativeOpenRequestedVideoId = videoId;
             playerChatButton.click();
             return true;
         }
     }
-    return !!chatFrame;
+    return replayNativeOpenRequestedVideoId === videoId || !!chatFrame;
 }
 
 export function autoCollapseNativeChatIfOpen(force = false) {
@@ -445,6 +497,7 @@ export function isNativeChatOpenInFullscreen() {
 
 export function syncNativeChatFullscreenState() {
     const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen'));
+    syncReplayNativeChatPresentation();
     if (!isFs) return;
 
     // Không tự động gán userManuallyOpenedChat = true tại đây để tránh khóa nhầm cờ tự động đóng
@@ -533,6 +586,7 @@ export function setupChatToggleListeners() {
 }
 
 export function syncNativeChatState() {
+    syncReplayNativeChatPresentation();
     if (currentConfig.hideNativeLiveChat && !isReplayChatOverlayActive()) {
         autoCollapseNativeChatIfOpen();
     }
@@ -862,6 +916,8 @@ export function restoreNativeLiveChatIfSaved() {
 
 export function updateChatOverlayVisibility() {
     const mode = currentConfig.chatOverlay || 'off';
+    if (mode === 'off') replayNativeOpenRequestedVideoId = null;
+    syncReplayNativeChatPresentation();
     if (mode !== 'off') {
         ensureChatOverlayContainers();
     }
@@ -1389,6 +1445,7 @@ export function initChatOverlay() {
 
     document.addEventListener('fullscreenchange', () => {
         const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen'));
+        syncReplayNativeChatPresentation();
         const isOpen = isNativeChatOpenInFullscreen();
 
         if (!isFs) {
@@ -1409,6 +1466,7 @@ export function initChatOverlay() {
         clearTimeout(windowResizeTimer);
         windowResizeTimer = setTimeout(() => {
             syncPlayerFullscreenSize();
+            syncReplayNativeChatPresentation();
         }, 150);
     });
 

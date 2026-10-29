@@ -127,11 +127,27 @@ export function hasLiveChatReplaySupport(pageData = window.ytInitialData) {
         if (renderer.continuations?.some(item => item?.liveChatReplayContinuationData?.continuation)) return true;
     }
 
-    return Array.from(document.querySelectorAll('iframe[src], iframe#chatframe, ytd-live-chat-frame iframe'))
+    const replayFrameExists = Array.from(document.querySelectorAll('iframe[src], iframe#chatframe, ytd-live-chat-frame iframe'))
         .some(frame => {
             try { return new URL(frame.src || frame.getAttribute('src') || '', location.href).pathname.includes('/live_chat_replay'); }
             catch (e) { return false; }
         });
+    if (replayFrameExists) return true;
+
+    // Premiere replays can expose only a collapsed replay card at first;
+    // YouTube creates the iframe after its "Open control panel" button is used.
+    const replayCard = Array.from(document.querySelectorAll('ytd-watch-flexy button, ytd-watch-flexy [role="button"], ytd-watch-flexy yt-formatted-string'))
+        .find(el => {
+            if (!el.getClientRects().length) return false;
+            const text = `${el.innerText || el.textContent || ''} ${el.getAttribute('aria-label') || ''}`;
+            return /mở bảng điều khiển|open control panel/i.test(text);
+        });
+    if (replayCard) {
+        const context = replayCard.closest('ytd-live-chat-frame, ytd-engagement-panel-section-list-renderer, ytd-watch-metadata, #panels, #chat-container') || replayCard.parentElement?.parentElement;
+        const text = `${context?.innerText || context?.textContent || ''} ${document.querySelector('ytd-watch-flexy')?.innerText || ''}`;
+        if (/phát lại cuộc trò chuyện trực tiếp|live chat replay|top chat replay|phát lại các tin nhắn/i.test(text)) return true;
+    }
+    return false;
 }
 
 /** True only when YouTube exposes an actual live chat or replay for this video. */
