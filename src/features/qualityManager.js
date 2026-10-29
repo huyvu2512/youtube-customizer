@@ -80,9 +80,19 @@ function hasEnoughStartupBuffer(player, video, attempts) {
 function applyTargetOnce(player, target, videoId, preferenceKey) {
     const current = typeof player.getPlaybackQuality === 'function' ? player.getPlaybackQuality() : null;
 
-    // Do not lock YouTube's quality range: the user can choose a higher
-    // resolution manually after this initial preference has been applied.
-    if (current !== target && typeof player.setPlaybackQuality === 'function') {
+    if (target === 'auto') {
+        // A previous fixed-quality choice can leave YouTube's player range
+        // constrained. Restore the adaptive range before asking for Auto.
+        if (typeof player.setPlaybackQualityRange === 'function') {
+            player.setPlaybackQualityRange('auto', 'default');
+        }
+        if (typeof player.setPlaybackQuality === 'function') {
+            player.setPlaybackQuality('auto');
+        }
+        try { localStorage.removeItem('yt-player-quality'); } catch (e) {}
+    } else if (current !== target && typeof player.setPlaybackQuality === 'function') {
+        // Do not constrain the range for fixed presets; manual YouTube
+        // selections remain available after the initial preference is applied.
         player.setPlaybackQuality(target);
     }
     if (target !== 'auto' && !currentConfig.audioOnlyMode) syncQualityToLocalStorage(target);

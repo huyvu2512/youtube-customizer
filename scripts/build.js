@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.29
-// @description  YouTube Customizer v3.9.29 — Khởi tạo Live Chat Replay qua nút chat gốc.
+// @version      3.9.30
+// @description  YouTube Customizer v3.9.30 — Khôi phục chất lượng tự động từ menu.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -25,6 +25,7 @@ const banner = `// ==UserScript==
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.30 — Khôi phục chất lượng thích ứng khi chọn Tự động.
  * v3.9.29 — Bấm nút Replay gốc để khởi tạo khung chat ẩn.
  * v3.9.28 — Tự mở Live Chat Replay; ẩn khung gốc khi phóng to.
  * v3.9.27 — Áp chất lượng một lần; dùng chat gốc cho Live Chat Replay.
@@ -34,7 +35,6 @@ const banner = `// ==UserScript==
  * v3.9.23 — Tăng tốc tua Numpad 4/6 và mở rộng nhận diện iframe Live Chat.
  * v3.9.22 — Tăng tốc tua khi giữ Numpad 4/6; khôi phục kết nối Live Chat nền.
  * v3.9.21 — Khôi phục trạng thái ổn định từ v3.9.19 và cập nhật quy tắc phát triển trong AGENTS.md.
- * v3.9.20 — Thử nghiệm ảnh xem trước Live Stream theo thời gian thực.
  * ============================================================================
  */`;
 
