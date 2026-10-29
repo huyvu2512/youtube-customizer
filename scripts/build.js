@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.33
-// @description  YouTube Customizer v3.9.33 — Áp chất lượng ban đầu rồi cho phép đổi thủ công.
+// @version      3.9.34
+// @description  YouTube Customizer v3.9.34 — Giữ chất lượng ban đầu đến khi chọn thủ công.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -25,7 +25,8 @@ const banner = `// ==UserScript==
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
- * v3.9.33 — Áp chất lượng ban đầu, sau đó cho phép chọn thủ công.
+ * v3.9.34 — Giữ mức ban đầu đến khi người dùng đổi trong menu YouTube.
+ * v3.9.33 — Áp chất lượng ban đầu rồi cho phép đổi thủ công trong YouTube.
  * v3.9.32 — Phủ khoảng đen khi phóng to mà không cắt khung hình.
  * v3.9.31 — Nhận diện Replay từ cấu trúc YouTube, không phụ thuộc ngôn ngữ.
  * v3.9.30 — Khôi phục chất lượng thích ứng khi chọn Tự động.
@@ -34,7 +35,6 @@ const banner = `// ==UserScript==
  * v3.9.27 — Áp chất lượng một lần; dùng chat gốc cho Live Chat Replay.
  * v3.9.26 — Chỉ mở cập nhật thủ công; bỏ tự tải lại khi đổi tab.
  * v3.9.25 — Giữ xử lý bấm gốc của YouTube trong Chế độ Chỉ Âm Thanh.
- * v3.9.24 — Bổ sung bấm phát/tạm dừng; ép chất lượng thấp nhất và khôi phục mức ưu tiên.
  * ============================================================================
  */`;
 

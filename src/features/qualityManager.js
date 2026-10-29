@@ -7,45 +7,17 @@ let applyTimeoutId = null;
 let applyGeneration = 0;
 let lastAppliedQualityKey = null;
 let isQualityManagerInitialized = false;
-let rangeReleaseTimer = null;
-
-function releaseTemporaryQualityRange(player, videoId, target, attempts = 0) {
-    if (rangeReleaseTimer !== null) {
-        clearTimeout(rangeReleaseTimer);
-        rangeReleaseTimer = null;
-    }
-
-    rangeReleaseTimer = setTimeout(() => {
-        const activePlayer = getPlayer();
-        if (activePlayer !== player || getVideoId(activePlayer) !== videoId) {
-            rangeReleaseTimer = null;
-            return;
-        }
-
-        let appliedQuality = null;
-        try { appliedQuality = player.getPlaybackQuality?.(); } catch (e) {}
-        if (appliedQuality === target || attempts >= 20) {
-            try { player.setPlaybackQualityRange?.('auto', 'default'); } catch (e) {}
-            rangeReleaseTimer = null;
-            return;
-        }
-
-        // Retry briefly while YouTube switches to the requested initial stream.
-        try {
-            player.setPlaybackQualityRange?.(target, target);
-            player.setPlaybackQuality?.(target);
-        } catch (e) {}
-        releaseTemporaryQualityRange(player, videoId, target, attempts + 1);
-    }, attempts === 0 ? 300 : 100);
-}
+let lockedQualityVideoId = null;
 
 function releaseQualityRangeForManualSelection(event) {
     const menuItem = event.target?.closest?.('#movie_player .ytp-settings-menu .ytp-menuitem');
-    if (!menuItem || rangeReleaseTimer === null) return;
-    clearTimeout(rangeReleaseTimer);
-    rangeReleaseTimer = null;
+    if (!menuItem || !lockedQualityVideoId) return;
+    // Resolution labels are numeric across YouTube interface languages.
+    // Release before YouTube's own click handler applies the user's choice.
+    if (!/\b(?:4320|2880|2160|1440|1080|720|480|360|240|144)p\b|\bAuto\b|Tự động|Automático|Automatique|Automatisch|Авто|Автоматически|自動|自动/i.test(menuItem.textContent || '')) return;
     const player = getPlayer();
     try { player?.setPlaybackQualityRange?.('auto', 'default'); } catch (e) {}
+    lockedQualityVideoId = null;
 }
 
 function getPlayer() {
@@ -131,13 +103,13 @@ function applyTargetOnce(player, target, videoId, preferenceKey) {
         }
         try { localStorage.removeItem('yt-player-quality'); } catch (e) {}
     } else {
-        // Briefly constrain the player so the startup preference is selected,
-        // then restore the full range as soon as YouTube reports that quality.
+        // Match YouTube's native manual-quality behavior: keep the selected
+        // startup rung until the user explicitly chooses a different rung.
         try { player.setPlaybackQualityRange?.(target, target); } catch (e) {}
         if (typeof player.setPlaybackQuality === 'function') {
             player.setPlaybackQuality(target);
         }
-        releaseTemporaryQualityRange(player, videoId, target);
+        lockedQualityVideoId = videoId || getVideoId(player);
     }
     if (target !== 'auto' && !currentConfig.audioOnlyMode) syncQualityToLocalStorage(target);
     lastAppliedQualityKey = preferenceKey || getPreferenceKey(videoId);
@@ -254,8 +226,7 @@ export function initQualityManager() {
     window.addEventListener('yt-navigate-start', () => {
         applyGeneration++;
         if (applyTimeoutId !== null) clearTimeout(applyTimeoutId);
-        if (rangeReleaseTimer !== null) clearTimeout(rangeReleaseTimer);
-        rangeReleaseTimer = null;
+        lockedQualityVideoId = null;
         applyTimeoutId = null;
         lastAppliedQualityKey = null;
     });
