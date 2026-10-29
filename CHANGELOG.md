@@ -1,5 +1,11 @@
 # Lịch sử thay đổi
 
+## v3.9.28 — 29/10/2026 22:35
+
+- **[5b2e360](https://github.com/huyvu2512/youtube-customizer/commit/5b2e360)** Tự mở bảng điều khiển để khởi tạo Live Chat Replay.
+- **[5b2e360](https://github.com/huyvu2512/youtube-customizer/commit/5b2e360)** Ẩn khung chat gốc khi phóng to nhưng giữ iframe chạy.
+- **[5b2e360](https://github.com/huyvu2512/youtube-customizer/commit/5b2e360)** Làm mờ và khóa tùy chọn Live Chat khi video không hỗ trợ.
+
 ## v3.9.27 — 29/10/2026 22:21
 
 - **[3c2a951](https://github.com/huyvu2512/youtube-customizer/commit/3c2a951)** Chỉ áp độ phân giải ưu tiên một lần sau khi video tải đủ dữ liệu.
