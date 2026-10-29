@@ -1,6 +1,6 @@
 ## v3.9.34 — 29/10/2026 23:39
 
-- Giữ chất lượng ban đầu đến khi chọn mức khác trong menu YouTube.
+- **[2e7f1a1](https://github.com/huyvu2512/youtube-customizer/commit/2e7f1a1c7f4749ab9e176a5f5f96f11abc390d80)** Giữ chất lượng ban đầu đến khi chọn mức khác trong menu YouTube.
 
 ## v3.9.33 — 29/10/2026 23:32
 
