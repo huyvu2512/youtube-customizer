@@ -127,6 +127,12 @@ export function hasLiveChatReplaySupport(pageData = window.ytInitialData) {
         if (renderer.continuations?.some(item => item?.liveChatReplayContinuationData?.continuation)) return true;
     }
 
+    const replayToggle = document.querySelector(
+        'ytd-live-chat-frame#chat #show-hide-button button[aria-label*="phát lại cuộc trò chuyện" i], ' +
+        'ytd-live-chat-frame#chat #show-hide-button button[aria-label*="replay chat" i]'
+    );
+    if (replayToggle) return true;
+
     const replayFrameExists = Array.from(document.querySelectorAll('iframe[src], iframe#chatframe, ytd-live-chat-frame iframe'))
         .some(frame => {
             try { return new URL(frame.src || frame.getAttribute('src') || '', location.href).pathname.includes('/live_chat_replay'); }
