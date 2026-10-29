@@ -1,5 +1,9 @@
 # Lịch sử thay đổi
 
+## v3.9.31 — 29/10/2026 22:49
+
+- **[bd71ac6](https://github.com/huyvu2512/youtube-customizer/commit/bd71ac6)** Nhận diện Replay từ cấu trúc YouTube, không phụ thuộc ngôn ngữ.
+
 ## v3.9.30 — 29/10/2026 22:45
 
 - **[b4fc94c](https://github.com/huyvu2512/youtube-customizer/commit/b4fc94c)** Khôi phục chất lượng thích ứng khi chọn Tự động trong menu.
