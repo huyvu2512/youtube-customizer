@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.30
-// @description  YouTube Customizer v3.9.30 — Khôi phục chất lượng tự động từ menu.
+// @version      3.9.31
+// @description  YouTube Customizer v3.9.31 — Nhận diện Live Chat Replay không phụ thuộc ngôn ngữ.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -13,6 +13,7 @@
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.31 — Nhận diện Replay từ cấu trúc YouTube, không phụ thuộc ngôn ngữ.
  * v3.9.30 — Khôi phục chất lượng thích ứng khi chọn Tự động.
  * v3.9.29 — Bấm nút Replay gốc để khởi tạo khung chat ẩn.
  * v3.9.28 — Tự mở Live Chat Replay; ẩn khung gốc khi phóng to.
@@ -22,7 +23,6 @@
  * v3.9.24 — Bổ sung bấm phát/tạm dừng; ép chất lượng thấp nhất và khôi phục mức ưu tiên.
  * v3.9.23 — Tăng tốc tua Numpad 4/6 và mở rộng nhận diện iframe Live Chat.
  * v3.9.22 — Tăng tốc tua khi giữ Numpad 4/6; khôi phục kết nối Live Chat nền.
- * v3.9.21 — Khôi phục trạng thái ổn định từ v3.9.19 và cập nhật quy tắc phát triển trong AGENTS.md.
  * ============================================================================
  */
 (() => {
@@ -45,7 +45,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.30";
+      APP_VERSION = "3.9.31";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -309,40 +309,38 @@
     const conversationBar = watchNext?.conversationBar;
     return conversationBar?.liveChatRenderer || conversationBar?.conversationBarRenderer?.liveChatRenderer || null;
   }
-  function getMenuTitle(item) {
-    const title = item?.title;
-    return typeof title === "string" ? title : title?.simpleText || title?.runs?.map((run) => run.text).join("") || "";
+  function hasReplayContinuation(data) {
+    const pending = Array.isArray(data) ? [...data] : [data];
+    const seen = /* @__PURE__ */ new Set();
+    while (pending.length) {
+      const value = pending.pop();
+      if (!value || typeof value !== "object" || seen.has(value)) continue;
+      seen.add(value);
+      if (value.liveChatReplayContinuationData?.continuation) return true;
+      pending.push(...Object.values(value));
+    }
+    return false;
   }
   function hasLiveChatReplaySupport(pageData = window.ytInitialData) {
     const renderer = getPageLiveChatRenderer(pageData) || document.querySelector("ytd-live-chat-frame")?.data?.liveChatRenderer;
-    if (renderer) {
-      const menuItems = renderer.header?.liveChatHeaderRenderer?.viewSelector?.sortFilterSubMenuRenderer?.subMenuItems || [];
-      if (menuItems.some((item) => /replay|phát lại/i.test(getMenuTitle(item)))) return true;
-      if (renderer.continuations?.some((item) => item?.liveChatReplayContinuationData?.continuation)) return true;
-    }
-    const replayToggle = document.querySelector(
-      'ytd-live-chat-frame#chat #show-hide-button button[aria-label*="phát lại cuộc trò chuyện" i], ytd-live-chat-frame#chat #show-hide-button button[aria-label*="replay chat" i]'
-    );
-    if (replayToggle) return true;
-    const replayFrameExists = Array.from(document.querySelectorAll("iframe[src], iframe#chatframe, ytd-live-chat-frame iframe")).some((frame) => {
+    if (hasReplayContinuation(renderer)) return true;
+    const replayFrameExists = Array.from(document.querySelectorAll("iframe[src], iframe#chatframe, ytd-live-chat-frame iframe")).some((frame2) => {
       try {
-        return new URL(frame.src || frame.getAttribute("src") || "", location.href).pathname.includes("/live_chat_replay");
+        return new URL(frame2.src || frame2.getAttribute("src") || "", location.href).pathname.includes("/live_chat_replay");
       } catch (e) {
         return false;
       }
     });
     if (replayFrameExists) return true;
-    const replayCard = Array.from(document.querySelectorAll('ytd-watch-flexy button, ytd-watch-flexy [role="button"], ytd-watch-flexy yt-formatted-string')).find((el) => {
-      if (!el.getClientRects().length) return false;
-      const text = `${el.innerText || el.textContent || ""} ${el.getAttribute("aria-label") || ""}`;
-      return /mở bảng điều khiển|open control panel/i.test(text);
-    });
-    if (replayCard) {
-      const context = replayCard.closest("ytd-live-chat-frame, ytd-engagement-panel-section-list-renderer, ytd-watch-metadata, #panels, #chat-container") || replayCard.parentElement?.parentElement;
-      const text = `${context?.innerText || context?.textContent || ""} ${document.querySelector("ytd-watch-flexy")?.innerText || ""}`;
-      if (/phát lại cuộc trò chuyện trực tiếp|live chat replay|top chat replay|phát lại các tin nhắn/i.test(text)) return true;
+    const frame = document.querySelector("ytd-live-chat-frame#chat");
+    const showButton = frame?.querySelector("#show-hide-button button");
+    if (!frame || !showButton) return false;
+    let isLive = false;
+    try {
+      isLive = !!document.querySelector("#movie_player:not(#inline-preview-player)")?.getVideoData?.()?.isLive;
+    } catch (e) {
     }
-    return false;
+    return !isLive;
   }
   function hasLiveOrChatSupport() {
     if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return false;
@@ -5204,28 +5202,10 @@
     });
     if (nativeReplayFrame) return true;
     const videoId = getCurrentLiveVideoId();
-    const replayToggle = chatFrame?.querySelector(
-      '#show-hide-button button[aria-label*="phát lại cuộc trò chuyện" i], #show-hide-button button[aria-label*="replay chat" i]'
-    );
+    const replayToggle = chatFrame?.querySelector("#show-hide-button button");
     if (replayToggle && replayNativeOpenRequestedVideoId !== videoId) {
       replayNativeOpenRequestedVideoId = videoId;
       replayToggle.click();
-      [250, 700, 1500].forEach((delay) => setTimeout(() => {
-        findAndObserveItems();
-        ensureBackgroundLiveChat();
-      }, delay));
-      return true;
-    }
-    const openControlButton = Array.from(document.querySelectorAll(
-      'ytd-watch-flexy button, ytd-watch-flexy [role="button"], ytd-watch-flexy yt-button-shape'
-    )).find((el) => {
-      if (!el.getClientRects().length) return false;
-      const label = `${el.innerText || el.textContent || ""} ${el.getAttribute("aria-label") || ""} ${el.getAttribute("title") || ""}`;
-      return /mở bảng điều khiển|open control panel/i.test(label);
-    });
-    if (openControlButton && replayNativeOpenRequestedVideoId !== videoId) {
-      replayNativeOpenRequestedVideoId = videoId;
-      openControlButton.click();
       [250, 700, 1500].forEach((delay) => setTimeout(() => {
         findAndObserveItems();
         ensureBackgroundLiveChat();
@@ -5246,13 +5226,11 @@
         return true;
       }
     }
-    if (!openControlButton) {
-      const playerChatButton = document.querySelector(".ytp-live-chat-button, .ytp-chat-button");
-      if (playerChatButton && playerChatButton.getClientRects().length && replayNativeOpenRequestedVideoId !== videoId) {
-        replayNativeOpenRequestedVideoId = videoId;
-        playerChatButton.click();
-        return true;
-      }
+    const playerChatButton = document.querySelector(".ytp-live-chat-button, .ytp-chat-button");
+    if (playerChatButton && playerChatButton.getClientRects().length && replayNativeOpenRequestedVideoId !== videoId) {
+      replayNativeOpenRequestedVideoId = videoId;
+      playerChatButton.click();
+      return true;
     }
     return replayNativeOpenRequestedVideoId === videoId || !!chatFrame;
   }

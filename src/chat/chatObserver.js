@@ -230,33 +230,10 @@ export function openNativeChatForReplayOverlay() {
     if (nativeReplayFrame) return true;
 
     const videoId = getCurrentLiveVideoId();
-    const replayToggle = chatFrame?.querySelector(
-        '#show-hide-button button[aria-label*="phát lại cuộc trò chuyện" i], ' +
-        '#show-hide-button button[aria-label*="replay chat" i]'
-    );
+    const replayToggle = chatFrame?.querySelector('#show-hide-button button');
     if (replayToggle && replayNativeOpenRequestedVideoId !== videoId) {
         replayNativeOpenRequestedVideoId = videoId;
         replayToggle.click();
-        [250, 700, 1500].forEach(delay => setTimeout(() => {
-            findAndObserveItems();
-            ensureBackgroundLiveChat();
-        }, delay));
-        return true;
-    }
-
-    // Premiere replay cards expose this button before creating #chatframe.
-    // Use that explicit entry point first; the collapsed-frame button can be
-    // present but only toggle an empty shell on some YouTube layouts.
-    const openControlButton = Array.from(document.querySelectorAll(
-        'ytd-watch-flexy button, ytd-watch-flexy [role="button"], ytd-watch-flexy yt-button-shape'
-    )).find(el => {
-        if (!el.getClientRects().length) return false;
-        const label = `${el.innerText || el.textContent || ''} ${el.getAttribute('aria-label') || ''} ${el.getAttribute('title') || ''}`;
-        return /mở bảng điều khiển|open control panel/i.test(label);
-    });
-    if (openControlButton && replayNativeOpenRequestedVideoId !== videoId) {
-        replayNativeOpenRequestedVideoId = videoId;
-        openControlButton.click();
         [250, 700, 1500].forEach(delay => setTimeout(() => {
             findAndObserveItems();
             ensureBackgroundLiveChat();
@@ -281,13 +258,11 @@ export function openNativeChatForReplayOverlay() {
         }
     }
 
-    if (!openControlButton) {
-        const playerChatButton = document.querySelector('.ytp-live-chat-button, .ytp-chat-button');
-        if (playerChatButton && playerChatButton.getClientRects().length && replayNativeOpenRequestedVideoId !== videoId) {
-            replayNativeOpenRequestedVideoId = videoId;
-            playerChatButton.click();
-            return true;
-        }
+    const playerChatButton = document.querySelector('.ytp-live-chat-button, .ytp-chat-button');
+    if (playerChatButton && playerChatButton.getClientRects().length && replayNativeOpenRequestedVideoId !== videoId) {
+        replayNativeOpenRequestedVideoId = videoId;
+        playerChatButton.click();
+        return true;
     }
     return replayNativeOpenRequestedVideoId === videoId || !!chatFrame;
 }
