@@ -1,3 +1,7 @@
+## v3.9.32 — 29/10/2026 23:08
+
+- **[243eb85](https://github.com/huyvu2512/youtube-customizer/commit/243eb85d4954cc96084a7f22465ce9b530a56faf)** Phủ khoảng đen khi phóng to mà không cắt khung hình.
+
 # Lịch sử thay đổi
 
 ## v3.9.31 — 29/10/2026 22:49

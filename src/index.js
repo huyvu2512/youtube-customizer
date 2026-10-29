@@ -28,6 +28,7 @@ import {
     bindGlobalKeys,
     setWatchLoading,
     setupFullscreenLock,
+    initLetterboxBackdrop,
     initAutoLiveSync,
     resetAutoLiveState,
     checkInitialLiveSnap,
@@ -131,6 +132,7 @@ if (window.self !== window.top) {
         syncPanelState();
         bindGlobalKeys();
         setupFullscreenLock();
+        initLetterboxBackdrop();
         dismissPromoBanners(document);
         initChatOverlay();
         initOptimization();
@@ -192,6 +194,7 @@ if (window.self !== window.top) {
     setupFeedShelvesObserver();
     setupPromoObserver();
     setupFullscreenLock();
+    initLetterboxBackdrop();
     initChatOverlay();
     initAutoLiveSync();
     initMixFilter();

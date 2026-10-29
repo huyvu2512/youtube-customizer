@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.31
-// @description  YouTube Customizer v3.9.31 — Nhận diện Live Chat Replay không phụ thuộc ngôn ngữ.
+// @version      3.9.32
+// @description  YouTube Customizer v3.9.32 — Phủ nền mờ cho khoảng đen khi phóng to video.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -13,6 +13,7 @@
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.32 — Phủ khoảng đen khi phóng to mà không cắt khung hình.
  * v3.9.31 — Nhận diện Replay từ cấu trúc YouTube, không phụ thuộc ngôn ngữ.
  * v3.9.30 — Khôi phục chất lượng thích ứng khi chọn Tự động.
  * v3.9.29 — Bấm nút Replay gốc để khởi tạo khung chat ẩn.
@@ -22,7 +23,6 @@
  * v3.9.25 — Giữ xử lý bấm gốc của YouTube trong Chế độ Chỉ Âm Thanh.
  * v3.9.24 — Bổ sung bấm phát/tạm dừng; ép chất lượng thấp nhất và khôi phục mức ưu tiên.
  * v3.9.23 — Tăng tốc tua Numpad 4/6 và mở rộng nhận diện iframe Live Chat.
- * v3.9.22 — Tăng tốc tua khi giữ Numpad 4/6; khôi phục kết nối Live Chat nền.
  * ============================================================================
  */
 (() => {
@@ -45,7 +45,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.31";
+      APP_VERSION = "3.9.32";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -1023,9 +1023,9 @@
   function updateCachedRects(force = false) {
     const now = Date.now();
     if (!force && now - lastRectUpdateTime < 1500 && cachedPlayerRect && cachedWrapperRect) return;
-    const activePlayer = findActivePlayer();
-    if (!activePlayer || !ambientWrapper) return;
-    cachedPlayerRect = activePlayer.getBoundingClientRect();
+    const activePlayer2 = findActivePlayer();
+    if (!activePlayer2 || !ambientWrapper) return;
+    cachedPlayerRect = activePlayer2.getBoundingClientRect();
     cachedWrapperRect = ambientWrapper.getBoundingClientRect();
     const video = findActiveVideo();
     if (video) {
@@ -1052,9 +1052,9 @@
     return availableSpace / 2;
   }
   function findActiveVideo() {
-    const activePlayer = findActivePlayer();
-    if (activePlayer) {
-      const v = activePlayer.querySelector("video.html5-main-video") || activePlayer.querySelector("video");
+    const activePlayer2 = findActivePlayer();
+    if (activePlayer2) {
+      const v = activePlayer2.querySelector("video.html5-main-video") || activePlayer2.querySelector("video");
       if (v && (!v.closest || !v.closest("#inline-preview-player, #preview, ytd-video-preview"))) return v;
     }
     return null;
@@ -1068,9 +1068,9 @@
       return false;
     }
     const watchFlexy = document.querySelector("ytd-watch-flexy");
-    const activePlayer = findActivePlayer();
-    if (!watchFlexy && !activePlayer) return false;
-    const targetParent = watchFlexy || (activePlayer ? activePlayer.parentElement : null);
+    const activePlayer2 = findActivePlayer();
+    if (!watchFlexy && !activePlayer2) return false;
+    const targetParent = watchFlexy || (activePlayer2 ? activePlayer2.parentElement : null);
     if (!targetParent) return false;
     if (!ambientWrapper || !ambientWrapper.isConnected || ambientWrapper.parentElement !== targetParent) {
       const existing = document.getElementById("ytc-ambient-wrapper");
@@ -1083,8 +1083,8 @@
         ambientWrapper.setAttribute("aria-hidden", "true");
         ambientSpreadCanvas = document.createElement("canvas");
         ambientSpreadCanvas.id = "ytc-ambient-spread-canvas";
-        ambientSpreadCanvas.width = CANVAS_WIDTH;
-        ambientSpreadCanvas.height = CANVAS_HEIGHT;
+        ambientSpreadCanvas.width = CANVAS_WIDTH2;
+        ambientSpreadCanvas.height = CANVAS_HEIGHT2;
         ambientWrapper.appendChild(ambientSpreadCanvas);
       }
       ambientWrapper.style.display = "";
@@ -1104,7 +1104,7 @@
     }
     return !!ambientSpreadCtx;
   }
-  function drawFrame(video) {
+  function drawFrame2(video) {
     if (!isAmbientEnabled()) {
       stopLoop();
       return;
@@ -1112,8 +1112,8 @@
     if (!video) return;
     if (!ensureAmbientCanvas()) return;
     if (!ambientSpreadCtx) return;
-    const activePlayer = findActivePlayer();
-    if (!activePlayer) return;
+    const activePlayer2 = findActivePlayer();
+    if (!activePlayer2) return;
     try {
       const vW = video.videoWidth;
       const vH = video.videoHeight;
@@ -1179,8 +1179,8 @@
         cachedVideoRect = videoRect;
       }
       const mediaRect = cachedVideoRect;
-      const scaleX = CANVAS_WIDTH / wrapW;
-      const scaleY = CANVAS_HEIGHT / wrapH;
+      const scaleX = CANVAS_WIDTH2 / wrapW;
+      const scaleY = CANVAS_HEIGHT2 / wrapH;
       const cvX = Math.round((mediaRect.left - wrapperRect.left) * scaleX);
       const cvY = Math.round((mediaRect.top - wrapperRect.top) * scaleY);
       const cvW = Math.round(mediaRect.width * scaleX);
@@ -1191,7 +1191,7 @@
       const sH = Math.max(1, Math.round(sourceH));
       const stripW = Math.max(4, Math.round(sW * 0.016));
       const stripH = Math.max(4, Math.round(sH * 0.02));
-      ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH2, CANVAS_HEIGHT2);
       const bleedX = Math.round(cvW * 0.035);
       const bleedY = Math.round(cvH * 0.035);
       ambientSpreadCtx.globalAlpha = 0.85;
@@ -1207,9 +1207,9 @@
         cvH + bleedY * 2
       );
       ambientSpreadCtx.globalAlpha = 1;
-      const rightW = Math.max(0, CANVAS_WIDTH - (cvX + cvW));
+      const rightW = Math.max(0, CANVAS_WIDTH2 - (cvX + cvW));
       const bottomY = cvY + cvH;
-      const bottomH = Math.max(0, CANVAS_HEIGHT - bottomY);
+      const bottomH = Math.max(0, CANVAS_HEIGHT2 - bottomY);
       if (rightW > 0 && cvH > 0) {
         const srcX = sX + sW - stripW;
         ambientSpreadCtx.drawImage(
@@ -1304,7 +1304,7 @@
     if (document.fullscreenElement) return;
     if (video.paused || video.ended) {
       if (!isPausedAndDrawn && video.readyState >= 2 && video.videoWidth > 0) {
-        drawFrame(video);
+        drawFrame2(video);
         isPausedAndDrawn = true;
       }
       return;
@@ -1313,7 +1313,7 @@
     if (video.readyState < 2 || !video.videoWidth || !video.videoHeight) {
       return;
     }
-    drawFrame(video);
+    drawFrame2(video);
   }
   function startLoop() {
     if (!isAmbientEnabled()) {
@@ -1417,7 +1417,7 @@
       if (!isAmbientEnabled()) return;
       updateCachedRects(true);
       const v = findActiveVideo();
-      if (v && isRunning) drawFrame(v);
+      if (v && isRunning) drawFrame2(v);
     }, 700);
   }
   function applyAmbientLightingState() {
@@ -1441,7 +1441,7 @@
         existing.style.display = "none";
       }
       if (ambientSpreadCtx) {
-        ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH2, CANVAS_HEIGHT2);
       }
       document.querySelectorAll("ytd-reel-video-renderer.ytc-ambient-shorts-host").forEach((el) => {
         el.classList.remove("ytc-ambient-shorts-host");
@@ -1475,13 +1475,13 @@
       if (!isAmbientEnabled()) return;
       updateCachedRects(true);
       const v = findActiveVideo();
-      if (v && isRunning) drawFrame(v);
+      if (v && isRunning) drawFrame2(v);
     });
     window.addEventListener("fullscreenchange", () => {
       if (!isAmbientEnabled()) return;
       updateCachedRects(true);
       const v = findActiveVideo();
-      if (v && isRunning) drawFrame(v);
+      if (v && isRunning) drawFrame2(v);
     });
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("yt-navigate-finish", handleNavigation);
@@ -1501,7 +1501,7 @@
     });
     applyAmbientLightingState();
   }
-  var ambientWrapper, ambientSpreadCanvas, ambientSpreadCtx, animFrameId, isRunning, lastDrawTime, currentVideo, hasDrawnFirstFrame, isPausedAndDrawn, CANVAS_WIDTH, CANVAS_HEIGHT, TARGET_INTERVAL, cachedPlayerRect, cachedWrapperRect, cachedVideoRect, cachedObjectFit, cachedObjectPosition, lastRectUpdateTime, lastVideoDimensions, ambientInitialized;
+  var ambientWrapper, ambientSpreadCanvas, ambientSpreadCtx, animFrameId, isRunning, lastDrawTime, currentVideo, hasDrawnFirstFrame, isPausedAndDrawn, CANVAS_WIDTH2, CANVAS_HEIGHT2, TARGET_INTERVAL, cachedPlayerRect, cachedWrapperRect, cachedVideoRect, cachedObjectFit, cachedObjectPosition, lastRectUpdateTime, lastVideoDimensions, ambientInitialized;
   var init_ambientLight = __esm({
     "src/player/ambientLight.js"() {
       init_config();
@@ -1514,8 +1514,8 @@
       currentVideo = null;
       hasDrawnFirstFrame = false;
       isPausedAndDrawn = false;
-      CANVAS_WIDTH = 640;
-      CANVAS_HEIGHT = 800;
+      CANVAS_WIDTH2 = 640;
+      CANVAS_HEIGHT2 = 800;
       TARGET_INTERVAL = 1e3 / 30;
       cachedPlayerRect = null;
       cachedWrapperRect = null;
@@ -8465,6 +8465,26 @@ html[fullscreen] #movie_player,
     outline: none !important;
 }
 
+/* Phủ dải đen khi toàn màn hình bằng bản nền mờ; video chính vẫn giữ nguyên tỷ lệ. */
+#movie_player.ytc-letterbox-backdrop-active {
+    isolation: isolate !important;
+    background: #000 !important;
+}
+#movie_player.ytc-letterbox-backdrop-active > .ytc-letterbox-backdrop {
+    position: absolute !important;
+    inset: -4% !important;
+    z-index: 0 !important;
+    width: 108% !important;
+    height: 108% !important;
+    object-fit: fill !important;
+    filter: blur(30px) brightness(.62) saturate(1.15) !important;
+    opacity: .88 !important;
+    pointer-events: none !important;
+}
+#movie_player.ytc-letterbox-backdrop-active > .html5-video-container {
+    z-index: 1 !important;
+}
+
 /* Làm trong suốt các khung chứa video, cột nội dung & bình luận để ánh sáng xuyên thấu sâu xuống trang */
 html.ytc-ambient-lighting ytd-watch-flexy,
 html.ytc-ambient-lighting ytd-watch-flexy #columns,
@@ -9319,6 +9339,97 @@ html:not([dark]) .ytc-stat-red {
     });
   }
 
+  // src/player/letterboxBackdrop.js
+  var CANVAS_WIDTH = 640;
+  var CANVAS_HEIGHT = 360;
+  var UPDATE_INTERVAL_MS = 500;
+  var canvas = null;
+  var context = null;
+  var updateTimer = null;
+  var activePlayer = null;
+  var activeVideo = null;
+  var initialized = false;
+  function findPlayer() {
+    return document.querySelector("#movie_player:not(#inline-preview-player)");
+  }
+  function isFullscreen(player) {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement || player?.classList.contains("ytp-fullscreen"));
+  }
+  function ensureCanvas(player) {
+    if (!player) return false;
+    if (activePlayer !== player) {
+      canvas?.remove();
+      canvas = null;
+      context = null;
+      activePlayer = player;
+    }
+    if (!canvas) {
+      canvas = document.createElement("canvas");
+      canvas.className = "ytc-letterbox-backdrop";
+      canvas.width = CANVAS_WIDTH;
+      canvas.height = CANVAS_HEIGHT;
+      canvas.setAttribute("aria-hidden", "true");
+      context = canvas.getContext("2d", { alpha: false, desynchronized: true });
+    }
+    const videoContainer = player.querySelector(".html5-video-container");
+    if (!videoContainer) return false;
+    if (canvas.parentElement !== player) player.insertBefore(canvas, videoContainer);
+    player.classList.add("ytc-letterbox-backdrop-active");
+    return true;
+  }
+  function stopBackdrop() {
+    if (updateTimer !== null) {
+      clearInterval(updateTimer);
+      updateTimer = null;
+    }
+    activePlayer?.classList.remove("ytc-letterbox-backdrop-active");
+    canvas?.remove();
+    canvas = null;
+    context = null;
+    activePlayer = null;
+    activeVideo = null;
+  }
+  function drawFrame() {
+    const player = findPlayer();
+    if (!player || !isFullscreen(player)) {
+      stopBackdrop();
+      return;
+    }
+    if (!ensureCanvas(player)) return;
+    const video = player.querySelector("video.html5-main-video") || player.querySelector("video");
+    if (!video || video.readyState < 2 || !video.videoWidth || !video.videoHeight) return;
+    if (video.paused && video === activeVideo && canvas.dataset.hasFrame === "true") return;
+    try {
+      context.drawImage(video, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      activeVideo = video;
+      canvas.dataset.hasFrame = "true";
+    } catch (_) {
+    }
+  }
+  function syncBackdrop() {
+    const player = findPlayer();
+    if (!player || !isFullscreen(player)) {
+      stopBackdrop();
+      return;
+    }
+    drawFrame();
+    if (updateTimer === null) updateTimer = setInterval(drawFrame, UPDATE_INTERVAL_MS);
+  }
+  function initLetterboxBackdrop() {
+    if (initialized) return;
+    initialized = true;
+    document.addEventListener("fullscreenchange", syncBackdrop, { passive: true });
+    document.addEventListener("webkitfullscreenchange", syncBackdrop, { passive: true });
+    window.addEventListener("yt-navigate-finish", () => {
+      stopBackdrop();
+      syncBackdrop();
+    }, { passive: true });
+    window.addEventListener("yt-page-data-updated", () => {
+      stopBackdrop();
+      syncBackdrop();
+    }, { passive: true });
+  }
+
   // src/player/shortcuts.js
   init_config();
 
@@ -10146,6 +10257,7 @@ html:not([dark]) .ytc-stat-red {
       syncPanelState();
       bindGlobalKeys();
       setupFullscreenLock();
+      initLetterboxBackdrop();
       dismissPromoBanners(document);
       initChatOverlay();
       initOptimization();
@@ -10214,6 +10326,7 @@ html:not([dark]) .ytc-stat-red {
     setupFeedShelvesObserver();
     setupPromoObserver();
     setupFullscreenLock();
+    initLetterboxBackdrop();
     initChatOverlay();
     initAutoLiveSync();
     initMixFilter();

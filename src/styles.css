@@ -2089,6 +2089,26 @@ html[fullscreen] #movie_player,
     outline: none !important;
 }
 
+/* Phủ dải đen khi toàn màn hình bằng bản nền mờ; video chính vẫn giữ nguyên tỷ lệ. */
+#movie_player.ytc-letterbox-backdrop-active {
+    isolation: isolate !important;
+    background: #000 !important;
+}
+#movie_player.ytc-letterbox-backdrop-active > .ytc-letterbox-backdrop {
+    position: absolute !important;
+    inset: -4% !important;
+    z-index: 0 !important;
+    width: 108% !important;
+    height: 108% !important;
+    object-fit: fill !important;
+    filter: blur(30px) brightness(.62) saturate(1.15) !important;
+    opacity: .88 !important;
+    pointer-events: none !important;
+}
+#movie_player.ytc-letterbox-backdrop-active > .html5-video-container {
+    z-index: 1 !important;
+}
+
 /* Làm trong suốt các khung chứa video, cột nội dung & bình luận để ánh sáng xuyên thấu sâu xuống trang */
 html.ytc-ambient-lighting ytd-watch-flexy,
 html.ytc-ambient-lighting ytd-watch-flexy #columns,
