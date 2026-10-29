@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.26
-// @description  YouTube Customizer v3.9.26 — Chỉ cập nhật Tampermonkey theo thao tác người dùng.
+// @version      3.9.27
+// @description  YouTube Customizer v3.9.27 — Áp chất lượng một lần và cải thiện Live Chat Replay.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -13,6 +13,7 @@
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.27 — Áp chất lượng một lần; dùng chat gốc cho Live Chat Replay.
  * v3.9.26 — Chỉ mở cập nhật thủ công; bỏ tự tải lại khi đổi tab.
  * v3.9.25 — Giữ xử lý bấm gốc của YouTube trong Chế độ Chỉ Âm Thanh.
  * v3.9.24 — Bổ sung bấm phát/tạm dừng; ép chất lượng thấp nhất và khôi phục mức ưu tiên.
@@ -22,8 +23,6 @@
  * v3.9.20 — Thử nghiệm ảnh xem trước Live Stream theo thời gian thực.
  * v3.9.19 — Lịch sử đầy đủ được tổng hợp tại CHANGELOG.md; phần này giới hạn 10 phiên bản gần nhất.
  * v3.9.18 — Gỡ huy hiệu ngôi sao khỏi mục Ánh sáng phòng (Ambilight).
- * v3.9.17 — Thay emoji ngôi sao bằng SVG riêng; bỏ animation nhấp nháy.
- * v3.9.16 — Gỡ canvas/CSS thử nghiệm trên scrollbar, bỏ cập nhật canvas theo từng frame và khi cuộn.
  * ============================================================================
  */
 (() => {
@@ -46,7 +45,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.26";
+      APP_VERSION = "3.9.27";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -305,37 +304,56 @@
       timer = setTimeout(() => observer.disconnect(), timeout);
     }
   }
-  function hasLiveOrChatSupport() {
-    if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) {
-      return false;
+  function getPageLiveChatRenderer(data = window.ytInitialData) {
+    const watchNext = data?.contents?.twoColumnWatchNextResults || data?.response?.contents?.twoColumnWatchNextResults || data?.contents?.singleColumnWatchNextResults || data?.response?.contents?.singleColumnWatchNextResults;
+    const conversationBar = watchNext?.conversationBar;
+    return conversationBar?.liveChatRenderer || conversationBar?.conversationBarRenderer?.liveChatRenderer || null;
+  }
+  function getMenuTitle(item) {
+    const title = item?.title;
+    return typeof title === "string" ? title : title?.simpleText || title?.runs?.map((run) => run.text).join("") || "";
+  }
+  function hasLiveChatReplaySupport(pageData = window.ytInitialData) {
+    const renderer = getPageLiveChatRenderer(pageData) || document.querySelector("ytd-live-chat-frame")?.data?.liveChatRenderer;
+    if (renderer) {
+      const menuItems = renderer.header?.liveChatHeaderRenderer?.viewSelector?.sortFilterSubMenuRenderer?.subMenuItems || [];
+      if (menuItems.some((item) => /replay|phát lại/i.test(getMenuTitle(item)))) return true;
+      if (renderer.continuations?.some((item) => item?.liveChatReplayContinuationData?.continuation)) return true;
     }
-    if (location.pathname.startsWith("/live")) {
-      return true;
-    }
-    if (document.getElementById("ytc-bg-live-chat")) {
-      return true;
-    }
-    const player = document.querySelector("#movie_player:not(#inline-preview-player)");
-    if (player) {
+    return Array.from(document.querySelectorAll("iframe[src], iframe#chatframe, ytd-live-chat-frame iframe")).some((frame) => {
       try {
-        if (typeof player.getVideoData === "function") {
-          const data = player.getVideoData();
-          if (data && (data.isLive || data.isPostLiveDvr)) return true;
-        }
-        if (typeof player.isLive === "function" && player.isLive()) return true;
+        return new URL(frame.src || frame.getAttribute("src") || "", location.href).pathname.includes("/live_chat_replay");
+      } catch (e) {
+        return false;
+      }
+    });
+  }
+  function hasLiveOrChatSupport() {
+    if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return false;
+    if (location.pathname.startsWith("/live")) return true;
+    const player = document.querySelector("#movie_player:not(#inline-preview-player)");
+    try {
+      const videoData = player?.getVideoData?.();
+      if (videoData && (videoData.isLive || videoData.isPostLiveDvr)) return true;
+      if (typeof player?.isLive === "function" && player.isLive()) return true;
+    } catch (e) {
+    }
+    if (getPageLiveChatRenderer() || hasLiveChatReplaySupport()) return true;
+    const frames = document.querySelectorAll(
+      'iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]'
+    );
+    for (const frame of frames) {
+      try {
+        if (new URL(frame.src || frame.getAttribute("src") || "", location.href).pathname.includes("/live_chat")) return true;
       } catch (e) {
       }
     }
-    const chatEl = document.querySelector(
-      'ytd-live-chat-frame, iframe#chatframe, iframe[src*="/live_chat"], #chat-teaser, #teaser, ytd-engagement-panel-section-list-renderer[target-id*="chat" i], [target-id="engagement-panel-live-chat"], .ytp-live-chat-button, .ytp-chat-button, #actions button[aria-label*="trò chuyện" i], #actions button[aria-label*="chat" i], #top-level-buttons-computed button[aria-label*="trò chuyện" i], #top-level-buttons-computed button[aria-label*="chat" i]'
-    );
-    if (chatEl) return true;
-    const chatBox = document.querySelector("#chat.ytd-watch-flexy, #chat-container");
-    if (chatBox) {
-      const hasContent = chatBox.querySelector("ytd-live-chat-frame, iframe, #chat-teaser, #teaser, button");
-      if (hasContent) return true;
-    }
-    return false;
+    const chatRenderer = document.querySelector("ytd-live-chat-frame")?.data?.liveChatRenderer;
+    if (chatRenderer) return true;
+    const chatTeaser = document.querySelector("#chat-teaser, ytd-live-chat-frame #teaser");
+    if (chatTeaser && chatTeaser.getClientRects().length) return true;
+    const chatButton = document.querySelector(".ytp-live-chat-button, .ytp-chat-button");
+    return !!(chatButton && chatButton.getClientRects().length);
   }
   function showToast(message, duration = 3e3) {
     if (!document.body) return;
@@ -774,6 +792,20 @@
     initQualityManager: () => initQualityManager,
     scheduleApplyQuality: () => scheduleApplyQuality
   });
+  function getPlayer() {
+    return document.getElementById("movie_player") || document.querySelector(".html5-video-player");
+  }
+  function getVideoId(player = getPlayer()) {
+    try {
+      const id = player?.getVideoData?.()?.video_id;
+      if (id) return id;
+    } catch (e) {
+    }
+    return new URL(window.location.href).searchParams.get("v") || "";
+  }
+  function getPreferenceKey(videoId) {
+    return `${videoId || "watch"}:${currentConfig.audioOnlyMode ? "audio-only" : currentConfig.preferredQuality || "auto"}`;
+  }
   function syncQualityToLocalStorage(target) {
     try {
       const qualityNumbers = {
@@ -790,162 +822,152 @@
       };
       const qualityNum = qualityNumbers[target];
       if (!qualityNum) return;
-      const payload = {
+      const now = Date.now();
+      localStorage.setItem("yt-player-quality", JSON.stringify({
         data: JSON.stringify({ quality: qualityNum, previousQuality: qualityNum }),
-        creation: Date.now(),
-        expiration: Date.now() + 2592e6
-      };
-      localStorage.setItem("yt-player-quality", JSON.stringify(payload));
+        creation: now,
+        expiration: now + 2592e6
+      }));
     } catch (e) {
     }
   }
   function pickTargetQuality(available, pref) {
-    if (!available || available.length === 0) return null;
-    if (currentConfig.audioOnlyMode) {
-      return available.includes("tiny") ? "tiny" : available[available.length - 1];
+    if (!available?.length) return null;
+    if (currentConfig.audioOnlyMode) return available.includes("tiny") ? "tiny" : available[available.length - 1];
+    if (pref === "max") return available[0];
+    const orderByPreference = {
+      "1440p": ["hd1440", "hd1080", "hd720", "large", "medium", "small", "tiny"],
+      "1080p": ["hd1080", "hd720", "large", "medium", "small", "tiny"],
+      "720p": ["hd720", "large", "medium", "small", "tiny"]
+    };
+    const order = orderByPreference[pref];
+    return order ? order.find((level) => available.includes(level)) || available[available.length - 1] : null;
+  }
+  function getBufferedAhead(video) {
+    if (!video) return 0;
+    try {
+      const time = video.currentTime;
+      for (let i = 0; i < video.buffered.length; i++) {
+        if (video.buffered.start(i) <= time && video.buffered.end(i) >= time) {
+          return video.buffered.end(i) - time;
+        }
+      }
+    } catch (e) {
     }
-    if (pref === "max") {
-      return available[0];
+    return 0;
+  }
+  function hasEnoughStartupBuffer(player, video, attempts) {
+    if (!video || video.readyState >= 4) return true;
+    if (video.readyState < 3) return false;
+    let isLive = false;
+    try {
+      isLive = !!player?.getVideoData?.()?.isLive;
+    } catch (e) {
     }
-    if (pref === "1440p") {
-      const order = ["hd1440", "hd1080", "hd720", "large", "medium", "small", "tiny"];
-      return order.find((q) => available.includes(q)) || available[0];
+    return isLive || getBufferedAhead(video) >= 1.5 || attempts >= 28;
+  }
+  function applyTargetOnce(player, target, videoId, preferenceKey) {
+    const current = typeof player.getPlaybackQuality === "function" ? player.getPlaybackQuality() : null;
+    if (current !== target && typeof player.setPlaybackQuality === "function") {
+      player.setPlaybackQuality(target);
     }
-    if (pref === "1080p") {
-      const order = ["hd1080", "hd720", "large", "medium", "small", "tiny"];
-      return order.find((q) => available.includes(q)) || available[available.length - 1];
-    }
-    if (pref === "720p") {
-      const order = ["hd720", "large", "medium", "small", "tiny"];
-      return order.find((q) => available.includes(q)) || available[available.length - 1];
-    }
-    return null;
+    if (target !== "auto" && !currentConfig.audioOnlyMode) syncQualityToLocalStorage(target);
+    lastAppliedQualityKey = preferenceKey || getPreferenceKey(videoId);
   }
   function applyPreferredQuality() {
-    if (!window.location.pathname.startsWith("/watch")) return;
-    const player = document.getElementById("movie_player") || document.querySelector(".html5-video-player");
-    if (!player || typeof player.getAvailableQualityLevels !== "function") return;
+    if (!window.location.pathname.startsWith("/watch")) return false;
+    const player = getPlayer();
+    if (!player || typeof player.getAvailableQualityLevels !== "function") return false;
     try {
-      if (!currentConfig.audioOnlyMode && (!currentConfig.preferredQuality || currentConfig.preferredQuality === "auto")) {
-        if (typeof player.setPlaybackQualityRange === "function") {
-          player.setPlaybackQualityRange("auto", "default");
-        }
-        if (typeof player.setPlaybackQuality === "function") player.setPlaybackQuality("auto");
-        const videoId2 = player.getVideoData?.()?.video_id || new URL(window.location.href).searchParams.get("v");
-        lastAppliedQualityKey = `${videoId2 || "watch"}:auto:auto`;
-        return;
+      const videoId = getVideoId(player);
+      const pref = currentConfig.preferredQuality || "auto";
+      if (!currentConfig.audioOnlyMode && pref === "auto") {
+        applyTargetOnce(player, "auto", videoId, getPreferenceKey(videoId));
+        return true;
       }
-      const rawLevels = player.getAvailableQualityLevels();
-      if (!Array.isArray(rawLevels) || rawLevels.length === 0) return;
-      const available = rawLevels.filter((q) => q && q !== "auto");
-      if (available.length === 0) return;
-      const target = pickTargetQuality(available, currentConfig.preferredQuality);
-      if (!target) return;
-      const current = typeof player.getPlaybackQuality === "function" ? player.getPlaybackQuality() : null;
-      if (current === target && !currentConfig.audioOnlyMode) return;
-      if (typeof player.setPlaybackQualityRange === "function") {
-        player.setPlaybackQualityRange(target, target);
-      }
-      if (typeof player.setPlaybackQuality === "function") {
-        player.setPlaybackQuality(target);
-      }
-      if (!currentConfig.audioOnlyMode) {
-        syncQualityToLocalStorage(target);
-      }
-      const videoId = player.getVideoData?.()?.video_id || new URL(window.location.href).searchParams.get("v");
-      lastAppliedQualityKey = `${videoId || "watch"}:${currentConfig.preferredQuality || "auto"}:${target}`;
-    } catch (err) {
+      const levels = player.getAvailableQualityLevels();
+      const available = Array.isArray(levels) ? levels.filter((level) => level && level !== "auto") : [];
+      const target = pickTargetQuality(available, pref);
+      if (!target) return false;
+      applyTargetOnce(player, target, videoId, getPreferenceKey(videoId));
+      return true;
+    } catch (e) {
+      return false;
     }
   }
-  function scheduleApplyQuality() {
+  function scheduleApplyQuality(options = {}) {
+    const force = options === true || !!options.force;
     if (applyTimeoutId !== null) {
       clearTimeout(applyTimeoutId);
       applyTimeoutId = null;
     }
     const generation = ++applyGeneration;
     if (!window.location.pathname.startsWith("/watch")) return;
-    if (!currentConfig.audioOnlyMode && (!currentConfig.preferredQuality || currentConfig.preferredQuality === "auto")) {
-      const player = document.getElementById("movie_player") || document.querySelector(".html5-video-player");
-      const videoId = player?.getVideoData?.()?.video_id || new URL(window.location.href).searchParams.get("v");
-      const qualityKey = `${videoId || "watch"}:auto:auto`;
-      if (lastAppliedQualityKey !== qualityKey) applyPreferredQuality();
-      return;
-    }
-    const expectedVideoId = new URL(window.location.href).searchParams.get("v");
+    const initialPlayer = getPlayer();
+    const expectedVideoId = new URL(window.location.href).searchParams.get("v") || getVideoId(initialPlayer);
+    const preferenceKey = getPreferenceKey(expectedVideoId);
+    if (!force && lastAppliedQualityKey === preferenceKey) return;
     let attempts = 0;
-    let applyIssued = false;
-    let retryIssued = false;
     const maxAttempts = 30;
     const tryApply = () => {
       if (generation !== applyGeneration) return;
       attempts++;
-      const player = document.getElementById("movie_player") || document.querySelector(".html5-video-player");
-      if (player && typeof player.getAvailableQualityLevels === "function") {
-        try {
-          const playerVideoId = typeof player.getVideoData === "function" ? player.getVideoData()?.video_id : null;
-          const videoId = playerVideoId || expectedVideoId;
-          if (expectedVideoId && playerVideoId && playerVideoId !== expectedVideoId) {
-            scheduleRetry();
-            return;
-          }
-          const levels = player.getAvailableQualityLevels();
-          const available = Array.isArray(levels) ? levels.filter((q) => q && q !== "auto") : [];
-          const target = pickTargetQuality(available, currentConfig.preferredQuality);
-          if (target) {
-            const qualityKey = `${videoId || "watch"}:${currentConfig.preferredQuality}:${target}`;
-            const current = typeof player.getPlaybackQuality === "function" ? player.getPlaybackQuality() : null;
-            const needsApply = current !== target || lastAppliedQualityKey !== qualityKey;
-            if (needsApply && (!applyIssued || attempts >= 6 && !retryIssued)) {
-              if (typeof player.setPlaybackQualityRange === "function") {
-                player.setPlaybackQualityRange(target, target);
-              }
-              if (typeof player.setPlaybackQuality === "function") {
-                player.setPlaybackQuality(target);
-              }
-              if (!currentConfig.audioOnlyMode) {
-                syncQualityToLocalStorage(target);
-              }
-              lastAppliedQualityKey = qualityKey;
-              if (applyIssued) retryIssued = true;
-              applyIssued = true;
-            }
-            if (current === target && lastAppliedQualityKey === qualityKey) {
-              applyTimeoutId = null;
-              return;
-            }
-          }
-        } catch (err) {
-        }
+      if (getPreferenceKey(expectedVideoId) !== preferenceKey) return;
+      const player = getPlayer();
+      const playerVideoId = getVideoId(player);
+      if (!player || expectedVideoId && playerVideoId && playerVideoId !== expectedVideoId) {
+        scheduleRetry();
+        return;
       }
-      scheduleRetry();
+      try {
+        const video = player.querySelector("video.html5-main-video, video");
+        if (!hasEnoughStartupBuffer(player, video, attempts)) {
+          scheduleRetry();
+          return;
+        }
+        const pref = currentConfig.preferredQuality || "auto";
+        if (!currentConfig.audioOnlyMode && pref === "auto") {
+          applyTargetOnce(player, "auto", playerVideoId || expectedVideoId, preferenceKey);
+          applyTimeoutId = null;
+          return;
+        }
+        const levels = typeof player.getAvailableQualityLevels === "function" ? player.getAvailableQualityLevels() : [];
+        const available = Array.isArray(levels) ? levels.filter((level) => level && level !== "auto") : [];
+        const target = pickTargetQuality(available, pref);
+        if (!target) {
+          scheduleRetry();
+          return;
+        }
+        applyTargetOnce(player, target, playerVideoId || expectedVideoId, preferenceKey);
+        applyTimeoutId = null;
+      } catch (e) {
+        scheduleRetry();
+      }
     };
     function scheduleRetry() {
       if (attempts < maxAttempts && generation === applyGeneration) {
-        applyTimeoutId = setTimeout(tryApply, 400);
+        applyTimeoutId = setTimeout(tryApply, 350);
       } else {
         applyTimeoutId = null;
       }
     }
-    applyTimeoutId = setTimeout(tryApply, 400);
+    applyTimeoutId = setTimeout(tryApply, 250);
   }
   function initQualityManager() {
     if (isQualityManagerInitialized) return;
     isQualityManagerInitialized = true;
-    window.addEventListener("yt-navigate-finish", scheduleApplyQuality);
-    window.addEventListener("yt-page-data-updated", scheduleApplyQuality);
-    document.addEventListener("loadedmetadata", (e) => {
-      if (e.target && e.target.tagName === "VIDEO") {
-        scheduleApplyQuality();
-      }
+    window.addEventListener("yt-navigate-start", () => {
+      applyGeneration++;
+      if (applyTimeoutId !== null) clearTimeout(applyTimeoutId);
+      applyTimeoutId = null;
+      lastAppliedQualityKey = null;
+    });
+    window.addEventListener("yt-navigate-finish", () => scheduleApplyQuality());
+    window.addEventListener("yt-page-data-updated", () => scheduleApplyQuality());
+    document.addEventListener("loadedmetadata", (event) => {
+      if (event.target?.tagName === "VIDEO") scheduleApplyQuality();
     }, true);
-    document.addEventListener("playing", (e) => {
-      if (e.target && e.target.tagName === "VIDEO") {
-        scheduleApplyQuality();
-      }
-    }, true);
-    if (window.location.pathname.startsWith("/watch")) {
-      scheduleApplyQuality();
-    }
+    if (window.location.pathname.startsWith("/watch")) scheduleApplyQuality();
   }
   var applyTimeoutId, applyGeneration, lastAppliedQualityKey, isQualityManagerInitialized;
   var init_qualityManager = __esm({
@@ -4620,7 +4642,7 @@
           }
           Promise.resolve().then(() => (init_qualityManager(), qualityManager_exports)).then((m) => {
             if (m && typeof m.scheduleApplyQuality === "function") {
-              m.scheduleApplyQuality();
+              m.scheduleApplyQuality({ force: true });
             }
           }).catch(() => {
           });
@@ -4931,7 +4953,7 @@
     const hasChat = hasLiveOrChatSupport();
     const chatRow = panel.querySelector("#ytc-row-chatoverlay");
     if (chatRow) {
-      chatRow.classList.toggle("ytc-disabled", !hasChat);
+      chatRow.style.display = hasChat ? "" : "none";
       const allBtns = chatRow.querySelectorAll(".ytc-mode-btn");
       allBtns.forEach((btn) => {
         if (!hasChat) {
@@ -5012,6 +5034,9 @@
     } catch (e) {
     }
   }
+  function isReplayChatOverlayActive() {
+    return !!(currentConfig.chatOverlay && currentConfig.chatOverlay !== "off" && hasLiveChatReplaySupport());
+  }
   function resetChatCollapseState() {
     setUserManuallyOpenedChat(false);
     setHasAutoCollapsedChatForCurrentVideo(false);
@@ -5025,7 +5050,7 @@
     }
   }
   function hookInnerTubeDataForChat(data) {
-    if (!currentConfig.hideNativeLiveChat || userManuallyOpenedChat) return;
+    if (!currentConfig.hideNativeLiveChat || userManuallyOpenedChat || hasLiveChatReplaySupport(data)) return;
     try {
       const conversationBar = data?.contents?.twoColumnWatchNextResults?.conversationBar || data?.response?.contents?.twoColumnWatchNextResults?.conversationBar;
       const liveChatRenderer = conversationBar?.liveChatRenderer;
@@ -5124,9 +5149,35 @@
     }
     return null;
   }
+  function openNativeChatForReplayOverlay() {
+    if (!isReplayChatOverlayActive()) return false;
+    setNativeChatHiddenState(false);
+    if (chatAutoCloseObserver) {
+      chatAutoCloseObserver.disconnect();
+      chatAutoCloseObserver = null;
+    }
+    const chatFrame = document.querySelector("ytd-live-chat-frame#chat, #chat.ytd-watch-flexy, #chat-container ytd-live-chat-frame");
+    const isCollapsed = !!(chatFrame && (chatFrame.hasAttribute("collapsed") || chatFrame.collapsed === true));
+    if (isCollapsed) {
+      const showButton = chatFrame.querySelector(
+        '#show-hide-button yt-button-shape button, #show-hide-button button, #show-hide-button, [aria-label*="Hiện" i], [aria-label*="Show" i], [aria-label*="Mở" i], [aria-label*="Open" i]'
+      );
+      if (showButton) showButton.click();
+      else if (typeof chatFrame.expand === "function") chatFrame.expand();
+      return true;
+    }
+    if (!chatFrame) {
+      const playerChatButton = document.querySelector(".ytp-live-chat-button, .ytp-chat-button");
+      if (playerChatButton && playerChatButton.getClientRects().length) {
+        playerChatButton.click();
+        return true;
+      }
+    }
+    return !!chatFrame;
+  }
   function autoCollapseNativeChatIfOpen(force = false) {
     if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return false;
-    if (!currentConfig.hideNativeLiveChat) return false;
+    if (!currentConfig.hideNativeLiveChat || isReplayChatOverlayActive()) return false;
     if (!force && (hasAutoCollapsedChatForCurrentVideo || userManuallyOpenedChat)) return false;
     let collapsedSomething = false;
     const chatFrame = document.querySelector("ytd-live-chat-frame#chat, #chat.ytd-watch-flexy, #chat-container ytd-live-chat-frame");
@@ -5202,7 +5253,7 @@
     if (nativeFrame && !nativeFrame._ytcAutoCloseBound) {
       nativeFrame._ytcAutoCloseBound = true;
       nativeFrame.addEventListener("load", () => {
-        if (!hasAutoCollapsedChatForCurrentVideo && !userManuallyOpenedChat && currentConfig.hideNativeLiveChat) {
+        if (!hasAutoCollapsedChatForCurrentVideo && !userManuallyOpenedChat && currentConfig.hideNativeLiveChat && !isReplayChatOverlayActive()) {
           setTimeout(() => autoCollapseNativeChatIfOpen(), 50);
           setTimeout(() => autoCollapseNativeChatIfOpen(), 200);
           setTimeout(() => autoCollapseNativeChatIfOpen(), 500);
@@ -5212,6 +5263,11 @@
     return false;
   }
   function setupAutoCloseObserver() {
+    if (isReplayChatOverlayActive()) {
+      if (chatAutoCloseObserver) chatAutoCloseObserver.disconnect();
+      chatAutoCloseObserver = null;
+      return;
+    }
     if (!currentConfig.hideNativeLiveChat) return;
     if (hasAutoCollapsedChatForCurrentVideo || userManuallyOpenedChat) return;
     if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
@@ -5229,14 +5285,14 @@
     const retryDelays = [150, 500, 1200];
     retryDelays.forEach((delay) => {
       setTimeout(() => {
-        if (!hasAutoCollapsedChatForCurrentVideo && !userManuallyOpenedChat && currentConfig.hideNativeLiveChat) {
+        if (!hasAutoCollapsedChatForCurrentVideo && !userManuallyOpenedChat && currentConfig.hideNativeLiveChat && !isReplayChatOverlayActive()) {
           autoCollapseNativeChatIfOpen();
         }
       }, delay);
     });
     let autoCloseDebounceTimer = null;
     chatAutoCloseObserver = new MutationObserver(() => {
-      if (hasAutoCollapsedChatForCurrentVideo || userManuallyOpenedChat || !currentConfig.hideNativeLiveChat) {
+      if (hasAutoCollapsedChatForCurrentVideo || userManuallyOpenedChat || !currentConfig.hideNativeLiveChat || isReplayChatOverlayActive()) {
         if (chatAutoCloseObserver) {
           chatAutoCloseObserver.disconnect();
           chatAutoCloseObserver = null;
@@ -5290,7 +5346,9 @@
   function syncNativeChatFullscreenState() {
     const isFs = !!(document.fullscreenElement || document.querySelector("#movie_player.ytp-fullscreen"));
     if (!isFs) return;
-    if (!userManuallyOpenedChat || currentConfig.hideNativeLiveChat) {
+    if (isReplayChatOverlayActive()) {
+      setNativeChatHiddenState(false);
+    } else if (!userManuallyOpenedChat || currentConfig.hideNativeLiveChat) {
       if (currentConfig.chatOverlay && currentConfig.chatOverlay !== "off" || currentConfig.hideNativeLiveChat) {
         setNativeChatHiddenState(true);
       }
@@ -5353,7 +5411,7 @@
     }, true);
   }
   function syncNativeChatState() {
-    if (currentConfig.hideNativeLiveChat) {
+    if (currentConfig.hideNativeLiveChat && !isReplayChatOverlayActive()) {
       autoCollapseNativeChatIfOpen();
     }
     if ((!currentConfig.chatOverlay || currentConfig.chatOverlay === "off") && !currentConfig.hideNativeLiveChat) {
@@ -5362,7 +5420,9 @@
     }
     const isFs = !!(document.fullscreenElement || document.querySelector("#movie_player.ytp-fullscreen"));
     if (isFs) {
-      if (!userManuallyOpenedChat || currentConfig.hideNativeLiveChat) {
+      if (isReplayChatOverlayActive()) {
+        setNativeChatHiddenState(false);
+      } else if (!userManuallyOpenedChat || currentConfig.hideNativeLiveChat) {
         setNativeChatHiddenState(true);
       } else {
         setNativeChatHiddenState(false);
@@ -5546,6 +5606,11 @@
     }
     const videoId = getCurrentLiveVideoId();
     if (!videoId) return;
+    if (hasLiveChatReplaySupport()) {
+      openNativeChatForReplayOverlay();
+      findAndObserveItems();
+      return;
+    }
     if (currentBgVideoId !== videoId) {
       clearBackgroundChatState();
       currentBgVideoId = videoId;
@@ -5650,11 +5715,19 @@
     if (mode !== "off") {
       ensureNativeLiveChatRunning();
       seenMessageIds.clear();
+      if (hasLiveChatReplaySupport()) {
+        openNativeChatForReplayOverlay();
+      }
       ensureBackgroundLiveChat();
       requestExistingMessages();
     } else {
       setNativeChatHiddenState(false);
       stopAllLiveChatIfDisabled();
+      if (currentConfig.hideNativeLiveChat) {
+        setTimeout(() => autoCollapseNativeChatIfOpen(true), 100);
+        setTimeout(() => autoCollapseNativeChatIfOpen(true), 450);
+        setupAutoCloseObserver();
+      }
     }
   }
   function initIframeChatSender() {
@@ -6028,7 +6101,7 @@
       } else if ((isOpen || userManuallyOpenedChat) && !currentConfig.hideNativeLiveChat) {
         userManuallyOpenedChat = true;
         setNativeChatHiddenState(false);
-      } else if (currentConfig.chatOverlay && currentConfig.chatOverlay !== "off" || currentConfig.hideNativeLiveChat) {
+      } else if ((currentConfig.chatOverlay && currentConfig.chatOverlay !== "off" || currentConfig.hideNativeLiveChat) && !isReplayChatOverlayActive()) {
         setNativeChatHiddenState(true);
       }
       syncPlayerFullscreenSize();
@@ -6129,14 +6202,14 @@
       if (typeof window !== "undefined") {
         document.addEventListener("yt-page-data-fetched", (evt) => {
           hookInnerTubeDataForChat(evt.detail?.pageData);
-          if (currentConfig.hideNativeLiveChat && !userManuallyOpenedChat) {
+          if (currentConfig.hideNativeLiveChat && !userManuallyOpenedChat && !isReplayChatOverlayActive()) {
             autoCollapseNativeChatIfOpen();
             setTimeout(() => autoCollapseNativeChatIfOpen(), 50);
             setTimeout(() => autoCollapseNativeChatIfOpen(), 200);
           }
         });
         document.addEventListener("yt-navigate-finish", () => {
-          if (currentConfig.hideNativeLiveChat && !userManuallyOpenedChat) {
+          if (currentConfig.hideNativeLiveChat && !userManuallyOpenedChat && !isReplayChatOverlayActive()) {
             autoCollapseNativeChatIfOpen();
             setTimeout(() => autoCollapseNativeChatIfOpen(), 100);
             setTimeout(() => autoCollapseNativeChatIfOpen(), 300);
@@ -6194,6 +6267,7 @@
     observeFullscreenChatPanels: () => observeFullscreenChatPanels,
     observePlayerChatState: () => observePlayerChatState,
     onTheaterModeChanged: () => onTheaterModeChanged,
+    openNativeChatForReplayOverlay: () => openNativeChatForReplayOverlay,
     requestExistingMessages: () => requestExistingMessages,
     resetChatCollapseState: () => resetChatCollapseState,
     restoreNativeLiveChatIfSaved: () => restoreNativeLiveChatIfSaved,
@@ -7248,7 +7322,8 @@
   init_config();
   init_qualityManager();
   var audioBadgeElement = null;
-  function getPlayer() {
+  var lastQualityMode = null;
+  function getPlayer2() {
     return document.querySelector("#movie_player:not(#inline-preview-player)");
   }
   function ensureAudioBadge(player) {
@@ -7268,19 +7343,19 @@
     const body = document.body;
     root.classList.toggle("ytc-audio-only", isAudioOnly);
     if (body) body.classList.toggle("ytc-audio-only", isAudioOnly);
-    const player = getPlayer();
+    const player = getPlayer2();
     if (isAudioOnly) {
       if (player) {
         ensureAudioBadge(player);
       }
-      applyPreferredQuality();
-      scheduleApplyQuality();
     } else {
       const badge = document.getElementById("ytc-audio-only-badge");
       if (badge) badge.remove();
       audioBadgeElement = null;
-      applyPreferredQuality();
-      scheduleApplyQuality();
+    }
+    if (lastQualityMode !== isAudioOnly) {
+      lastQualityMode = isAudioOnly;
+      scheduleApplyQuality({ force: true });
     }
   }
   function initAudioOnly() {
@@ -7420,7 +7495,6 @@
       applyHomeGridColumns();
       updateChatOverlayVisibility();
       applyAudioOnlyState();
-      applyPreferredQuality();
       if (currentConfig.autoDismissPromos) {
         dismissPromoBanners(document);
       }

@@ -22,8 +22,7 @@ import {
     setupPromoObserver,
     isHomeFeedPath,
     initMixFilter,
-    initQualityManager,
-    applyPreferredQuality
+    initQualityManager
 } from './features/index.js';
 import {
     bindGlobalKeys,
@@ -107,7 +106,6 @@ if (window.self !== window.top) {
         applyHomeGridColumns();
         updateChatOverlayVisibility();
         applyAudioOnlyState();
-        applyPreferredQuality();
         if (currentConfig.autoDismissPromos) {
             dismissPromoBanners(document);
         }

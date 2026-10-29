@@ -1,6 +1,6 @@
-// ==========================================================================
-// VIDEO QUALITY MANAGER (ƯU TIÊN CHỌN ĐỘ PHÂN GIẢI VIDEO THEO Ý MUỐN)
-// ==========================================================================
+// ===========================================================================
+// VIDEO QUALITY: APPLY THE SAVED PREFERENCE ONCE PER VIDEO
+// ===========================================================================
 import { currentConfig } from '../core/config.js';
 
 let applyTimeoutId = null;
@@ -8,226 +8,202 @@ let applyGeneration = 0;
 let lastAppliedQualityKey = null;
 let isQualityManagerInitialized = false;
 
+function getPlayer() {
+    return document.getElementById('movie_player') || document.querySelector('.html5-video-player');
+}
+
+function getVideoId(player = getPlayer()) {
+    try {
+        const id = player?.getVideoData?.()?.video_id;
+        if (id) return id;
+    } catch (e) {}
+    return new URL(window.location.href).searchParams.get('v') || '';
+}
+
+function getPreferenceKey(videoId) {
+    return `${videoId || 'watch'}:${currentConfig.audioOnlyMode ? 'audio-only' : (currentConfig.preferredQuality || 'auto')}`;
+}
+
 function syncQualityToLocalStorage(target) {
     try {
         const qualityNumbers = {
-            highres: 4320,
-            hd2880: 2880,
-            hd2160: 2160,
-            hd1440: 1440,
-            hd1080: 1080,
-            hd720: 720,
-            large: 480,
-            medium: 360,
-            small: 240,
-            tiny: 144
+            highres: 4320, hd2880: 2880, hd2160: 2160, hd1440: 1440,
+            hd1080: 1080, hd720: 720, large: 480, medium: 360,
+            small: 240, tiny: 144
         };
         const qualityNum = qualityNumbers[target];
         if (!qualityNum) return;
-
-        const payload = {
+        const now = Date.now();
+        localStorage.setItem('yt-player-quality', JSON.stringify({
             data: JSON.stringify({ quality: qualityNum, previousQuality: qualityNum }),
-            creation: Date.now(),
-            expiration: Date.now() + 2592000000
-        };
-        localStorage.setItem('yt-player-quality', JSON.stringify(payload));
+            creation: now,
+            expiration: now + 2592000000
+        }));
     } catch (e) {}
 }
 
-/**
- * Lựa chọn độ phân giải tốt nhất từ danh sách available theo cấu hình
- */
 function pickTargetQuality(available, pref) {
-    if (!available || available.length === 0) return null;
+    if (!available?.length) return null;
+    if (currentConfig.audioOnlyMode) return available.includes('tiny') ? 'tiny' : available[available.length - 1];
+    if (pref === 'max') return available[0];
 
-    if (currentConfig.audioOnlyMode) {
-        // Prefer YouTube's lowest rung; fall back to the lowest available rung.
-        return available.includes('tiny') ? 'tiny' : available[available.length - 1];
-    }
-
-    if (pref === 'max') {
-        // available được YouTube sắp xếp theo thứ tự giảm dần
-        return available[0];
-    }
-
-    if (pref === '1440p') {
-        const order = ['hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny'];
-        return order.find(q => available.includes(q)) || available[0];
-    }
-
-    if (pref === '1080p') {
-        const order = ['hd1080', 'hd720', 'large', 'medium', 'small', 'tiny'];
-        return order.find(q => available.includes(q)) || available[available.length - 1];
-    }
-
-    if (pref === '720p') {
-        const order = ['hd720', 'large', 'medium', 'small', 'tiny'];
-        return order.find(q => available.includes(q)) || available[available.length - 1];
-    }
-
-    return null;
+    const orderByPreference = {
+        '1440p': ['hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny'],
+        '1080p': ['hd1080', 'hd720', 'large', 'medium', 'small', 'tiny'],
+        '720p': ['hd720', 'large', 'medium', 'small', 'tiny']
+    };
+    const order = orderByPreference[pref];
+    return order ? (order.find(level => available.includes(level)) || available[available.length - 1]) : null;
 }
 
-/**
- * Ép độ phân giải mong muốn vào trình phát YouTube
- */
-export function applyPreferredQuality() {
-    if (!window.location.pathname.startsWith('/watch')) return;
+function getBufferedAhead(video) {
+    if (!video) return 0;
+    try {
+        const time = video.currentTime;
+        for (let i = 0; i < video.buffered.length; i++) {
+            if (video.buffered.start(i) <= time && video.buffered.end(i) >= time) {
+                return video.buffered.end(i) - time;
+            }
+        }
+    } catch (e) {}
+    return 0;
+}
 
-    const player = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
-    if (!player || typeof player.getAvailableQualityLevels !== 'function') return;
+function hasEnoughStartupBuffer(player, video, attempts) {
+    if (!video || video.readyState >= 4) return true;
+    if (video.readyState < 3) return false;
+    let isLive = false;
+    try { isLive = !!player?.getVideoData?.()?.isLive; } catch (e) {}
+    return isLive || getBufferedAhead(video) >= 1.5 || attempts >= 28;
+}
+
+function applyTargetOnce(player, target, videoId, preferenceKey) {
+    const current = typeof player.getPlaybackQuality === 'function' ? player.getPlaybackQuality() : null;
+
+    // Do not lock YouTube's quality range: the user can choose a higher
+    // resolution manually after this initial preference has been applied.
+    if (current !== target && typeof player.setPlaybackQuality === 'function') {
+        player.setPlaybackQuality(target);
+    }
+    if (target !== 'auto' && !currentConfig.audioOnlyMode) syncQualityToLocalStorage(target);
+    lastAppliedQualityKey = preferenceKey || getPreferenceKey(videoId);
+}
+
+/** Applies the configured quality once immediately, for explicit user actions. */
+export function applyPreferredQuality() {
+    if (!window.location.pathname.startsWith('/watch')) return false;
+    const player = getPlayer();
+    if (!player || typeof player.getAvailableQualityLevels !== 'function') return false;
 
     try {
-        if (!currentConfig.audioOnlyMode && (!currentConfig.preferredQuality || currentConfig.preferredQuality === 'auto')) {
-            if (typeof player.setPlaybackQualityRange === 'function') {
-                player.setPlaybackQualityRange('auto', 'default');
-            }
-            if (typeof player.setPlaybackQuality === 'function') player.setPlaybackQuality('auto');
-            const videoId = player.getVideoData?.()?.video_id || new URL(window.location.href).searchParams.get('v');
-            lastAppliedQualityKey = `${videoId || 'watch'}:auto:auto`;
-            return;
+        const videoId = getVideoId(player);
+        const pref = currentConfig.preferredQuality || 'auto';
+        if (!currentConfig.audioOnlyMode && pref === 'auto') {
+            applyTargetOnce(player, 'auto', videoId, getPreferenceKey(videoId));
+            return true;
         }
-
-        const rawLevels = player.getAvailableQualityLevels();
-        if (!Array.isArray(rawLevels) || rawLevels.length === 0) return;
-
-        const available = rawLevels.filter(q => q && q !== 'auto');
-        if (available.length === 0) return;
-
-        const target = pickTargetQuality(available, currentConfig.preferredQuality);
-        if (!target) return;
-
-        const current = typeof player.getPlaybackQuality === 'function' ? player.getPlaybackQuality() : null;
-        if (current === target && !currentConfig.audioOnlyMode) return;
-
-        if (typeof player.setPlaybackQualityRange === 'function') {
-            player.setPlaybackQualityRange(target, target);
-        }
-        if (typeof player.setPlaybackQuality === 'function') {
-            player.setPlaybackQuality(target);
-        }
-
-        if (!currentConfig.audioOnlyMode) {
-            syncQualityToLocalStorage(target);
-        }
-        const videoId = player.getVideoData?.()?.video_id || new URL(window.location.href).searchParams.get('v');
-        lastAppliedQualityKey = `${videoId || 'watch'}:${currentConfig.preferredQuality || 'auto'}:${target}`;
-    } catch (err) {}
+        const levels = player.getAvailableQualityLevels();
+        const available = Array.isArray(levels) ? levels.filter(level => level && level !== 'auto') : [];
+        const target = pickTargetQuality(available, pref);
+        if (!target) return false;
+        applyTargetOnce(player, target, videoId, getPreferenceKey(videoId));
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
 
 /**
- * Schedule quality application for the active video, retrying until the player
- * reports the requested level or the bounded retry window expires.
+ * Waits for usable video data, then applies the preference once. Subsequent
+ * player events do not reapply it, so manual quality changes remain untouched.
  */
-export function scheduleApplyQuality() {
+export function scheduleApplyQuality(options = {}) {
+    const force = options === true || !!options.force;
     if (applyTimeoutId !== null) {
         clearTimeout(applyTimeoutId);
         applyTimeoutId = null;
     }
     const generation = ++applyGeneration;
     if (!window.location.pathname.startsWith('/watch')) return;
-    if (!currentConfig.audioOnlyMode && (!currentConfig.preferredQuality || currentConfig.preferredQuality === 'auto')) {
-        const player = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
-        const videoId = player?.getVideoData?.()?.video_id || new URL(window.location.href).searchParams.get('v');
-        const qualityKey = `${videoId || 'watch'}:auto:auto`;
-        if (lastAppliedQualityKey !== qualityKey) applyPreferredQuality();
-        return;
-    }
 
-    const expectedVideoId = new URL(window.location.href).searchParams.get('v');
+    const initialPlayer = getPlayer();
+    const expectedVideoId = new URL(window.location.href).searchParams.get('v') || getVideoId(initialPlayer);
+    const preferenceKey = getPreferenceKey(expectedVideoId);
+    if (!force && lastAppliedQualityKey === preferenceKey) return;
+
     let attempts = 0;
-    let applyIssued = false;
-    let retryIssued = false;
     const maxAttempts = 30;
     const tryApply = () => {
         if (generation !== applyGeneration) return;
         attempts++;
-        const player = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
-        if (player && typeof player.getAvailableQualityLevels === 'function') {
-            try {
-                const playerVideoId = typeof player.getVideoData === 'function'
-                    ? player.getVideoData()?.video_id
-                    : null;
-                const videoId = playerVideoId || expectedVideoId;
 
-                // During SPA navigation the old player can remain alive briefly.
-                if (expectedVideoId && playerVideoId && playerVideoId !== expectedVideoId) {
-                    scheduleRetry();
-                    return;
-                }
+        // The preference may have changed while this startup wait was pending.
+        if (getPreferenceKey(expectedVideoId) !== preferenceKey) return;
 
-                const levels = player.getAvailableQualityLevels();
-                const available = Array.isArray(levels) ? levels.filter(q => q && q !== 'auto') : [];
-                const target = pickTargetQuality(available, currentConfig.preferredQuality);
-                if (target) {
-                    const qualityKey = `${videoId || 'watch'}:${currentConfig.preferredQuality}:${target}`;
-                    const current = typeof player.getPlaybackQuality === 'function'
-                        ? player.getPlaybackQuality()
-                        : null;
-                    const needsApply = current !== target || lastAppliedQualityKey !== qualityKey;
-
-                    if (needsApply && (!applyIssued || (attempts >= 6 && !retryIssued))) {
-                        if (typeof player.setPlaybackQualityRange === 'function') {
-                            player.setPlaybackQualityRange(target, target);
-                        }
-                        if (typeof player.setPlaybackQuality === 'function') {
-                            player.setPlaybackQuality(target);
-                        }
-                        if (!currentConfig.audioOnlyMode) {
-                            syncQualityToLocalStorage(target);
-                        }
-                        lastAppliedQualityKey = qualityKey;
-                        if (applyIssued) retryIssued = true;
-                        applyIssued = true;
-                    }
-
-                    // Do not stop on a non-empty manifest; wait until the player reports the target.
-                    if (current === target && lastAppliedQualityKey === qualityKey) {
-                        applyTimeoutId = null;
-                        return;
-                    }
-                }
-            } catch (err) {}
+        const player = getPlayer();
+        const playerVideoId = getVideoId(player);
+        if (!player || (expectedVideoId && playerVideoId && playerVideoId !== expectedVideoId)) {
+            scheduleRetry();
+            return;
         }
 
-        scheduleRetry();
+        try {
+            const video = player.querySelector('video.html5-main-video, video');
+            if (!hasEnoughStartupBuffer(player, video, attempts)) {
+                scheduleRetry();
+                return;
+            }
+
+            const pref = currentConfig.preferredQuality || 'auto';
+            if (!currentConfig.audioOnlyMode && pref === 'auto') {
+                applyTargetOnce(player, 'auto', playerVideoId || expectedVideoId, preferenceKey);
+                applyTimeoutId = null;
+                return;
+            }
+
+            const levels = typeof player.getAvailableQualityLevels === 'function'
+                ? player.getAvailableQualityLevels()
+                : [];
+            const available = Array.isArray(levels) ? levels.filter(level => level && level !== 'auto') : [];
+            const target = pickTargetQuality(available, pref);
+            if (!target) {
+                scheduleRetry();
+                return;
+            }
+
+            applyTargetOnce(player, target, playerVideoId || expectedVideoId, preferenceKey);
+            applyTimeoutId = null;
+        } catch (e) {
+            scheduleRetry();
+        }
     };
 
     function scheduleRetry() {
         if (attempts < maxAttempts && generation === applyGeneration) {
-            applyTimeoutId = setTimeout(tryApply, 400);
+            applyTimeoutId = setTimeout(tryApply, 350);
         } else {
             applyTimeoutId = null;
         }
     }
 
-    // Wait for the new video's data and quality list, then verify the requested level.
-    applyTimeoutId = setTimeout(tryApply, 400);
+    applyTimeoutId = setTimeout(tryApply, 250);
 }
 
-/**
- * Khởi tạo trình lắng nghe điều phối độ phân giải video
- */
 export function initQualityManager() {
     if (isQualityManagerInitialized) return;
     isQualityManagerInitialized = true;
 
-    window.addEventListener('yt-navigate-finish', scheduleApplyQuality);
-    window.addEventListener('yt-page-data-updated', scheduleApplyQuality);
-
-    document.addEventListener('loadedmetadata', (e) => {
-        if (e.target && e.target.tagName === 'VIDEO') {
-            scheduleApplyQuality();
-        }
+    window.addEventListener('yt-navigate-start', () => {
+        applyGeneration++;
+        if (applyTimeoutId !== null) clearTimeout(applyTimeoutId);
+        applyTimeoutId = null;
+        lastAppliedQualityKey = null;
+    });
+    window.addEventListener('yt-navigate-finish', () => scheduleApplyQuality());
+    window.addEventListener('yt-page-data-updated', () => scheduleApplyQuality());
+    document.addEventListener('loadedmetadata', event => {
+        if (event.target?.tagName === 'VIDEO') scheduleApplyQuality();
     }, true);
 
-    document.addEventListener('playing', (e) => {
-        if (e.target && e.target.tagName === 'VIDEO') {
-            scheduleApplyQuality();
-        }
-    }, true);
-
-    if (window.location.pathname.startsWith('/watch')) {
-        scheduleApplyQuality();
-    }
+    if (window.location.pathname.startsWith('/watch')) scheduleApplyQuality();
 }

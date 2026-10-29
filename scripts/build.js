@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.26
-// @description  YouTube Customizer v3.9.26 — Chỉ cập nhật Tampermonkey theo thao tác người dùng.
+// @version      3.9.27
+// @description  YouTube Customizer v3.9.27 — Áp chất lượng một lần và cải thiện Live Chat Replay.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -25,6 +25,7 @@ const banner = `// ==UserScript==
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.27 — Áp chất lượng một lần; dùng chat gốc cho Live Chat Replay.
  * v3.9.26 — Chỉ mở cập nhật thủ công; bỏ tự tải lại khi đổi tab.
  * v3.9.25 — Giữ xử lý bấm gốc của YouTube trong Chế độ Chỉ Âm Thanh.
  * v3.9.24 — Bổ sung bấm phát/tạm dừng; ép chất lượng thấp nhất và khôi phục mức ưu tiên.
@@ -34,8 +35,6 @@ const banner = `// ==UserScript==
  * v3.9.20 — Thử nghiệm ảnh xem trước Live Stream theo thời gian thực.
  * v3.9.19 — Lịch sử đầy đủ được tổng hợp tại CHANGELOG.md; phần này giới hạn 10 phiên bản gần nhất.
  * v3.9.18 — Gỡ huy hiệu ngôi sao khỏi mục Ánh sáng phòng (Ambilight).
- * v3.9.17 — Thay emoji ngôi sao bằng SVG riêng; bỏ animation nhấp nháy.
- * v3.9.16 — Gỡ canvas/CSS thử nghiệm trên scrollbar, bỏ cập nhật canvas theo từng frame và khi cuộn.
  * ============================================================================
  */`;
 

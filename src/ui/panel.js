@@ -731,7 +731,7 @@ export function createSettingsPanel() {
 
                 import('../features/qualityManager.js').then(m => {
                     if (m && typeof m.scheduleApplyQuality === 'function') {
-                        m.scheduleApplyQuality();
+                        m.scheduleApplyQuality({ force: true });
                     }
                 }).catch(() => {});
             });

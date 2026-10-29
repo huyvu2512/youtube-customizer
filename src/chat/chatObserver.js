@@ -2,7 +2,7 @@
 // CHAT OBSERVER, BACKGROUND SYNC & IFRAME CONTROLLER
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
-import { whenElement, hasLiveOrChatSupport, rafThrottle } from '../core/utils.js';
+import { whenElement, hasLiveOrChatSupport, hasLiveChatReplaySupport, rafThrottle } from '../core/utils.js';
 import {
     chatOverlayInitialized,
     setChatOverlayInitialized,
@@ -39,6 +39,10 @@ export function setHasAutoCollapsedChatForCurrentVideo(v) {
     try { window.hasAutoCollapsedChatForCurrentVideo = v; } catch (e) {}
 }
 
+function isReplayChatOverlayActive() {
+    return !!(currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off' && hasLiveChatReplaySupport());
+}
+
 let chatAutoCloseObserver = null;
 let chatAutoCloseTimeout = null;
 
@@ -57,7 +61,7 @@ export function resetChatCollapseState() {
 
 // Chặn sớm dữ liệu InnerTube ngay từ khi YouTube tải trang để khung chat khởi tạo ở trạng thái đóng
 function hookInnerTubeDataForChat(data) {
-    if (!currentConfig.hideNativeLiveChat || userManuallyOpenedChat) return;
+    if (!currentConfig.hideNativeLiveChat || userManuallyOpenedChat || hasLiveChatReplaySupport(data)) return;
     try {
         const conversationBar = data?.contents?.twoColumnWatchNextResults?.conversationBar ||
                                 data?.response?.contents?.twoColumnWatchNextResults?.conversationBar;
@@ -75,7 +79,7 @@ function hookInnerTubeDataForChat(data) {
 if (typeof window !== 'undefined') {
     document.addEventListener('yt-page-data-fetched', (evt) => {
         hookInnerTubeDataForChat(evt.detail?.pageData);
-        if (currentConfig.hideNativeLiveChat && !userManuallyOpenedChat) {
+        if (currentConfig.hideNativeLiveChat && !userManuallyOpenedChat && !isReplayChatOverlayActive()) {
             autoCollapseNativeChatIfOpen();
             setTimeout(() => autoCollapseNativeChatIfOpen(), 50);
             setTimeout(() => autoCollapseNativeChatIfOpen(), 200);
@@ -83,7 +87,7 @@ if (typeof window !== 'undefined') {
     });
 
     document.addEventListener('yt-navigate-finish', () => {
-        if (currentConfig.hideNativeLiveChat && !userManuallyOpenedChat) {
+        if (currentConfig.hideNativeLiveChat && !userManuallyOpenedChat && !isReplayChatOverlayActive()) {
             autoCollapseNativeChatIfOpen();
             setTimeout(() => autoCollapseNativeChatIfOpen(), 100);
             setTimeout(() => autoCollapseNativeChatIfOpen(), 300);
@@ -192,9 +196,39 @@ export function findNativeChatCloseButton() {
     return null;
 }
 
+export function openNativeChatForReplayOverlay() {
+    if (!isReplayChatOverlayActive()) return false;
+    setNativeChatHiddenState(false);
+    if (chatAutoCloseObserver) {
+        chatAutoCloseObserver.disconnect();
+        chatAutoCloseObserver = null;
+    }
+
+    const chatFrame = document.querySelector('ytd-live-chat-frame#chat, #chat.ytd-watch-flexy, #chat-container ytd-live-chat-frame');
+    const isCollapsed = !!(chatFrame && (chatFrame.hasAttribute('collapsed') || chatFrame.collapsed === true));
+    if (isCollapsed) {
+        const showButton = chatFrame.querySelector(
+            '#show-hide-button yt-button-shape button, #show-hide-button button, #show-hide-button, ' +
+            '[aria-label*="Hiện" i], [aria-label*="Show" i], [aria-label*="Mở" i], [aria-label*="Open" i]'
+        );
+        if (showButton) showButton.click();
+        else if (typeof chatFrame.expand === 'function') chatFrame.expand();
+        return true;
+    }
+
+    if (!chatFrame) {
+        const playerChatButton = document.querySelector('.ytp-live-chat-button, .ytp-chat-button');
+        if (playerChatButton && playerChatButton.getClientRects().length) {
+            playerChatButton.click();
+            return true;
+        }
+    }
+    return !!chatFrame;
+}
+
 export function autoCollapseNativeChatIfOpen(force = false) {
     if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return false;
-    if (!currentConfig.hideNativeLiveChat) return false;
+    if (!currentConfig.hideNativeLiveChat || isReplayChatOverlayActive()) return false;
     if (!force && (hasAutoCollapsedChatForCurrentVideo || userManuallyOpenedChat)) return false;
 
     let collapsedSomething = false;
@@ -291,7 +325,7 @@ export function autoCollapseNativeChatIfOpen(force = false) {
     if (nativeFrame && !nativeFrame._ytcAutoCloseBound) {
         nativeFrame._ytcAutoCloseBound = true;
         nativeFrame.addEventListener('load', () => {
-            if (!hasAutoCollapsedChatForCurrentVideo && !userManuallyOpenedChat && currentConfig.hideNativeLiveChat) {
+            if (!hasAutoCollapsedChatForCurrentVideo && !userManuallyOpenedChat && currentConfig.hideNativeLiveChat && !isReplayChatOverlayActive()) {
                 setTimeout(() => autoCollapseNativeChatIfOpen(), 50);
                 setTimeout(() => autoCollapseNativeChatIfOpen(), 200);
                 setTimeout(() => autoCollapseNativeChatIfOpen(), 500);
@@ -303,6 +337,11 @@ export function autoCollapseNativeChatIfOpen(force = false) {
 }
 
 export function setupAutoCloseObserver() {
+    if (isReplayChatOverlayActive()) {
+        if (chatAutoCloseObserver) chatAutoCloseObserver.disconnect();
+        chatAutoCloseObserver = null;
+        return;
+    }
     if (!currentConfig.hideNativeLiveChat) return;
     if (hasAutoCollapsedChatForCurrentVideo || userManuallyOpenedChat) return;
     if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
@@ -325,7 +364,7 @@ export function setupAutoCloseObserver() {
     const retryDelays = [150, 500, 1200];
     retryDelays.forEach(delay => {
         setTimeout(() => {
-            if (!hasAutoCollapsedChatForCurrentVideo && !userManuallyOpenedChat && currentConfig.hideNativeLiveChat) {
+            if (!hasAutoCollapsedChatForCurrentVideo && !userManuallyOpenedChat && currentConfig.hideNativeLiveChat && !isReplayChatOverlayActive()) {
                 autoCollapseNativeChatIfOpen();
             }
         }, delay);
@@ -333,7 +372,7 @@ export function setupAutoCloseObserver() {
 
     let autoCloseDebounceTimer = null;
     chatAutoCloseObserver = new MutationObserver(() => {
-        if (hasAutoCollapsedChatForCurrentVideo || userManuallyOpenedChat || !currentConfig.hideNativeLiveChat) {
+        if (hasAutoCollapsedChatForCurrentVideo || userManuallyOpenedChat || !currentConfig.hideNativeLiveChat || isReplayChatOverlayActive()) {
             if (chatAutoCloseObserver) {
                 chatAutoCloseObserver.disconnect();
                 chatAutoCloseObserver = null;
@@ -409,7 +448,9 @@ export function syncNativeChatFullscreenState() {
     if (!isFs) return;
 
     // Không tự động gán userManuallyOpenedChat = true tại đây để tránh khóa nhầm cờ tự động đóng
-    if (!userManuallyOpenedChat || currentConfig.hideNativeLiveChat) {
+    if (isReplayChatOverlayActive()) {
+        setNativeChatHiddenState(false);
+    } else if (!userManuallyOpenedChat || currentConfig.hideNativeLiveChat) {
         if ((currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') || currentConfig.hideNativeLiveChat) {
             setNativeChatHiddenState(true);
         }
@@ -492,7 +533,7 @@ export function setupChatToggleListeners() {
 }
 
 export function syncNativeChatState() {
-    if (currentConfig.hideNativeLiveChat) {
+    if (currentConfig.hideNativeLiveChat && !isReplayChatOverlayActive()) {
         autoCollapseNativeChatIfOpen();
     }
 
@@ -504,7 +545,9 @@ export function syncNativeChatState() {
     const isFs = !!(document.fullscreenElement || document.querySelector('#movie_player.ytp-fullscreen'));
 
     if (isFs) {
-        if (!userManuallyOpenedChat || currentConfig.hideNativeLiveChat) {
+        if (isReplayChatOverlayActive()) {
+            setNativeChatHiddenState(false);
+        } else if (!userManuallyOpenedChat || currentConfig.hideNativeLiveChat) {
             setNativeChatHiddenState(true);
         } else {
             setNativeChatHiddenState(false);
@@ -734,6 +777,15 @@ export function ensureBackgroundLiveChat() {
     const videoId = getCurrentLiveVideoId();
     if (!videoId) return;
 
+    // Chat replay already belongs to YouTube's native iframe. Reuse that
+    // frame so replay continuation/timing stays native and avoid a second
+    // hidden replay client competing for network and CPU.
+    if (hasLiveChatReplaySupport()) {
+        openNativeChatForReplayOverlay();
+        findAndObserveItems();
+        return;
+    }
+
     if (currentBgVideoId !== videoId) {
         clearBackgroundChatState();
         currentBgVideoId = videoId;
@@ -858,11 +910,19 @@ export function updateChatOverlayVisibility() {
     if (mode !== 'off') {
         ensureNativeLiveChatRunning();
         seenMessageIds.clear();
+        if (hasLiveChatReplaySupport()) {
+            openNativeChatForReplayOverlay();
+        }
         ensureBackgroundLiveChat();
         requestExistingMessages();
     } else {
         setNativeChatHiddenState(false);
         stopAllLiveChatIfDisabled();
+        if (currentConfig.hideNativeLiveChat) {
+            setTimeout(() => autoCollapseNativeChatIfOpen(true), 100);
+            setTimeout(() => autoCollapseNativeChatIfOpen(true), 450);
+            setupAutoCloseObserver();
+        }
     }
 }
 
@@ -1336,7 +1396,7 @@ export function initChatOverlay() {
         } else if ((isOpen || userManuallyOpenedChat) && !currentConfig.hideNativeLiveChat) {
             userManuallyOpenedChat = true;
             setNativeChatHiddenState(false);
-        } else if ((currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') || currentConfig.hideNativeLiveChat) {
+        } else if (((currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') || currentConfig.hideNativeLiveChat) && !isReplayChatOverlayActive()) {
             setNativeChatHiddenState(true);
         }
         syncPlayerFullscreenSize();

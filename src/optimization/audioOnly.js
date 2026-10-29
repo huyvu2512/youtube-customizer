@@ -2,9 +2,10 @@
 // AUDIO-ONLY MODE (RADIO MODE: HIDE VIDEO RENDERING & LOWER TO 144P)
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
-import { applyPreferredQuality, scheduleApplyQuality } from '../features/qualityManager.js';
+import { scheduleApplyQuality } from '../features/qualityManager.js';
 
 let audioBadgeElement = null;
+let lastQualityMode = null;
 
 function getPlayer() {
     return document.querySelector('#movie_player:not(#inline-preview-player)');
@@ -36,15 +37,17 @@ export function applyAudioOnlyState() {
         if (player) {
             ensureAudioBadge(player);
         }
-        applyPreferredQuality();
-        scheduleApplyQuality();
     } else {
         const badge = document.getElementById('ytc-audio-only-badge');
         if (badge) badge.remove();
         audioBadgeElement = null;
-        // Restore the user's saved quality preference (including Auto).
-        applyPreferredQuality();
-        scheduleApplyQuality();
+    }
+
+    // Only a mode transition should request a quality change. Other settings
+    // updates must not override a resolution the user chose in YouTube.
+    if (lastQualityMode !== isAudioOnly) {
+        lastQualityMode = isAudioOnly;
+        scheduleApplyQuality({ force: true });
     }
 }
 

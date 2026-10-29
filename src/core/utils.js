@@ -104,54 +104,67 @@ export function whenElement(selector, callback, timeout = 5000) {
     }
 }
 
-/**
- * Kiểm tra xem video hiện tại có phải Live Stream hoặc có khung trò chuyện / phát lại trò chuyện không
- */
+function getPageLiveChatRenderer(data = window.ytInitialData) {
+    const watchNext = data?.contents?.twoColumnWatchNextResults ||
+        data?.response?.contents?.twoColumnWatchNextResults ||
+        data?.contents?.singleColumnWatchNextResults ||
+        data?.response?.contents?.singleColumnWatchNextResults;
+    const conversationBar = watchNext?.conversationBar;
+    return conversationBar?.liveChatRenderer || conversationBar?.conversationBarRenderer?.liveChatRenderer || null;
+}
+
+function getMenuTitle(item) {
+    const title = item?.title;
+    return typeof title === 'string' ? title : title?.simpleText || title?.runs?.map(run => run.text).join('') || '';
+}
+
+export function hasLiveChatReplaySupport(pageData = window.ytInitialData) {
+    const renderer = getPageLiveChatRenderer(pageData) || document.querySelector('ytd-live-chat-frame')?.data?.liveChatRenderer;
+    if (renderer) {
+        const menuItems = renderer.header?.liveChatHeaderRenderer?.viewSelector
+            ?.sortFilterSubMenuRenderer?.subMenuItems || [];
+        if (menuItems.some(item => /replay|phát lại/i.test(getMenuTitle(item)))) return true;
+        if (renderer.continuations?.some(item => item?.liveChatReplayContinuationData?.continuation)) return true;
+    }
+
+    return Array.from(document.querySelectorAll('iframe[src], iframe#chatframe, ytd-live-chat-frame iframe'))
+        .some(frame => {
+            try { return new URL(frame.src || frame.getAttribute('src') || '', location.href).pathname.includes('/live_chat_replay'); }
+            catch (e) { return false; }
+        });
+}
+
+/** True only when YouTube exposes an actual live chat or replay for this video. */
 export function hasLiveOrChatSupport() {
-    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) {
-        return false;
-    }
-    if (location.pathname.startsWith('/live')) {
-        return true;
-    }
-    if (document.getElementById('ytc-bg-live-chat')) {
-        return true;
-    }
+    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return false;
+    if (location.pathname.startsWith('/live')) return true;
+
     const player = document.querySelector('#movie_player:not(#inline-preview-player)');
-    if (player) {
+    try {
+        const videoData = player?.getVideoData?.();
+        if (videoData && (videoData.isLive || videoData.isPostLiveDvr)) return true;
+        if (typeof player?.isLive === 'function' && player.isLive()) return true;
+    } catch (e) {}
+
+    if (getPageLiveChatRenderer() || hasLiveChatReplaySupport()) return true;
+
+    const frames = document.querySelectorAll(
+        'iframe#chatframe, ytd-live-chat-frame iframe, iframe[src*="/live_chat"]'
+    );
+    for (const frame of frames) {
         try {
-            if (typeof player.getVideoData === 'function') {
-                const data = player.getVideoData();
-                if (data && (data.isLive || data.isPostLiveDvr)) return true;
-            }
-            if (typeof player.isLive === 'function' && player.isLive()) return true;
+            if (new URL(frame.src || frame.getAttribute('src') || '', location.href).pathname.includes('/live_chat')) return true;
         } catch (e) {}
     }
-    const chatEl = document.querySelector(
-        'ytd-live-chat-frame, ' +
-        'iframe#chatframe, ' +
-        'iframe[src*="/live_chat"], ' +
-        '#chat-teaser, ' +
-        '#teaser, ' +
-        'ytd-engagement-panel-section-list-renderer[target-id*="chat" i], ' +
-        '[target-id="engagement-panel-live-chat"], ' +
-        '.ytp-live-chat-button, ' +
-        '.ytp-chat-button, ' +
-        '#actions button[aria-label*="trò chuyện" i], ' +
-        '#actions button[aria-label*="chat" i], ' +
-        '#top-level-buttons-computed button[aria-label*="trò chuyện" i], ' +
-        '#top-level-buttons-computed button[aria-label*="chat" i]'
-    );
-    if (chatEl) return true;
 
-    // Kiểm tra #chat hoặc #chat-container nếu thực sự chứa nội dung (iframe, teaser hoặc frame)
-    const chatBox = document.querySelector('#chat.ytd-watch-flexy, #chat-container');
-    if (chatBox) {
-        const hasContent = chatBox.querySelector('ytd-live-chat-frame, iframe, #chat-teaser, #teaser, button');
-        if (hasContent) return true;
-    }
+    const chatRenderer = document.querySelector('ytd-live-chat-frame')?.data?.liveChatRenderer;
+    if (chatRenderer) return true;
 
-    return false;
+    const chatTeaser = document.querySelector('#chat-teaser, ytd-live-chat-frame #teaser');
+    if (chatTeaser && chatTeaser.getClientRects().length) return true;
+
+    const chatButton = document.querySelector('.ytp-live-chat-button, .ytp-chat-button');
+    return !!(chatButton && chatButton.getClientRects().length);
 }
 
 let toastTimer = null;
