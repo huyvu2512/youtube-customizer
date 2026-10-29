@@ -1,6 +1,6 @@
 ## v3.9.33 — 29/10/2026 23:32
 
-- Áp chất lượng ban đầu rồi cho phép đổi thủ công trong YouTube.
+- **[56c1c3d](https://github.com/huyvu2512/youtube-customizer/commit/56c1c3d9cf63c5e0dbede10ceccbe1cc2c829155)** Áp chất lượng ban đầu rồi cho phép đổi thủ công trong YouTube.
 
 ## v3.9.32 — 29/10/2026 23:08
 
