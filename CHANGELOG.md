@@ -1,5 +1,9 @@
 # Lịch sử thay đổi
 
+## v3.9.30 — 29/10/2026 22:45
+
+- **[b4fc94c](https://github.com/huyvu2512/youtube-customizer/commit/b4fc94c)** Khôi phục chất lượng thích ứng khi chọn Tự động trong menu.
+
 ## v3.9.29 — 29/10/2026 22:42
 
 - **[7cef95e](https://github.com/huyvu2512/youtube-customizer/commit/7cef95e)** Bấm nút Replay gốc để khởi tạo iframe chat đang ẩn.
