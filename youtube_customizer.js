@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.35
-// @description  YouTube Customizer v3.9.35 — Tối ưu hiệu năng phóng to, tua video và xem trước timeline.
+// @version      3.9.36
+// @description  YouTube Customizer v3.9.36 — Gỡ :has() CSS, tắt observer thừa trên Watch và khử blur GPU khi phóng to.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -13,6 +13,7 @@
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.36 — Gỡ :has() CSS, tắt observer thừa trên Watch và khử blur GPU khi phóng to.
  * v3.9.35 — Tối ưu hiệu năng phóng to, tua video và xem trước timeline.
  * v3.9.34 — Giữ mức ban đầu đến khi người dùng đổi trong menu YouTube.
  * v3.9.33 — Áp chất lượng ban đầu rồi cho phép đổi thủ công trong YouTube.
@@ -22,7 +23,6 @@
  * v3.9.29 — Bấm nút Replay gốc để khởi tạo khung chat ẩn.
  * v3.9.28 — Tự mở Live Chat Replay; ẩn khung gốc khi phóng to.
  * v3.9.27 — Áp chất lượng một lần; dùng chat gốc cho Live Chat Replay.
- * v3.9.26 — Chỉ mở cập nhật thủ công; bỏ tự tải lại khi đổi tab.
  * ============================================================================
  */
 (() => {
@@ -45,7 +45,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.35";
+      APP_VERSION = "3.9.36";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -115,7 +115,7 @@
       configListeners.push(fn);
     }
   }
-  function applyConfigToRoot() {
+  function applyConfigToRoot(notify = true) {
     const root = document.documentElement;
     if (!root) return;
     root.classList.toggle("ytc-hide-shorts", !!currentConfig.hideShorts);
@@ -156,13 +156,15 @@
       document.body.setAttribute("data-ytc-cols", String(currentConfig.columns || 3));
       document.body.setAttribute("data-ytc-chat", currentConfig.chatOverlay || "off");
     }
-    broadcastConfigToIframes(currentConfig);
-    configListeners.forEach((fn) => {
-      try {
-        fn(currentConfig);
-      } catch (e) {
-      }
-    });
+    if (notify) {
+      broadcastConfigToIframes(currentConfig);
+      configListeners.forEach((fn) => {
+        try {
+          fn(currentConfig);
+        } catch (e) {
+        }
+      });
+    }
   }
   function broadcastConfigToIframes(cfg = currentConfig) {
     if (typeof window === "undefined") return;
@@ -417,12 +419,15 @@
   });
 
   // src/features/grid.js
-  function isHomeFeedPath() {
-    const p = location.pathname;
-    return p === "/" || p.startsWith("/feed") || p.startsWith("/@") || p.startsWith("/channel");
+  function isHomeFeedPath(pathname = typeof location !== "undefined" ? location.pathname : "") {
+    return pathname === "/" || pathname.startsWith("/feed") || pathname.startsWith("/@") || pathname.startsWith("/channel");
   }
   function applyHomeGridColumns() {
-    if (!isHomeFeedPath()) return;
+    const isFeed = isHomeFeedPath();
+    if (document.documentElement) {
+      document.documentElement.classList.toggle("ytc-feed-page", isFeed);
+    }
+    if (!isFeed) return;
     const cols = currentConfig.columns || 3;
     const colStr = String(cols);
     const grids = document.querySelectorAll("ytd-rich-grid-renderer");
@@ -496,141 +501,301 @@
   // src/features/feedFilter.js
   var feedFilter_exports = {};
   __export(feedFilter_exports, {
+    hasActiveFeedFilters: () => hasActiveFeedFilters,
+    hasActiveWatchCardFilters: () => hasActiveWatchCardFilters,
+    needsFeedObserver: () => needsFeedObserver,
     scanAndTagFeedContent: () => scanAndTagFeedContent,
     scheduleFeedScan: () => scheduleFeedScan,
-    setupFeedShelvesObserver: () => setupFeedShelvesObserver
+    setupFeedShelvesObserver: () => setupFeedShelvesObserver,
+    syncFeedObserver: () => syncFeedObserver
   });
-  function scanAndTagFeedContent(scope) {
-    if (!currentConfig.hideMembersOnly && !currentConfig.hideExploreTopics && !currentConfig.hideCommunity && !currentConfig.hideMixes) return;
-    const root = scope && scope.querySelectorAll ? scope : document;
-    const sections = root.querySelectorAll("ytd-rich-section-renderer:not([data-ytc-shelf-scanned])");
-    sections.forEach((sec) => {
-      sec.setAttribute("data-ytc-shelf-scanned", "1");
-      if (currentConfig.hideMembersOnly) {
-        if (sec.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], a[href*="/membership"], a[href*="/memberships"]')) {
-          sec.classList.add("ytc-shelf-members");
-        } else {
-          const text = sec.textContent || "";
-          if (text.includes("lợi ích từ hội viên") || text.includes("Ưu tiên hội viên") || text.includes("ưu tiên hội viên") || text.includes("hội viên") && text.includes("YouTube chọn lọc") || text.includes("Get more from memberships") || text.includes("Members only") || text.includes("Members first")) {
-            sec.classList.add("ytc-shelf-members");
-          }
-        }
-      }
-      if (currentConfig.hideExploreTopics && !sec.classList.contains("ytc-shelf-members")) {
-        if (sec.querySelector("yt-chip-cloud-chip-renderer, yt-chip-cloud-renderer, ytd-feed-filter-chip-bar-renderer")) {
-          sec.classList.add("ytc-shelf-explore");
-        } else {
-          const text = sec.textContent || "";
-          if (text.includes("Khám phá các chủ đề") || text.includes("Explore other topics") || text.includes("Explore topics")) {
-            sec.classList.add("ytc-shelf-explore");
-          }
-        }
-      }
-      if (currentConfig.hideCommunity && !sec.classList.contains("ytc-shelf-members") && !sec.classList.contains("ytc-shelf-explore")) {
-        if (sec.querySelector("ytd-post-renderer, ytd-backstage-post-renderer, ytd-backstage-post-thread-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer")) {
-          sec.classList.add("ytc-shelf-community");
-        }
-      }
-      if (currentConfig.hideMixes && !sec.classList.contains("ytc-shelf-members") && !sec.classList.contains("ytc-shelf-explore") && !sec.classList.contains("ytc-shelf-community")) {
-        const titleEl = sec.querySelector("#title, #title-container, yt-formatted-string#title");
-        const titleText = (titleEl ? titleEl.textContent : "") || "";
-        if (titleText.includes("Danh sách kết hợp") || titleText.includes("Mixes") || titleText.includes("YouTube tạo danh sách phát này")) {
-          sec.classList.add("ytc-shelf-mix");
-        }
-      }
-    });
-    if (currentConfig.hideMembersOnly) {
-      const videoCards = root.querySelectorAll("ytd-rich-item-renderer:not([data-ytc-mem-scanned]), ytd-video-renderer:not([data-ytc-mem-scanned]), ytd-compact-video-renderer:not([data-ytc-mem-scanned])");
-      videoCards.forEach((card) => {
-        card.setAttribute("data-ytc-mem-scanned", "1");
-        if (card.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], [aria-label*="hội viên" i], [aria-label*="Hội viên" i], [aria-label*="Members" i]')) {
-          card.classList.add("ytc-item-members");
-        } else {
-          const badgeArea = card.querySelector("#badges, ytd-badge-supported-renderer, #metadata-line");
-          const text = badgeArea ? badgeArea.textContent || "" : "";
-          if (text.includes("Ưu tiên hội viên") || text.includes("ưu tiên hội viên") || text.includes("Chỉ dành cho hội viên") || text.includes("chỉ dành cho hội viên") || text.includes("Members first") || text.includes("Members only") || text.includes("Members-only") || text.includes("Early access")) {
-            card.classList.add("ytc-item-members");
-          }
+  function hasActiveFeedFilters() {
+    return !!(currentConfig.hideShorts || currentConfig.hidePlayables || currentConfig.hideMembersOnly || currentConfig.hideMixes || currentConfig.hideExploreTopics || currentConfig.hideCommunity || currentConfig.cleanSearch);
+  }
+  function hasActiveWatchCardFilters() {
+    return !!(currentConfig.hideMembersOnly || currentConfig.hideMixes);
+  }
+  function needsFeedObserver(pathname = typeof location !== "undefined" ? location.pathname : "/") {
+    if (pathname.startsWith("/shorts")) return false;
+    if (pathname.startsWith("/watch") || pathname.startsWith("/live")) {
+      return hasActiveWatchCardFilters();
+    }
+    return hasActiveFeedFilters() || isHomeFeedPath(pathname) && (currentConfig.columns || 3) !== 3;
+  }
+  function isWatchRoute() {
+    const p = location.pathname;
+    return p.startsWith("/watch") || p.startsWith("/live");
+  }
+  function tagGuideEntries(doc) {
+    if (!doc || !doc.querySelectorAll) return;
+    if (currentConfig.hideShorts) {
+      doc.querySelectorAll("ytd-guide-entry-renderer:not([data-ytc-sh-guide]), ytd-mini-guide-entry-renderer:not([data-ytc-sh-guide])").forEach((entry) => {
+        entry.setAttribute("data-ytc-sh-guide", "1");
+        if (entry.querySelector('a[href^="/shorts"]')) {
+          entry.classList.add("ytc-guide-shorts");
         }
       });
     }
-    if (currentConfig.hideMixes) {
-      const mixCards = root.querySelectorAll(
-        "ytd-rich-item-renderer:not([data-ytc-mix-scanned]), ytd-video-renderer:not([data-ytc-mix-scanned]), ytd-compact-video-renderer:not([data-ytc-mix-scanned]), ytd-radio-renderer:not([data-ytc-mix-scanned]), ytd-compact-radio-renderer:not([data-ytc-mix-scanned]), ytd-grid-radio-renderer:not([data-ytc-mix-scanned]), ytd-playlist-renderer:not([data-ytc-mix-scanned]), ytd-compact-playlist-renderer:not([data-ytc-mix-scanned])"
-      );
-      mixCards.forEach((card) => {
-        card.setAttribute("data-ytc-mix-scanned", "1");
-        const tag = card.tagName.toLowerCase();
-        if (tag === "ytd-radio-renderer" || tag === "ytd-compact-radio-renderer" || tag === "ytd-grid-radio-renderer" || tag === "ytd-playlist-renderer" || tag === "ytd-compact-playlist-renderer") {
-          card.classList.add("ytc-item-mix");
-          return;
-        }
-        if (card.querySelector("ytd-radio-renderer, ytd-compact-radio-renderer, ytd-playlist-renderer, ytd-compact-playlist-renderer")) {
-          card.classList.add("ytc-item-mix");
-          return;
-        }
-        if (card.querySelector('ytd-playlist-thumbnail, ytd-playlist-custom-thumbnail-renderer, a[href*="/playlist?list="]')) {
-          card.classList.add("ytc-item-mix");
-          return;
-        }
-        const hasVideoDuration = !!card.querySelector("ytd-thumbnail-overlay-time-status-renderer, span.ytd-thumbnail-overlay-time-status-renderer");
-        if (!hasVideoDuration) {
-          const titleOrBadge = card.querySelector("#video-title, #title, #metadata") || card;
-          const text = titleOrBadge.textContent || "";
-          if (text.includes("Danh sách kết hợp") || text.includes("YouTube tạo danh sách phát này") || text.includes("Xem toàn bộ danh sách phát") || text.includes("Xem toàn bộ khoá học") || text.includes("Xem toàn bộ khóa học")) {
-            card.classList.add("ytc-item-mix");
-          }
+    if (currentConfig.hidePlayables) {
+      doc.querySelectorAll("ytd-guide-entry-renderer:not([data-ytc-pl-guide]), ytd-mini-guide-entry-renderer:not([data-ytc-pl-guide])").forEach((entry) => {
+        entry.setAttribute("data-ytc-pl-guide", "1");
+        if (entry.querySelector('a[href*="/playables"], a[href*="playables"]')) {
+          entry.classList.add("ytc-guide-playables");
         }
       });
     }
   }
-  function setupFeedShelvesObserver() {
-    scheduleFeedScan(document);
-    applyHomeGridColumns();
-    const attach = (container) => {
-      scheduleFeedScan(container);
-      applyHomeGridColumns();
-      new MutationObserver((mutations) => {
-        let hasRelevantChanges = false;
-        for (const mutation of mutations) {
-          if (!mutation.addedNodes.length) continue;
-          if (mutation.target.closest && mutation.target.closest("#preview, ytd-video-preview, #inline-preview-player, .html5-video-player, #ytc-streamer-box, #ytc-danmaku-container, ytd-moving-thumbnail-renderer")) {
-            continue;
+  function getScanRoots(scope) {
+    if (isWatchRoute()) {
+      if (scope && scope !== document && scope.nodeType === 1 && !scope.matches("#page-manager, ytd-page-manager, ytd-app")) {
+        return [scope];
+      }
+      return Array.from(document.querySelectorAll("#related, ytd-watch-next-secondary-results-renderer, #playlist, ytd-playlist-panel-renderer"));
+    }
+    if (scope && scope !== document && scope.nodeType === 1 && !scope.matches("#page-manager, ytd-page-manager, ytd-app")) {
+      if (scope.closest?.("ytd-browse[hidden], ytd-search[hidden]")) return [];
+      return [scope];
+    }
+    const activeContainers = Array.from(document.querySelectorAll("ytd-browse:not([hidden]), ytd-search:not([hidden])"));
+    if (activeContainers.length > 0) return activeContainers;
+    return scope && scope.querySelectorAll ? [scope] : [document];
+  }
+  function scanAndTagFeedContent(scope) {
+    if (!hasActiveFeedFilters()) return;
+    if (currentConfig.hideShorts || currentConfig.hidePlayables) {
+      tagGuideEntries(document);
+    }
+    if (isWatchRoute() && !hasActiveWatchCardFilters()) return;
+    const roots = getScanRoots(scope);
+    if (!roots.length) return;
+    for (const root of roots) {
+      if (!root || !root.querySelectorAll) continue;
+      if (currentConfig.hideShorts || currentConfig.hidePlayables || currentConfig.hideMembersOnly || currentConfig.hideExploreTopics || currentConfig.hideCommunity || currentConfig.hideMixes || currentConfig.cleanSearch) {
+        const sections = root.querySelectorAll("ytd-rich-section-renderer:not([data-ytc-sec-scanned])");
+        sections.forEach((sec) => {
+          sec.setAttribute("data-ytc-sec-scanned", "1");
+          if (currentConfig.hideShorts && sec.querySelector("ytd-rich-shelf-renderer[is-shorts], ytd-reel-shelf-renderer")) {
+            sec.classList.add("ytc-shelf-shorts");
+            return;
           }
-          for (const node of mutation.addedNodes) {
-            if (node.nodeType === 1) {
-              const tag = node.tagName.toLowerCase();
-              if (tag === "ytd-rich-grid-row" || tag === "ytd-rich-grid-renderer" || tag === "ytd-rich-item-renderer" || tag === "ytd-rich-section-renderer" || tag === "ytd-continuation-item-renderer") {
-                hasRelevantChanges = true;
-                break;
-              }
-              if (node.querySelector && node.querySelector("ytd-rich-grid-row, ytd-rich-item-renderer, ytd-rich-section-renderer")) {
-                hasRelevantChanges = true;
-                break;
-              }
+          if (currentConfig.hidePlayables && sec.querySelector('[is-mini-game-card-shelf], a[href*="playables"]')) {
+            sec.classList.add("ytc-shelf-playables");
+            return;
+          }
+          if (currentConfig.cleanSearch && sec.querySelector("ytd-ad-slot-renderer")) {
+            sec.classList.add("ytc-shelf-ad");
+            return;
+          }
+          if (currentConfig.hideMembersOnly) {
+            if (sec.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], a[href*="/membership"], a[href*="/memberships"]')) {
+              sec.classList.add("ytc-shelf-members");
+              return;
+            }
+            const text = sec.textContent || "";
+            if (text.includes("lợi ích từ hội viên") || text.includes("Ưu tiên hội viên") || text.includes("ưu tiên hội viên") || text.includes("hội viên") && text.includes("YouTube chọn lọc") || text.includes("Get more from memberships") || text.includes("Members only") || text.includes("Members first")) {
+              sec.classList.add("ytc-shelf-members");
+              return;
             }
           }
-          if (hasRelevantChanges) break;
-        }
-        if (hasRelevantChanges) {
-          scheduleFeedScan(container);
-        }
-      }).observe(container, { childList: true, subtree: true });
-    };
-    const target = document.getElementById("page-manager") || document.querySelector("ytd-page-manager") || document.body;
-    if (target) attach(target);
-    else whenElement("#page-manager", attach);
+          if (currentConfig.hideExploreTopics) {
+            if (sec.querySelector("#chips, yt-chip-cloud-chip-renderer, yt-chip-cloud-renderer, ytd-feed-filter-chip-bar-renderer")) {
+              sec.classList.add("ytc-shelf-explore");
+              return;
+            }
+            const text = sec.textContent || "";
+            if (text.includes("Khám phá các chủ đề") || text.includes("Explore other topics") || text.includes("Explore topics")) {
+              sec.classList.add("ytc-shelf-explore");
+              return;
+            }
+          }
+          if (currentConfig.hideCommunity) {
+            if (sec.querySelector("ytd-post-renderer, ytd-backstage-post-renderer, ytd-backstage-post-thread-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer")) {
+              sec.classList.add("ytc-shelf-community");
+              return;
+            }
+          }
+          if (currentConfig.hideMixes) {
+            const titleEl = sec.querySelector("#title, #title-container, yt-formatted-string#title");
+            const titleText = (titleEl ? titleEl.textContent : "") || "";
+            if (titleText.includes("Danh sách kết hợp") || titleText.includes("Mixes") || titleText.includes("YouTube tạo danh sách phát này")) {
+              sec.classList.add("ytc-shelf-mix");
+            }
+          }
+        });
+      }
+      if (currentConfig.hideMembersOnly) {
+        const videoCards = root.querySelectorAll(
+          "ytd-rich-item-renderer:not([data-ytc-mem-scanned]), ytd-video-renderer:not([data-ytc-mem-scanned]), ytd-compact-video-renderer:not([data-ytc-mem-scanned]), yt-lockup-view-model:not([data-ytc-mem-scanned])"
+        );
+        videoCards.forEach((card) => {
+          card.setAttribute("data-ytc-mem-scanned", "1");
+          if (card.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], [aria-label*="hội viên" i], [aria-label*="Members" i]')) {
+            card.classList.add("ytc-item-members");
+          } else {
+            const badgeArea = card.querySelector("#badges, ytd-badge-supported-renderer, #metadata-line, yt-badge-view-model");
+            const text = badgeArea ? badgeArea.textContent || "" : "";
+            if (text.includes("Ưu tiên hội viên") || text.includes("ưu tiên hội viên") || text.includes("Chỉ dành cho hội viên") || text.includes("chỉ dành cho hội viên") || text.includes("Members first") || text.includes("Members only") || text.includes("Members-only") || text.includes("Early access")) {
+              card.classList.add("ytc-item-members");
+            }
+          }
+        });
+      }
+      if (currentConfig.hideMixes) {
+        const mixCards = root.querySelectorAll(
+          "ytd-rich-item-renderer:not([data-ytc-mix-scanned]), ytd-video-renderer:not([data-ytc-mix-scanned]), ytd-compact-video-renderer:not([data-ytc-mix-scanned]), yt-lockup-view-model:not([data-ytc-mix-scanned]), ytd-radio-renderer:not([data-ytc-mix-scanned]), ytd-compact-radio-renderer:not([data-ytc-mix-scanned]), ytd-grid-radio-renderer:not([data-ytc-mix-scanned]), ytd-playlist-renderer:not([data-ytc-mix-scanned]), ytd-compact-playlist-renderer:not([data-ytc-mix-scanned])"
+        );
+        mixCards.forEach((card) => {
+          card.setAttribute("data-ytc-mix-scanned", "1");
+          const tag = card.tagName.toLowerCase();
+          if (tag === "ytd-radio-renderer" || tag === "ytd-compact-radio-renderer" || tag === "ytd-grid-radio-renderer" || tag === "ytd-playlist-renderer" || tag === "ytd-compact-playlist-renderer") {
+            card.classList.add("ytc-item-mix");
+            return;
+          }
+          if (card.querySelector('ytd-radio-renderer, ytd-compact-radio-renderer, ytd-playlist-renderer, ytd-compact-playlist-renderer, ytd-playlist-thumbnail, ytd-playlist-custom-thumbnail-renderer, a[href*="/playlist?list="], a[href*="list=RD"], a[href*="list=PL"], a[href*="list=OLAK5uy_"], a[href*="list=CL"]')) {
+            card.classList.add("ytc-item-mix");
+            return;
+          }
+          const hasVideoDuration = !!card.querySelector("ytd-thumbnail-overlay-time-status-renderer, span.ytd-thumbnail-overlay-time-status-renderer");
+          if (!hasVideoDuration) {
+            const titleOrBadge = card.querySelector("#video-title, #title, #metadata") || card;
+            const text = titleOrBadge.textContent || "";
+            if (text.includes("Danh sách kết hợp") || text.includes("YouTube tạo danh sách phát này") || text.includes("Xem toàn bộ danh sách phát") || text.includes("Xem toàn bộ khoá học") || text.includes("Xem toàn bộ khóa học")) {
+              card.classList.add("ytc-item-mix");
+            }
+          }
+        });
+        root.querySelectorAll("ytd-shelf-renderer:not([data-ytc-mix-shelf])").forEach((shelf) => {
+          shelf.setAttribute("data-ytc-mix-shelf", "1");
+          const titleEl = shelf.querySelector("#title, #title-container");
+          const titleText = (titleEl ? titleEl.textContent : "") || "";
+          if (titleText.includes("Danh sách kết hợp") || titleText.includes("Mixes")) {
+            shelf.classList.add("ytc-shelf-mix");
+          }
+        });
+        root.querySelectorAll("yt-chip-cloud-chip-renderer:not([data-ytc-mix-chip])").forEach((chip) => {
+          chip.setAttribute("data-ytc-mix-chip", "1");
+          const text = chip.textContent || "";
+          if (text.includes("Danh sách kết hợp") || text.includes("Mixes")) {
+            chip.classList.add("ytc-chip-mix");
+          }
+        });
+      }
+      if (currentConfig.cleanSearch) {
+        root.querySelectorAll("ytd-rich-item-renderer:not([data-ytc-ad-scanned]), ytd-video-renderer:not([data-ytc-ad-scanned])").forEach((card) => {
+          card.setAttribute("data-ytc-ad-scanned", "1");
+          if (card.querySelector("ytd-ad-slot-renderer, .badge-style-type-ad")) {
+            card.classList.add("ytc-item-ad");
+          }
+        });
+      }
+      if (currentConfig.hideCommunity) {
+        root.querySelectorAll("ytd-rich-item-renderer:not([data-ytc-com-scanned])").forEach((card) => {
+          card.setAttribute("data-ytc-com-scanned", "1");
+          if (card.querySelector("ytd-post-renderer, ytd-backstage-post-renderer")) {
+            card.classList.add("ytc-item-community");
+          }
+        });
+      }
+    }
   }
-  var scheduleFeedScan;
+  function attachFeedObserver(container) {
+    if (!container) return;
+    if (feedObserver && feedObserverTarget === container) {
+      scheduleFeedScan(container);
+      return;
+    }
+    if (feedObserver) {
+      feedObserver.disconnect();
+      feedObserver = null;
+      feedObserverTarget = null;
+    }
+    scheduleFeedScan(container);
+    feedObserverTarget = container;
+    feedObserver = new MutationObserver((mutations) => {
+      if (!needsFeedObserver()) {
+        syncFeedObserver();
+        return;
+      }
+      let hasRelevantChanges = false;
+      for (const mutation of mutations) {
+        if (!mutation.addedNodes.length) continue;
+        if (mutation.target.closest && mutation.target.closest(IGNORED_FEED_ZONE)) {
+          continue;
+        }
+        for (const node of mutation.addedNodes) {
+          if (node.nodeType === 1) {
+            const tag = node.tagName ? node.tagName.toUpperCase() : "";
+            if (RELEVANT_FEED_TAGS.has(tag)) {
+              hasRelevantChanges = true;
+              break;
+            }
+            if (node.firstElementChild && node.querySelector && node.querySelector("ytd-rich-grid-row, ytd-rich-item-renderer, ytd-rich-section-renderer, ytd-compact-video-renderer, yt-lockup-view-model")) {
+              hasRelevantChanges = true;
+              break;
+            }
+          }
+        }
+        if (hasRelevantChanges) break;
+      }
+      if (hasRelevantChanges) {
+        scheduleFeedScan(container);
+      }
+    });
+    feedObserver.observe(container, { childList: true, subtree: true });
+  }
+  function syncFeedObserver() {
+    if (!needsFeedObserver()) {
+      if (feedObserver) {
+        feedObserver.disconnect();
+        feedObserver = null;
+        feedObserverTarget = null;
+      }
+      return;
+    }
+    if (isWatchRoute()) {
+      const secondary = document.getElementById("secondary") || document.querySelector("ytd-watch-next-secondary-results-renderer, #related");
+      if (secondary) attachFeedObserver(secondary);
+      else whenElement("#secondary", () => {
+        if (needsFeedObserver() && isWatchRoute()) {
+          attachFeedObserver(document.getElementById("secondary"));
+        }
+      });
+      return;
+    }
+    const target = document.getElementById("page-manager") || document.querySelector("ytd-page-manager") || document.body;
+    if (target) attachFeedObserver(target);
+    else whenElement("#page-manager", (el) => {
+      if (needsFeedObserver() && !isWatchRoute()) attachFeedObserver(el);
+    });
+  }
+  function setupFeedShelvesObserver() {
+    syncFeedObserver();
+  }
+  var feedObserver, feedObserverTarget, scheduleFeedScan, RELEVANT_FEED_TAGS, IGNORED_FEED_ZONE;
   var init_feedFilter = __esm({
     "src/features/feedFilter.js"() {
       init_utils();
       init_config();
       init_grid();
+      feedObserver = null;
+      feedObserverTarget = null;
       scheduleFeedScan = rafThrottle((root) => {
         scanAndTagFeedContent(root);
         applyHomeGridColumns();
       });
+      RELEVANT_FEED_TAGS = /* @__PURE__ */ new Set([
+        "YTD-RICH-GRID-ROW",
+        "YTD-RICH-GRID-RENDERER",
+        "YTD-RICH-ITEM-RENDERER",
+        "YTD-RICH-SECTION-RENDERER",
+        "YTD-CONTINUATION-ITEM-RENDERER",
+        "YTD-VIDEO-RENDERER",
+        "YTD-COMPACT-VIDEO-RENDERER",
+        "YT-LOCKUP-VIEW-MODEL",
+        "YTD-SHELF-RENDERER",
+        "YTD-PLAYLIST-PANEL-RENDERER"
+      ]);
+      IGNORED_FEED_ZONE = "#preview, ytd-video-preview, #inline-preview-player, #movie_player, .html5-video-player, #ytc-streamer-box, #ytc-danmaku-container, ytd-moving-thumbnail-renderer, #comments, ytd-comments, #below, ytd-watch-metadata, #panels, ytd-engagement-panel-section-list-renderer, ytd-browse[hidden]";
     }
   });
 
@@ -1132,9 +1297,26 @@
       if (ambientSpreadCtx) {
         ambientSpreadCtx.imageSmoothingEnabled = true;
         ambientSpreadCtx.imageSmoothingQuality = "medium";
+        ambientFadeGrad = ambientSpreadCtx.createLinearGradient(0, Math.round(CANVAS_HEIGHT2 * 0.56), 0, CANVAS_HEIGHT2);
+        ambientFadeGrad.addColorStop(0, "rgba(0, 0, 0, 1)");
+        ambientFadeGrad.addColorStop(0.55, "rgba(0, 0, 0, 0.45)");
+        ambientFadeGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+      }
+      if (!ambientSampleCanvas) {
+        ambientSampleCanvas = document.createElement("canvas");
+        ambientSampleCanvas.width = SAMPLE_WIDTH;
+        ambientSampleCanvas.height = SAMPLE_HEIGHT;
+        ambientSampleCtx = ambientSampleCanvas.getContext("2d", {
+          alpha: true,
+          willReadFrequently: false
+        });
+        if (ambientSampleCtx) {
+          ambientSampleCtx.imageSmoothingEnabled = true;
+          ambientSampleCtx.imageSmoothingQuality = "low";
+        }
       }
     }
-    return !!ambientSpreadCtx;
+    return !!(ambientSpreadCtx && ambientSampleCtx);
   }
   function drawFrame2(video) {
     if (!isAmbientEnabled()) {
@@ -1145,7 +1327,7 @@
     if (!ensureAmbientCanvas()) return;
     if (!ambientSpreadCtx) return;
     const activePlayer2 = findActivePlayer();
-    if (!activePlayer2) return;
+    if (!activePlayer2 || activePlayer2.classList.contains("ytp-scrubbing")) return;
     try {
       const vW = video.videoWidth;
       const vH = video.videoHeight;
@@ -1169,7 +1351,7 @@
       const pH = playerRect.height;
       if (pW < 10 || pH < 10) return;
       const wrapW = wrapperRect.width || window.innerWidth || 1920;
-      const wrapH = wrapperRect.height || 2200;
+      const wrapH = wrapperRect.height || 1150;
       const boxW = videoRect.width || pW;
       const boxH = videoRect.height || pH;
       if (boxW < 10 || boxH < 10) return;
@@ -1211,8 +1393,8 @@
         cachedVideoRect = videoRect;
       }
       const mediaRect = cachedVideoRect;
-      const scaleX = CANVAS_WIDTH2 / wrapW;
-      const scaleY = CANVAS_HEIGHT2 / wrapH;
+      const scaleX = SAMPLE_WIDTH / wrapW;
+      const scaleY = SAMPLE_HEIGHT / wrapH;
       const cvX = Math.round((mediaRect.left - wrapperRect.left) * scaleX);
       const cvY = Math.round((mediaRect.top - wrapperRect.top) * scaleY);
       const cvW = Math.round(mediaRect.width * scaleX);
@@ -1221,13 +1403,13 @@
       const sY = Math.round(sourceY);
       const sW = Math.max(1, Math.round(sourceW));
       const sH = Math.max(1, Math.round(sourceH));
-      const stripW = Math.max(4, Math.round(sW * 0.016));
-      const stripH = Math.max(4, Math.round(sH * 0.02));
-      ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH2, CANVAS_HEIGHT2);
-      const bleedX = Math.round(cvW * 0.035);
-      const bleedY = Math.round(cvH * 0.035);
-      ambientSpreadCtx.globalAlpha = 0.85;
-      ambientSpreadCtx.drawImage(
+      const stripW = Math.max(4, Math.round(sW * 0.02));
+      const stripH = Math.max(4, Math.round(sH * 0.025));
+      ambientSampleCtx.clearRect(0, 0, SAMPLE_WIDTH, SAMPLE_HEIGHT);
+      const bleedX = Math.round(cvW * 0.04);
+      const bleedY = Math.round(cvH * 0.04);
+      ambientSampleCtx.globalAlpha = 0.88;
+      ambientSampleCtx.drawImage(
         video,
         sX,
         sY,
@@ -1238,75 +1420,44 @@
         cvW + bleedX * 2,
         cvH + bleedY * 2
       );
-      ambientSpreadCtx.globalAlpha = 1;
-      const rightW = Math.max(0, CANVAS_WIDTH2 - (cvX + cvW));
+      ambientSampleCtx.globalAlpha = 1;
+      const rightW = Math.max(0, SAMPLE_WIDTH - (cvX + cvW));
       const bottomY = cvY + cvH;
-      const bottomH = Math.max(0, CANVAS_HEIGHT2 - bottomY);
+      const bottomH = Math.max(0, SAMPLE_HEIGHT - bottomY);
       if (rightW > 0 && cvH > 0) {
         const srcX = sX + sW - stripW;
-        ambientSpreadCtx.drawImage(
-          video,
-          srcX,
-          sY,
-          stripW,
-          sH,
-          cvX + cvW - 1,
-          cvY,
-          rightW + 1,
-          cvH
-        );
+        ambientSampleCtx.drawImage(video, srcX, sY, stripW, sH, cvX + cvW - 1, cvY, rightW + 1, cvH);
       }
       if (cvX > 0 && cvH > 0) {
-        ambientSpreadCtx.drawImage(
-          video,
-          sX,
-          sY,
-          stripW,
-          sH,
-          0,
-          cvY,
-          cvX + 1,
-          cvH
-        );
+        ambientSampleCtx.drawImage(video, sX, sY, stripW, sH, 0, cvY, cvX + 1, cvH);
       }
       if (cvY > 0 && cvW > 0) {
-        ambientSpreadCtx.drawImage(
-          video,
-          sX,
-          sY,
-          sW,
-          stripH,
-          cvX,
-          0,
-          cvW,
-          cvY + 1
-        );
+        ambientSampleCtx.drawImage(video, sX, sY, sW, stripH, cvX, 0, cvW, cvY + 1);
       }
       if (bottomH > 0 && cvW > 0) {
         const srcY = sY + sH - stripH;
-        ambientSpreadCtx.drawImage(
-          video,
-          sX,
-          srcY,
-          sW,
-          stripH,
-          cvX,
-          bottomY - 1,
-          cvW,
-          bottomH + 1
-        );
+        ambientSampleCtx.drawImage(video, sX, srcY, sW, stripH, cvX, bottomY - 1, cvW, bottomH + 1);
       }
       if (cvX > 0 && cvY > 0) {
-        ambientSpreadCtx.drawImage(video, sX, sY, stripW, stripH, 0, 0, cvX + 1, cvY + 1);
+        ambientSampleCtx.drawImage(video, sX, sY, stripW, stripH, 0, 0, cvX + 1, cvY + 1);
       }
       if (rightW > 0 && cvY > 0) {
-        ambientSpreadCtx.drawImage(video, sX + sW - stripW, sY, stripW, stripH, cvX + cvW - 1, 0, rightW + 1, cvY + 1);
+        ambientSampleCtx.drawImage(video, sX + sW - stripW, sY, stripW, stripH, cvX + cvW - 1, 0, rightW + 1, cvY + 1);
       }
       if (cvX > 0 && bottomH > 0) {
-        ambientSpreadCtx.drawImage(video, sX, sY + sH - stripH, stripW, stripH, 0, bottomY - 1, cvX + 1, bottomH + 1);
+        ambientSampleCtx.drawImage(video, sX, sY + sH - stripH, stripW, stripH, 0, bottomY - 1, cvX + 1, bottomH + 1);
       }
       if (rightW > 0 && bottomH > 0) {
-        ambientSpreadCtx.drawImage(video, sX + sW - stripW, sY + sH - stripH, stripW, stripH, cvX + cvW - 1, bottomY - 1, rightW + 1, bottomH + 1);
+        ambientSampleCtx.drawImage(video, sX + sW - stripW, sY + sH - stripH, stripW, stripH, cvX + cvW - 1, bottomY - 1, rightW + 1, bottomH + 1);
+      }
+      ambientSpreadCtx.globalCompositeOperation = "source-over";
+      ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH2, CANVAS_HEIGHT2);
+      ambientSpreadCtx.drawImage(ambientSampleCanvas, 0, 0, SAMPLE_WIDTH, SAMPLE_HEIGHT, 0, 0, CANVAS_WIDTH2, CANVAS_HEIGHT2);
+      if (ambientFadeGrad) {
+        ambientSpreadCtx.globalCompositeOperation = "destination-in";
+        ambientSpreadCtx.fillStyle = ambientFadeGrad;
+        ambientSpreadCtx.fillRect(0, 0, CANVAS_WIDTH2, CANVAS_HEIGHT2);
+        ambientSpreadCtx.globalCompositeOperation = "source-over";
       }
       if (isAmbientEnabled()) {
         if (!hasDrawnFirstFrame) {
@@ -1332,7 +1483,7 @@
     if (video !== currentVideo) {
       attachVideo(video);
     }
-    if (video.seeking) return;
+    if (video.seeking || document.getElementById("movie_player")?.classList.contains("ytp-scrubbing")) return;
     if (video.paused || video.ended) {
       if (!isPausedAndDrawn && video.readyState >= 2 && video.videoWidth > 0) {
         drawFrame2(video);
@@ -1406,12 +1557,18 @@
   }
   function handleScroll() {
     if (!isAmbientEnabled()) {
-      document.documentElement.classList.remove("ytc-masthead-scrolled");
+      if (lastMastheadScrolled) {
+        lastMastheadScrolled = false;
+        document.documentElement.classList.remove("ytc-masthead-scrolled");
+      }
       return;
     }
     const scrollY = window.scrollY || window.pageYOffset || 0;
     const isScrolled = scrollY > 60;
-    document.documentElement.classList.toggle("ytc-masthead-scrolled", isScrolled);
+    if (isScrolled !== lastMastheadScrolled) {
+      lastMastheadScrolled = isScrolled;
+      document.documentElement.classList.toggle("ytc-masthead-scrolled", isScrolled);
+    }
   }
   function handleNavigation() {
     if (!isAmbientEnabled()) {
@@ -1487,6 +1644,7 @@
       syncAmbientObserver(false);
       hasDrawnFirstFrame = false;
       isPausedAndDrawn = false;
+      lastMastheadScrolled = null;
       document.documentElement.classList.remove("ytc-ambient-lighting");
       document.documentElement.classList.remove("ytc-ambient-ready");
       document.documentElement.classList.remove("ytc-masthead-scrolled");
@@ -1563,22 +1721,28 @@
     window.addEventListener("popstate", handleNavigation);
     applyAmbientLightingState();
   }
-  var ambientWrapper, ambientSpreadCanvas, ambientSpreadCtx, animFrameId, isRunning, lastDrawTime, currentVideo, hasDrawnFirstFrame, isPausedAndDrawn, CANVAS_WIDTH2, CANVAS_HEIGHT2, TARGET_INTERVAL, cachedPlayerRect, cachedWrapperRect, cachedVideoRect, cachedObjectFit, cachedObjectPosition, lastRectUpdateTime, lastVideoDimensions, ambientObserver, ambientInitialized;
+  var ambientWrapper, ambientSpreadCanvas, ambientSpreadCtx, ambientSampleCanvas, ambientSampleCtx, ambientFadeGrad, animFrameId, isRunning, lastDrawTime, currentVideo, hasDrawnFirstFrame, isPausedAndDrawn, lastMastheadScrolled, CANVAS_WIDTH2, CANVAS_HEIGHT2, SAMPLE_WIDTH, SAMPLE_HEIGHT, TARGET_INTERVAL, cachedPlayerRect, cachedWrapperRect, cachedVideoRect, cachedObjectFit, cachedObjectPosition, lastRectUpdateTime, lastVideoDimensions, ambientObserver, ambientInitialized;
   var init_ambientLight = __esm({
     "src/player/ambientLight.js"() {
       init_config();
       ambientWrapper = null;
       ambientSpreadCanvas = null;
       ambientSpreadCtx = null;
+      ambientSampleCanvas = null;
+      ambientSampleCtx = null;
+      ambientFadeGrad = null;
       animFrameId = null;
       isRunning = false;
       lastDrawTime = 0;
       currentVideo = null;
       hasDrawnFirstFrame = false;
       isPausedAndDrawn = false;
-      CANVAS_WIDTH2 = 320;
-      CANVAS_HEIGHT2 = 400;
-      TARGET_INTERVAL = 1e3 / 24;
+      lastMastheadScrolled = null;
+      CANVAS_WIDTH2 = 128;
+      CANVAS_HEIGHT2 = 160;
+      SAMPLE_WIDTH = 40;
+      SAMPLE_HEIGHT = 50;
+      TARGET_INTERVAL = 1e3 / 12;
       cachedPlayerRect = null;
       cachedWrapperRect = null;
       cachedVideoRect = null;
@@ -4076,7 +4240,7 @@
     performChatMemoryGc: () => performChatMemoryGc,
     stopChatMemoryGc: () => stopChatMemoryGc
   });
-  function isWatchRoute() {
+  function isWatchRoute2() {
     return location.pathname.startsWith("/watch") || location.pathname.startsWith("/live");
   }
   function cleanChatContainer(itemsContainer) {
@@ -4122,7 +4286,7 @@
     syncChatMemoryGcTimer();
   }
   function syncChatMemoryGcTimer() {
-    if (currentConfig.chatMemoryGc && isWatchRoute()) {
+    if (currentConfig.chatMemoryGc && isWatchRoute2()) {
       if (!gcInterval) gcInterval = setInterval(performChatMemoryGc, 1e4);
       return;
     }
@@ -5033,7 +5197,7 @@
       endContainer.insertBefore(btn, endContainer.firstElementChild);
     }
     const panel = createSettingsPanel();
-    syncPanelState(panel);
+    syncPanelState(panel, { force: true });
     bindGlobalMenuDismiss();
     setupOnboardingAndUpdates(btn);
     if (!btn._ytcBound) {
@@ -5046,7 +5210,7 @@
       btn.addEventListener("mouseenter", updatePosition, { passive: true });
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        syncPanelState(panel);
+        syncPanelState(panel, { force: true });
         updatePosition();
         const isOpen = panel.classList.toggle("open");
         if (isOpen) {
@@ -5062,7 +5226,11 @@
     const throttledEnsure = rafThrottle(ensureSettingsElements);
     const attach = (masthead2) => {
       throttledEnsure();
-      new MutationObserver(throttledEnsure).observe(masthead2, { childList: true, subtree: true });
+      new MutationObserver(() => {
+        const btn = document.getElementById("ytc-settings-btn");
+        if (btn && btn.isConnected) return;
+        throttledEnsure();
+      }).observe(masthead2, { childList: true, subtree: true });
     };
     const masthead = document.querySelector("ytd-masthead");
     if (masthead) attach(masthead);
@@ -5071,7 +5239,7 @@
     const retryInterval = setInterval(() => {
       retryCount++;
       ensureSettingsElements();
-      if (retryCount >= 6 && document.getElementById("ytc-settings-btn")) {
+      if (retryCount >= 6 && document.getElementById("ytc-settings-btn") || retryCount >= 12) {
         clearInterval(retryInterval);
       }
     }, 500);
@@ -5095,9 +5263,10 @@
   __export(sync_exports, {
     syncPanelState: () => syncPanelState
   });
-  function syncPanelState(targetPanel) {
+  function syncPanelState(targetPanel, options = {}) {
     const panel = targetPanel || document.getElementById("ytc-settings-panel");
     if (!panel) return;
+    if (!options.force && !panel.classList.contains("open")) return;
     updatePanelLanguage(panel);
     const hasChat = hasLiveOrChatSupport();
     const chatRow = panel.querySelector("#ytc-row-chatoverlay");
@@ -5857,8 +6026,31 @@
   }
   function restoreNativeLiveChatIfSaved() {
   }
+  function syncChatKeepAliveInterval() {
+    const mode = currentConfig.chatOverlay || "off";
+    if (mode === "off") {
+      if (chatKeepAliveTimer !== null) {
+        clearInterval(chatKeepAliveTimer);
+        chatKeepAliveTimer = null;
+      }
+      return;
+    }
+    if (chatKeepAliveTimer === null) {
+      chatKeepAliveTimer = setInterval(() => {
+        if (!currentConfig.chatOverlay || currentConfig.chatOverlay === "off") {
+          syncChatKeepAliveInterval();
+          return;
+        }
+        if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
+        findAndObserveItems();
+        ensureNativeLiveChatRunning();
+        ensureBackgroundLiveChat();
+      }, 2e3);
+    }
+  }
   function updateChatOverlayVisibility() {
     const mode = currentConfig.chatOverlay || "off";
+    syncChatKeepAliveInterval();
     if (mode === "off") replayNativeOpenRequestedVideoId = null;
     syncReplayNativeChatPresentation();
     if (mode !== "streamer") {
@@ -6361,14 +6553,7 @@
       setTimeout(autoCollapseNativeChatIfOpen, 1500);
     }
     setupTheaterModeObserver();
-    setInterval(() => {
-      if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
-      if (currentConfig.chatOverlay && currentConfig.chatOverlay !== "off") {
-        findAndObserveItems();
-        ensureNativeLiveChatRunning();
-        ensureBackgroundLiveChat();
-      }
-    }, 2e3);
+    syncChatKeepAliveInterval();
     if (location.pathname.startsWith("/watch") || location.pathname.startsWith("/live")) {
       whenElement("#movie_player:not(#inline-preview-player)", () => {
         observePlayerChatState();
@@ -6387,7 +6572,7 @@
       });
     }
   }
-  var userManuallyOpenedChat, hasAutoCollapsedChatForCurrentVideo, chatAutoCloseObserver, chatAutoCloseTimeout, replayNativeOpenRequestedVideoId, chatToggleListenersBound, ensureNativeLiveChatRunning, theaterObserver, bgChatIframe, currentBgVideoId, bgChatIframeStartedAt, bgChatIframeAttempts, bgChatIframeReady, BACKGROUND_CHAT_RETRY_MS, MAX_BACKGROUND_CHAT_ATTEMPTS, UNICODE_EMOJI_REGEX2;
+  var userManuallyOpenedChat, hasAutoCollapsedChatForCurrentVideo, chatAutoCloseObserver, chatAutoCloseTimeout, replayNativeOpenRequestedVideoId, chatToggleListenersBound, ensureNativeLiveChatRunning, theaterObserver, bgChatIframe, currentBgVideoId, bgChatIframeStartedAt, bgChatIframeAttempts, bgChatIframeReady, BACKGROUND_CHAT_RETRY_MS, MAX_BACKGROUND_CHAT_ATTEMPTS, chatKeepAliveTimer, UNICODE_EMOJI_REGEX2;
   var init_chatObserver = __esm({
     "src/chat/chatObserver.js"() {
       init_config();
@@ -6435,6 +6620,7 @@
       bgChatIframeReady = false;
       BACKGROUND_CHAT_RETRY_MS = 1e4;
       MAX_BACKGROUND_CHAT_ATTEMPTS = 3;
+      chatKeepAliveTimer = null;
       UNICODE_EMOJI_REGEX2 = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{200D}\u{FE0F}]/gu;
     }
   });
@@ -6519,166 +6705,100 @@
 
 /* --------------------------------------------------------------------------
    1. LƯỚI VIDEO TRANG CHỦ & FEED: ÉP 3/4/5 CỘT CHUẨN XÁC
-   (Độ ưu tiên cao nhất, cố định vĩnh viễn khi F5 tải lại trang)
+   (Chỉ kích hoạt trên trang Feed / Kênh để không ảnh hưởng trang xem video)
    -------------------------------------------------------------------------- */
 @media (min-width: 900px) {
-    ytd-browse[page-subtype="home"] ytd-rich-grid-renderer,
-    ytd-browse[page-subtype="subscriptions"] ytd-rich-grid-renderer,
-    ytd-browse[page-subtype="channels"] ytd-rich-grid-renderer,
-    #page-manager ytd-browse ytd-rich-grid-renderer,
-    ytd-rich-grid-renderer.ytc-grid,
-    ytd-rich-grid-renderer {
+    html.ytc-feed-page[data-ytc-cols="3"] ytd-browse:not([hidden]) ytd-rich-grid-renderer {
         --ytd-rich-grid-items-per-row: 3 !important;
         --ytd-rich-grid-posts-per-row: 3 !important;
         --ytd-rich-grid-item-max-width: none !important;
     }
 
-    html[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,
-    html[data-ytc-cols="3"] ytd-rich-grid-renderer,
-    body[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,
-    body[data-ytc-cols="3"] ytd-rich-grid-renderer,
-    [data-ytc-cols="3"] #page-manager ytd-browse ytd-rich-grid-renderer,
-    [data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,
-    [data-ytc-cols="3"] ytd-browse ytd-rich-grid-renderer,
-    [data-ytc-cols="3"] ytd-rich-grid-renderer {
-        --ytd-rich-grid-items-per-row: 3 !important;
-        --ytd-rich-grid-posts-per-row: 3 !important;
-        --ytd-rich-grid-item-max-width: none !important;
-    }
-
-    html[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,
-    html[data-ytc-cols="4"] ytd-rich-grid-renderer,
-    body[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,
-    body[data-ytc-cols="4"] ytd-rich-grid-renderer,
-    [data-ytc-cols="4"] #page-manager ytd-browse ytd-rich-grid-renderer,
-    [data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,
-    [data-ytc-cols="4"] ytd-browse ytd-rich-grid-renderer,
-    [data-ytc-cols="4"] ytd-rich-grid-renderer {
+    html.ytc-feed-page[data-ytc-cols="4"] ytd-browse:not([hidden]) ytd-rich-grid-renderer {
         --ytd-rich-grid-items-per-row: 4 !important;
         --ytd-rich-grid-posts-per-row: 4 !important;
         --ytd-rich-grid-item-max-width: none !important;
     }
 
-    html[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,
-    html[data-ytc-cols="5"] ytd-rich-grid-renderer,
-    body[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,
-    body[data-ytc-cols="5"] ytd-rich-grid-renderer,
-    [data-ytc-cols="5"] #page-manager ytd-browse ytd-rich-grid-renderer,
-    [data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,
-    [data-ytc-cols="5"] ytd-browse ytd-rich-grid-renderer,
-    [data-ytc-cols="5"] ytd-rich-grid-renderer {
+    html.ytc-feed-page[data-ytc-cols="5"] ytd-browse:not([hidden]) ytd-rich-grid-renderer {
         --ytd-rich-grid-items-per-row: 5 !important;
         --ytd-rich-grid-posts-per-row: 5 !important;
         --ytd-rich-grid-item-max-width: none !important;
     }
 
-    /* Làm phẳng cấu trúc dòng ytd-rich-grid-row — dùng flex-wrap thay display:contents để GIỮ NGUYÊN hitbox hover */
-    #contents > ytd-rich-grid-row {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        width: 100% !important;
-    }
-    #contents > ytd-rich-grid-row > #contents {
+    /* Làm phẳng cấu trúc dòng ytd-rich-grid-row — chỉ áp dụng trên trang Feed */
+    html.ytc-feed-page ytd-browse:not([hidden]) #contents > ytd-rich-grid-row,
+    html.ytc-feed-page ytd-browse:not([hidden]) #contents > ytd-rich-grid-row > #contents {
         display: flex !important;
         flex-wrap: wrap !important;
         width: 100% !important;
     }
 
-    #contents.ytd-rich-grid-row ytd-rich-item-renderer,
-    ytd-rich-grid-renderer ytd-rich-item-renderer {
-        width: calc(100% / var(--ytd-rich-grid-items-per-row, 3) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
-        max-width: calc(100% / var(--ytd-rich-grid-items-per-row, 3) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
-    }
-
-    [data-ytc-cols="3"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,
-    [data-ytc-cols="3"] ytd-rich-grid-renderer ytd-rich-item-renderer {
+    html.ytc-feed-page[data-ytc-cols="3"] ytd-browse:not([hidden]) ytd-rich-grid-renderer ytd-rich-item-renderer {
         width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
         max-width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
     }
 
-    [data-ytc-cols="4"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,
-    [data-ytc-cols="4"] ytd-rich-grid-renderer ytd-rich-item-renderer {
+    html.ytc-feed-page[data-ytc-cols="4"] ytd-browse:not([hidden]) ytd-rich-grid-renderer ytd-rich-item-renderer {
         width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
         max-width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
     }
 
-    [data-ytc-cols="5"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,
-    [data-ytc-cols="5"] ytd-rich-grid-renderer ytd-rich-item-renderer {
+    html.ytc-feed-page[data-ytc-cols="5"] ytd-browse:not([hidden]) ytd-rich-grid-renderer ytd-rich-item-renderer {
         width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
         max-width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
     }
 }
 
 /* --------------------------------------------------------------------------
-   2. TỐI ƯU HIỆU NĂNG, KHUNG HÌNH & LIVE CHAT (ZERO-LAG)
+   2. KHUNG XEM TRƯỚC INLINE TRÊN FEED (CHỈ ÁP DỤNG TRÊN FEED ĐANG MỞ)
    -------------------------------------------------------------------------- */
-/* Đảm bảo khung xem trước video inline khi hover không bao giờ bị cắt xén hay che khuất */
-#page-manager ytd-rich-grid-row {
+html.ytc-feed-page ytd-browse:not([hidden]) ytd-rich-grid-row {
     overflow: visible !important;
 }
 
-/* Dùng :hover đơn giản, KHÔNG dùng :has() để tránh style recalc storm mỗi khi di chuột */
-#page-manager ytd-rich-grid-row:hover {
+html.ytc-feed-page ytd-browse:not([hidden]) ytd-rich-grid-row:hover {
     z-index: 10 !important;
     position: relative !important;
     overflow: visible !important;
 }
 
-#page-manager ytd-rich-item-renderer {
+html.ytc-feed-page ytd-browse:not([hidden]) ytd-rich-item-renderer {
     overflow: visible !important;
 }
 
-#page-manager ytd-rich-item-renderer:hover,
-#page-manager ytd-rich-item-renderer[is-hovered],
-#page-manager ytd-rich-item-renderer[has-preview] {
+html.ytc-feed-page ytd-browse:not([hidden]) ytd-rich-item-renderer:hover,
+html.ytc-feed-page ytd-browse:not([hidden]) ytd-rich-item-renderer[is-hovered],
+html.ytc-feed-page ytd-browse:not([hidden]) ytd-rich-item-renderer[has-preview] {
     z-index: 20 !important;
     position: relative !important;
     overflow: visible !important;
 }
 
 /* z-index vừa đủ để preview nổi lên trên thẻ video khi hover, KHÔNG dùng pointer-events: auto toàn cục */
-#preview,
-#preview.ytd-rich-grid-renderer,
-ytd-rich-grid-renderer #preview,
-#page-manager #preview,
-ytd-video-preview,
-#video-preview {
+html.ytc-feed-page #preview,
+html.ytc-feed-page ytd-rich-grid-renderer #preview,
+html.ytc-feed-page ytd-video-preview,
+html.ytc-feed-page #video-preview {
     z-index: 60 !important;
     overflow: visible !important;
 }
-ytd-video-preview #media-container,
-ytd-video-preview #player-container,
-ytd-moving-thumbnail-renderer,
-#inline-preview-player {
+html.ytc-feed-page ytd-video-preview #media-container,
+html.ytc-feed-page ytd-video-preview #player-container,
+html.ytc-feed-page ytd-moving-thumbnail-renderer,
+html.ytc-feed-page #inline-preview-player {
     z-index: 60 !important;
-}
-
-ytd-comment-thread-renderer {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 200px;
-}
-
-/* Giữ thanh điều khiển và chat hiển thị mượt mà không can thiệp layout */
-iframe#chatframe {
-    contain: paint !important;
-}
-
-yt-live-chat-text-message-renderer,
-yt-live-chat-paid-message-renderer,
-yt-live-chat-membership-item-renderer {
-    content-visibility: auto !important;
-    contain-intrinsic-size: auto 32px !important;
 }
 
 /* --------------------------------------------------------------------------
    3. BỘ LỌC NỘI DUNG: SHORTS, CHƠI GAME, HỘI VIÊN, KHÁM PHÁ, CỘNG ĐỒNG, CLEAN SEARCH
+   (Dùng class đánh dấu trực tiếp, tránh style invalidation storm trên DOM lớn)
    -------------------------------------------------------------------------- */
-.ytc-hide-shorts ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),
-.ytc-hide-shorts ytd-rich-section-renderer:has(ytd-reel-shelf-renderer),
+.ytc-hide-shorts ytd-rich-section-renderer.ytc-shelf-shorts,
 .ytc-hide-shorts ytd-rich-shelf-renderer[is-shorts],
 .ytc-hide-shorts ytd-reel-shelf-renderer,
-.ytc-hide-shorts ytd-guide-entry-renderer:has(a[href^="/shorts"]),
-.ytc-hide-shorts ytd-mini-guide-entry-renderer:has(a[href^="/shorts"]),
+.ytc-hide-shorts ytd-guide-entry-renderer.ytc-guide-shorts,
+.ytc-hide-shorts ytd-mini-guide-entry-renderer.ytc-guide-shorts,
 .ytc-hide-shorts ytd-guide-entry-renderer a[title="Shorts"],
 .ytc-hide-shorts ytd-mini-guide-entry-renderer[aria-label="Shorts"],
 .ytc-hide-shorts #endpoint[title="Shorts"],
@@ -6687,13 +6807,10 @@ yt-live-chat-membership-item-renderer {
     display: none !important;
 }
 
-.ytc-hide-playables ytd-rich-section-renderer:has([is-mini-game-card-shelf]),
+.ytc-hide-playables ytd-rich-section-renderer.ytc-shelf-playables,
 .ytc-hide-playables ytd-rich-shelf-renderer[is-mini-game-card-shelf],
-.ytc-hide-playables ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-mini-game-card-shelf]),
-.ytc-hide-playables ytd-rich-section-renderer:has(a[href*="/playables"]),
-.ytc-hide-playables ytd-rich-section-renderer:has(a[href*="playables"]),
-.ytc-hide-playables ytd-guide-entry-renderer:has(a[href*="/playables"]),
-.ytc-hide-playables ytd-mini-guide-entry-renderer:has(a[href*="/playables"]),
+.ytc-hide-playables ytd-guide-entry-renderer.ytc-guide-playables,
+.ytc-hide-playables ytd-mini-guide-entry-renderer.ytc-guide-playables,
 .ytc-hide-playables ytd-guide-entry-renderer a[title*="Chơi game"],
 .ytc-hide-playables ytd-guide-entry-renderer a[title*="Playables"],
 .ytc-hide-playables ytd-mini-guide-entry-renderer[aria-label*="Chơi game"],
@@ -6703,40 +6820,11 @@ yt-live-chat-membership-item-renderer {
     display: none !important;
 }
 
-.ytc-hide-members ytd-rich-section-renderer:has(.badge-style-type-members-only),
-.ytc-hide-members ytd-rich-section-renderer:has(.badge-style-type-members-first),
-.ytc-hide-members ytd-rich-section-renderer:has([badge-style="MEMBERS_FIRST"]),
-.ytc-hide-members ytd-rich-section-renderer:has([badge-style="MEMBERS_ONLY"]),
-.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="hội viên"]),
-.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Hội viên"]),
-.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Members only"]),
-.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="members only"]),
-.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Members first"]),
-.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="members first"]),
-.ytc-hide-members ytd-rich-section-renderer:has(a[href*="/membership"]),
-.ytc-hide-members ytd-rich-section-renderer:has(a[href*="/memberships"]),
 .ytc-hide-members ytd-rich-section-renderer.ytc-shelf-members,
-.ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-only),
-.ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-first),
-.ytc-hide-members ytd-rich-item-renderer:has([badge-style="MEMBERS_FIRST"]),
-.ytc-hide-members ytd-rich-item-renderer:has([badge-style="MEMBERS_ONLY"]),
-.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="hội viên"]),
-.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Hội viên"]),
-.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Members only"]),
-.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Members first"]),
 .ytc-hide-members ytd-rich-item-renderer.ytc-item-members,
-.ytc-hide-members ytd-video-renderer:has(.badge-style-type-members-only),
-.ytc-hide-members ytd-video-renderer:has(.badge-style-type-members-first),
-.ytc-hide-members ytd-video-renderer:has([badge-style="MEMBERS_FIRST"]),
-.ytc-hide-members ytd-video-renderer:has([badge-style="MEMBERS_ONLY"]),
-.ytc-hide-members ytd-video-renderer:has([aria-label*="hội viên"]),
-.ytc-hide-members ytd-video-renderer:has([aria-label*="Hội viên"]),
 .ytc-hide-members ytd-video-renderer.ytc-item-members,
-.ytc-hide-members ytd-compact-video-renderer:has(.badge-style-type-members-only),
-.ytc-hide-members ytd-compact-video-renderer:has(.badge-style-type-members-first),
-.ytc-hide-members ytd-compact-video-renderer:has([badge-style="MEMBERS_FIRST"]),
-.ytc-hide-members ytd-compact-video-renderer:has([badge-style="MEMBERS_ONLY"]),
-.ytc-hide-members ytd-compact-video-renderer.ytc-item-members {
+.ytc-hide-members ytd-compact-video-renderer.ytc-item-members,
+.ytc-hide-members yt-lockup-view-model.ytc-item-members {
     display: none !important;
 }
 
@@ -6746,76 +6834,33 @@ yt-live-chat-membership-item-renderer {
 .ytc-hide-mixes ytd-radio-renderer,
 .ytc-hide-mixes ytd-compact-radio-renderer,
 .ytc-hide-mixes ytd-grid-radio-renderer,
-.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-playlist-renderer),
-.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-radio-renderer),
-.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-playlist-thumbnail),
-.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-playlist-custom-thumbnail-renderer),
-.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="/playlist?list="]),
-.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="list=PL"]),
-.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="list=OLAK5uy_"]),
-.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="list=CL"]),
-.ytc-hide-mixes ytd-video-renderer:has(ytd-playlist-thumbnail),
-.ytc-hide-mixes ytd-video-renderer:has(a[href*="/playlist?list="]),
-.ytc-hide-mixes ytd-video-renderer:has(a[href*="list=PL"]),
-.ytc-hide-mixes ytd-video-renderer:has(a[href*="list=OLAK5uy_"]),
-.ytc-hide-mixes ytd-video-renderer:has(a[href*="list=CL"]),
 .ytc-hide-mixes ytd-rich-item-renderer.ytc-item-mix,
 .ytc-hide-mixes ytd-video-renderer.ytc-item-mix,
 .ytc-hide-mixes ytd-compact-video-renderer.ytc-item-mix,
+.ytc-hide-mixes yt-lockup-view-model.ytc-item-mix,
 .ytc-hide-mixes #related ytd-compact-radio-renderer,
 .ytc-hide-mixes #related ytd-compact-playlist-renderer,
-.ytc-hide-mixes #playlist:has(a[href*="list=RD"]),
-.ytc-hide-mixes #playlist:has([title*="Danh sách kết hợp"]),
-.ytc-hide-mixes #playlist:has([title*="Mixes"]),
-.ytc-hide-mixes #playlist:has([title*="Mix -"]),
-.ytc-hide-mixes ytd-playlist-panel-renderer:has(a[href*="list=RD"]),
-.ytc-hide-mixes ytd-playlist-panel-renderer:has([title*="Danh sách kết hợp"]),
-.ytc-hide-mixes ytd-playlist-panel-renderer:has([title*="Mixes"]),
-.ytc-hide-mixes ytd-playlist-panel-renderer:has([title*="Mix -"]),
-/* Kệ Mix chuyên biệt (dựa theo tiêu đề rõ ràng, không ẩn oan toàn bộ kệ nhạc) */
-.ytc-hide-mixes ytd-rich-section-renderer:has(#title-container [title*="Danh sách kết hợp"]),
-.ytc-hide-mixes ytd-rich-section-renderer:has(#title-container [title*="Mixes"]),
-.ytc-hide-mixes ytd-rich-section-renderer:has(#title[title*="Danh sách kết hợp"]),
-.ytc-hide-mixes ytd-rich-section-renderer:has(#title[title*="Mixes"]),
-.ytc-hide-mixes ytd-shelf-renderer:has(#title-container [title*="Danh sách kết hợp"]),
-.ytc-hide-mixes ytd-shelf-renderer:has(#title-container [title*="Mixes"]),
-.ytc-hide-mixes ytd-shelf-renderer:has(#title[title*="Danh sách kết hợp"]),
-.ytc-hide-mixes ytd-shelf-renderer:has(#title[title*="Mixes"]),
+.ytc-hide-mixes #playlist.ytc-item-mix,
+.ytc-hide-mixes ytd-playlist-panel-renderer.ytc-item-mix,
 .ytc-hide-mixes ytd-rich-section-renderer.ytc-shelf-mix,
 .ytc-hide-mixes ytd-shelf-renderer.ytc-shelf-mix,
-/* Chip "Danh sách kết hợp" trên thanh chủ đề */
-.ytc-hide-mixes yt-chip-cloud-chip-renderer:has([title*="Danh sách kết hợp"]),
-.ytc-hide-mixes yt-chip-cloud-chip-renderer:has([title*="Mixes"]),
+.ytc-hide-mixes yt-chip-cloud-chip-renderer.ytc-chip-mix,
 .ytc-hide-mixes .ytc-item-mix {
     display: none !important;
 }
 
-.ytc-hide-explore ytd-rich-section-renderer:has(yt-chip-cloud-chip-renderer),
-.ytc-hide-explore ytd-rich-section-renderer:has(yt-chip-cloud-renderer),
-.ytc-hide-explore ytd-rich-section-renderer:has(ytd-feed-filter-chip-bar-renderer),
-.ytc-hide-explore ytd-rich-section-renderer:has(#chips),
-.ytc-hide-explore ytd-rich-section-renderer.ytc-shelf-explore,
-.ytc-hide-explore ytd-rich-section-renderer:has([title*="Khám phá các chủ đề"]),
-.ytc-hide-explore ytd-rich-section-renderer:has([title*="Explore other topics"]),
-.ytc-hide-explore ytd-rich-section-renderer:has([title*="Explore topics"]) {
+.ytc-hide-explore ytd-rich-section-renderer.ytc-shelf-explore {
     display: none !important;
 }
 
 .ytc-clean-search ytd-ad-slot-renderer,
-.ytc-clean-search ytd-rich-item-renderer:has(ytd-ad-slot-renderer),
-.ytc-clean-search ytd-rich-section-renderer:has(ytd-ad-slot-renderer),
-.ytc-clean-search ytd-video-renderer:has(.badge-style-type-ad) {
+.ytc-clean-search ytd-rich-item-renderer.ytc-item-ad,
+.ytc-clean-search ytd-rich-section-renderer.ytc-shelf-ad,
+.ytc-clean-search ytd-video-renderer.ytc-item-ad {
     display: none !important;
 }
 
-.ytc-hide-community ytd-rich-section-renderer:has(ytd-post-renderer),
-.ytc-hide-community ytd-rich-section-renderer:has(ytd-backstage-post-renderer),
-.ytc-hide-community ytd-rich-section-renderer:has(ytd-backstage-post-thread-renderer),
-.ytc-hide-community ytd-rich-section-renderer:has(ytd-post-multi-image-renderer),
-.ytc-hide-community ytd-rich-section-renderer:has(ytd-poll-renderer),
 .ytc-hide-community ytd-rich-section-renderer.ytc-shelf-community,
-.ytc-hide-community ytd-rich-item-renderer:has(ytd-post-renderer),
-.ytc-hide-community ytd-rich-item-renderer:has(ytd-backstage-post-renderer),
 .ytc-hide-community ytd-rich-item-renderer.ytc-item-community,
 .ytc-hide-community ytd-post-renderer,
 .ytc-hide-community ytd-backstage-post-renderer,
@@ -6905,9 +6950,9 @@ html.ytc-ambient-lighting .ytp-ambient-mode-rendering-container {
     align-items: center !important;
     box-sizing: content-box !important;
 }
-ytd-topbar-logo-renderer ytd-yoodle-renderer,
-ytd-yoodle-renderer ytd-logo,
-ytd-topbar-logo-renderer ytd-yoodle-renderer * {
+:root.ytc-premium-logo ytd-topbar-logo-renderer ytd-yoodle-renderer,
+:root.ytc-premium-logo ytd-yoodle-renderer ytd-logo,
+:root.ytc-premium-logo ytd-topbar-logo-renderer ytd-yoodle-renderer * {
     display: none !important;
 }
 :root.ytc-premium-logo ytd-topbar-logo-renderer #logo ytd-logo:not(.ytd-yoodle-renderer),
@@ -8548,15 +8593,12 @@ body:not(.ytc-ambient-lighting) #ytc-ambient-wrapper {
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
-    height: 2200px !important;
+    height: 1150px !important;
     pointer-events: none !important;
     z-index: 0 !important;
     overflow: hidden !important;
     contain: paint !important;
     opacity: 0;
-    /* Lan tỏa sâu xuống giữa trang (gấp đôi độ dài trước đây), tan biến mượt mà */
-    mask-image: linear-gradient(to bottom, #000 0%, #000 65%, rgba(0, 0, 0, 0.6) 80%, rgba(0, 0, 0, 0.2) 92%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 65%, rgba(0, 0, 0, 0.6) 80%, rgba(0, 0, 0, 0.2) 92%, transparent 100%);
     transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -8564,17 +8606,14 @@ html.ytc-ambient-lighting #ytc-ambient-wrapper.ytc-ambient-active {
     opacity: 1;
 }
 
-/* Lớp Canvas Ambilight: Dải kéo giãn anamorphic mượt mà, giữ trọn vẹn đường nét vật thể và chuyển động mở rộng */
+/* Lớp Canvas Ambilight: Canvas đã làm mờ trước ở độ phân giải nhỏ để GPU chỉ scale nhẹ */
 #ytc-ambient-spread-canvas {
     position: absolute !important;
-    top: -30px !important;
-    left: -30px !important;
-    width: calc(100% + 60px) !important;
-    height: calc(100% + 60px) !important;
-    filter: blur(12px) saturate(135%) brightness(103%);
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
     pointer-events: none !important;
-    transform: translateZ(0);
-    opacity: 0.95;
+    opacity: 0.92;
 }
 
 /* Chỉ ẩn Ambilight mặc định của YouTube khi BẬT Ánh sáng phòng của script để tránh xung đột */
@@ -8583,15 +8622,7 @@ html.ytc-ambient-lighting ytd-watch-flexy #cinematic-container {
     display: none !important;
 }
 
-/* Khung video: Bo tròn mượt mà, bóng đổ nhẹ tự nhiên giúp mép video tan chảy vào dải ánh sáng mở rộng */
-html.ytc-ambient-lighting #movie_player {
-    border-radius: 12px !important;
-    overflow: hidden !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: 0 4px 28px rgba(0, 0, 0, 0.45) !important;
-}
-
+/* Giữ nguyên hình dạng gốc của #movie_player để trình duyệt ưu tiên Hardware Video Overlay khi phóng to */
 html[fullscreen] #movie_player,
 .ytp-fullscreen #movie_player {
     border-radius: 0 !important;
@@ -8600,9 +8631,8 @@ html[fullscreen] #movie_player,
     outline: none !important;
 }
 
-/* Phủ dải đen khi toàn màn hình bằng bản nền mờ; video chính vẫn giữ nguyên tỷ lệ. */
+/* Phủ dải đen khi toàn màn hình bằng bản nền mờ siêu nhẹ; video chính giữ nguyên tỷ lệ & hardware overlay */
 #movie_player.ytc-letterbox-backdrop-active {
-    isolation: isolate !important;
     background: #000 !important;
 }
 #movie_player.ytc-letterbox-backdrop-active > .ytc-letterbox-backdrop {
@@ -8612,7 +8642,8 @@ html[fullscreen] #movie_player,
     width: 108% !important;
     height: 108% !important;
     object-fit: fill !important;
-    opacity: .88 !important;
+    opacity: 0.42 !important;
+    filter: saturate(1.15);
     pointer-events: none !important;
 }
 #movie_player.ytc-letterbox-backdrop-active > .html5-video-container {
@@ -8713,17 +8744,6 @@ html.ytc-ambient-lighting ytd-text-inline-expander {
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-}
-
-/* Giảm màu và dịu nội dung phụ xung quanh để video chính nổi bật rực rỡ */
-html.ytc-ambient-lighting #secondary ytd-thumbnail,
-html.ytc-ambient-lighting #related ytd-thumbnail {
-    filter: brightness(0.88) contrast(0.95);
-    transition: filter 0.25s ease;
-}
-html.ytc-ambient-lighting #secondary ytd-thumbnail:hover,
-html.ytc-ambient-lighting #related ytd-thumbnail:hover {
-    filter: brightness(1) contrast(1);
 }
 
 /* ==========================================================================
@@ -8850,10 +8870,10 @@ html[dark].ytc-ambient-lighting ytd-watch-metadata #title h1 {
    2. QUY TẮC RIÊNG CHO GIAO DIỆN SÁNG (LIGHT THEME)
    ========================================================================== */
 
-/* Tinh chỉnh màu sắc Ambilight trên nền trắng: Màu sắc rực rỡ, đậm đà ngang ngửa Dark Theme */
+/* Tinh chỉnh màu sắc Ambilight trên nền trắng (không dùng CSS blur nặng trên toàn viewport) */
 html:not([dark]) #ytc-ambient-spread-canvas {
-    filter: blur(24px) saturate(210%) contrast(115%) brightness(96%);
-    opacity: 0.9;
+    filter: saturate(165%) contrast(108%) brightness(98%);
+    opacity: 0.85;
 }
 
 /* Khi ở đỉnh trang: Masthead trong suốt */
@@ -9009,20 +9029,13 @@ body.ytc-fs-locked .ytp-fullscreen-button {
 /* ==========================================================================
    TRIỆT TIÊU THÔNG BÁO GIÁN ĐOẠN ANTI-ADBLOCK (YOUTUBE SNACKBAR & TOAST & BUBBLE)
    ========================================================================== */
-snackbar-container:has(.snackbarViewModelTitleSubtextWrapper),
-snackbar-container:has(.snackbarViewModelTitle),
-snackbar-container:has(a[href*="3037019"]),
-snackbar-view-model:has(a[href*="3037019"]),
-.ytSnackbarContainerHost:has(.snackbarViewModelTitle),
-.ytSnackbarContainerSnackbarContainer:has(.snackbarViewModelTitle),
 yt-bubble-hint-renderer,
 ytd-bubble-hint-renderer,
 .paper-toast-open.yt-notification-action-renderer,
 .toast-button.style-scope.yt-notification-action-renderer,
 .ytp-suggested-action-badge[data-tooltip-target-id*="interrupt" i],
 .ytp-suggested-action-badge-expanded,
-tp-yt-paper-toast:has(yt-notification-action-renderer),
-yt-notification-action-renderer:has(#toast) {
+.ytc-dismissed-interruption {
     display: none !important;
     opacity: 0 !important;
     pointer-events: none !important;
@@ -9145,7 +9158,10 @@ html:not([dark]) .ytc-stat-red {
 
   // src/features/logo.js
   init_utils();
+  init_config();
   init_grid();
+  var logoObserver = null;
+  var logoRetryInterval = null;
   var LOGO_MARK = "M32.1819";
   var logoSVG = '<g><path d="M14.4848 20C14.4848 20 23.5695 20 25.8229 19.4C27.0917 19.06 28.0459 18.08 28.3808 16.87C29 14.65 29 9.98 29 9.98C29 9.98 29 5.34 28.3808 3.14C28.0459 1.9 27.0917 0.94 25.8229 0.61C23.5695 0 14.4848 0 14.4848 0C14.4848 0 5.42037 0 3.17711 0.61C1.9286 0.94 0.954148 1.9 0.59888 3.14C0 5.34 0 9.98 0 9.98C0 9.98 0 14.65 0.59888 16.87C0.954148 18.08 1.9286 19.06 3.17711 19.4C5.42037 20 14.4848 20 14.4848 20Z" fill="#FF0033"/><path d="M19 10L11.5 5.75V14.25L19 10Z" fill="white"/></g><g id="youtube-paths_yt19"><path d="M32.1819 2.10016V18.9002H34.7619V12.9102H35.4519C38.8019 12.9102 40.5619 11.1102 40.5619 7.57016V6.88016C40.5619 3.31016 39.0019 2.10016 35.7219 2.10016H32.1819ZM37.8619 7.63016C37.8619 10.0002 37.1419 11.0802 35.4019 11.0802H34.7619V3.95016H35.4519C37.4219 3.95016 37.8619 4.76016 37.8619 7.13016V7.63016Z"/><path d="M41.982 18.9002H44.532V10.0902C44.952 9.37016 45.992 9.05016 47.302 9.32016L47.462 6.33016C47.292 6.31016 47.142 6.29016 47.002 6.29016C45.802 6.29016 44.832 7.20016 44.342 8.86016H44.162L43.952 6.54016H41.982V18.9002H41.982V18.9002Z"/><path d="M55.7461 11.5002C55.7461 8.52016 55.4461 6.31016 52.0161 6.31016C48.7861 6.31016 48.0661 8.46016 48.0661 11.6202V13.7902C48.0661 16.8702 48.7261 19.1102 51.9361 19.1102C54.4761 19.1102 55.7861 17.8402 55.6361 15.3802L53.3861 15.2602C53.3561 16.7802 53.0061 17.4002 51.9961 17.4002C50.7261 17.4002 50.6661 16.1902 50.6661 14.3902V13.5502H55.7461V11.5002ZM51.9561 7.97016C53.1761 7.97016 53.2661 9.12016 53.2661 11.0702V12.0802H50.6661V11.0702C50.6661 9.14016 50.7461 7.97016 51.9561 7.97016Z"/><path d="M60.1945 18.9002V8.92016C60.5745 8.39016 61.1945 8.07016 61.7945 8.07016C62.5645 8.07016 62.8445 8.61016 62.8445 9.69016V18.9002H65.5045L65.4845 8.93016C65.8545 8.37016 66.4845 8.04016 67.1045 8.04016C67.7745 8.04016 68.1445 8.61016 68.1445 9.69016V18.9002H70.8045V9.49016C70.8045 7.28016 70.0145 6.27016 68.3445 6.27016C67.1845 6.27016 66.1945 6.69016 65.2845 7.67016C64.9045 6.76016 64.1545 6.27016 63.0845 6.27016C61.8745 6.27016 60.7345 6.79016 59.9345 7.76016H59.7845L59.5945 6.54016H57.5445V18.9002H60.1945Z"/><path d="M74.0858 4.97016C74.9858 4.97016 75.4058 4.67016 75.4058 3.43016C75.4058 2.27016 74.9558 1.91016 74.0858 1.91016C73.2058 1.91016 72.7758 2.23016 72.7758 3.43016C72.7758 4.67016 73.1858 4.97016 74.0858 4.97016ZM72.8658 18.9002H75.3958V6.54016H72.8658V18.9002Z"/><path d="M79.9516 19.0902C81.4116 19.0902 82.3216 18.4802 83.0716 17.3802H83.1816L83.2916 18.9002H85.2816V6.54016H82.6416V16.4702C82.3616 16.9602 81.7116 17.3202 81.1016 17.3202C80.3316 17.3202 80.0916 16.7102 80.0916 15.6902V6.54016H77.4616V15.8102C77.4616 17.8202 78.0416 19.0902 79.9516 19.0902Z"/><path d="M90.0031 18.9002V8.92016C90.3831 8.39016 91.0031 8.07016 91.6031 8.07016C92.3731 8.07016 92.6531 8.61016 92.6531 9.69016V18.9002H95.3131L95.2931 8.93016C95.6631 8.37016 96.2931 8.04016 96.9131 8.04016C97.5831 8.04016 97.9531 8.61016 97.9531 9.69016V18.9002H100.613V9.49016C100.613 7.28016 99.8231 6.27016 98.1531 6.27016C96.9931 6.27016 96.0031 6.69016 95.0931 7.67016C94.7131 6.76016 93.9631 6.27016 92.8931 6.27016C91.6831 6.27016 90.5431 6.79016 89.7431 7.76016H89.5931L89.4031 6.54016H87.3531V18.9002H90.0031Z"/></g>';
   function buildLogoHtml() {
@@ -9179,6 +9195,7 @@ html:not([dark]) .ytc-stat-red {
     }
   }
   var scheduleLogoScan = rafThrottle((root) => {
+    if (!currentConfig.premiumLogo) return;
     const doc = root && root.ownerDocument || document;
     const renderers = doc.querySelectorAll("ytd-topbar-logo-renderer");
     renderers.forEach((renderer) => {
@@ -9194,19 +9211,41 @@ html:not([dark]) .ytc-stat-red {
       }
     });
   });
-  function setupLogoObserver() {
+  function clearLogoObserver() {
+    if (logoObserver) {
+      logoObserver.disconnect();
+      logoObserver = null;
+    }
+    if (logoRetryInterval !== null) {
+      clearInterval(logoRetryInterval);
+      logoRetryInterval = null;
+    }
+  }
+  function syncLogoObserver() {
+    if (!currentConfig.premiumLogo) {
+      clearLogoObserver();
+      document.querySelectorAll("ytd-topbar-logo-renderer .custom-premium-logo").forEach((el) => el.remove());
+      document.querySelectorAll("ytd-logo[is-red-logo]").forEach((el) => el.removeAttribute("is-red-logo"));
+      return;
+    }
     scheduleLogoScan(document);
     const attach = (masthead2) => {
+      if (!currentConfig.premiumLogo || logoObserver) return;
       scheduleLogoScan(masthead2);
-      new MutationObserver((mutations) => {
+      logoObserver = new MutationObserver((mutations) => {
+        if (!currentConfig.premiumLogo) {
+          syncLogoObserver();
+          return;
+        }
         let shouldScan = false;
         for (const mutation of mutations) {
           if (mutation.type === "childList") {
-            mutation.addedNodes.forEach((node) => {
+            for (const node of mutation.addedNodes) {
               if (node.nodeType === 1 && (node.matches?.("ytd-logo, ytd-topbar-logo-renderer") || node.querySelector?.("ytd-logo"))) {
                 shouldScan = true;
+                break;
               }
-            });
+            }
           } else if (mutation.type === "attributes") {
             if (mutation.target.matches?.("ytd-logo, ytd-topbar-logo-renderer, #logo")) {
               shouldScan = true;
@@ -9215,19 +9254,30 @@ html:not([dark]) .ytc-stat-red {
           if (shouldScan) break;
         }
         if (shouldScan) scheduleLogoScan(masthead2);
-      }).observe(masthead2, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "hidden"] });
+      });
+      logoObserver.observe(masthead2, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "hidden"] });
     };
     const masthead = document.querySelector("ytd-masthead");
     if (masthead) attach(masthead);
     else whenElement("ytd-masthead", attach);
-    let retryCount = 0;
-    const retryInterval = setInterval(() => {
-      retryCount++;
-      scheduleLogoScan(document);
-      if (retryCount >= 10 && document.querySelector("ytd-topbar-logo-renderer .custom-premium-logo")) {
-        clearInterval(retryInterval);
-      }
-    }, 300);
+    if (logoRetryInterval === null) {
+      let retryCount = 0;
+      logoRetryInterval = setInterval(() => {
+        if (!currentConfig.premiumLogo) {
+          clearLogoObserver();
+          return;
+        }
+        retryCount++;
+        scheduleLogoScan(document);
+        if (retryCount >= 6 && document.querySelector("ytd-topbar-logo-renderer .custom-premium-logo") || retryCount >= 10) {
+          clearInterval(logoRetryInterval);
+          logoRetryInterval = null;
+        }
+      }, 300);
+    }
+  }
+  function setupLogoObserver() {
+    syncLogoObserver();
   }
   document.addEventListener("click", (e) => {
     if (!e.target.closest("ytd-topbar-logo-renderer")) return;
@@ -9240,13 +9290,65 @@ html:not([dark]) .ytc-stat-red {
   init_config();
   init_utils();
   init_shoppingFilter();
-  var INTERRUPTION_SELECTOR = 'snackbar-container, snackbar-view-model, .ytSnackbarContainerHost, .ytSnackbarContainerSnackbarContainer, .snackbarViewModelHost, .snackbarViewModelTitle, .snackbarViewModelTitleSubtextWrapper, yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, #toast, yt-notification-action-renderer, ytd-notification-action-renderer, .ytp-suggested-action-badge, .ytp-suggested-action-badge-expanded, div[class*="interrupt" i], div[class*="suggested-action" i], div[class*="ad-interrupt" i], .paper-toast-open, .toast-button';
+  var INTERRUPTION_SELECTOR = "snackbar-container, snackbar-view-model, .ytSnackbarContainerHost, .ytSnackbarContainerSnackbarContainer, .snackbarViewModelHost, .snackbarViewModelTitle, .snackbarViewModelTitleSubtextWrapper, yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, #toast, yt-notification-action-renderer, ytd-notification-action-renderer, .ytp-suggested-action-badge, .ytp-suggested-action-badge-expanded, .paper-toast-open, .toast-button";
   var PROMO_SELECTOR = "ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer, ytd-upsell-dialog-renderer, ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer";
-  var IGNORED_MUTATION_ZONES = "#comments, ytd-comments, #ytc-danmaku-container, #ytc-streamer-box, #ytc-ambient-wrapper, ytd-moving-thumbnail-renderer, .ytp-chrome-bottom, .ytp-tooltip, .ytp-caption-window-container, .ytp-bezel, .ytp-spinner, .ytp-chapter-hover-container, ytd-live-chat-frame, #chat, #related, ytd-watch-next-secondary-results-renderer, #playlist, ytd-playlist-panel-renderer";
+  var PROMO_CANDIDATE_TAGS = /* @__PURE__ */ new Set([
+    "SNACKBAR-CONTAINER",
+    "SNACKBAR-VIEW-MODEL",
+    "YT-BUBBLE-HINT-RENDERER",
+    "YTD-BUBBLE-HINT-RENDERER",
+    "TP-YT-PAPER-TOAST",
+    "YT-NOTIFICATION-ACTION-RENDERER",
+    "YTD-NOTIFICATION-ACTION-RENDERER",
+    "YTD-MEALBAR-PROMO-RENDERER",
+    "YT-MEALBAR-PROMO-RENDERER",
+    "YTD-UPSELL-DIALOG-RENDERER",
+    "YTD-IN-FEED-SURVEY-RENDERER",
+    "YTD-SINGLE-OPTION-SURVEY-RENDERER",
+    "YTD-POPUP-CONTAINER",
+    "TP-YT-PAPER-DIALOG",
+    "TP-YT-IRON-OVERLAY-BACKDROP",
+    "YTD-ENFORCEMENT-MESSAGE-VIEW-MODEL",
+    "YTD-MERCH-SHELF-RENDERER",
+    "YTD-PRODUCTS-SHELF-RENDERER",
+    "YTD-PRODUCT-SHELF-RENDERER"
+  ]);
+  var FAST_SKIP_PARENT_IDS = /* @__PURE__ */ new Set([
+    "below",
+    "comments",
+    "sections",
+    "contents",
+    "secondary",
+    "related",
+    "panels",
+    "panels-full-bleed-container",
+    "masthead",
+    "ytc-settings-panel",
+    "ytc-perf-widget"
+  ]);
+  var IGNORED_MUTATION_ZONES = "#comments, ytd-comments, #ytc-danmaku-container, #ytc-streamer-box, #ytc-ambient-wrapper, #ytc-settings-panel, #ytc-perf-widget, ytd-moving-thumbnail-renderer, .ytp-chrome-bottom, .ytp-tooltip, .ytp-caption-window-container, .ytp-bezel, .ytp-spinner, .ytp-chapter-hover-container, .ytp-heat-map-container, .ytp-progress-bar-container, .ytp-storyboard-framepreview, .ytp-ce-element, .html5-video-info-panel, ytd-video-preview, #preview, #inline-preview-player, ytd-live-chat-frame, #chat, #related, ytd-watch-next-secondary-results-renderer, #playlist, ytd-playlist-panel-renderer, #below, ytd-watch-metadata, #panels, #panels-full-bleed-container, ytd-engagement-panel-section-list-renderer, ytd-transcript-renderer, #masthead, ytd-masthead";
   function isIgnoredPromoMutationNode(node) {
     if (!node) return true;
     const el = node.nodeType === 1 ? node : node.parentElement;
-    return !!(el && el.closest?.(IGNORED_MUTATION_ZONES));
+    if (!el) return true;
+    if (el.id && FAST_SKIP_PARENT_IDS.has(el.id)) return true;
+    return !!el.closest?.(IGNORED_MUTATION_ZONES);
+  }
+  function shouldInspectPromoAddedNode(node, mutationTarget = null) {
+    if (!node || node.nodeType !== 1) return false;
+    const tag = node.tagName ? node.tagName.toUpperCase() : "";
+    if (PROMO_CANDIDATE_TAGS.has(tag)) return true;
+    if (node.id === "toast") return true;
+    const cls = typeof node.className === "string" ? node.className : "";
+    if (cls && (cls.includes("Snackbar") || cls.includes("snackbar") || cls.includes("suggested-action") || cls.includes("interrupt") || cls.includes("paper-toast") || cls.includes("toast-button") || cls.includes("mealbar") || cls.includes("upsell") || cls.includes("merch") || cls.includes("shopping"))) {
+      return true;
+    }
+    const targetTag = mutationTarget && mutationTarget.tagName ? mutationTarget.tagName.toUpperCase() : "";
+    if ((targetTag === "BODY" || targetTag === "YTD-POPUP-CONTAINER") && node.firstElementChild) {
+      const childTag = node.firstElementChild.tagName ? node.firstElementChild.tagName.toUpperCase() : "";
+      if (PROMO_CANDIDATE_TAGS.has(childTag)) return true;
+    }
+    return false;
   }
   function queryIncludingRoot(root, selector) {
     const matches = Array.from(root.querySelectorAll(selector));
@@ -9288,6 +9390,7 @@ html:not([dark]) .ytc-stat-red {
           } catch (e) {
           }
         }
+        target.classList.add("ytc-dismissed-interruption");
         target.style.setProperty("display", "none", "important");
         target.style.setProperty("opacity", "0", "important");
         target.style.setProperty("pointer-events", "none", "important");
@@ -9346,21 +9449,13 @@ html:not([dark]) .ytc-stat-red {
     const pendingScopes = /* @__PURE__ */ new Set();
     let scheduledFrame = 0;
     const observer = new MutationObserver((mutations) => {
-      const activeSelector = currentConfig.autoDismissPromos ? `${INTERRUPTION_SELECTOR}, ${PROMO_SELECTOR}` : INTERRUPTION_SELECTOR;
-      const queueElement = (node) => {
-        if (!node || node.nodeType !== 1 || isIgnoredPromoMutationNode(node)) return;
-        const related = node.closest(activeSelector);
-        if (related) pendingScopes.add(related);
-        if (node.matches(activeSelector)) pendingScopes.add(node);
-        if (node.firstElementChild) {
-          node.querySelectorAll(activeSelector).forEach((el) => pendingScopes.add(el));
-        }
-      };
       for (const mutation of mutations) {
         if (!mutation.addedNodes.length) continue;
         if (isIgnoredPromoMutationNode(mutation.target)) continue;
         for (const node of mutation.addedNodes) {
-          queueElement(node);
+          if (!shouldInspectPromoAddedNode(node, mutation.target)) continue;
+          if (isIgnoredPromoMutationNode(node)) continue;
+          pendingScopes.add(node);
         }
       }
       if (pendingScopes.size && !scheduledFrame) {
@@ -9479,9 +9574,9 @@ html:not([dark]) .ytc-stat-red {
   }
 
   // src/player/letterboxBackdrop.js
-  var CANVAS_WIDTH = 96;
-  var CANVAS_HEIGHT = 54;
-  var UPDATE_INTERVAL_MS = 500;
+  var CANVAS_WIDTH = 48;
+  var CANVAS_HEIGHT = 27;
+  var UPDATE_INTERVAL_MS = 2e3;
   var LETTERBOX_RATIO_THRESHOLD = 0.06;
   var canvas = null;
   var context = null;
@@ -9580,10 +9675,7 @@ html:not([dark]) .ytc-stat-red {
     if (!ensureCanvas(player) || !context) return;
     if (video.paused && video === activeVideo && canvas.dataset.hasFrame === "true") return;
     try {
-      if ("filter" in context) {
-        context.filter = "blur(8px) brightness(0.62) saturate(1.15)";
-      }
-      context.drawImage(video, -4, -3, CANVAS_WIDTH + 8, CANVAS_HEIGHT + 6);
+      context.drawImage(video, -2, -2, CANVAS_WIDTH + 4, CANVAS_HEIGHT + 4);
       activeVideo = video;
       canvas.dataset.hasFrame = "true";
     } catch (_) {
@@ -9891,8 +9983,8 @@ html:not([dark]) .ytc-stat-red {
     snapReadySince = 0;
   }
   function syncAutoLiveSyncTimer() {
-    const isWatchRoute2 = location.pathname.startsWith("/watch") || location.pathname.startsWith("/live");
-    if (currentConfig.autoLiveSync && isWatchRoute2) {
+    const isWatchRoute3 = location.pathname.startsWith("/watch") || location.pathname.startsWith("/live");
+    if (currentConfig.autoLiveSync && isWatchRoute3) {
       if (!autoLiveSyncTimer) autoLiveSyncTimer = setInterval(checkLiveSync, 1e3);
       return;
     }
@@ -10455,9 +10547,9 @@ html:not([dark]) .ytc-stat-red {
       currentConfig.chatOverlay = "off";
       resetChatCollapseState();
       updateChatOverlayVisibility();
-      syncPanelState();
-      applyConfigToRoot();
-      scheduleLogoScan(document);
+      applyConfigToRoot(false);
+      syncLogoObserver();
+      syncFeedObserver();
       ensureSettingsElements();
       syncPanelState();
       bindGlobalKeys();
@@ -10476,14 +10568,22 @@ html:not([dark]) .ytc-stat-red {
       applyAmbientLightingState();
       if (location.pathname.startsWith("/watch")) {
         setWatchLoading(true);
+        applyHomeGridColumns();
+        if (hasActiveFeedFilters()) scanAndTagFeedContent(document);
       } else if (isHomeFeedPath()) {
         applyHomeGridColumns();
         scheduleFeedScan(document);
+      } else {
+        applyHomeGridColumns();
+        if (hasActiveFeedFilters()) scheduleFeedScan(document);
       }
     };
     injectStyles(styles_default);
     onConfigChange(() => {
       applyHomeGridColumns();
+      syncLogoObserver();
+      syncFeedObserver();
+      applyAmbientLightingState();
       updateChatOverlayVisibility();
       applyAudioOnlyState();
       if (currentConfig.autoDismissPromos) {
@@ -10493,7 +10593,7 @@ html:not([dark]) .ytc-stat-red {
         resetAutoLiveState();
       }
     });
-    applyConfigToRoot();
+    applyConfigToRoot(false);
     bindGlobalKeys();
     checkAndAutoUpdate();
     if (document.readyState === "loading") {
@@ -10547,7 +10647,7 @@ html:not([dark]) .ytc-stat-red {
       const gridRetryInterval = setInterval(() => {
         gridRetryCount++;
         applyHomeGridColumns();
-        if (document.querySelector("ytd-rich-grid-renderer ytd-rich-item-renderer") || gridRetryCount >= 10) {
+        if ((currentConfig.columns || 3) === 3 || document.querySelector("ytd-rich-grid-renderer ytd-rich-item-renderer") || gridRetryCount >= 10) {
           clearInterval(gridRetryInterval);
         }
       }, 250);

@@ -12,17 +12,23 @@ import { currentConfig } from '../core/config.js';
 let ambientWrapper = null;
 let ambientSpreadCanvas = null;
 let ambientSpreadCtx = null;
+let ambientSampleCanvas = null;
+let ambientSampleCtx = null;
+let ambientFadeGrad = null;
 let animFrameId = null;
 let isRunning = false;
 let lastDrawTime = 0;
 let currentVideo = null;
 let hasDrawnFirstFrame = false;
 let isPausedAndDrawn = false;
+let lastMastheadScrolled = null;
 
-// Kích thước canvas nội bộ (tỷ lệ chuẩn tối ưu hiệu năng và GPU)
-const CANVAS_WIDTH = 320;
-const CANVAS_HEIGHT = 400;
-const TARGET_INTERVAL = 1000 / 24; // 24 FPS mượt mà & siêu nhẹ
+// Canvas nội bộ nhỏ + downscale 2 bước để khử răng cưa và thay thế hoàn toàn CSS blur/mask-image toàn màn hình
+const CANVAS_WIDTH = 128;
+const CANVAS_HEIGHT = 160;
+const SAMPLE_WIDTH = 40;
+const SAMPLE_HEIGHT = 50;
+const TARGET_INTERVAL = 1000 / 12; // 12 FPS cho nền ánh sáng viền nhẹ nhàng, giảm tải GPU khi phóng to
 
 function isFullscreenActive() {
     return !!(document.fullscreenElement || document.webkitFullscreenElement);
@@ -156,10 +162,28 @@ function ensureAmbientCanvas() {
         if (ambientSpreadCtx) {
             ambientSpreadCtx.imageSmoothingEnabled = true;
             ambientSpreadCtx.imageSmoothingQuality = 'medium';
+            ambientFadeGrad = ambientSpreadCtx.createLinearGradient(0, Math.round(CANVAS_HEIGHT * 0.56), 0, CANVAS_HEIGHT);
+            ambientFadeGrad.addColorStop(0, 'rgba(0, 0, 0, 1)');
+            ambientFadeGrad.addColorStop(0.55, 'rgba(0, 0, 0, 0.45)');
+            ambientFadeGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        }
+
+        if (!ambientSampleCanvas) {
+            ambientSampleCanvas = document.createElement('canvas');
+            ambientSampleCanvas.width = SAMPLE_WIDTH;
+            ambientSampleCanvas.height = SAMPLE_HEIGHT;
+            ambientSampleCtx = ambientSampleCanvas.getContext('2d', {
+                alpha: true,
+                willReadFrequently: false
+            });
+            if (ambientSampleCtx) {
+                ambientSampleCtx.imageSmoothingEnabled = true;
+                ambientSampleCtx.imageSmoothingQuality = 'low';
+            }
         }
     }
 
-    return !!ambientSpreadCtx;
+    return !!(ambientSpreadCtx && ambientSampleCtx);
 }
 
 /**
@@ -175,7 +199,7 @@ function drawFrame(video) {
     if (!ambientSpreadCtx) return;
 
     const activePlayer = findActivePlayer();
-    if (!activePlayer) return;
+    if (!activePlayer || activePlayer.classList.contains('ytp-scrubbing')) return;
 
     try {
         const vW = video.videoWidth;
@@ -205,7 +229,7 @@ function drawFrame(video) {
         if (pW < 10 || pH < 10) return;
 
         const wrapW = wrapperRect.width || window.innerWidth || 1920;
-        const wrapH = wrapperRect.height || 2200;
+        const wrapH = wrapperRect.height || 1150;
 
         // Match the actual rendered media box inside YouTube's video element.
         // Portrait and letterboxed videos usually use object-fit: contain, so do not crop them
@@ -254,8 +278,8 @@ function drawFrame(video) {
         }
 
         const mediaRect = cachedVideoRect;
-        const scaleX = CANVAS_WIDTH / wrapW;
-        const scaleY = CANVAS_HEIGHT / wrapH;
+        const scaleX = SAMPLE_WIDTH / wrapW;
+        const scaleY = SAMPLE_HEIGHT / wrapH;
         const cvX = Math.round((mediaRect.left - wrapperRect.left) * scaleX);
         const cvY = Math.round((mediaRect.top - wrapperRect.top) * scaleY);
         const cvW = Math.round(mediaRect.width * scaleX);
@@ -265,19 +289,17 @@ function drawFrame(video) {
         const sW = Math.max(1, Math.round(sourceW));
         const sH = Math.max(1, Math.round(sourceH));
 
-        // Độ dày dải mép lấy mẫu (sát mép video chuẩn xác 100%, không thụt sâu làm sai lệch màu)
-        const stripW = Math.max(4, Math.round(sW * 0.016));
-        const stripH = Math.max(4, Math.round(sH * 0.020));
+        // Độ dày dải mép lấy mẫu sát cạnh video
+        const stripW = Math.max(4, Math.round(sW * 0.020));
+        const stripH = Math.max(4, Math.round(sH * 0.025));
 
-        // Xóa sạch canvas trước khi vẽ
-        ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ambientSampleCtx.clearRect(0, 0, SAMPLE_WIDTH, SAMPLE_HEIGHT);
 
-        // 1. LỚP ĐỆM HÒA QUYỆN DƯỚI KHUNG VIDEO (Under-Player Seamless Blend Pad)
-        // Vẽ video mở rộng nhẹ 3% xung quanh khung player để xóa sổ hoàn toàn viền cắt sắc nhọn
-        const bleedX = Math.round(cvW * 0.035);
-        const bleedY = Math.round(cvH * 0.035);
-        ambientSpreadCtx.globalAlpha = 0.85;
-        ambientSpreadCtx.drawImage(
+        // 1. Vẽ nhẹ video gốc vào buffer nhỏ để khử răng cưa các mép
+        const bleedX = Math.round(cvW * 0.04);
+        const bleedY = Math.round(cvH * 0.04);
+        ambientSampleCtx.globalAlpha = 0.88;
+        ambientSampleCtx.drawImage(
             video,
             sX, sY, sW, sH,
             Math.max(0, cvX - bleedX),
@@ -285,67 +307,51 @@ function drawFrame(video) {
             cvW + bleedX * 2,
             cvH + bleedY * 2
         );
-        ambientSpreadCtx.globalAlpha = 1.0;
+        ambientSampleCtx.globalAlpha = 1.0;
 
-        const rightW = Math.max(0, CANVAS_WIDTH - (cvX + cvW));
+        const rightW = Math.max(0, SAMPLE_WIDTH - (cvX + cvW));
         const bottomY = cvY + cvH;
-        const bottomH = Math.max(0, CANVAS_HEIGHT - bottomY);
+        const bottomH = Math.max(0, SAMPLE_HEIGHT - bottomY);
 
-        // 2. KÉO DÃI TRỰC TIẾP MÉP PHẢI (Right Edge Anamorphic Extension)
-        // Kéo dải pixel sát cạnh phải của video sang tận mép phải màn hình,
-        // giữ nguyên 100% tọa độ dọc cvY & chiều cao cvH để vật thể (vỉa hè, người, cây) kéo dài thẳng tắp
+        // 2-5. Kéo giãn 4 mép lên sample buffer 40x50
         if (rightW > 0 && cvH > 0) {
             const srcX = sX + sW - stripW;
-            ambientSpreadCtx.drawImage(
-                video,
-                srcX, sY, stripW, sH,
-                cvX + cvW - 1, cvY, rightW + 1, cvH
-            );
+            ambientSampleCtx.drawImage(video, srcX, sY, stripW, sH, cvX + cvW - 1, cvY, rightW + 1, cvH);
         }
-
-        // 3. KÉO DÃI TRỰC TIẾP MÉP TRÁI (Left Edge Anamorphic Extension)
-        // Kéo dải pixel sát cạnh trái của video sang tận mép trái màn hình
         if (cvX > 0 && cvH > 0) {
-            ambientSpreadCtx.drawImage(
-                video,
-                sX, sY, stripW, sH,
-                0, cvY, cvX + 1, cvH
-            );
+            ambientSampleCtx.drawImage(video, sX, sY, stripW, sH, 0, cvY, cvX + 1, cvH);
         }
-
-        // 4. KÉO DÃI TRỰC TIẾP MÉP TRÊN (Top Edge Anamorphic Extension)
-        // Kéo dải pixel sát mép trên lên hết thanh Masthead
         if (cvY > 0 && cvW > 0) {
-            ambientSpreadCtx.drawImage(
-                video,
-                sX, sY, sW, stripH,
-                cvX, 0, cvW, cvY + 1
-            );
+            ambientSampleCtx.drawImage(video, sX, sY, sW, stripH, cvX, 0, cvW, cvY + 1);
         }
-
-        // 5. KÉO DÃI TRỰC TIẾP MÉP DƯỚI (Bottom Edge Anamorphic Extension)
-        // Kéo dải pixel sát mép dưới xuống sâu tận khu vực bình luận
         if (bottomH > 0 && cvW > 0) {
             const srcY = sY + sH - stripH;
-            ambientSpreadCtx.drawImage(
-                video,
-                sX, srcY, sW, stripH,
-                cvX, bottomY - 1, cvW, bottomH + 1
-            );
+            ambientSampleCtx.drawImage(video, sX, srcY, sW, stripH, cvX, bottomY - 1, cvW, bottomH + 1);
         }
 
-        // 6. KHUẾCH TÁN 4 GÓC ĐỐI XỨNG (4 Diagonal Corners Extension)
+        // 6. Phủ 4 góc
         if (cvX > 0 && cvY > 0) {
-            ambientSpreadCtx.drawImage(video, sX, sY, stripW, stripH, 0, 0, cvX + 1, cvY + 1);
+            ambientSampleCtx.drawImage(video, sX, sY, stripW, stripH, 0, 0, cvX + 1, cvY + 1);
         }
         if (rightW > 0 && cvY > 0) {
-            ambientSpreadCtx.drawImage(video, sX + sW - stripW, sY, stripW, stripH, cvX + cvW - 1, 0, rightW + 1, cvY + 1);
+            ambientSampleCtx.drawImage(video, sX + sW - stripW, sY, stripW, stripH, cvX + cvW - 1, 0, rightW + 1, cvY + 1);
         }
         if (cvX > 0 && bottomH > 0) {
-            ambientSpreadCtx.drawImage(video, sX, sY + sH - stripH, stripW, stripH, 0, bottomY - 1, cvX + 1, bottomH + 1);
+            ambientSampleCtx.drawImage(video, sX, sY + sH - stripH, stripW, stripH, 0, bottomY - 1, cvX + 1, bottomH + 1);
         }
         if (rightW > 0 && bottomH > 0) {
-            ambientSpreadCtx.drawImage(video, sX + sW - stripW, sY + sH - stripH, stripW, stripH, cvX + cvW - 1, bottomY - 1, rightW + 1, bottomH + 1);
+            ambientSampleCtx.drawImage(video, sX + sW - stripW, sY + sH - stripH, stripW, stripH, cvX + cvW - 1, bottomY - 1, rightW + 1, bottomH + 1);
+        }
+
+        // Kết xuất từ buffer 40x50 lên canvas 128x160 và tan mờ đáy bằng gradient nội bộ (0 CSS filter blur / mask-image)
+        ambientSpreadCtx.globalCompositeOperation = 'source-over';
+        ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ambientSpreadCtx.drawImage(ambientSampleCanvas, 0, 0, SAMPLE_WIDTH, SAMPLE_HEIGHT, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        if (ambientFadeGrad) {
+            ambientSpreadCtx.globalCompositeOperation = 'destination-in';
+            ambientSpreadCtx.fillStyle = ambientFadeGrad;
+            ambientSpreadCtx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            ambientSpreadCtx.globalCompositeOperation = 'source-over';
         }
 
         // 5. Kích hoạt trạng thái hiển thị CHỈ KHI tính năng thực sự được bật
@@ -383,7 +389,7 @@ function renderLoop(timestamp) {
         attachVideo(video);
     }
 
-    if (video.seeking) return;
+    if (video.seeking || document.getElementById('movie_player')?.classList.contains('ytp-scrubbing')) return;
 
     // Khi video pause: Vẽ 1 frame lúc pause rồi tạm nghỉ để tiết kiệm CPU
     if (video.paused || video.ended) {
@@ -472,12 +478,18 @@ function handleVisibilityChange() {
 
 function handleScroll() {
     if (!isAmbientEnabled()) {
-        document.documentElement.classList.remove('ytc-masthead-scrolled');
+        if (lastMastheadScrolled) {
+            lastMastheadScrolled = false;
+            document.documentElement.classList.remove('ytc-masthead-scrolled');
+        }
         return;
     }
     const scrollY = window.scrollY || window.pageYOffset || 0;
     const isScrolled = scrollY > 60;
-    document.documentElement.classList.toggle('ytc-masthead-scrolled', isScrolled);
+    if (isScrolled !== lastMastheadScrolled) {
+        lastMastheadScrolled = isScrolled;
+        document.documentElement.classList.toggle('ytc-masthead-scrolled', isScrolled);
+    }
 }
 
 function handleNavigation() {
@@ -563,6 +575,7 @@ export function applyAmbientLightingState() {
         syncAmbientObserver(false);
         hasDrawnFirstFrame = false;
         isPausedAndDrawn = false;
+        lastMastheadScrolled = null;
         document.documentElement.classList.remove('ytc-ambient-lighting');
         document.documentElement.classList.remove('ytc-ambient-ready');
         document.documentElement.classList.remove('ytc-masthead-scrolled');

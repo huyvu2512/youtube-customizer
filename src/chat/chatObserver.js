@@ -908,8 +908,33 @@ export function restoreNativeLiveChatIfSaved() {
     // Không làm gì nếu không có trạng thái lưu
 }
 
+let chatKeepAliveTimer = null;
+function syncChatKeepAliveInterval() {
+    const mode = currentConfig.chatOverlay || 'off';
+    if (mode === 'off') {
+        if (chatKeepAliveTimer !== null) {
+            clearInterval(chatKeepAliveTimer);
+            chatKeepAliveTimer = null;
+        }
+        return;
+    }
+    if (chatKeepAliveTimer === null) {
+        chatKeepAliveTimer = setInterval(() => {
+            if (!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') {
+                syncChatKeepAliveInterval();
+                return;
+            }
+            if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
+            findAndObserveItems();
+            ensureNativeLiveChatRunning();
+            ensureBackgroundLiveChat();
+        }, 2000);
+    }
+}
+
 export function updateChatOverlayVisibility() {
     const mode = currentConfig.chatOverlay || 'off';
+    syncChatKeepAliveInterval();
     if (mode === 'off') replayNativeOpenRequestedVideoId = null;
     syncReplayNativeChatPresentation();
 
@@ -1522,15 +1547,7 @@ export function initChatOverlay() {
         setTimeout(autoCollapseNativeChatIfOpen, 1500);
     }
     setupTheaterModeObserver();
-
-    setInterval(() => {
-        if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
-        if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
-            findAndObserveItems();
-            ensureNativeLiveChatRunning();
-            ensureBackgroundLiveChat();
-        }
-    }, 2000);
+    syncChatKeepAliveInterval();
 
     if (location.pathname.startsWith('/watch') || location.pathname.startsWith('/live')) {
         whenElement('#movie_player:not(#inline-preview-player)', () => {

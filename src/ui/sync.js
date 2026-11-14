@@ -6,9 +6,10 @@ import { hasLiveOrChatSupport } from '../core/utils.js';
 import { getLanguageInfo, t } from '../core/i18n.js';
 import { updatePanelLanguage } from './panel.js';
 
-export function syncPanelState(targetPanel) {
+export function syncPanelState(targetPanel, options = {}) {
     const panel = targetPanel || document.getElementById('ytc-settings-panel');
     if (!panel) return;
+    if (!options.force && !panel.classList.contains('open')) return;
 
     // 0. Đồng bộ toàn bộ ngôn ngữ giao diện của panel
     updatePanelLanguage(panel);

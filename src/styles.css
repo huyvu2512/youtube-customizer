@@ -4,166 +4,100 @@
 
 /* --------------------------------------------------------------------------
    1. LƯỚI VIDEO TRANG CHỦ & FEED: ÉP 3/4/5 CỘT CHUẨN XÁC
-   (Độ ưu tiên cao nhất, cố định vĩnh viễn khi F5 tải lại trang)
+   (Chỉ kích hoạt trên trang Feed / Kênh để không ảnh hưởng trang xem video)
    -------------------------------------------------------------------------- */
 @media (min-width: 900px) {
-    ytd-browse[page-subtype="home"] ytd-rich-grid-renderer,
-    ytd-browse[page-subtype="subscriptions"] ytd-rich-grid-renderer,
-    ytd-browse[page-subtype="channels"] ytd-rich-grid-renderer,
-    #page-manager ytd-browse ytd-rich-grid-renderer,
-    ytd-rich-grid-renderer.ytc-grid,
-    ytd-rich-grid-renderer {
+    html.ytc-feed-page[data-ytc-cols="3"] ytd-browse:not([hidden]) ytd-rich-grid-renderer {
         --ytd-rich-grid-items-per-row: 3 !important;
         --ytd-rich-grid-posts-per-row: 3 !important;
         --ytd-rich-grid-item-max-width: none !important;
     }
 
-    html[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,
-    html[data-ytc-cols="3"] ytd-rich-grid-renderer,
-    body[data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,
-    body[data-ytc-cols="3"] ytd-rich-grid-renderer,
-    [data-ytc-cols="3"] #page-manager ytd-browse ytd-rich-grid-renderer,
-    [data-ytc-cols="3"] #page-manager ytd-rich-grid-renderer,
-    [data-ytc-cols="3"] ytd-browse ytd-rich-grid-renderer,
-    [data-ytc-cols="3"] ytd-rich-grid-renderer {
-        --ytd-rich-grid-items-per-row: 3 !important;
-        --ytd-rich-grid-posts-per-row: 3 !important;
-        --ytd-rich-grid-item-max-width: none !important;
-    }
-
-    html[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,
-    html[data-ytc-cols="4"] ytd-rich-grid-renderer,
-    body[data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,
-    body[data-ytc-cols="4"] ytd-rich-grid-renderer,
-    [data-ytc-cols="4"] #page-manager ytd-browse ytd-rich-grid-renderer,
-    [data-ytc-cols="4"] #page-manager ytd-rich-grid-renderer,
-    [data-ytc-cols="4"] ytd-browse ytd-rich-grid-renderer,
-    [data-ytc-cols="4"] ytd-rich-grid-renderer {
+    html.ytc-feed-page[data-ytc-cols="4"] ytd-browse:not([hidden]) ytd-rich-grid-renderer {
         --ytd-rich-grid-items-per-row: 4 !important;
         --ytd-rich-grid-posts-per-row: 4 !important;
         --ytd-rich-grid-item-max-width: none !important;
     }
 
-    html[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,
-    html[data-ytc-cols="5"] ytd-rich-grid-renderer,
-    body[data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,
-    body[data-ytc-cols="5"] ytd-rich-grid-renderer,
-    [data-ytc-cols="5"] #page-manager ytd-browse ytd-rich-grid-renderer,
-    [data-ytc-cols="5"] #page-manager ytd-rich-grid-renderer,
-    [data-ytc-cols="5"] ytd-browse ytd-rich-grid-renderer,
-    [data-ytc-cols="5"] ytd-rich-grid-renderer {
+    html.ytc-feed-page[data-ytc-cols="5"] ytd-browse:not([hidden]) ytd-rich-grid-renderer {
         --ytd-rich-grid-items-per-row: 5 !important;
         --ytd-rich-grid-posts-per-row: 5 !important;
         --ytd-rich-grid-item-max-width: none !important;
     }
 
-    /* Làm phẳng cấu trúc dòng ytd-rich-grid-row — dùng flex-wrap thay display:contents để GIỮ NGUYÊN hitbox hover */
-    #contents > ytd-rich-grid-row {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        width: 100% !important;
-    }
-    #contents > ytd-rich-grid-row > #contents {
+    /* Làm phẳng cấu trúc dòng ytd-rich-grid-row — chỉ áp dụng trên trang Feed */
+    html.ytc-feed-page ytd-browse:not([hidden]) #contents > ytd-rich-grid-row,
+    html.ytc-feed-page ytd-browse:not([hidden]) #contents > ytd-rich-grid-row > #contents {
         display: flex !important;
         flex-wrap: wrap !important;
         width: 100% !important;
     }
 
-    #contents.ytd-rich-grid-row ytd-rich-item-renderer,
-    ytd-rich-grid-renderer ytd-rich-item-renderer {
-        width: calc(100% / var(--ytd-rich-grid-items-per-row, 3) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
-        max-width: calc(100% / var(--ytd-rich-grid-items-per-row, 3) - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
-    }
-
-    [data-ytc-cols="3"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,
-    [data-ytc-cols="3"] ytd-rich-grid-renderer ytd-rich-item-renderer {
+    html.ytc-feed-page[data-ytc-cols="3"] ytd-browse:not([hidden]) ytd-rich-grid-renderer ytd-rich-item-renderer {
         width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
         max-width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
     }
 
-    [data-ytc-cols="4"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,
-    [data-ytc-cols="4"] ytd-rich-grid-renderer ytd-rich-item-renderer {
+    html.ytc-feed-page[data-ytc-cols="4"] ytd-browse:not([hidden]) ytd-rich-grid-renderer ytd-rich-item-renderer {
         width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
         max-width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
     }
 
-    [data-ytc-cols="5"] #contents.ytd-rich-grid-row ytd-rich-item-renderer,
-    [data-ytc-cols="5"] ytd-rich-grid-renderer ytd-rich-item-renderer {
+    html.ytc-feed-page[data-ytc-cols="5"] ytd-browse:not([hidden]) ytd-rich-grid-renderer ytd-rich-item-renderer {
         width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
         max-width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
     }
 }
 
 /* --------------------------------------------------------------------------
-   2. TỐI ƯU HIỆU NĂNG, KHUNG HÌNH & LIVE CHAT (ZERO-LAG)
+   2. KHUNG XEM TRƯỚC INLINE TRÊN FEED (CHỈ ÁP DỤNG TRÊN FEED ĐANG MỞ)
    -------------------------------------------------------------------------- */
-/* Đảm bảo khung xem trước video inline khi hover không bao giờ bị cắt xén hay che khuất */
-#page-manager ytd-rich-grid-row {
+html.ytc-feed-page ytd-browse:not([hidden]) ytd-rich-grid-row {
     overflow: visible !important;
 }
 
-/* Dùng :hover đơn giản, KHÔNG dùng :has() để tránh style recalc storm mỗi khi di chuột */
-#page-manager ytd-rich-grid-row:hover {
+html.ytc-feed-page ytd-browse:not([hidden]) ytd-rich-grid-row:hover {
     z-index: 10 !important;
     position: relative !important;
     overflow: visible !important;
 }
 
-#page-manager ytd-rich-item-renderer {
+html.ytc-feed-page ytd-browse:not([hidden]) ytd-rich-item-renderer {
     overflow: visible !important;
 }
 
-#page-manager ytd-rich-item-renderer:hover,
-#page-manager ytd-rich-item-renderer[is-hovered],
-#page-manager ytd-rich-item-renderer[has-preview] {
+html.ytc-feed-page ytd-browse:not([hidden]) ytd-rich-item-renderer:hover,
+html.ytc-feed-page ytd-browse:not([hidden]) ytd-rich-item-renderer[is-hovered],
+html.ytc-feed-page ytd-browse:not([hidden]) ytd-rich-item-renderer[has-preview] {
     z-index: 20 !important;
     position: relative !important;
     overflow: visible !important;
 }
 
 /* z-index vừa đủ để preview nổi lên trên thẻ video khi hover, KHÔNG dùng pointer-events: auto toàn cục */
-#preview,
-#preview.ytd-rich-grid-renderer,
-ytd-rich-grid-renderer #preview,
-#page-manager #preview,
-ytd-video-preview,
-#video-preview {
+html.ytc-feed-page #preview,
+html.ytc-feed-page ytd-rich-grid-renderer #preview,
+html.ytc-feed-page ytd-video-preview,
+html.ytc-feed-page #video-preview {
     z-index: 60 !important;
     overflow: visible !important;
 }
-ytd-video-preview #media-container,
-ytd-video-preview #player-container,
-ytd-moving-thumbnail-renderer,
-#inline-preview-player {
+html.ytc-feed-page ytd-video-preview #media-container,
+html.ytc-feed-page ytd-video-preview #player-container,
+html.ytc-feed-page ytd-moving-thumbnail-renderer,
+html.ytc-feed-page #inline-preview-player {
     z-index: 60 !important;
-}
-
-ytd-comment-thread-renderer {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 200px;
-}
-
-/* Giữ thanh điều khiển và chat hiển thị mượt mà không can thiệp layout */
-iframe#chatframe {
-    contain: paint !important;
-}
-
-yt-live-chat-text-message-renderer,
-yt-live-chat-paid-message-renderer,
-yt-live-chat-membership-item-renderer {
-    content-visibility: auto !important;
-    contain-intrinsic-size: auto 32px !important;
 }
 
 /* --------------------------------------------------------------------------
    3. BỘ LỌC NỘI DUNG: SHORTS, CHƠI GAME, HỘI VIÊN, KHÁM PHÁ, CỘNG ĐỒNG, CLEAN SEARCH
+   (Dùng class đánh dấu trực tiếp, tránh style invalidation storm trên DOM lớn)
    -------------------------------------------------------------------------- */
-.ytc-hide-shorts ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),
-.ytc-hide-shorts ytd-rich-section-renderer:has(ytd-reel-shelf-renderer),
+.ytc-hide-shorts ytd-rich-section-renderer.ytc-shelf-shorts,
 .ytc-hide-shorts ytd-rich-shelf-renderer[is-shorts],
 .ytc-hide-shorts ytd-reel-shelf-renderer,
-.ytc-hide-shorts ytd-guide-entry-renderer:has(a[href^="/shorts"]),
-.ytc-hide-shorts ytd-mini-guide-entry-renderer:has(a[href^="/shorts"]),
+.ytc-hide-shorts ytd-guide-entry-renderer.ytc-guide-shorts,
+.ytc-hide-shorts ytd-mini-guide-entry-renderer.ytc-guide-shorts,
 .ytc-hide-shorts ytd-guide-entry-renderer a[title="Shorts"],
 .ytc-hide-shorts ytd-mini-guide-entry-renderer[aria-label="Shorts"],
 .ytc-hide-shorts #endpoint[title="Shorts"],
@@ -172,13 +106,10 @@ yt-live-chat-membership-item-renderer {
     display: none !important;
 }
 
-.ytc-hide-playables ytd-rich-section-renderer:has([is-mini-game-card-shelf]),
+.ytc-hide-playables ytd-rich-section-renderer.ytc-shelf-playables,
 .ytc-hide-playables ytd-rich-shelf-renderer[is-mini-game-card-shelf],
-.ytc-hide-playables ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-mini-game-card-shelf]),
-.ytc-hide-playables ytd-rich-section-renderer:has(a[href*="/playables"]),
-.ytc-hide-playables ytd-rich-section-renderer:has(a[href*="playables"]),
-.ytc-hide-playables ytd-guide-entry-renderer:has(a[href*="/playables"]),
-.ytc-hide-playables ytd-mini-guide-entry-renderer:has(a[href*="/playables"]),
+.ytc-hide-playables ytd-guide-entry-renderer.ytc-guide-playables,
+.ytc-hide-playables ytd-mini-guide-entry-renderer.ytc-guide-playables,
 .ytc-hide-playables ytd-guide-entry-renderer a[title*="Chơi game"],
 .ytc-hide-playables ytd-guide-entry-renderer a[title*="Playables"],
 .ytc-hide-playables ytd-mini-guide-entry-renderer[aria-label*="Chơi game"],
@@ -188,40 +119,11 @@ yt-live-chat-membership-item-renderer {
     display: none !important;
 }
 
-.ytc-hide-members ytd-rich-section-renderer:has(.badge-style-type-members-only),
-.ytc-hide-members ytd-rich-section-renderer:has(.badge-style-type-members-first),
-.ytc-hide-members ytd-rich-section-renderer:has([badge-style="MEMBERS_FIRST"]),
-.ytc-hide-members ytd-rich-section-renderer:has([badge-style="MEMBERS_ONLY"]),
-.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="hội viên"]),
-.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Hội viên"]),
-.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Members only"]),
-.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="members only"]),
-.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="Members first"]),
-.ytc-hide-members ytd-rich-section-renderer:has([aria-label*="members first"]),
-.ytc-hide-members ytd-rich-section-renderer:has(a[href*="/membership"]),
-.ytc-hide-members ytd-rich-section-renderer:has(a[href*="/memberships"]),
 .ytc-hide-members ytd-rich-section-renderer.ytc-shelf-members,
-.ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-only),
-.ytc-hide-members ytd-rich-item-renderer:has(.badge-style-type-members-first),
-.ytc-hide-members ytd-rich-item-renderer:has([badge-style="MEMBERS_FIRST"]),
-.ytc-hide-members ytd-rich-item-renderer:has([badge-style="MEMBERS_ONLY"]),
-.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="hội viên"]),
-.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Hội viên"]),
-.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Members only"]),
-.ytc-hide-members ytd-rich-item-renderer:has([aria-label*="Members first"]),
 .ytc-hide-members ytd-rich-item-renderer.ytc-item-members,
-.ytc-hide-members ytd-video-renderer:has(.badge-style-type-members-only),
-.ytc-hide-members ytd-video-renderer:has(.badge-style-type-members-first),
-.ytc-hide-members ytd-video-renderer:has([badge-style="MEMBERS_FIRST"]),
-.ytc-hide-members ytd-video-renderer:has([badge-style="MEMBERS_ONLY"]),
-.ytc-hide-members ytd-video-renderer:has([aria-label*="hội viên"]),
-.ytc-hide-members ytd-video-renderer:has([aria-label*="Hội viên"]),
 .ytc-hide-members ytd-video-renderer.ytc-item-members,
-.ytc-hide-members ytd-compact-video-renderer:has(.badge-style-type-members-only),
-.ytc-hide-members ytd-compact-video-renderer:has(.badge-style-type-members-first),
-.ytc-hide-members ytd-compact-video-renderer:has([badge-style="MEMBERS_FIRST"]),
-.ytc-hide-members ytd-compact-video-renderer:has([badge-style="MEMBERS_ONLY"]),
-.ytc-hide-members ytd-compact-video-renderer.ytc-item-members {
+.ytc-hide-members ytd-compact-video-renderer.ytc-item-members,
+.ytc-hide-members yt-lockup-view-model.ytc-item-members {
     display: none !important;
 }
 
@@ -231,76 +133,33 @@ yt-live-chat-membership-item-renderer {
 .ytc-hide-mixes ytd-radio-renderer,
 .ytc-hide-mixes ytd-compact-radio-renderer,
 .ytc-hide-mixes ytd-grid-radio-renderer,
-.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-playlist-renderer),
-.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-radio-renderer),
-.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-playlist-thumbnail),
-.ytc-hide-mixes ytd-rich-item-renderer:has(ytd-playlist-custom-thumbnail-renderer),
-.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="/playlist?list="]),
-.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="list=PL"]),
-.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="list=OLAK5uy_"]),
-.ytc-hide-mixes ytd-rich-item-renderer:has(a[href*="list=CL"]),
-.ytc-hide-mixes ytd-video-renderer:has(ytd-playlist-thumbnail),
-.ytc-hide-mixes ytd-video-renderer:has(a[href*="/playlist?list="]),
-.ytc-hide-mixes ytd-video-renderer:has(a[href*="list=PL"]),
-.ytc-hide-mixes ytd-video-renderer:has(a[href*="list=OLAK5uy_"]),
-.ytc-hide-mixes ytd-video-renderer:has(a[href*="list=CL"]),
 .ytc-hide-mixes ytd-rich-item-renderer.ytc-item-mix,
 .ytc-hide-mixes ytd-video-renderer.ytc-item-mix,
 .ytc-hide-mixes ytd-compact-video-renderer.ytc-item-mix,
+.ytc-hide-mixes yt-lockup-view-model.ytc-item-mix,
 .ytc-hide-mixes #related ytd-compact-radio-renderer,
 .ytc-hide-mixes #related ytd-compact-playlist-renderer,
-.ytc-hide-mixes #playlist:has(a[href*="list=RD"]),
-.ytc-hide-mixes #playlist:has([title*="Danh sách kết hợp"]),
-.ytc-hide-mixes #playlist:has([title*="Mixes"]),
-.ytc-hide-mixes #playlist:has([title*="Mix -"]),
-.ytc-hide-mixes ytd-playlist-panel-renderer:has(a[href*="list=RD"]),
-.ytc-hide-mixes ytd-playlist-panel-renderer:has([title*="Danh sách kết hợp"]),
-.ytc-hide-mixes ytd-playlist-panel-renderer:has([title*="Mixes"]),
-.ytc-hide-mixes ytd-playlist-panel-renderer:has([title*="Mix -"]),
-/* Kệ Mix chuyên biệt (dựa theo tiêu đề rõ ràng, không ẩn oan toàn bộ kệ nhạc) */
-.ytc-hide-mixes ytd-rich-section-renderer:has(#title-container [title*="Danh sách kết hợp"]),
-.ytc-hide-mixes ytd-rich-section-renderer:has(#title-container [title*="Mixes"]),
-.ytc-hide-mixes ytd-rich-section-renderer:has(#title[title*="Danh sách kết hợp"]),
-.ytc-hide-mixes ytd-rich-section-renderer:has(#title[title*="Mixes"]),
-.ytc-hide-mixes ytd-shelf-renderer:has(#title-container [title*="Danh sách kết hợp"]),
-.ytc-hide-mixes ytd-shelf-renderer:has(#title-container [title*="Mixes"]),
-.ytc-hide-mixes ytd-shelf-renderer:has(#title[title*="Danh sách kết hợp"]),
-.ytc-hide-mixes ytd-shelf-renderer:has(#title[title*="Mixes"]),
+.ytc-hide-mixes #playlist.ytc-item-mix,
+.ytc-hide-mixes ytd-playlist-panel-renderer.ytc-item-mix,
 .ytc-hide-mixes ytd-rich-section-renderer.ytc-shelf-mix,
 .ytc-hide-mixes ytd-shelf-renderer.ytc-shelf-mix,
-/* Chip "Danh sách kết hợp" trên thanh chủ đề */
-.ytc-hide-mixes yt-chip-cloud-chip-renderer:has([title*="Danh sách kết hợp"]),
-.ytc-hide-mixes yt-chip-cloud-chip-renderer:has([title*="Mixes"]),
+.ytc-hide-mixes yt-chip-cloud-chip-renderer.ytc-chip-mix,
 .ytc-hide-mixes .ytc-item-mix {
     display: none !important;
 }
 
-.ytc-hide-explore ytd-rich-section-renderer:has(yt-chip-cloud-chip-renderer),
-.ytc-hide-explore ytd-rich-section-renderer:has(yt-chip-cloud-renderer),
-.ytc-hide-explore ytd-rich-section-renderer:has(ytd-feed-filter-chip-bar-renderer),
-.ytc-hide-explore ytd-rich-section-renderer:has(#chips),
-.ytc-hide-explore ytd-rich-section-renderer.ytc-shelf-explore,
-.ytc-hide-explore ytd-rich-section-renderer:has([title*="Khám phá các chủ đề"]),
-.ytc-hide-explore ytd-rich-section-renderer:has([title*="Explore other topics"]),
-.ytc-hide-explore ytd-rich-section-renderer:has([title*="Explore topics"]) {
+.ytc-hide-explore ytd-rich-section-renderer.ytc-shelf-explore {
     display: none !important;
 }
 
 .ytc-clean-search ytd-ad-slot-renderer,
-.ytc-clean-search ytd-rich-item-renderer:has(ytd-ad-slot-renderer),
-.ytc-clean-search ytd-rich-section-renderer:has(ytd-ad-slot-renderer),
-.ytc-clean-search ytd-video-renderer:has(.badge-style-type-ad) {
+.ytc-clean-search ytd-rich-item-renderer.ytc-item-ad,
+.ytc-clean-search ytd-rich-section-renderer.ytc-shelf-ad,
+.ytc-clean-search ytd-video-renderer.ytc-item-ad {
     display: none !important;
 }
 
-.ytc-hide-community ytd-rich-section-renderer:has(ytd-post-renderer),
-.ytc-hide-community ytd-rich-section-renderer:has(ytd-backstage-post-renderer),
-.ytc-hide-community ytd-rich-section-renderer:has(ytd-backstage-post-thread-renderer),
-.ytc-hide-community ytd-rich-section-renderer:has(ytd-post-multi-image-renderer),
-.ytc-hide-community ytd-rich-section-renderer:has(ytd-poll-renderer),
 .ytc-hide-community ytd-rich-section-renderer.ytc-shelf-community,
-.ytc-hide-community ytd-rich-item-renderer:has(ytd-post-renderer),
-.ytc-hide-community ytd-rich-item-renderer:has(ytd-backstage-post-renderer),
 .ytc-hide-community ytd-rich-item-renderer.ytc-item-community,
 .ytc-hide-community ytd-post-renderer,
 .ytc-hide-community ytd-backstage-post-renderer,
@@ -390,9 +249,9 @@ html.ytc-ambient-lighting .ytp-ambient-mode-rendering-container {
     align-items: center !important;
     box-sizing: content-box !important;
 }
-ytd-topbar-logo-renderer ytd-yoodle-renderer,
-ytd-yoodle-renderer ytd-logo,
-ytd-topbar-logo-renderer ytd-yoodle-renderer * {
+:root.ytc-premium-logo ytd-topbar-logo-renderer ytd-yoodle-renderer,
+:root.ytc-premium-logo ytd-yoodle-renderer ytd-logo,
+:root.ytc-premium-logo ytd-topbar-logo-renderer ytd-yoodle-renderer * {
     display: none !important;
 }
 :root.ytc-premium-logo ytd-topbar-logo-renderer #logo ytd-logo:not(.ytd-yoodle-renderer),
@@ -2033,15 +1892,12 @@ body:not(.ytc-ambient-lighting) #ytc-ambient-wrapper {
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
-    height: 2200px !important;
+    height: 1150px !important;
     pointer-events: none !important;
     z-index: 0 !important;
     overflow: hidden !important;
     contain: paint !important;
     opacity: 0;
-    /* Lan tỏa sâu xuống giữa trang (gấp đôi độ dài trước đây), tan biến mượt mà */
-    mask-image: linear-gradient(to bottom, #000 0%, #000 65%, rgba(0, 0, 0, 0.6) 80%, rgba(0, 0, 0, 0.2) 92%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 65%, rgba(0, 0, 0, 0.6) 80%, rgba(0, 0, 0, 0.2) 92%, transparent 100%);
     transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -2049,17 +1905,14 @@ html.ytc-ambient-lighting #ytc-ambient-wrapper.ytc-ambient-active {
     opacity: 1;
 }
 
-/* Lớp Canvas Ambilight: Dải kéo giãn anamorphic mượt mà, giữ trọn vẹn đường nét vật thể và chuyển động mở rộng */
+/* Lớp Canvas Ambilight: Canvas đã làm mờ trước ở độ phân giải nhỏ để GPU chỉ scale nhẹ */
 #ytc-ambient-spread-canvas {
     position: absolute !important;
-    top: -30px !important;
-    left: -30px !important;
-    width: calc(100% + 60px) !important;
-    height: calc(100% + 60px) !important;
-    filter: blur(12px) saturate(135%) brightness(103%);
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
     pointer-events: none !important;
-    transform: translateZ(0);
-    opacity: 0.95;
+    opacity: 0.92;
 }
 
 /* Chỉ ẩn Ambilight mặc định của YouTube khi BẬT Ánh sáng phòng của script để tránh xung đột */
@@ -2068,15 +1921,7 @@ html.ytc-ambient-lighting ytd-watch-flexy #cinematic-container {
     display: none !important;
 }
 
-/* Khung video: Bo tròn mượt mà, bóng đổ nhẹ tự nhiên giúp mép video tan chảy vào dải ánh sáng mở rộng */
-html.ytc-ambient-lighting #movie_player {
-    border-radius: 12px !important;
-    overflow: hidden !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: 0 4px 28px rgba(0, 0, 0, 0.45) !important;
-}
-
+/* Giữ nguyên hình dạng gốc của #movie_player để trình duyệt ưu tiên Hardware Video Overlay khi phóng to */
 html[fullscreen] #movie_player,
 .ytp-fullscreen #movie_player {
     border-radius: 0 !important;
@@ -2085,9 +1930,8 @@ html[fullscreen] #movie_player,
     outline: none !important;
 }
 
-/* Phủ dải đen khi toàn màn hình bằng bản nền mờ; video chính vẫn giữ nguyên tỷ lệ. */
+/* Phủ dải đen khi toàn màn hình bằng bản nền mờ siêu nhẹ; video chính giữ nguyên tỷ lệ & hardware overlay */
 #movie_player.ytc-letterbox-backdrop-active {
-    isolation: isolate !important;
     background: #000 !important;
 }
 #movie_player.ytc-letterbox-backdrop-active > .ytc-letterbox-backdrop {
@@ -2097,7 +1941,8 @@ html[fullscreen] #movie_player,
     width: 108% !important;
     height: 108% !important;
     object-fit: fill !important;
-    opacity: .88 !important;
+    opacity: 0.42 !important;
+    filter: saturate(1.15);
     pointer-events: none !important;
 }
 #movie_player.ytc-letterbox-backdrop-active > .html5-video-container {
@@ -2198,17 +2043,6 @@ html.ytc-ambient-lighting ytd-text-inline-expander {
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-}
-
-/* Giảm màu và dịu nội dung phụ xung quanh để video chính nổi bật rực rỡ */
-html.ytc-ambient-lighting #secondary ytd-thumbnail,
-html.ytc-ambient-lighting #related ytd-thumbnail {
-    filter: brightness(0.88) contrast(0.95);
-    transition: filter 0.25s ease;
-}
-html.ytc-ambient-lighting #secondary ytd-thumbnail:hover,
-html.ytc-ambient-lighting #related ytd-thumbnail:hover {
-    filter: brightness(1) contrast(1);
 }
 
 /* ==========================================================================
@@ -2335,10 +2169,10 @@ html[dark].ytc-ambient-lighting ytd-watch-metadata #title h1 {
    2. QUY TẮC RIÊNG CHO GIAO DIỆN SÁNG (LIGHT THEME)
    ========================================================================== */
 
-/* Tinh chỉnh màu sắc Ambilight trên nền trắng: Màu sắc rực rỡ, đậm đà ngang ngửa Dark Theme */
+/* Tinh chỉnh màu sắc Ambilight trên nền trắng (không dùng CSS blur nặng trên toàn viewport) */
 html:not([dark]) #ytc-ambient-spread-canvas {
-    filter: blur(24px) saturate(210%) contrast(115%) brightness(96%);
-    opacity: 0.9;
+    filter: saturate(165%) contrast(108%) brightness(98%);
+    opacity: 0.85;
 }
 
 /* Khi ở đỉnh trang: Masthead trong suốt */
@@ -2494,20 +2328,13 @@ body.ytc-fs-locked .ytp-fullscreen-button {
 /* ==========================================================================
    TRIỆT TIÊU THÔNG BÁO GIÁN ĐOẠN ANTI-ADBLOCK (YOUTUBE SNACKBAR & TOAST & BUBBLE)
    ========================================================================== */
-snackbar-container:has(.snackbarViewModelTitleSubtextWrapper),
-snackbar-container:has(.snackbarViewModelTitle),
-snackbar-container:has(a[href*="3037019"]),
-snackbar-view-model:has(a[href*="3037019"]),
-.ytSnackbarContainerHost:has(.snackbarViewModelTitle),
-.ytSnackbarContainerSnackbarContainer:has(.snackbarViewModelTitle),
 yt-bubble-hint-renderer,
 ytd-bubble-hint-renderer,
 .paper-toast-open.yt-notification-action-renderer,
 .toast-button.style-scope.yt-notification-action-renderer,
 .ytp-suggested-action-badge[data-tooltip-target-id*="interrupt" i],
 .ytp-suggested-action-badge-expanded,
-tp-yt-paper-toast:has(yt-notification-action-renderer),
-yt-notification-action-renderer:has(#toast) {
+.ytc-dismissed-interruption {
     display: none !important;
     opacity: 0 !important;
     pointer-events: none !important;

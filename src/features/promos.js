@@ -11,22 +11,73 @@ const INTERRUPTION_SELECTOR =
     'yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, #toast, ' +
     'yt-notification-action-renderer, ytd-notification-action-renderer, ' +
     '.ytp-suggested-action-badge, .ytp-suggested-action-badge-expanded, ' +
-    'div[class*="interrupt" i], div[class*="suggested-action" i], div[class*="ad-interrupt" i], ' +
     '.paper-toast-open, .toast-button';
 
 const PROMO_SELECTOR =
     'ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer, ytd-upsell-dialog-renderer, ' +
     'ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer';
+
+const PROMO_CANDIDATE_TAGS = new Set([
+    'SNACKBAR-CONTAINER', 'SNACKBAR-VIEW-MODEL',
+    'YT-BUBBLE-HINT-RENDERER', 'YTD-BUBBLE-HINT-RENDERER',
+    'TP-YT-PAPER-TOAST', 'YT-NOTIFICATION-ACTION-RENDERER', 'YTD-NOTIFICATION-ACTION-RENDERER',
+    'YTD-MEALBAR-PROMO-RENDERER', 'YT-MEALBAR-PROMO-RENDERER',
+    'YTD-UPSELL-DIALOG-RENDERER', 'YTD-IN-FEED-SURVEY-RENDERER', 'YTD-SINGLE-OPTION-SURVEY-RENDERER',
+    'YTD-POPUP-CONTAINER', 'TP-YT-PAPER-DIALOG', 'TP-YT-IRON-OVERLAY-BACKDROP',
+    'YTD-ENFORCEMENT-MESSAGE-VIEW-MODEL', 'YTD-MERCH-SHELF-RENDERER',
+    'YTD-PRODUCTS-SHELF-RENDERER', 'YTD-PRODUCT-SHELF-RENDERER'
+]);
+
+const FAST_SKIP_PARENT_IDS = new Set([
+    'below', 'comments', 'sections', 'contents', 'secondary', 'related',
+    'panels', 'panels-full-bleed-container', 'masthead', 'ytc-settings-panel', 'ytc-perf-widget'
+]);
+
 export const IGNORED_MUTATION_ZONES =
     '#comments, ytd-comments, #ytc-danmaku-container, #ytc-streamer-box, #ytc-ambient-wrapper, ' +
-    'ytd-moving-thumbnail-renderer, .ytp-chrome-bottom, .ytp-tooltip, .ytp-caption-window-container, ' +
-    '.ytp-bezel, .ytp-spinner, .ytp-chapter-hover-container, ytd-live-chat-frame, #chat, ' +
-    '#related, ytd-watch-next-secondary-results-renderer, #playlist, ytd-playlist-panel-renderer';
+    '#ytc-settings-panel, #ytc-perf-widget, ytd-moving-thumbnail-renderer, ' +
+    '.ytp-chrome-bottom, .ytp-tooltip, .ytp-caption-window-container, ' +
+    '.ytp-bezel, .ytp-spinner, .ytp-chapter-hover-container, .ytp-heat-map-container, ' +
+    '.ytp-progress-bar-container, .ytp-storyboard-framepreview, .ytp-ce-element, .html5-video-info-panel, ' +
+    'ytd-video-preview, #preview, #inline-preview-player, ytd-live-chat-frame, #chat, ' +
+    '#related, ytd-watch-next-secondary-results-renderer, #playlist, ytd-playlist-panel-renderer, ' +
+    '#below, ytd-watch-metadata, #panels, #panels-full-bleed-container, ' +
+    'ytd-engagement-panel-section-list-renderer, ytd-transcript-renderer, #masthead, ytd-masthead';
 
 export function isIgnoredPromoMutationNode(node) {
     if (!node) return true;
     const el = node.nodeType === 1 ? node : node.parentElement;
-    return !!(el && el.closest?.(IGNORED_MUTATION_ZONES));
+    if (!el) return true;
+    if (el.id && FAST_SKIP_PARENT_IDS.has(el.id)) return true;
+    return !!el.closest?.(IGNORED_MUTATION_ZONES);
+}
+
+export function shouldInspectPromoAddedNode(node, mutationTarget = null) {
+    if (!node || node.nodeType !== 1) return false;
+    const tag = node.tagName ? node.tagName.toUpperCase() : '';
+    if (PROMO_CANDIDATE_TAGS.has(tag)) return true;
+    if (node.id === 'toast') return true;
+    const cls = typeof node.className === 'string' ? node.className : '';
+    if (cls && (
+        cls.includes('Snackbar') ||
+        cls.includes('snackbar') ||
+        cls.includes('suggested-action') ||
+        cls.includes('interrupt') ||
+        cls.includes('paper-toast') ||
+        cls.includes('toast-button') ||
+        cls.includes('mealbar') ||
+        cls.includes('upsell') ||
+        cls.includes('merch') ||
+        cls.includes('shopping')
+    )) {
+        return true;
+    }
+    const targetTag = mutationTarget && mutationTarget.tagName ? mutationTarget.tagName.toUpperCase() : '';
+    if ((targetTag === 'BODY' || targetTag === 'YTD-POPUP-CONTAINER') && node.firstElementChild) {
+        const childTag = node.firstElementChild.tagName ? node.firstElementChild.tagName.toUpperCase() : '';
+        if (PROMO_CANDIDATE_TAGS.has(childTag)) return true;
+    }
+    return false;
 }
 
 function queryIncludingRoot(root, selector) {
@@ -80,6 +131,7 @@ export function dismissInterruptionPrompts(scope) {
             if (closeBtn) {
                 try { closeBtn.click(); } catch(e) {}
             }
+            target.classList.add('ytc-dismissed-interruption');
             target.style.setProperty('display', 'none', 'important');
             target.style.setProperty('opacity', '0', 'important');
             target.style.setProperty('pointer-events', 'none', 'important');
@@ -148,25 +200,13 @@ export function setupPromoObserver() {
     const pendingScopes = new Set();
     let scheduledFrame = 0;
     const observer = new MutationObserver((mutations) => {
-        const activeSelector = currentConfig.autoDismissPromos
-            ? `${INTERRUPTION_SELECTOR}, ${PROMO_SELECTOR}`
-            : INTERRUPTION_SELECTOR;
-
-        const queueElement = (node) => {
-            if (!node || node.nodeType !== 1 || isIgnoredPromoMutationNode(node)) return;
-            const related = node.closest(activeSelector);
-            if (related) pendingScopes.add(related);
-            if (node.matches(activeSelector)) pendingScopes.add(node);
-            if (node.firstElementChild) {
-                node.querySelectorAll(activeSelector).forEach((el) => pendingScopes.add(el));
-            }
-        };
-
         for (const mutation of mutations) {
             if (!mutation.addedNodes.length) continue;
             if (isIgnoredPromoMutationNode(mutation.target)) continue;
             for (const node of mutation.addedNodes) {
-                queueElement(node);
+                if (!shouldInspectPromoAddedNode(node, mutation.target)) continue;
+                if (isIgnoredPromoMutationNode(node)) continue;
+                pendingScopes.add(node);
             }
         }
 

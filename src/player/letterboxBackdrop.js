@@ -1,7 +1,7 @@
-// Fill fullscreen letterbox areas with a low-cost, pre-blurred copy of the video.
-const CANVAS_WIDTH = 96;
-const CANVAS_HEIGHT = 54;
-const UPDATE_INTERVAL_MS = 500;
+// Fill fullscreen letterbox areas with a low-cost, bilinear-smoothed copy of the video.
+const CANVAS_WIDTH = 48;
+const CANVAS_HEIGHT = 27;
+const UPDATE_INTERVAL_MS = 2000;
 const LETTERBOX_RATIO_THRESHOLD = 0.06;
 
 let canvas = null;
@@ -115,11 +115,8 @@ function drawFrame() {
     if (!ensureCanvas(player) || !context) return;
     if (video.paused && video === activeVideo && canvas.dataset.hasFrame === 'true') return;
     try {
-        // Pre-blur onto a tiny canvas once per tick instead of running a full-viewport CSS blur shader.
-        if ('filter' in context) {
-            context.filter = 'blur(8px) brightness(0.62) saturate(1.15)';
-        }
-        context.drawImage(video, -4, -3, CANVAS_WIDTH + 8, CANVAS_HEIGHT + 6);
+        // Upscaling a tiny 48x27 canvas on GPU gives smooth blur with zero CPU/Skia filter pass.
+        context.drawImage(video, -2, -2, CANVAS_WIDTH + 4, CANVAS_HEIGHT + 4);
         activeVideo = video;
         canvas.dataset.hasFrame = 'true';
     } catch (_) {

@@ -70,7 +70,7 @@ export function onConfigChange(fn) {
     }
 }
 
-export function applyConfigToRoot() {
+export function applyConfigToRoot(notify = true) {
     const root = document.documentElement;
     if (!root) return;
 
@@ -114,11 +114,13 @@ export function applyConfigToRoot() {
         document.body.setAttribute('data-ytc-chat', currentConfig.chatOverlay || 'off');
     }
 
-    broadcastConfigToIframes(currentConfig);
+    if (notify) {
+        broadcastConfigToIframes(currentConfig);
 
-    configListeners.forEach(fn => {
-        try { fn(currentConfig); } catch (e) {}
-    });
+        configListeners.forEach(fn => {
+            try { fn(currentConfig); } catch (e) {}
+        });
+    }
 }
 
 export function broadcastConfigToIframes(cfg = currentConfig) {

@@ -3,13 +3,16 @@
 // ==========================================================================
 import { currentConfig } from '../core/config.js';
 
-export function isHomeFeedPath() {
-    const p = location.pathname;
-    return p === '/' || p.startsWith('/feed') || p.startsWith('/@') || p.startsWith('/channel');
+export function isHomeFeedPath(pathname = (typeof location !== 'undefined' ? location.pathname : '')) {
+    return pathname === '/' || pathname.startsWith('/feed') || pathname.startsWith('/@') || pathname.startsWith('/channel');
 }
 
 export function applyHomeGridColumns() {
-    if (!isHomeFeedPath()) return;
+    const isFeed = isHomeFeedPath();
+    if (document.documentElement) {
+        document.documentElement.classList.toggle('ytc-feed-page', isFeed);
+    }
+    if (!isFeed) return;
     const cols = currentConfig.columns || 3;
     const colStr = String(cols);
     const grids = document.querySelectorAll('ytd-rich-grid-renderer');

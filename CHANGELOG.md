@@ -1,3 +1,9 @@
+## v3.9.36 — 14/11/2026 23:05
+
+- Gỡ toàn bộ `:has()` CSS, scoping lưới và `content-visibility` bình luận.
+- Ngắt observer/interval logo, feed và promo ngoài vùng cần thiết trên trang xem.
+- Khử shader CSS blur/mask Ambilight và giữ hardware overlay khi phóng to.
+
 ## v3.9.35 — 14/11/2026 22:22
 
 - Tắt nền mờ letterbox khi tỷ lệ khung hình đã khớp.

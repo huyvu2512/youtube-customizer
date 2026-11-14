@@ -993,7 +993,7 @@ export function ensureSettingsElements() {
     }
 
     const panel = createSettingsPanel();
-    syncPanelState(panel);
+    syncPanelState(panel, { force: true });
     bindGlobalMenuDismiss();
     setupOnboardingAndUpdates(btn);
 
@@ -1010,7 +1010,7 @@ export function ensureSettingsElements() {
 
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            syncPanelState(panel);
+            syncPanelState(panel, { force: true });
             updatePosition();
             const isOpen = panel.classList.toggle('open');
             if (isOpen) {
@@ -1029,7 +1029,11 @@ export function setupSettingsObserver() {
 
     const attach = (masthead) => {
         throttledEnsure();
-        new MutationObserver(throttledEnsure).observe(masthead, { childList: true, subtree: true });
+        new MutationObserver(() => {
+            const btn = document.getElementById('ytc-settings-btn');
+            if (btn && btn.isConnected) return;
+            throttledEnsure();
+        }).observe(masthead, { childList: true, subtree: true });
     };
 
     const masthead = document.querySelector('ytd-masthead');
@@ -1040,7 +1044,7 @@ export function setupSettingsObserver() {
     const retryInterval = setInterval(() => {
         retryCount++;
         ensureSettingsElements();
-        if (retryCount >= 6 && document.getElementById('ytc-settings-btn')) {
+        if ((retryCount >= 6 && document.getElementById('ytc-settings-btn')) || retryCount >= 12) {
             clearInterval(retryInterval);
         }
     }, 500);

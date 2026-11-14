@@ -14,10 +14,13 @@ import {
 import { whenElement } from './core/utils.js';
 import {
     applyHomeGridColumns,
-    scheduleLogoScan,
     setupLogoObserver,
+    syncLogoObserver,
     scheduleFeedScan,
+    scanAndTagFeedContent,
+    hasActiveFeedFilters,
     setupFeedShelvesObserver,
+    syncFeedObserver,
     dismissPromoBanners,
     setupPromoObserver,
     isHomeFeedPath,
@@ -105,6 +108,9 @@ if (window.self !== window.top) {
     // Đăng ký đồng bộ layout & overlay mỗi khi config thay đổi
     onConfigChange(() => {
         applyHomeGridColumns();
+        syncLogoObserver();
+        syncFeedObserver();
+        applyAmbientLightingState();
         updateChatOverlayVisibility();
         applyAudioOnlyState();
         if (currentConfig.autoDismissPromos) {
@@ -115,7 +121,7 @@ if (window.self !== window.top) {
         }
     });
 
-    applyConfigToRoot();
+    applyConfigToRoot(false);
     bindGlobalKeys();
     checkAndAutoUpdate();
 
@@ -124,10 +130,10 @@ if (window.self !== window.top) {
         currentConfig.chatOverlay = 'off';
         resetChatCollapseState();
         updateChatOverlayVisibility();
-        syncPanelState();
 
-        applyConfigToRoot();
-        scheduleLogoScan(document);
+        applyConfigToRoot(false);
+        syncLogoObserver();
+        syncFeedObserver();
         ensureSettingsElements();
         syncPanelState();
         bindGlobalKeys();
@@ -147,9 +153,14 @@ if (window.self !== window.top) {
 
         if (location.pathname.startsWith('/watch')) {
             setWatchLoading(true);
+            applyHomeGridColumns();
+            if (hasActiveFeedFilters()) scanAndTagFeedContent(document);
         } else if (isHomeFeedPath()) {
             applyHomeGridColumns();
             scheduleFeedScan(document);
+        } else {
+            applyHomeGridColumns();
+            if (hasActiveFeedFilters()) scheduleFeedScan(document);
         }
     }
 
@@ -213,7 +224,7 @@ if (window.self !== window.top) {
         const gridRetryInterval = setInterval(() => {
             gridRetryCount++;
             applyHomeGridColumns();
-            if (document.querySelector('ytd-rich-grid-renderer ytd-rich-item-renderer') || gridRetryCount >= 10) {
+            if ((currentConfig.columns || 3) === 3 || document.querySelector('ytd-rich-grid-renderer ytd-rich-item-renderer') || gridRetryCount >= 10) {
                 clearInterval(gridRetryInterval);
             }
         }, 250);

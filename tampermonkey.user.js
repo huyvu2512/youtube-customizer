@@ -1,22 +1,23 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.35
-// @description  YouTube Customizer v3.9.35 — Tối ưu hiệu năng phóng to, tua video và xem trước timeline.
+// @version      3.9.36
+// @description  YouTube Customizer v3.9.36 — Gỡ :has() CSS, tắt observer thừa trên Watch và khử blur GPU khi phóng to.
 // @author       Huy Vũ
-// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.35
+// @require      https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/youtube_customizer.js?v=3.9.36
 // @match        https://www.youtube.com/*
 // @run-at       document-start
 // @grant        none
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
-// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.35
-// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.35
+// @updateURL    https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.36
+// @downloadURL  https://raw.githubusercontent.com/huyvu2512/youtube-customizer/main/tampermonkey.user.js?v=3.9.36
 // ==/UserScript==
 
 /*
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.36 — Gỡ :has() CSS, tắt observer thừa trên Watch và khử blur GPU khi phóng to.
  * v3.9.35 — Tối ưu hiệu năng phóng to, tua video và xem trước timeline.
  * v3.9.34 — Giữ mức ban đầu đến khi người dùng đổi trong menu YouTube.
  * v3.9.33 — Áp chất lượng ban đầu rồi cho phép đổi thủ công trong YouTube.
@@ -26,6 +27,5 @@
  * v3.9.29 — Bấm nút Replay gốc để khởi tạo khung chat ẩn.
  * v3.9.28 — Tự mở Live Chat Replay; ẩn khung gốc khi phóng to.
  * v3.9.27 — Áp chất lượng một lần; dùng chat gốc cho Live Chat Replay.
- * v3.9.26 — Chỉ mở cập nhật thủ công; bỏ tự tải lại khi đổi tab.
  * ============================================================================
  */
