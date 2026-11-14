@@ -1,3 +1,9 @@
+## v3.9.35 — 14/11/2026 22:22
+
+- Tắt nền mờ letterbox khi tỷ lệ khung hình đã khớp.
+- Bỏ qua mutation nội bộ trình phát và giảm tải CSS blur.
+- Dừng luồng Ambilight, container chat thừa và tua phím quá dày.
+
 ## v3.9.34 — 29/10/2026 23:39
 
 - **[2e7f1a1](https://github.com/huyvu2512/youtube-customizer/commit/2e7f1a1c7f4749ab9e176a5f5f96f11abc390d80)** Giữ chất lượng ban đầu đến khi chọn mức khác trong menu YouTube.

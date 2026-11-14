@@ -88,6 +88,13 @@ function dispatchYtSeek(key) {
     target.dispatchEvent(evUp);
 }
 
+const REPEAT_SEEK_INTERVAL_MS = 85;
+let lastRepeatSeekTime = 0;
+
+export function shouldThrottleRepeatSeek(now, lastTime, isRepeat, minInterval = REPEAT_SEEK_INTERVAL_MS) {
+    return !!isRepeat && (now - lastTime) < minInterval;
+}
+
 let keysBound = false;
 export function bindGlobalKeys() {
     if (keysBound) return;
@@ -118,8 +125,9 @@ export function bindGlobalKeys() {
             return;
         }
 
-        const player = document.querySelector('#movie_player');
-        const asdAllowed = canUseAsdKeys(player);
+        const player = document.querySelector('#movie_player:not(#inline-preview-player)') || document.querySelector('#movie_player');
+        const isAsdKey = !isNumpad && (code === 'KeyA' || code === 'KeyS' || code === 'KeyD');
+        const asdAllowed = isAsdKey && canUseAsdKeys(player);
 
         let captured = false;
         let isSeekAction = false;
@@ -138,13 +146,21 @@ export function bindGlobalKeys() {
             }
             // Numpad 4: Tua lùi 10 giây (J)
             else if (code === 'Numpad4' || e.key === '4' || e.key === 'ArrowLeft' || e.keyCode === 100 || e.keyCode === 37) {
-                dispatchYtSeek('j');
-                isSeekAction = true;
+                const now = Date.now();
+                if (!shouldThrottleRepeatSeek(now, lastRepeatSeekTime, e.repeat)) {
+                    lastRepeatSeekTime = now;
+                    dispatchYtSeek('j');
+                    isSeekAction = true;
+                }
             }
             // Numpad 6: Tua tiến 10 giây (L)
             else if (code === 'Numpad6' || e.key === '6' || e.key === 'ArrowRight' || e.keyCode === 102 || e.keyCode === 39) {
-                dispatchYtSeek('l');
-                isSeekAction = true;
+                const now = Date.now();
+                if (!shouldThrottleRepeatSeek(now, lastRepeatSeekTime, e.repeat)) {
+                    lastRepeatSeekTime = now;
+                    dispatchYtSeek('l');
+                    isSeekAction = true;
+                }
             }
             // Numpad 5: Tạm dừng / phát tiếp (K)
             else if (code === 'Numpad5' || e.key === '5' || e.key === 'Clear' || e.keyCode === 101 || e.keyCode === 12) {

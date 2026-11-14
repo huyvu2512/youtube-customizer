@@ -123,7 +123,7 @@ export function applyConfigToRoot() {
 
 export function broadcastConfigToIframes(cfg = currentConfig) {
     if (typeof window === 'undefined') return;
-    const frames = document.querySelectorAll('iframe');
+    const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe#ytc-bg-live-chat, iframe[src*="live_chat"]');
     frames.forEach(frame => {
         try {
             if (frame.contentWindow) {

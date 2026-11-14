@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.34
-// @description  YouTube Customizer v3.9.34 — Giữ chất lượng ban đầu đến khi chọn thủ công.
+// @version      3.9.35
+// @description  YouTube Customizer v3.9.35 — Tối ưu hiệu năng phóng to, tua video và xem trước timeline.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -13,6 +13,7 @@
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.35 — Tối ưu hiệu năng phóng to, tua video và xem trước timeline.
  * v3.9.34 — Giữ mức ban đầu đến khi người dùng đổi trong menu YouTube.
  * v3.9.33 — Áp chất lượng ban đầu rồi cho phép đổi thủ công trong YouTube.
  * v3.9.32 — Phủ khoảng đen khi phóng to mà không cắt khung hình.
@@ -22,7 +23,6 @@
  * v3.9.28 — Tự mở Live Chat Replay; ẩn khung gốc khi phóng to.
  * v3.9.27 — Áp chất lượng một lần; dùng chat gốc cho Live Chat Replay.
  * v3.9.26 — Chỉ mở cập nhật thủ công; bỏ tự tải lại khi đổi tab.
- * v3.9.25 — Giữ xử lý bấm gốc của YouTube trong Chế độ Chỉ Âm Thanh.
  * ============================================================================
  */
 (() => {
@@ -45,7 +45,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.34";
+      APP_VERSION = "3.9.35";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -166,7 +166,7 @@
   }
   function broadcastConfigToIframes(cfg = currentConfig) {
     if (typeof window === "undefined") return;
-    const frames = document.querySelectorAll("iframe");
+    const frames = document.querySelectorAll('iframe#chatframe, ytd-live-chat-frame iframe, iframe#ytc-bg-live-chat, iframe[src*="live_chat"]');
     frames.forEach((frame) => {
       try {
         if (frame.contentWindow) {
@@ -473,9 +473,14 @@
       panel.style.setProperty("opacity", "0", "important");
       panel.style.setProperty("pointer-events", "none", "important");
     });
-    const shoppingBtns = root.querySelectorAll(
+    const shoppingBtns = new Set(root.querySelectorAll(
       '.ytp-shopping-button, .ytp-featured-product-banner, .ytp-suggested-action-badge[aria-label*="sản phẩm" i], .ytp-suggested-action-badge[aria-label*="product" i], .ytp-suggested-action-badge[aria-label*="shopping" i]'
-    );
+    ));
+    root.querySelectorAll(".ytp-suggested-action-badge").forEach((badge) => {
+      if (badge.querySelector('svg path[d*="M19 6"]')) {
+        shoppingBtns.add(badge);
+      }
+    });
     shoppingBtns.forEach((btn) => {
       btn.style.setProperty("display", "none", "important");
       btn.style.setProperty("opacity", "0", "important");
@@ -1010,7 +1015,10 @@
     window.addEventListener("yt-navigate-finish", () => scheduleApplyQuality());
     window.addEventListener("yt-page-data-updated", () => scheduleApplyQuality());
     document.addEventListener("loadedmetadata", (event) => {
-      if (event.target?.tagName === "VIDEO") scheduleApplyQuality();
+      const video = event.target;
+      if (video?.tagName === "VIDEO" && video.closest?.("#movie_player:not(#inline-preview-player)")) {
+        scheduleApplyQuality();
+      }
     }, true);
     if (window.location.pathname.startsWith("/watch")) scheduleApplyQuality();
   }
@@ -1032,6 +1040,9 @@
     applyAmbientLightingState: () => applyAmbientLightingState,
     initAmbientLight: () => initAmbientLight
   });
+  function isFullscreenActive() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+  }
   function isAmbientEnabled() {
     return !!currentConfig.ambientLighting && !currentConfig.audioOnlyMode && !isShortsPage();
   }
@@ -1309,8 +1320,7 @@
     }
   }
   function renderLoop(timestamp) {
-    if (!isRunning) return;
-    if (!isAmbientEnabled()) {
+    if (!isRunning || document.hidden || isFullscreenActive() || !isAmbientEnabled()) {
       stopLoop();
       return;
     }
@@ -1322,7 +1332,7 @@
     if (video !== currentVideo) {
       attachVideo(video);
     }
-    if (document.fullscreenElement) return;
+    if (video.seeking) return;
     if (video.paused || video.ended) {
       if (!isPausedAndDrawn && video.readyState >= 2 && video.videoWidth > 0) {
         drawFrame2(video);
@@ -1337,7 +1347,7 @@
     drawFrame2(video);
   }
   function startLoop() {
-    if (!isAmbientEnabled()) {
+    if (!isAmbientEnabled() || document.hidden || isFullscreenActive()) {
       stopLoop();
       return;
     }
@@ -1441,9 +1451,40 @@
       if (v && isRunning) drawFrame2(v);
     }, 700);
   }
+  function syncAmbientObserver(enabled) {
+    if (!enabled) {
+      if (ambientObserver) {
+        ambientObserver.disconnect();
+        ambientObserver = null;
+      }
+      return;
+    }
+    if (ambientObserver) return;
+    ambientObserver = new MutationObserver((mutations) => {
+      if (!isAmbientEnabled() || isFullscreenActive()) return;
+      if (currentVideo && currentVideo.isConnected) return;
+      let hasAdded = false;
+      for (const mutation of mutations) {
+        if (mutation.addedNodes.length) {
+          hasAdded = true;
+          break;
+        }
+      }
+      if (!hasAdded) return;
+      const video = findActiveVideo();
+      if (video && video !== currentVideo) {
+        attachVideo(video);
+      }
+    });
+    const target = document.getElementById("page-manager") || document.querySelector("ytd-app") || document.documentElement;
+    if (target) {
+      ambientObserver.observe(target, { childList: true, subtree: true });
+    }
+  }
   function applyAmbientLightingState() {
     if (!isAmbientEnabled()) {
       stopLoop();
+      syncAmbientObserver(false);
       hasDrawnFirstFrame = false;
       isPausedAndDrawn = false;
       document.documentElement.classList.remove("ytc-ambient-lighting");
@@ -1482,6 +1523,7 @@
       ambientWrapper.style.display = "";
     }
     ensureAmbientCanvas();
+    syncAmbientObserver(true);
     const video = findActiveVideo();
     if (video) {
       attachVideo(video);
@@ -1491,38 +1533,37 @@
   function initAmbientLight() {
     if (ambientInitialized) return;
     ambientInitialized = true;
+    const handleFullscreenChange = () => {
+      if (!isAmbientEnabled()) return;
+      if (isFullscreenActive()) {
+        stopLoop();
+        return;
+      }
+      cachedPlayerRect = null;
+      cachedWrapperRect = null;
+      cachedVideoRect = null;
+      isPausedAndDrawn = false;
+      updateCachedRects(true);
+      startLoop();
+      const v = findActiveVideo();
+      if (v && isRunning && !v.seeking) drawFrame2(v);
+    };
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("resize", () => {
-      if (!isAmbientEnabled()) return;
+      if (!isAmbientEnabled() || isFullscreenActive()) return;
       updateCachedRects(true);
       const v = findActiveVideo();
-      if (v && isRunning) drawFrame2(v);
-    });
-    window.addEventListener("fullscreenchange", () => {
-      if (!isAmbientEnabled()) return;
-      updateCachedRects(true);
-      const v = findActiveVideo();
-      if (v && isRunning) drawFrame2(v);
-    });
+      if (v && isRunning && !v.seeking) drawFrame2(v);
+    }, { passive: true });
+    document.addEventListener("fullscreenchange", handleFullscreenChange, { passive: true });
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange, { passive: true });
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("yt-navigate-finish", handleNavigation);
     window.addEventListener("yt-page-data-updated", handleNavigation);
     window.addEventListener("popstate", handleNavigation);
-    const observer = new MutationObserver(() => {
-      if (!isAmbientEnabled()) return;
-      if (currentVideo && currentVideo.isConnected) return;
-      const video = findActiveVideo();
-      if (video && video !== currentVideo) {
-        attachVideo(video);
-      }
-    });
-    observer.observe(document.documentElement, {
-      childList: true,
-      subtree: true
-    });
     applyAmbientLightingState();
   }
-  var ambientWrapper, ambientSpreadCanvas, ambientSpreadCtx, animFrameId, isRunning, lastDrawTime, currentVideo, hasDrawnFirstFrame, isPausedAndDrawn, CANVAS_WIDTH2, CANVAS_HEIGHT2, TARGET_INTERVAL, cachedPlayerRect, cachedWrapperRect, cachedVideoRect, cachedObjectFit, cachedObjectPosition, lastRectUpdateTime, lastVideoDimensions, ambientInitialized;
+  var ambientWrapper, ambientSpreadCanvas, ambientSpreadCtx, animFrameId, isRunning, lastDrawTime, currentVideo, hasDrawnFirstFrame, isPausedAndDrawn, CANVAS_WIDTH2, CANVAS_HEIGHT2, TARGET_INTERVAL, cachedPlayerRect, cachedWrapperRect, cachedVideoRect, cachedObjectFit, cachedObjectPosition, lastRectUpdateTime, lastVideoDimensions, ambientObserver, ambientInitialized;
   var init_ambientLight = __esm({
     "src/player/ambientLight.js"() {
       init_config();
@@ -1535,9 +1576,9 @@
       currentVideo = null;
       hasDrawnFirstFrame = false;
       isPausedAndDrawn = false;
-      CANVAS_WIDTH2 = 640;
-      CANVAS_HEIGHT2 = 800;
-      TARGET_INTERVAL = 1e3 / 30;
+      CANVAS_WIDTH2 = 320;
+      CANVAS_HEIGHT2 = 400;
+      TARGET_INTERVAL = 1e3 / 24;
       cachedPlayerRect = null;
       cachedWrapperRect = null;
       cachedVideoRect = null;
@@ -1545,6 +1586,7 @@
       cachedObjectPosition = "50% 50%";
       lastRectUpdateTime = 0;
       lastVideoDimensions = "";
+      ambientObserver = null;
       ambientInitialized = false;
     }
   });
@@ -1600,50 +1642,76 @@
     } catch (e) {
     }
   }
+  function removeChatOverlayContainers() {
+    const dContainer = document.getElementById("ytc-danmaku-container") || danmakuContainer;
+    if (dContainer) dContainer.remove();
+    danmakuContainer = null;
+    const sBox = document.getElementById("ytc-streamer-box") || streamerBox;
+    if (sBox) sBox.remove();
+    streamerBox = null;
+    streamerMessages = null;
+  }
   function ensureChatOverlayContainers() {
     if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
+    const mode = currentConfig.chatOverlay || "off";
+    if (mode === "off") {
+      removeChatOverlayContainers();
+      return;
+    }
     const player = document.querySelector("#movie_player:not(#inline-preview-player)");
     if (!player) return;
-    let dContainer = document.getElementById("ytc-danmaku-container");
-    if (!dContainer) {
-      dContainer = document.createElement("div");
-      dContainer.id = "ytc-danmaku-container";
-      player.appendChild(dContainer);
-    } else if (dContainer.parentElement !== player) {
-      player.appendChild(dContainer);
-    }
-    danmakuContainer = dContainer;
-    let sBox = document.getElementById("ytc-streamer-box");
-    if (!sBox) {
-      sBox = document.createElement("div");
-      sBox.id = "ytc-streamer-box";
-      setElementHTML(sBox, `
-            <div class="ytc-box-header">
-                <span class="ytc-box-title">
-                    <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" style="flex-shrink:0;"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-                    Live Chat
-                </span>
-                <button class="ytc-box-close" title="Ẩn khung chat" aria-label="Ẩn khung chat">
-                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-            </div>
-            <div class="ytc-box-messages"></div>
-            <div class="ytc-box-resize" title="Kéo để thay đổi kích thước"></div>
-        `);
-      player.appendChild(sBox);
-      const closeBtn = sBox.querySelector(".ytc-box-close");
-      if (closeBtn) {
-        closeBtn.onclick = (e) => {
-          e.stopPropagation();
-          sBox.style.display = "none";
-          window.dispatchEvent(new CustomEvent("ytc-close-streamer-box"));
-        };
+    if (mode === "danmaku") {
+      const sBox = document.getElementById("ytc-streamer-box") || streamerBox;
+      if (sBox) sBox.remove();
+      streamerBox = null;
+      streamerMessages = null;
+      let dContainer = document.getElementById("ytc-danmaku-container");
+      if (!dContainer) {
+        dContainer = document.createElement("div");
+        dContainer.id = "ytc-danmaku-container";
+        player.appendChild(dContainer);
+      } else if (dContainer.parentElement !== player) {
+        player.appendChild(dContainer);
       }
-    } else if (sBox.parentElement !== player) {
-      player.appendChild(sBox);
+      danmakuContainer = dContainer;
+      return;
     }
-    streamerBox = sBox;
-    streamerMessages = sBox.querySelector(".ytc-box-messages");
+    if (mode === "streamer") {
+      const dContainer = document.getElementById("ytc-danmaku-container") || danmakuContainer;
+      if (dContainer) dContainer.remove();
+      danmakuContainer = null;
+      let sBox = document.getElementById("ytc-streamer-box");
+      if (!sBox) {
+        sBox = document.createElement("div");
+        sBox.id = "ytc-streamer-box";
+        setElementHTML(sBox, `
+                <div class="ytc-box-header">
+                    <span class="ytc-box-title">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" style="flex-shrink:0;"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+                        Live Chat
+                    </span>
+                    <button class="ytc-box-close" title="Ẩn khung chat" aria-label="Ẩn khung chat">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+                <div class="ytc-box-messages"></div>
+                <div class="ytc-box-resize" title="Kéo để thay đổi kích thước"></div>
+            `);
+        player.appendChild(sBox);
+        const closeBtn = sBox.querySelector(".ytc-box-close");
+        if (closeBtn) {
+          closeBtn.onclick = (e) => {
+            e.stopPropagation();
+            sBox.style.display = "none";
+            window.dispatchEvent(new CustomEvent("ytc-close-streamer-box"));
+          };
+        }
+      } else if (sBox.parentElement !== player) {
+        player.appendChild(sBox);
+      }
+      streamerBox = sBox;
+      streamerMessages = sBox.querySelector(".ytc-box-messages");
+    }
   }
   var CHATBOX_POS_KEY, chatOverlayInitialized, danmakuContainer, streamerBox, streamerMessages, seenMessageIds, isNativeChatHiddenByScript;
   var init_chatState = __esm({
@@ -1661,6 +1729,33 @@
   });
 
   // src/chat/streamerBox.js
+  function disconnectChatBoxObservers() {
+    if (chatBoxResizeObserver) {
+      chatBoxResizeObserver.disconnect();
+    }
+    chatBoxObservedPlayer = null;
+    activeChatBox = null;
+    activeChatPlayer = null;
+  }
+  function bindGlobalChatBoxListeners() {
+    if (globalListenersBound) return;
+    globalListenersBound = true;
+    window.addEventListener("resize", () => {
+      if ((currentConfig.chatOverlay || "off") !== "streamer") return;
+      if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
+      const p = document.querySelector("#movie_player:not(#inline-preview-player)");
+      if (activeChatBox && activeChatBox.isConnected && p) applyChatBoxPos(activeChatBox, p);
+      syncPlayerFullscreenSize();
+    });
+    document.addEventListener("fullscreenchange", () => {
+      if ((currentConfig.chatOverlay || "off") !== "streamer") return;
+      if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
+      const p = document.querySelector("#movie_player:not(#inline-preview-player)");
+      if (activeChatBox && activeChatBox.isConnected && p) {
+        applyChatBoxPos(activeChatBox, p);
+      }
+    });
+  }
   function getSavedChatBoxPos() {
     try {
       const stored = localStorage.getItem(CHATBOX_POS_KEY);
@@ -1763,13 +1858,34 @@
     box.addEventListener("mouseleave", onLeave);
   }
   function setupChatBoxInteractions(box, player) {
+    if (!box) return;
+    activeChatBox = box;
+    activeChatPlayer = player;
+    bindGlobalChatBoxListeners();
+    if (window.ResizeObserver && player) {
+      if (!chatBoxResizeObserver) {
+        chatBoxResizeObserver = new ResizeObserver(() => {
+          if ((currentConfig.chatOverlay || "off") !== "streamer") return;
+          if (activeChatBox && activeChatBox.isConnected && activeChatPlayer) {
+            applyChatBoxPos(activeChatBox, activeChatPlayer);
+          }
+        });
+      }
+      if (chatBoxObservedPlayer !== player) {
+        chatBoxResizeObserver.disconnect();
+        chatBoxResizeObserver.observe(player);
+        chatBoxObservedPlayer = player;
+      }
+    }
+    if (box.dataset.ytcBound === "true") return;
+    box.dataset.ytcBound = "true";
     const header = box.querySelector(".ytc-box-header");
     const resizeHandle = box.querySelector(".ytc-box-resize");
     if (header) {
       header.addEventListener("dblclick", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        centerChatBox(box, player);
+        centerChatBox(box, activeChatPlayer || player);
       });
       header.addEventListener("mousedown", (e) => {
         if (e.button !== 0) return;
@@ -1897,31 +2013,18 @@
         document.addEventListener("mouseup", onMouseUp);
       });
     }
-    window.addEventListener("resize", () => {
-      if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
-      const p = document.querySelector("#movie_player:not(#inline-preview-player)");
-      if (box && p) applyChatBoxPos(box, p);
-      syncPlayerFullscreenSize();
-    });
-    document.addEventListener("fullscreenchange", () => {
-      if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
-      const p = document.querySelector("#movie_player:not(#inline-preview-player)");
-      if (box && p) {
-        applyChatBoxPos(box, p);
-        setTimeout(() => applyChatBoxPos(box, p), 150);
-      }
-    });
-    if (window.ResizeObserver && player) {
-      const ro = new ResizeObserver(() => {
-        applyChatBoxPos(box, player);
-      });
-      ro.observe(player);
-    }
   }
+  var chatBoxResizeObserver, chatBoxObservedPlayer, activeChatBox, activeChatPlayer, globalListenersBound;
   var init_streamerBox = __esm({
     "src/chat/streamerBox.js"() {
+      init_config();
       init_utils();
       init_chatState();
+      chatBoxResizeObserver = null;
+      chatBoxObservedPlayer = null;
+      activeChatBox = null;
+      activeChatPlayer = null;
+      globalListenersBound = false;
     }
   });
 
@@ -5515,36 +5618,39 @@
   }
   function onTheaterModeChanged(isTheater) {
     if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
+    const mode = currentConfig.chatOverlay || "off";
+    if (mode === "off") return;
     ensureChatOverlayContainers();
     const player = document.querySelector("#movie_player:not(#inline-preview-player)");
-    if (player && streamerBox) {
+    if (player && streamerBox && mode === "streamer") {
       applyChatBoxPos(streamerBox, player);
     }
-    if (currentConfig.chatOverlay && currentConfig.chatOverlay !== "off") {
-      if (currentConfig.chatOverlay === "danmaku") {
-        startDanmakuScheduler();
-      }
-      setTimeout(() => {
-        ensureChatOverlayContainers();
-        const p = document.querySelector("#movie_player:not(#inline-preview-player)");
-        if (p && streamerBox) applyChatBoxPos(streamerBox, p);
-        findAndObserveItems();
-        requestExistingMessages();
-      }, 150);
-      setTimeout(() => {
-        ensureChatOverlayContainers();
-        const p = document.querySelector("#movie_player:not(#inline-preview-player)");
-        if (p && streamerBox) applyChatBoxPos(streamerBox, p);
-        findAndObserveItems();
-      }, 600);
-      setTimeout(() => {
-        ensureChatOverlayContainers();
-        const p = document.querySelector("#movie_player:not(#inline-preview-player)");
-        if (p && streamerBox) applyChatBoxPos(streamerBox, p);
-        findAndObserveItems();
-      }, 1500);
-      ensureBackgroundLiveChat();
+    if (mode === "danmaku") {
+      startDanmakuScheduler();
     }
+    setTimeout(() => {
+      if ((currentConfig.chatOverlay || "off") === "off") return;
+      ensureChatOverlayContainers();
+      const p = document.querySelector("#movie_player:not(#inline-preview-player)");
+      if (p && streamerBox && currentConfig.chatOverlay === "streamer") applyChatBoxPos(streamerBox, p);
+      findAndObserveItems();
+      requestExistingMessages();
+    }, 150);
+    setTimeout(() => {
+      if ((currentConfig.chatOverlay || "off") === "off") return;
+      ensureChatOverlayContainers();
+      const p = document.querySelector("#movie_player:not(#inline-preview-player)");
+      if (p && streamerBox && currentConfig.chatOverlay === "streamer") applyChatBoxPos(streamerBox, p);
+      findAndObserveItems();
+    }, 600);
+    setTimeout(() => {
+      if ((currentConfig.chatOverlay || "off") === "off") return;
+      ensureChatOverlayContainers();
+      const p = document.querySelector("#movie_player:not(#inline-preview-player)");
+      if (p && streamerBox && currentConfig.chatOverlay === "streamer") applyChatBoxPos(streamerBox, p);
+      findAndObserveItems();
+    }, 1500);
+    ensureBackgroundLiveChat();
   }
   function setupTheaterModeObserver() {
     if (theaterObserver) return;
@@ -5755,7 +5861,15 @@
     const mode = currentConfig.chatOverlay || "off";
     if (mode === "off") replayNativeOpenRequestedVideoId = null;
     syncReplayNativeChatPresentation();
-    if (mode !== "off") {
+    if (mode !== "streamer") {
+      disconnectChatBoxObservers();
+    }
+    if (mode === "off") {
+      stopDanmakuScheduler();
+      danmakuQueue.length = 0;
+      laneNextAvailableTime.fill(0);
+      removeChatOverlayContainers();
+    } else {
       ensureChatOverlayContainers();
     }
     const danmaku = document.getElementById("ytc-danmaku-container") || danmakuContainer;
@@ -5763,18 +5877,19 @@
     const player = document.querySelector("#movie_player:not(#inline-preview-player)");
     const showDanmaku = mode === "danmaku";
     const showStreamer = mode === "streamer";
+    if (!showDanmaku) {
+      stopDanmakuScheduler();
+      danmakuQueue.length = 0;
+      laneNextAvailableTime.fill(0);
+    }
     if (danmaku) {
       danmaku.style.display = showDanmaku ? "block" : "none";
       danmaku.innerHTML = "";
-      danmakuQueue.length = 0;
-      laneNextAvailableTime.fill(0);
       setLastDanmakuSpawnTime(Date.now() + 400);
       setLastSpawnedLane(-1);
       if (showDanmaku) {
         stopDanmakuScheduler();
         startDanmakuScheduler();
-      } else {
-        stopDanmakuScheduler();
       }
     }
     if (streamer) {
@@ -6190,9 +6305,6 @@
         setNativeChatHiddenState(true);
       }
       syncPlayerFullscreenSize();
-      setTimeout(syncPlayerFullscreenSize, 60);
-      setTimeout(syncPlayerFullscreenSize, 180);
-      setTimeout(syncPlayerFullscreenSize, 350);
     });
     let windowResizeTimer = null;
     window.addEventListener("resize", () => {
@@ -6261,12 +6373,16 @@
       whenElement("#movie_player:not(#inline-preview-player)", () => {
         observePlayerChatState();
         observeFullscreenChatPanels();
-        ensureChatOverlayContainers();
         if (currentConfig.chatOverlay && currentConfig.chatOverlay !== "off") {
+          ensureChatOverlayContainers();
           ensureBackgroundLiveChat();
           ensureNativeLiveChatRunning();
-        } else if (currentConfig.hideNativeLiveChat) {
-          stopAllLiveChatIfDisabled();
+        } else {
+          disconnectChatBoxObservers();
+          removeChatOverlayContainers();
+          if (currentConfig.hideNativeLiveChat) {
+            stopAllLiveChatIfDisabled();
+          }
         }
       });
     }
@@ -6334,6 +6450,7 @@
     chatOverlayInitialized: () => chatOverlayInitialized,
     danmakuContainer: () => danmakuContainer,
     danmakuQueue: () => danmakuQueue,
+    disconnectChatBoxObservers: () => disconnectChatBoxObservers,
     displayChatMessage: () => displayChatMessage,
     ensureBackgroundLiveChat: () => ensureBackgroundLiveChat,
     ensureChatOverlayContainers: () => ensureChatOverlayContainers,
@@ -6357,6 +6474,7 @@
     observePlayerChatState: () => observePlayerChatState,
     onTheaterModeChanged: () => onTheaterModeChanged,
     openNativeChatForReplayOverlay: () => openNativeChatForReplayOverlay,
+    removeChatOverlayContainers: () => removeChatOverlayContainers,
     requestExistingMessages: () => requestExistingMessages,
     resetChatCollapseState: () => resetChatCollapseState,
     restoreNativeLiveChatIfSaved: () => restoreNativeLiveChatIfSaved,
@@ -6757,8 +6875,7 @@ html.ytc-ambient-lighting .ytp-ambient-mode-rendering-container {
 .ytc-hide-shopping .ytp-featured-product-banner,
 .ytc-hide-shopping .ytp-suggested-action-badge[aria-label*="sản phẩm" i],
 .ytc-hide-shopping .ytp-suggested-action-badge[aria-label*="product" i],
-.ytc-hide-shopping .ytp-suggested-action-badge[aria-label*="shopping" i],
-.ytc-hide-shopping .ytp-suggested-action-badge:has(svg path[d*="M19 6"]) {
+.ytc-hide-shopping .ytp-suggested-action-badge[aria-label*="shopping" i] {
     display: none !important;
     opacity: 0 !important;
     pointer-events: none !important;
@@ -8403,20 +8520,17 @@ html:not([dark]) .ytc-update-btn:hover {
    - OLED Depth Shadow & Glass UI: Giao diện kính mờ sang trọng, video nổi bật
    ========================================================================== */
 
-/* Triệt tiêu 100% thanh cuộn ngang toàn cục */
-html, body {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
+/* Chỉ chống tràn ngang khi bật Ambilight để không ép layout root toàn cục */
+html.ytc-ambient-lighting,
+html.ytc-ambient-lighting body {
+    overflow-x: clip !important;
 }
 
-ytd-app, #page-manager, ytd-watch-flexy {
+html.ytc-ambient-lighting ytd-app,
+html.ytc-ambient-lighting #page-manager,
+html.ytc-ambient-lighting ytd-watch-flexy {
     overflow-x: clip !important;
     max-width: 100% !important;
-}
-
-ytd-watch-flexy {
-    position: relative !important;
-    overflow: visible !important;
 }
 
 /* Khi tính năng TẮT (không có class ytc-ambient-lighting): Triệt tiêu 100% hiển thị Ambilight */
@@ -8457,7 +8571,7 @@ html.ytc-ambient-lighting #ytc-ambient-wrapper.ytc-ambient-active {
     left: -30px !important;
     width: calc(100% + 60px) !important;
     height: calc(100% + 60px) !important;
-    filter: blur(16px) saturate(135%) brightness(103%);
+    filter: blur(12px) saturate(135%) brightness(103%);
     pointer-events: none !important;
     transform: translateZ(0);
     opacity: 0.95;
@@ -8498,7 +8612,6 @@ html[fullscreen] #movie_player,
     width: 108% !important;
     height: 108% !important;
     object-fit: fill !important;
-    filter: blur(30px) brightness(.62) saturate(1.15) !important;
     opacity: .88 !important;
     pointer-events: none !important;
 }
@@ -8739,7 +8852,7 @@ html[dark].ytc-ambient-lighting ytd-watch-metadata #title h1 {
 
 /* Tinh chỉnh màu sắc Ambilight trên nền trắng: Màu sắc rực rỡ, đậm đà ngang ngửa Dark Theme */
 html:not([dark]) #ytc-ambient-spread-canvas {
-    filter: blur(48px) saturate(220%) contrast(115%) brightness(96%);
+    filter: blur(24px) saturate(210%) contrast(115%) brightness(96%);
     opacity: 0.9;
 }
 
@@ -9127,9 +9240,14 @@ html:not([dark]) .ytc-stat-red {
   init_config();
   init_utils();
   init_shoppingFilter();
-  var INTERRUPTION_SELECTOR = 'snackbar-container, snackbar-view-model, .ytSnackbarContainerHost, .ytSnackbarContainerSnackbarContainer, .snackbarViewModelHost, .snackbarViewModelTitle, .snackbarViewModelTitleSubtextWrapper, yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, #toast, yt-notification-action-renderer, ytd-notification-action-renderer, .ytp-suggested-action-badge, .ytp-suggested-action-badge-expanded, .ytp-bezel, .ytp-hint, div[class*="interrupt" i], div[class*="suggested-action" i], div[class*="ad-interrupt" i], .paper-toast-open, .toast-button';
+  var INTERRUPTION_SELECTOR = 'snackbar-container, snackbar-view-model, .ytSnackbarContainerHost, .ytSnackbarContainerSnackbarContainer, .snackbarViewModelHost, .snackbarViewModelTitle, .snackbarViewModelTitleSubtextWrapper, yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, #toast, yt-notification-action-renderer, ytd-notification-action-renderer, .ytp-suggested-action-badge, .ytp-suggested-action-badge-expanded, div[class*="interrupt" i], div[class*="suggested-action" i], div[class*="ad-interrupt" i], .paper-toast-open, .toast-button';
   var PROMO_SELECTOR = "ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer, ytd-upsell-dialog-renderer, ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer";
-  var IGNORED_MUTATION_ZONES = "#comments, ytd-comments, #ytc-danmaku-container, #ytc-streamer-box, ytd-moving-thumbnail-renderer";
+  var IGNORED_MUTATION_ZONES = "#comments, ytd-comments, #ytc-danmaku-container, #ytc-streamer-box, #ytc-ambient-wrapper, ytd-moving-thumbnail-renderer, .ytp-chrome-bottom, .ytp-tooltip, .ytp-caption-window-container, .ytp-bezel, .ytp-spinner, .ytp-chapter-hover-container, ytd-live-chat-frame, #chat, #related, ytd-watch-next-secondary-results-renderer, #playlist, ytd-playlist-panel-renderer";
+  function isIgnoredPromoMutationNode(node) {
+    if (!node) return true;
+    const el = node.nodeType === 1 ? node : node.parentElement;
+    return !!(el && el.closest?.(IGNORED_MUTATION_ZONES));
+  }
   function queryIncludingRoot(root, selector) {
     const matches = Array.from(root.querySelectorAll(selector));
     if (root.nodeType === 1 && root.matches(selector)) matches.unshift(root);
@@ -9227,23 +9345,23 @@ html:not([dark]) .ytc-stat-red {
     promoObserverAttached = true;
     const pendingScopes = /* @__PURE__ */ new Set();
     let scheduledFrame = 0;
-    const relevantSelector = `${INTERRUPTION_SELECTOR}, ${PROMO_SELECTOR}`;
     const observer = new MutationObserver((mutations) => {
-      const queueTarget = (node) => {
-        if (!node || node.nodeType !== 1) return;
-        const related = node.closest(relevantSelector);
+      const activeSelector = currentConfig.autoDismissPromos ? `${INTERRUPTION_SELECTOR}, ${PROMO_SELECTOR}` : INTERRUPTION_SELECTOR;
+      const queueElement = (node) => {
+        if (!node || node.nodeType !== 1 || isIgnoredPromoMutationNode(node)) return;
+        const related = node.closest(activeSelector);
         if (related) pendingScopes.add(related);
-        if (node.matches(relevantSelector)) pendingScopes.add(node);
-      };
-      const queueAddedNode = (node) => {
-        queueTarget(node);
-        if (!node || node.nodeType !== 1) return;
-        node.querySelectorAll(relevantSelector).forEach((el) => pendingScopes.add(el));
+        if (node.matches(activeSelector)) pendingScopes.add(node);
+        if (node.firstElementChild) {
+          node.querySelectorAll(activeSelector).forEach((el) => pendingScopes.add(el));
+        }
       };
       for (const mutation of mutations) {
-        if (mutation.target.closest?.(IGNORED_MUTATION_ZONES)) continue;
-        queueTarget(mutation.target);
-        for (const node of mutation.addedNodes) queueAddedNode(node);
+        if (!mutation.addedNodes.length) continue;
+        if (isIgnoredPromoMutationNode(mutation.target)) continue;
+        for (const node of mutation.addedNodes) {
+          queueElement(node);
+        }
       }
       if (pendingScopes.size && !scheduledFrame) {
         scheduledFrame = requestAnimationFrame(() => {
@@ -9361,15 +9479,26 @@ html:not([dark]) .ytc-stat-red {
   }
 
   // src/player/letterboxBackdrop.js
-  var CANVAS_WIDTH = 640;
-  var CANVAS_HEIGHT = 360;
+  var CANVAS_WIDTH = 96;
+  var CANVAS_HEIGHT = 54;
   var UPDATE_INTERVAL_MS = 500;
+  var LETTERBOX_RATIO_THRESHOLD = 0.06;
   var canvas = null;
   var context = null;
   var updateTimer = null;
   var activePlayer = null;
   var activeVideo = null;
+  var boundVideo2 = null;
   var initialized = false;
+  function shouldShowLetterboxBackdrop(videoWidth, videoHeight, containerWidth, containerHeight) {
+    if (!(videoWidth > 0 && videoHeight > 0 && containerWidth > 0 && containerHeight > 0)) {
+      return false;
+    }
+    const videoRatio = videoWidth / videoHeight;
+    const containerRatio = containerWidth / containerHeight;
+    const relativeDiff = Math.abs(videoRatio - containerRatio) / Math.max(videoRatio, containerRatio);
+    return relativeDiff > LETTERBOX_RATIO_THRESHOLD;
+  }
   function findPlayer() {
     return document.querySelector("#movie_player:not(#inline-preview-player)");
   }
@@ -9398,11 +9527,27 @@ html:not([dark]) .ytc-stat-red {
     player.classList.add("ytc-letterbox-backdrop-active");
     return true;
   }
-  function stopBackdrop() {
+  function stopTimer() {
     if (updateTimer !== null) {
       clearInterval(updateTimer);
       updateTimer = null;
     }
+  }
+  function unbindVideo() {
+    if (!boundVideo2) return;
+    boundVideo2.removeEventListener("loadedmetadata", syncBackdrop);
+    boundVideo2.removeEventListener("seeked", drawFrame);
+    boundVideo2 = null;
+  }
+  function bindVideo(video) {
+    if (!video || video === boundVideo2) return;
+    unbindVideo();
+    boundVideo2 = video;
+    boundVideo2.addEventListener("loadedmetadata", syncBackdrop, { passive: true });
+    boundVideo2.addEventListener("seeked", drawFrame, { passive: true });
+  }
+  function clearBackdropCanvas() {
+    stopTimer();
     activePlayer?.classList.remove("ytc-letterbox-backdrop-active");
     canvas?.remove();
     canvas = null;
@@ -9410,37 +9555,62 @@ html:not([dark]) .ytc-stat-red {
     activePlayer = null;
     activeVideo = null;
   }
+  function stopBackdrop() {
+    clearBackdropCanvas();
+    unbindVideo();
+  }
   function drawFrame() {
+    if (document.hidden) return;
     const player = findPlayer();
     if (!player || !isFullscreen(player)) {
       stopBackdrop();
       return;
     }
-    if (!ensureCanvas(player)) return;
     const video = player.querySelector("video.html5-main-video") || player.querySelector("video");
-    if (!video || video.readyState < 2 || !video.videoWidth || !video.videoHeight) return;
+    if (!video) return;
+    bindVideo(video);
+    if (video.readyState < 2 || !video.videoWidth || !video.videoHeight) return;
+    const containerW = player.clientWidth || window.innerWidth;
+    const containerH = player.clientHeight || window.innerHeight;
+    if (!shouldShowLetterboxBackdrop(video.videoWidth, video.videoHeight, containerW, containerH)) {
+      clearBackdropCanvas();
+      return;
+    }
+    if (video.seeking || player.classList.contains("ytp-scrubbing")) return;
+    if (!ensureCanvas(player) || !context) return;
     if (video.paused && video === activeVideo && canvas.dataset.hasFrame === "true") return;
     try {
-      context.drawImage(video, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      if ("filter" in context) {
+        context.filter = "blur(8px) brightness(0.62) saturate(1.15)";
+      }
+      context.drawImage(video, -4, -3, CANVAS_WIDTH + 8, CANVAS_HEIGHT + 6);
       activeVideo = video;
       canvas.dataset.hasFrame = "true";
     } catch (_) {
     }
   }
   function syncBackdrop() {
+    if (document.hidden) {
+      stopTimer();
+      return;
+    }
     const player = findPlayer();
     if (!player || !isFullscreen(player)) {
       stopBackdrop();
       return;
     }
     drawFrame();
-    if (updateTimer === null) updateTimer = setInterval(drawFrame, UPDATE_INTERVAL_MS);
+    if (activePlayer && updateTimer === null) {
+      updateTimer = setInterval(drawFrame, UPDATE_INTERVAL_MS);
+    }
   }
   function initLetterboxBackdrop() {
     if (initialized) return;
     initialized = true;
     document.addEventListener("fullscreenchange", syncBackdrop, { passive: true });
     document.addEventListener("webkitfullscreenchange", syncBackdrop, { passive: true });
+    window.addEventListener("resize", syncBackdrop, { passive: true });
+    document.addEventListener("visibilitychange", syncBackdrop, { passive: true });
     window.addEventListener("yt-navigate-finish", () => {
       stopBackdrop();
       syncBackdrop();
@@ -9841,6 +10011,11 @@ html:not([dark]) .ytc-stat-red {
     target.dispatchEvent(evDown);
     target.dispatchEvent(evUp);
   }
+  var REPEAT_SEEK_INTERVAL_MS = 85;
+  var lastRepeatSeekTime = 0;
+  function shouldThrottleRepeatSeek(now, lastTime, isRepeat, minInterval = REPEAT_SEEK_INTERVAL_MS) {
+    return !!isRepeat && now - lastTime < minInterval;
+  }
   var keysBound = false;
   function bindGlobalKeys() {
     if (keysBound) return;
@@ -9859,8 +10034,9 @@ html:not([dark]) .ytc-stat-red {
       if (e.repeat && !isNumpad && !isVolumeAction) {
         return;
       }
-      const player = document.querySelector("#movie_player");
-      const asdAllowed = canUseAsdKeys(player);
+      const player = document.querySelector("#movie_player:not(#inline-preview-player)") || document.querySelector("#movie_player");
+      const isAsdKey = !isNumpad && (code === "KeyA" || code === "KeyS" || code === "KeyD");
+      const asdAllowed = isAsdKey && canUseAsdKeys(player);
       let captured = false;
       let isSeekAction = false;
       if (isNumpad) {
@@ -9870,11 +10046,19 @@ html:not([dark]) .ytc-stat-red {
         } else if (code === "Numpad2" || e.key === "2" || e.key === "ArrowDown" || e.keyCode === 98 || e.keyCode === 40) {
           if (player) changeVolume(player, -5);
         } else if (code === "Numpad4" || e.key === "4" || e.key === "ArrowLeft" || e.keyCode === 100 || e.keyCode === 37) {
-          dispatchYtSeek("j");
-          isSeekAction = true;
+          const now = Date.now();
+          if (!shouldThrottleRepeatSeek(now, lastRepeatSeekTime, e.repeat)) {
+            lastRepeatSeekTime = now;
+            dispatchYtSeek("j");
+            isSeekAction = true;
+          }
         } else if (code === "Numpad6" || e.key === "6" || e.key === "ArrowRight" || e.keyCode === 102 || e.keyCode === 39) {
-          dispatchYtSeek("l");
-          isSeekAction = true;
+          const now = Date.now();
+          if (!shouldThrottleRepeatSeek(now, lastRepeatSeekTime, e.repeat)) {
+            lastRepeatSeekTime = now;
+            dispatchYtSeek("l");
+            isSeekAction = true;
+          }
         } else if (code === "Numpad5" || e.key === "5" || e.key === "Clear" || e.keyCode === 101 || e.keyCode === 12) {
           if (!e.repeat) dispatchYtSeek("k");
         }

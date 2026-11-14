@@ -1,8 +1,46 @@
 // ==========================================================================
 // KHUNG NỔI STREAMER (KÉO THẢ, CO GIÃN, NEO GÓC)
 // ==========================================================================
+import { currentConfig } from '../core/config.js';
 import { safeHTML } from '../core/utils.js';
 import { CHATBOX_POS_KEY, syncPlayerFullscreenSize } from './chatState.js';
+
+let chatBoxResizeObserver = null;
+let chatBoxObservedPlayer = null;
+let activeChatBox = null;
+let activeChatPlayer = null;
+let globalListenersBound = false;
+
+export function disconnectChatBoxObservers() {
+    if (chatBoxResizeObserver) {
+        chatBoxResizeObserver.disconnect();
+    }
+    chatBoxObservedPlayer = null;
+    activeChatBox = null;
+    activeChatPlayer = null;
+}
+
+function bindGlobalChatBoxListeners() {
+    if (globalListenersBound) return;
+    globalListenersBound = true;
+
+    window.addEventListener('resize', () => {
+        if ((currentConfig.chatOverlay || 'off') !== 'streamer') return;
+        if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
+        const p = document.querySelector('#movie_player:not(#inline-preview-player)');
+        if (activeChatBox && activeChatBox.isConnected && p) applyChatBoxPos(activeChatBox, p);
+        syncPlayerFullscreenSize();
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+        if ((currentConfig.chatOverlay || 'off') !== 'streamer') return;
+        if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
+        const p = document.querySelector('#movie_player:not(#inline-preview-player)');
+        if (activeChatBox && activeChatBox.isConnected && p) {
+            applyChatBoxPos(activeChatBox, p);
+        }
+    });
+}
 
 export function getSavedChatBoxPos() {
     try {
@@ -118,6 +156,30 @@ export function showInitialBox(box) {
 }
 
 export function setupChatBoxInteractions(box, player) {
+    if (!box) return;
+    activeChatBox = box;
+    activeChatPlayer = player;
+    bindGlobalChatBoxListeners();
+
+    if (window.ResizeObserver && player) {
+        if (!chatBoxResizeObserver) {
+            chatBoxResizeObserver = new ResizeObserver(() => {
+                if ((currentConfig.chatOverlay || 'off') !== 'streamer') return;
+                if (activeChatBox && activeChatBox.isConnected && activeChatPlayer) {
+                    applyChatBoxPos(activeChatBox, activeChatPlayer);
+                }
+            });
+        }
+        if (chatBoxObservedPlayer !== player) {
+            chatBoxResizeObserver.disconnect();
+            chatBoxResizeObserver.observe(player);
+            chatBoxObservedPlayer = player;
+        }
+    }
+
+    if (box.dataset.ytcBound === 'true') return;
+    box.dataset.ytcBound = 'true';
+
     const header = box.querySelector('.ytc-box-header');
     const resizeHandle = box.querySelector('.ytc-box-resize');
 
@@ -125,7 +187,7 @@ export function setupChatBoxInteractions(box, player) {
         header.addEventListener('dblclick', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            centerChatBox(box, player);
+            centerChatBox(box, activeChatPlayer || player);
         });
 
         header.addEventListener('mousedown', (e) => {
@@ -281,27 +343,5 @@ export function setupChatBoxInteractions(box, player) {
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
         });
-    }
-
-    window.addEventListener('resize', () => {
-        if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
-        const p = document.querySelector('#movie_player:not(#inline-preview-player)');
-        if (box && p) applyChatBoxPos(box, p);
-        syncPlayerFullscreenSize();
-    });
-    document.addEventListener('fullscreenchange', () => {
-        if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
-        const p = document.querySelector('#movie_player:not(#inline-preview-player)');
-        if (box && p) {
-            applyChatBoxPos(box, p);
-            setTimeout(() => applyChatBoxPos(box, p), 150);
-        }
-    });
-
-    if (window.ResizeObserver && player) {
-        const ro = new ResizeObserver(() => {
-            applyChatBoxPos(box, player);
-        });
-        ro.observe(player);
     }
 }

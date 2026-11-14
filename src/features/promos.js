@@ -10,15 +10,24 @@ const INTERRUPTION_SELECTOR =
     '.snackbarViewModelHost, .snackbarViewModelTitle, .snackbarViewModelTitleSubtextWrapper, ' +
     'yt-bubble-hint-renderer, ytd-bubble-hint-renderer, tp-yt-paper-toast, #toast, ' +
     'yt-notification-action-renderer, ytd-notification-action-renderer, ' +
-    '.ytp-suggested-action-badge, .ytp-suggested-action-badge-expanded, .ytp-bezel, .ytp-hint, ' +
+    '.ytp-suggested-action-badge, .ytp-suggested-action-badge-expanded, ' +
     'div[class*="interrupt" i], div[class*="suggested-action" i], div[class*="ad-interrupt" i], ' +
     '.paper-toast-open, .toast-button';
 
 const PROMO_SELECTOR =
     'ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer, ytd-upsell-dialog-renderer, ' +
     'ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer';
-const IGNORED_MUTATION_ZONES =
-    '#comments, ytd-comments, #ytc-danmaku-container, #ytc-streamer-box, ytd-moving-thumbnail-renderer';
+export const IGNORED_MUTATION_ZONES =
+    '#comments, ytd-comments, #ytc-danmaku-container, #ytc-streamer-box, #ytc-ambient-wrapper, ' +
+    'ytd-moving-thumbnail-renderer, .ytp-chrome-bottom, .ytp-tooltip, .ytp-caption-window-container, ' +
+    '.ytp-bezel, .ytp-spinner, .ytp-chapter-hover-container, ytd-live-chat-frame, #chat, ' +
+    '#related, ytd-watch-next-secondary-results-renderer, #playlist, ytd-playlist-panel-renderer';
+
+export function isIgnoredPromoMutationNode(node) {
+    if (!node) return true;
+    const el = node.nodeType === 1 ? node : node.parentElement;
+    return !!(el && el.closest?.(IGNORED_MUTATION_ZONES));
+}
 
 function queryIncludingRoot(root, selector) {
     const matches = Array.from(root.querySelectorAll(selector));
@@ -135,28 +144,30 @@ export function setupPromoObserver() {
     if (promoObserverAttached) return;
     promoObserverAttached = true;
 
-    // Theo dõi thay đổi để chỉ kiểm tra các node vừa được thêm và tổ tiên liên quan.
-    // Không quét lại toàn bộ DOM của YouTube sau mỗi đợt cập nhật giao diện.
+    // Theo dõi thay đổi để chỉ kiểm tra các node vừa được thêm, bỏ qua vùng player/tooltip tần suất cao.
     const pendingScopes = new Set();
     let scheduledFrame = 0;
-    const relevantSelector = `${INTERRUPTION_SELECTOR}, ${PROMO_SELECTOR}`;
     const observer = new MutationObserver((mutations) => {
-        const queueTarget = (node) => {
-            if (!node || node.nodeType !== 1) return;
-            const related = node.closest(relevantSelector);
+        const activeSelector = currentConfig.autoDismissPromos
+            ? `${INTERRUPTION_SELECTOR}, ${PROMO_SELECTOR}`
+            : INTERRUPTION_SELECTOR;
+
+        const queueElement = (node) => {
+            if (!node || node.nodeType !== 1 || isIgnoredPromoMutationNode(node)) return;
+            const related = node.closest(activeSelector);
             if (related) pendingScopes.add(related);
-            if (node.matches(relevantSelector)) pendingScopes.add(node);
-        };
-        const queueAddedNode = (node) => {
-            queueTarget(node);
-            if (!node || node.nodeType !== 1) return;
-            node.querySelectorAll(relevantSelector).forEach((el) => pendingScopes.add(el));
+            if (node.matches(activeSelector)) pendingScopes.add(node);
+            if (node.firstElementChild) {
+                node.querySelectorAll(activeSelector).forEach((el) => pendingScopes.add(el));
+            }
         };
 
         for (const mutation of mutations) {
-            if (mutation.target.closest?.(IGNORED_MUTATION_ZONES)) continue;
-            queueTarget(mutation.target);
-            for (const node of mutation.addedNodes) queueAddedNode(node);
+            if (!mutation.addedNodes.length) continue;
+            if (isIgnoredPromoMutationNode(mutation.target)) continue;
+            for (const node of mutation.addedNodes) {
+                queueElement(node);
+            }
         }
 
         if (pendingScopes.size && !scheduledFrame) {

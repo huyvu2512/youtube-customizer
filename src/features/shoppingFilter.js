@@ -27,10 +27,15 @@ export function dismissShoppingPanels(scope) {
         panel.style.setProperty('pointer-events', 'none', 'important');
     });
 
-    // 2. Ẩn nút túi xách / badge mua sắm trong player
-    const shoppingBtns = root.querySelectorAll(
+    // 2. Ẩn nút túi xách / badge mua sắm trong player (tránh dùng CSS :has() trong #movie_player)
+    const shoppingBtns = new Set(root.querySelectorAll(
         '.ytp-shopping-button, .ytp-featured-product-banner, .ytp-suggested-action-badge[aria-label*="sản phẩm" i], .ytp-suggested-action-badge[aria-label*="product" i], .ytp-suggested-action-badge[aria-label*="shopping" i]'
-    );
+    ));
+    root.querySelectorAll('.ytp-suggested-action-badge').forEach((badge) => {
+        if (badge.querySelector('svg path[d*="M19 6"]')) {
+            shoppingBtns.add(badge);
+        }
+    });
     shoppingBtns.forEach((btn) => {
         btn.style.setProperty('display', 'none', 'important');
         btn.style.setProperty('opacity', '0', 'important');

@@ -233,7 +233,10 @@ export function initQualityManager() {
     window.addEventListener('yt-navigate-finish', () => scheduleApplyQuality());
     window.addEventListener('yt-page-data-updated', () => scheduleApplyQuality());
     document.addEventListener('loadedmetadata', event => {
-        if (event.target?.tagName === 'VIDEO') scheduleApplyQuality();
+        const video = event.target;
+        if (video?.tagName === 'VIDEO' && video.closest?.('#movie_player:not(#inline-preview-player)')) {
+            scheduleApplyQuality();
+        }
     }, true);
 
     if (window.location.pathname.startsWith('/watch')) scheduleApplyQuality();

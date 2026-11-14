@@ -20,9 +20,13 @@ let hasDrawnFirstFrame = false;
 let isPausedAndDrawn = false;
 
 // Kích thước canvas nội bộ (tỷ lệ chuẩn tối ưu hiệu năng và GPU)
-const CANVAS_WIDTH = 640;
-const CANVAS_HEIGHT = 800;
-const TARGET_INTERVAL = 1000 / 30; // 30 FPS mượt mà & siêu nhẹ
+const CANVAS_WIDTH = 320;
+const CANVAS_HEIGHT = 400;
+const TARGET_INTERVAL = 1000 / 24; // 24 FPS mượt mà & siêu nhẹ
+
+function isFullscreenActive() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+}
 
 /**
  * Kiểm tra xem tính năng Ambilight có đang được phép chạy hay không
@@ -362,9 +366,7 @@ function drawFrame(video) {
  * Vòng lặp render liên tục kiên cường (Resilient Render Loop)
  */
 function renderLoop(timestamp) {
-    if (!isRunning) return;
-
-    if (!isAmbientEnabled()) {
+    if (!isRunning || document.hidden || isFullscreenActive() || !isAmbientEnabled()) {
         stopLoop();
         return;
     }
@@ -381,7 +383,7 @@ function renderLoop(timestamp) {
         attachVideo(video);
     }
 
-    if (document.fullscreenElement) return;
+    if (video.seeking) return;
 
     // Khi video pause: Vẽ 1 frame lúc pause rồi tạm nghỉ để tiết kiệm CPU
     if (video.paused || video.ended) {
@@ -402,7 +404,7 @@ function renderLoop(timestamp) {
 }
 
 function startLoop() {
-    if (!isAmbientEnabled()) {
+    if (!isAmbientEnabled() || document.hidden || isFullscreenActive()) {
         stopLoop();
         return;
     }
@@ -523,9 +525,42 @@ function handleNavigation() {
     }, 700);
 }
 
+let ambientObserver = null;
+function syncAmbientObserver(enabled) {
+    if (!enabled) {
+        if (ambientObserver) {
+            ambientObserver.disconnect();
+            ambientObserver = null;
+        }
+        return;
+    }
+    if (ambientObserver) return;
+    ambientObserver = new MutationObserver((mutations) => {
+        if (!isAmbientEnabled() || isFullscreenActive()) return;
+        if (currentVideo && currentVideo.isConnected) return;
+        let hasAdded = false;
+        for (const mutation of mutations) {
+            if (mutation.addedNodes.length) {
+                hasAdded = true;
+                break;
+            }
+        }
+        if (!hasAdded) return;
+        const video = findActiveVideo();
+        if (video && video !== currentVideo) {
+            attachVideo(video);
+        }
+    });
+    const target = document.getElementById('page-manager') || document.querySelector('ytd-app') || document.documentElement;
+    if (target) {
+        ambientObserver.observe(target, { childList: true, subtree: true });
+    }
+}
+
 export function applyAmbientLightingState() {
     if (!isAmbientEnabled()) {
         stopLoop();
+        syncAmbientObserver(false);
         hasDrawnFirstFrame = false;
         isPausedAndDrawn = false;
         document.documentElement.classList.remove('ytc-ambient-lighting');
@@ -566,6 +601,7 @@ export function applyAmbientLightingState() {
     }
 
     ensureAmbientCanvas();
+    syncAmbientObserver(true);
 
     const video = findActiveVideo();
     if (video) {
@@ -579,38 +615,36 @@ export function initAmbientLight() {
     if (ambientInitialized) return;
     ambientInitialized = true;
 
+    const handleFullscreenChange = () => {
+        if (!isAmbientEnabled()) return;
+        if (isFullscreenActive()) {
+            stopLoop();
+            return;
+        }
+        cachedPlayerRect = null;
+        cachedWrapperRect = null;
+        cachedVideoRect = null;
+        isPausedAndDrawn = false;
+        updateCachedRects(true);
+        startLoop();
+        const v = findActiveVideo();
+        if (v && isRunning && !v.seeking) drawFrame(v);
+    };
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('resize', () => {
-        if (!isAmbientEnabled()) return;
+        if (!isAmbientEnabled() || isFullscreenActive()) return;
         updateCachedRects(true);
         const v = findActiveVideo();
-        if (v && isRunning) drawFrame(v);
-    });
-    window.addEventListener('fullscreenchange', () => {
-        if (!isAmbientEnabled()) return;
-        updateCachedRects(true);
-        const v = findActiveVideo();
-        if (v && isRunning) drawFrame(v);
-    });
+        if (v && isRunning && !v.seeking) drawFrame(v);
+    }, { passive: true });
+    document.addEventListener('fullscreenchange', handleFullscreenChange, { passive: true });
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange, { passive: true });
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     window.addEventListener('yt-navigate-finish', handleNavigation);
     window.addEventListener('yt-page-data-updated', handleNavigation);
     window.addEventListener('popstate', handleNavigation);
-
-    const observer = new MutationObserver(() => {
-        if (!isAmbientEnabled()) return;
-        if (currentVideo && currentVideo.isConnected) return;
-        const video = findActiveVideo();
-        if (video && video !== currentVideo) {
-            attachVideo(video);
-        }
-    });
-
-    observer.observe(document.documentElement, {
-        childList: true,
-        subtree: true
-    });
 
     applyAmbientLightingState();
 }

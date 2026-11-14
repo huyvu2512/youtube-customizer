@@ -360,8 +360,7 @@ html.ytc-ambient-lighting .ytp-ambient-mode-rendering-container {
 .ytc-hide-shopping .ytp-featured-product-banner,
 .ytc-hide-shopping .ytp-suggested-action-badge[aria-label*="sản phẩm" i],
 .ytc-hide-shopping .ytp-suggested-action-badge[aria-label*="product" i],
-.ytc-hide-shopping .ytp-suggested-action-badge[aria-label*="shopping" i],
-.ytc-hide-shopping .ytp-suggested-action-badge:has(svg path[d*="M19 6"]) {
+.ytc-hide-shopping .ytp-suggested-action-badge[aria-label*="shopping" i] {
     display: none !important;
     opacity: 0 !important;
     pointer-events: none !important;
@@ -2006,20 +2005,17 @@ html:not([dark]) .ytc-update-btn:hover {
    - OLED Depth Shadow & Glass UI: Giao diện kính mờ sang trọng, video nổi bật
    ========================================================================== */
 
-/* Triệt tiêu 100% thanh cuộn ngang toàn cục */
-html, body {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
+/* Chỉ chống tràn ngang khi bật Ambilight để không ép layout root toàn cục */
+html.ytc-ambient-lighting,
+html.ytc-ambient-lighting body {
+    overflow-x: clip !important;
 }
 
-ytd-app, #page-manager, ytd-watch-flexy {
+html.ytc-ambient-lighting ytd-app,
+html.ytc-ambient-lighting #page-manager,
+html.ytc-ambient-lighting ytd-watch-flexy {
     overflow-x: clip !important;
     max-width: 100% !important;
-}
-
-ytd-watch-flexy {
-    position: relative !important;
-    overflow: visible !important;
 }
 
 /* Khi tính năng TẮT (không có class ytc-ambient-lighting): Triệt tiêu 100% hiển thị Ambilight */
@@ -2060,7 +2056,7 @@ html.ytc-ambient-lighting #ytc-ambient-wrapper.ytc-ambient-active {
     left: -30px !important;
     width: calc(100% + 60px) !important;
     height: calc(100% + 60px) !important;
-    filter: blur(16px) saturate(135%) brightness(103%);
+    filter: blur(12px) saturate(135%) brightness(103%);
     pointer-events: none !important;
     transform: translateZ(0);
     opacity: 0.95;
@@ -2101,7 +2097,6 @@ html[fullscreen] #movie_player,
     width: 108% !important;
     height: 108% !important;
     object-fit: fill !important;
-    filter: blur(30px) brightness(.62) saturate(1.15) !important;
     opacity: .88 !important;
     pointer-events: none !important;
 }
@@ -2342,7 +2337,7 @@ html[dark].ytc-ambient-lighting ytd-watch-metadata #title h1 {
 
 /* Tinh chỉnh màu sắc Ambilight trên nền trắng: Màu sắc rực rỡ, đậm đà ngang ngửa Dark Theme */
 html:not([dark]) #ytc-ambient-spread-canvas {
-    filter: blur(48px) saturate(220%) contrast(115%) brightness(96%);
+    filter: blur(24px) saturate(210%) contrast(115%) brightness(96%);
     opacity: 0.9;
 }
 

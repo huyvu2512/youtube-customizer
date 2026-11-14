@@ -1,14 +1,26 @@
-// Fill fullscreen letterbox areas with a low-cost, blurred copy of the video.
-const CANVAS_WIDTH = 640;
-const CANVAS_HEIGHT = 360;
+// Fill fullscreen letterbox areas with a low-cost, pre-blurred copy of the video.
+const CANVAS_WIDTH = 96;
+const CANVAS_HEIGHT = 54;
 const UPDATE_INTERVAL_MS = 500;
+const LETTERBOX_RATIO_THRESHOLD = 0.06;
 
 let canvas = null;
 let context = null;
 let updateTimer = null;
 let activePlayer = null;
 let activeVideo = null;
+let boundVideo = null;
 let initialized = false;
+
+export function shouldShowLetterboxBackdrop(videoWidth, videoHeight, containerWidth, containerHeight) {
+    if (!(videoWidth > 0 && videoHeight > 0 && containerWidth > 0 && containerHeight > 0)) {
+        return false;
+    }
+    const videoRatio = videoWidth / videoHeight;
+    const containerRatio = containerWidth / containerHeight;
+    const relativeDiff = Math.abs(videoRatio - containerRatio) / Math.max(videoRatio, containerRatio);
+    return relativeDiff > LETTERBOX_RATIO_THRESHOLD;
+}
 
 function findPlayer() {
     return document.querySelector('#movie_player:not(#inline-preview-player)');
@@ -42,11 +54,30 @@ function ensureCanvas(player) {
     return true;
 }
 
-function stopBackdrop() {
+function stopTimer() {
     if (updateTimer !== null) {
         clearInterval(updateTimer);
         updateTimer = null;
     }
+}
+
+function unbindVideo() {
+    if (!boundVideo) return;
+    boundVideo.removeEventListener('loadedmetadata', syncBackdrop);
+    boundVideo.removeEventListener('seeked', drawFrame);
+    boundVideo = null;
+}
+
+function bindVideo(video) {
+    if (!video || video === boundVideo) return;
+    unbindVideo();
+    boundVideo = video;
+    boundVideo.addEventListener('loadedmetadata', syncBackdrop, { passive: true });
+    boundVideo.addEventListener('seeked', drawFrame, { passive: true });
+}
+
+function clearBackdropCanvas() {
+    stopTimer();
     activePlayer?.classList.remove('ytc-letterbox-backdrop-active');
     canvas?.remove();
     canvas = null;
@@ -55,18 +86,40 @@ function stopBackdrop() {
     activeVideo = null;
 }
 
+function stopBackdrop() {
+    clearBackdropCanvas();
+    unbindVideo();
+}
+
 function drawFrame() {
+    if (document.hidden) return;
     const player = findPlayer();
     if (!player || !isFullscreen(player)) {
         stopBackdrop();
         return;
     }
-    if (!ensureCanvas(player)) return;
     const video = player.querySelector('video.html5-main-video') || player.querySelector('video');
-    if (!video || video.readyState < 2 || !video.videoWidth || !video.videoHeight) return;
+    if (!video) return;
+    bindVideo(video);
+    if (video.readyState < 2 || !video.videoWidth || !video.videoHeight) return;
+
+    const containerW = player.clientWidth || window.innerWidth;
+    const containerH = player.clientHeight || window.innerHeight;
+    if (!shouldShowLetterboxBackdrop(video.videoWidth, video.videoHeight, containerW, containerH)) {
+        // Keep native hardware video overlay active when no letterbox bars exist.
+        clearBackdropCanvas();
+        return;
+    }
+
+    if (video.seeking || player.classList.contains('ytp-scrubbing')) return;
+    if (!ensureCanvas(player) || !context) return;
     if (video.paused && video === activeVideo && canvas.dataset.hasFrame === 'true') return;
     try {
-        context.drawImage(video, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        // Pre-blur onto a tiny canvas once per tick instead of running a full-viewport CSS blur shader.
+        if ('filter' in context) {
+            context.filter = 'blur(8px) brightness(0.62) saturate(1.15)';
+        }
+        context.drawImage(video, -4, -3, CANVAS_WIDTH + 8, CANVAS_HEIGHT + 6);
         activeVideo = video;
         canvas.dataset.hasFrame = 'true';
     } catch (_) {
@@ -75,13 +128,19 @@ function drawFrame() {
 }
 
 function syncBackdrop() {
+    if (document.hidden) {
+        stopTimer();
+        return;
+    }
     const player = findPlayer();
     if (!player || !isFullscreen(player)) {
         stopBackdrop();
         return;
     }
     drawFrame();
-    if (updateTimer === null) updateTimer = setInterval(drawFrame, UPDATE_INTERVAL_MS);
+    if (activePlayer && updateTimer === null) {
+        updateTimer = setInterval(drawFrame, UPDATE_INTERVAL_MS);
+    }
 }
 
 export function initLetterboxBackdrop() {
@@ -89,6 +148,8 @@ export function initLetterboxBackdrop() {
     initialized = true;
     document.addEventListener('fullscreenchange', syncBackdrop, { passive: true });
     document.addEventListener('webkitfullscreenchange', syncBackdrop, { passive: true });
+    window.addEventListener('resize', syncBackdrop, { passive: true });
+    document.addEventListener('visibilitychange', syncBackdrop, { passive: true });
     window.addEventListener('yt-navigate-finish', () => {
         stopBackdrop();
         syncBackdrop();

@@ -12,10 +12,11 @@ import {
     isNativeChatHiddenByScript,
     setNativeChatHiddenState,
     syncPlayerFullscreenSize,
-    ensureChatOverlayContainers
+    ensureChatOverlayContainers,
+    removeChatOverlayContainers
 } from './chatState.js';
 import { getBackgroundChatRetryAction } from './backgroundChatRetry.js';
-import { applyChatBoxPos, showInitialBox, setupChatBoxInteractions } from './streamerBox.js';
+import { applyChatBoxPos, showInitialBox, setupChatBoxInteractions, disconnectChatBoxObservers } from './streamerBox.js';
 import {
     danmakuQueue,
     laneNextAvailableTime,
@@ -606,41 +607,45 @@ export const ensureNativeLiveChatRunning = syncNativeChatState;
 export function onTheaterModeChanged(isTheater) {
     if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
 
+    const mode = currentConfig.chatOverlay || 'off';
+    if (mode === 'off') return;
+
     // 1. Đồng bộ lại container overlay trên movie_player
     ensureChatOverlayContainers();
     const player = document.querySelector('#movie_player:not(#inline-preview-player)');
-    if (player && streamerBox) {
+    if (player && streamerBox && mode === 'streamer') {
         applyChatBoxPos(streamerBox, player);
     }
 
-    // 2. Nếu đang bật Live Chat Overlay:
-    if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
-        if (currentConfig.chatOverlay === 'danmaku') {
-            startDanmakuScheduler();
-        }
-
-        setTimeout(() => {
-            ensureChatOverlayContainers();
-            const p = document.querySelector('#movie_player:not(#inline-preview-player)');
-            if (p && streamerBox) applyChatBoxPos(streamerBox, p);
-            findAndObserveItems();
-            requestExistingMessages();
-        }, 150);
-        setTimeout(() => {
-            ensureChatOverlayContainers();
-            const p = document.querySelector('#movie_player:not(#inline-preview-player)');
-            if (p && streamerBox) applyChatBoxPos(streamerBox, p);
-            findAndObserveItems();
-        }, 600);
-        setTimeout(() => {
-            ensureChatOverlayContainers();
-            const p = document.querySelector('#movie_player:not(#inline-preview-player)');
-            if (p && streamerBox) applyChatBoxPos(streamerBox, p);
-            findAndObserveItems();
-        }, 1500);
-
-        ensureBackgroundLiveChat();
+    // 2. Đồng bộ luồng Live Chat Overlay đang bật
+    if (mode === 'danmaku') {
+        startDanmakuScheduler();
     }
+
+    setTimeout(() => {
+        if ((currentConfig.chatOverlay || 'off') === 'off') return;
+        ensureChatOverlayContainers();
+        const p = document.querySelector('#movie_player:not(#inline-preview-player)');
+        if (p && streamerBox && currentConfig.chatOverlay === 'streamer') applyChatBoxPos(streamerBox, p);
+        findAndObserveItems();
+        requestExistingMessages();
+    }, 150);
+    setTimeout(() => {
+        if ((currentConfig.chatOverlay || 'off') === 'off') return;
+        ensureChatOverlayContainers();
+        const p = document.querySelector('#movie_player:not(#inline-preview-player)');
+        if (p && streamerBox && currentConfig.chatOverlay === 'streamer') applyChatBoxPos(streamerBox, p);
+        findAndObserveItems();
+    }, 600);
+    setTimeout(() => {
+        if ((currentConfig.chatOverlay || 'off') === 'off') return;
+        ensureChatOverlayContainers();
+        const p = document.querySelector('#movie_player:not(#inline-preview-player)');
+        if (p && streamerBox && currentConfig.chatOverlay === 'streamer') applyChatBoxPos(streamerBox, p);
+        findAndObserveItems();
+    }, 1500);
+
+    ensureBackgroundLiveChat();
 }
 
 let theaterObserver = null;
@@ -907,9 +912,19 @@ export function updateChatOverlayVisibility() {
     const mode = currentConfig.chatOverlay || 'off';
     if (mode === 'off') replayNativeOpenRequestedVideoId = null;
     syncReplayNativeChatPresentation();
-    if (mode !== 'off') {
+
+    if (mode !== 'streamer') {
+        disconnectChatBoxObservers();
+    }
+    if (mode === 'off') {
+        stopDanmakuScheduler();
+        danmakuQueue.length = 0;
+        laneNextAvailableTime.fill(0);
+        removeChatOverlayContainers();
+    } else {
         ensureChatOverlayContainers();
     }
+
     const danmaku = document.getElementById('ytc-danmaku-container') || danmakuContainer;
     const streamer = document.getElementById('ytc-streamer-box') || streamerBox;
     const player = document.querySelector('#movie_player:not(#inline-preview-player)');
@@ -917,18 +932,20 @@ export function updateChatOverlayVisibility() {
     const showDanmaku = mode === 'danmaku';
     const showStreamer = mode === 'streamer';
 
+    if (!showDanmaku) {
+        stopDanmakuScheduler();
+        danmakuQueue.length = 0;
+        laneNextAvailableTime.fill(0);
+    }
+
     if (danmaku) {
         danmaku.style.display = showDanmaku ? 'block' : 'none';
         danmaku.innerHTML = '';
-        danmakuQueue.length = 0;
-        laneNextAvailableTime.fill(0);
         setLastDanmakuSpawnTime(Date.now() + 400);
         setLastSpawnedLane(-1);
         if (showDanmaku) {
             stopDanmakuScheduler();
             startDanmakuScheduler();
-        } else {
-            stopDanmakuScheduler();
         }
     }
     if (streamer) {
@@ -1446,9 +1463,6 @@ export function initChatOverlay() {
             setNativeChatHiddenState(true);
         }
         syncPlayerFullscreenSize();
-        setTimeout(syncPlayerFullscreenSize, 60);
-        setTimeout(syncPlayerFullscreenSize, 180);
-        setTimeout(syncPlayerFullscreenSize, 350);
     });
     let windowResizeTimer = null;
     window.addEventListener('resize', () => {
@@ -1522,12 +1536,16 @@ export function initChatOverlay() {
         whenElement('#movie_player:not(#inline-preview-player)', () => {
             observePlayerChatState();
             observeFullscreenChatPanels();
-            ensureChatOverlayContainers();
             if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
+                ensureChatOverlayContainers();
                 ensureBackgroundLiveChat();
                 ensureNativeLiveChatRunning();
-            } else if (currentConfig.hideNativeLiveChat) {
-                stopAllLiveChatIfDisabled();
+            } else {
+                disconnectChatBoxObservers();
+                removeChatOverlayContainers();
+                if (currentConfig.hideNativeLiveChat) {
+                    stopAllLiveChatIfDisabled();
+                }
             }
         });
     }
