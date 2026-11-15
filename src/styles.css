@@ -40,17 +40,17 @@
         width: 100% !important;
     }
 
-    html.ytc-feed-page[data-ytc-cols="3"] ytd-browse:not([hidden]) ytd-rich-grid-renderer ytd-rich-item-renderer {
+    html.ytc-feed-page[data-ytc-cols="3"] ytd-browse:not([hidden]) ytd-rich-grid-renderer ytd-rich-item-renderer:not([is-slim-media]):not([is-shorts-grid]) {
         width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
         max-width: calc(100% / 3 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
     }
 
-    html.ytc-feed-page[data-ytc-cols="4"] ytd-browse:not([hidden]) ytd-rich-grid-renderer ytd-rich-item-renderer {
+    html.ytc-feed-page[data-ytc-cols="4"] ytd-browse:not([hidden]) ytd-rich-grid-renderer ytd-rich-item-renderer:not([is-slim-media]):not([is-shorts-grid]) {
         width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
         max-width: calc(100% / 4 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
     }
 
-    html.ytc-feed-page[data-ytc-cols="5"] ytd-browse:not([hidden]) ytd-rich-grid-renderer ytd-rich-item-renderer {
+    html.ytc-feed-page[data-ytc-cols="5"] ytd-browse:not([hidden]) ytd-rich-grid-renderer ytd-rich-item-renderer:not([is-slim-media]):not([is-shorts-grid]) {
         width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
         max-width: calc(100% / 5 - var(--ytd-rich-grid-item-margin, 16px) - 0.01px) !important;
     }
@@ -171,7 +171,8 @@ html.ytc-feed-page #inline-preview-player {
 .ytc-hide-community ytd-rich-item-renderer.ytc-item-community,
 .ytc-hide-community ytd-post-renderer,
 .ytc-hide-community ytd-backstage-post-renderer,
-.ytc-hide-community ytd-backstage-post-thread-renderer {
+.ytc-hide-community ytd-backstage-post-thread-renderer,
+html.ytc-feed-page ytd-rich-section-renderer.ytc-shelf-empty {
     display: none !important;
 }
 

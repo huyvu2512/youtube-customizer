@@ -8,18 +8,25 @@ class MockClassList {
         this.el = el;
         this.set = new Set();
     }
+    _syncAttr() {
+        if (this.set.size > 0) this.el.attributes.set('class', Array.from(this.set).join(' '));
+        else this.el.attributes.delete('class');
+    }
     add(...names) {
         for (const n of names) {
             if (n) this.set.add(n);
         }
+        this._syncAttr();
     }
     remove(...names) {
         for (const n of names) this.set.delete(n);
+        this._syncAttr();
     }
     toggle(name, force) {
         const next = force === undefined ? !this.set.has(name) : !!force;
         if (next) this.set.add(name);
         else this.set.delete(name);
+        this._syncAttr();
         return next;
     }
     contains(name) {
@@ -332,7 +339,9 @@ test('unhydrated skeleton wrappers do not lock data-ytc-feed-sig and tag cleanly
     shortsSkeleton.append(shortsContent);
 
     const mixSkeleton = new MockElement('ytd-rich-item-renderer');
-    const mixLockup = new MockElement('yt-lockup-view-model');
+    const mixLockup = new MockElement('yt-lockup-view-model', {
+        classes: ['ytLockupViewModelHost', 'ytLockupViewModelCollectionStack2', 'content-id-RD123']
+    });
     mixSkeleton.append(new MockElement('div', { id: 'content' }));
     mixSkeleton.children[0].append(mixLockup);
 
@@ -347,7 +356,10 @@ test('unhydrated skeleton wrappers do not lock data-ytc-feed-sig and tag cleanly
     // Phase 2: Async inner elements arrive inside the already-mounted wrappers
     adContent.append(new MockElement('ytd-ad-slot-renderer'));
     shortsContent.append(new MockElement('ytd-rich-shelf-renderer', { attrs: { 'is-shorts': '' } }));
-    mixLockup.append(new MockElement('a', { attrs: { href: '/watch?v=123&list=RD123' }, text: 'My Mix' }));
+    mixLockup.append(
+        new MockElement('yt-collection-thumbnail-view-model'),
+        new MockElement('a', { attrs: { href: '/watch?v=123&list=RD123' }, text: 'Mix - My Mix' })
+    );
 
     scanAndTagFeedContent(globalThis.document);
 
@@ -539,10 +551,92 @@ test('feed MutationObserver reacts to continuation-is-reloading and async ad slo
     obs.disconnect();
 });
 
+test('Music tab single videos carrying list=RD...&start_radio=1 stay visible while real Mix shelves collapse cleanly', async () => {
+    const env = setupMockEnv();
+    const { currentConfig } = await import('../src/core/config.js');
+    const { scanAndTagFeedContent } = await import('../src/features/feedFilter.js');
+
+    Object.assign(currentConfig, {
+        columns: 4,
+        hideShorts: true,
+        hidePlayables: true,
+        hideMembersOnly: true,
+        hideMixes: true,
+        hideExploreTopics: true,
+        hideCommunity: true,
+        cleanSearch: true,
+        autoDismissPromos: false
+    });
+
+    // Shelf 1: "Video nhạc hàng đầu" with single music videos having &list=RD...&start_radio=1
+    const topMusicSection = new MockElement('ytd-rich-section-renderer');
+    const topMusicShelf = new MockElement('ytd-rich-shelf-renderer');
+    const topMusicContents = new MockElement('div', { id: 'contents' });
+
+    const singleSongCard = new MockElement('ytd-rich-item-renderer');
+    const singleSongLockup = new MockElement('yt-lockup-view-model', {
+        classes: ['ytLockupViewModelHost', 'ytLockupViewModelVertical']
+    });
+    const thumb = new MockElement('yt-thumbnail-view-model');
+    const badge = new MockElement('badge-shape', { text: '4:54' });
+    thumb.append(badge);
+    singleSongLockup.append(
+        thumb,
+        new MockElement('a', { attrs: { href: '/watch?v=QxXYWMIQAcQ&list=RDQxXYWMIQAcQ&start_radio=1&pp=oAcB' }, text: "Dangrangto - 'để dành cho em' (Visualizer)" })
+    );
+    singleSongCard.append(singleSongLockup);
+
+    // Single live music video without numeric duration inside Music tab (still NOT a collection/Mix)
+    const liveSongCard = new MockElement('ytd-rich-item-renderer');
+    const liveSongLockup = new MockElement('yt-lockup-view-model', {
+        classes: ['ytLockupViewModelHost', 'ytLockupViewModelVertical']
+    });
+    liveSongLockup.append(
+        new MockElement('yt-thumbnail-view-model'),
+        new MockElement('a', { attrs: { href: '/watch?v=live123&list=RDlive123&start_radio=1' }, text: 'Live Performance' })
+    );
+    liveSongCard.append(liveSongLockup);
+
+    topMusicContents.append(singleSongCard, liveSongCard);
+    topMusicShelf.append(topMusicContents);
+    topMusicSection.append(topMusicShelf);
+
+    // Shelf 2: "Tuyển tập nhạc của nghệ sĩ dành cho bạn" containing ONLY real Mix cards
+    const artistMixSection = new MockElement('ytd-rich-section-renderer');
+    const artistMixShelf = new MockElement('ytd-rich-shelf-renderer');
+    const artistMixContents = new MockElement('div', { id: 'contents' });
+
+    const realMixCard = new MockElement('ytd-rich-item-renderer');
+    const realMixLockup = new MockElement('yt-lockup-view-model', {
+        classes: ['ytLockupViewModelHost', 'ytLockupViewModelCollectionStack2', 'content-id-RD999']
+    });
+    realMixLockup.append(
+        new MockElement('yt-collection-thumbnail-view-model'),
+        new MockElement('a', { attrs: { href: '/watch?v=abc&list=RD999' }, text: 'Mix - Nghệ sĩ Việt' })
+    );
+    realMixCard.append(realMixLockup);
+    artistMixContents.append(realMixCard);
+    artistMixShelf.append(artistMixContents);
+    artistMixSection.append(artistMixShelf);
+
+    env.contents.append(topMusicSection, artistMixSection);
+    scanAndTagFeedContent(globalThis.document);
+
+    // Single songs on Music tab must NOT be hidden by hideMixes
+    assert.equal(singleSongCard.classList.contains('ytc-item-mix'), false);
+    assert.equal(liveSongCard.classList.contains('ytc-item-mix'), false);
+    assert.equal(topMusicSection.classList.contains('ytc-shelf-empty'), false);
+
+    // Real Mix card IS hidden and its now-empty shelf collapses so no orphan "Hiện thêm" bar stays visible
+    assert.equal(realMixCard.classList.contains('ytc-item-mix'), true);
+    assert.equal(artistMixSection.classList.contains('ytc-shelf-empty'), true);
+});
+
 test('styles.css reinforces flat ytd-rich-grid-renderer > #contents flex alignment and outer wrapper hide classes', () => {
     const css = fs.readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
     assert.match(css, /ytd-rich-grid-renderer\s*>\s*#contents\s*\{[\s\S]*display:\s*flex\s*!important;[\s\S]*flex-wrap:\s*wrap\s*!important;[\s\S]*justify-content:\s*flex-start\s*!important;/);
     assert.match(css, /\.ytc-hide-playables\s+ytd-rich-item-renderer\.ytc-item-playables/);
     assert.match(css, /\.ytc-auto-dismiss\s+ytd-rich-section-renderer\.ytc-shelf-promo/);
     assert.match(css, /\.ytc-auto-dismiss\s+ytd-rich-item-renderer\.ytc-item-promo/);
+    assert.match(css, /ytd-rich-section-renderer\.ytc-shelf-empty/);
 });

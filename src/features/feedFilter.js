@@ -17,7 +17,8 @@ const SECTION_HIDE_CLASSES = [
     'ytc-shelf-explore',
     'ytc-shelf-community',
     'ytc-shelf-mix',
-    'ytc-shelf-promo'
+    'ytc-shelf-promo',
+    'ytc-shelf-empty'
 ];
 
 const ITEM_HIDE_CLASSES = [
@@ -228,6 +229,30 @@ function isMembersCard(card) {
     return hasAnyBadgeText(card, MEMBERS_TEXT_PHRASES);
 }
 
+const MIX_EXPLICIT_SELECTOR =
+    'ytd-radio-renderer, ytd-compact-radio-renderer, ytd-playlist-renderer, ytd-compact-playlist-renderer, ' +
+    'ytd-playlist-thumbnail, ytd-playlist-custom-thumbnail-renderer, yt-collection-thumbnail-view-model, ' +
+    'a[href*="/playlist?list="], [class*="CollectionStack"], [class*="collection-stack"], ' +
+    '[class*="content-id-RD"], [class*="content-id-PL"], [class*="content-id-OLAK5uy_"], [class*="content-id-CL"]';
+
+const DURATION_BADGE_SELECTOR =
+    'ytd-thumbnail-overlay-time-status-renderer, span.ytd-thumbnail-overlay-time-status-renderer, ' +
+    'yt-thumbnail-view-model badge-shape, yt-thumbnail-overlay-badge-view-model badge-shape';
+
+function hasVideoDurationBadge(card) {
+    if (card.querySelector('ytd-thumbnail-overlay-time-status-renderer, span.ytd-thumbnail-overlay-time-status-renderer')) {
+        return true;
+    }
+    const badges = card.querySelectorAll(DURATION_BADGE_SELECTOR);
+    for (const badge of badges) {
+        const text = (badge.textContent || '').trim();
+        if (/^\d{1,2}:\d{2}(?::\d{2})?$/.test(text)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function isMixCard(card) {
     const tag = card.tagName ? card.tagName.toLowerCase() : '';
     if (
@@ -239,20 +264,56 @@ function isMixCard(card) {
     ) {
         return true;
     }
-    if (card.querySelector('ytd-radio-renderer, ytd-compact-radio-renderer, ytd-playlist-renderer, ytd-compact-playlist-renderer, ytd-playlist-thumbnail, ytd-playlist-custom-thumbnail-renderer, a[href*="/playlist?list="], a[href*="list=RD"], a[href*="list=PL"], a[href*="list=OLAK5uy_"], a[href*="list=CL"]')) {
+    if (card.matches?.(MIX_EXPLICIT_SELECTOR) || card.querySelector(MIX_EXPLICIT_SELECTOR)) {
         return true;
     }
-    const hasVideoDuration = !!card.querySelector('ytd-thumbnail-overlay-time-status-renderer, span.ytd-thumbnail-overlay-time-status-renderer');
-    if (hasVideoDuration) return false;
+    if (hasVideoDurationBadge(card)) {
+        return false;
+    }
+
+    const isModernLockup = tag === 'yt-lockup-view-model' || !!card.querySelector('yt-lockup-view-model');
+    if (!isModernLockup && card.querySelector('a[href*="list=RD"], a[href*="list=PL"], a[href*="list=OLAK5uy_"], a[href*="list=CL"]')) {
+        return true;
+    }
+
+    const titleEl = card.querySelector('#video-title, #title, .yt-lockup-metadata-view-model__title, h3');
+    const titleText = (titleEl ? titleEl.textContent : '') || '';
+    if (titleText.startsWith('Mix - ') || titleText.startsWith('Mix – ') || titleText.startsWith('Mix • ')) {
+        return true;
+    }
+
     const titleOrBadge = card.querySelector('#video-title, #title, #metadata, yt-lockup-metadata-view-model') || card;
     const text = titleOrBadge.textContent || '';
     return (
         text.includes('Danh sách kết hợp') ||
         text.includes('YouTube tạo danh sách phát này') ||
         text.includes('Xem toàn bộ danh sách phát') ||
+        text.includes('View full playlist') ||
         text.includes('Xem toàn bộ khoá học') ||
         text.includes('Xem toàn bộ khóa học')
     );
+}
+
+function isItemHiddenByActiveFilter(item) {
+    return (
+        (currentConfig.hideMembersOnly && item.classList.contains('ytc-item-members')) ||
+        (currentConfig.hideMixes && item.classList.contains('ytc-item-mix')) ||
+        (currentConfig.cleanSearch && item.classList.contains('ytc-item-ad')) ||
+        (currentConfig.hidePlayables && item.classList.contains('ytc-item-playables')) ||
+        (currentConfig.hideCommunity && item.classList.contains('ytc-item-community')) ||
+        (currentConfig.autoDismissPromos && item.classList.contains('ytc-item-promo'))
+    );
+}
+
+function isShelfEmptiedByFilters(sec, sig) {
+    const shelfItems = sec.querySelectorAll('ytd-rich-item-renderer');
+    if (!shelfItems.length) return false;
+    for (const item of shelfItems) {
+        if (item.getAttribute('data-ytc-feed-sig') !== sig || !isItemHiddenByActiveFilter(item)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 function isSectionHydrated(sec) {
@@ -293,6 +354,7 @@ function evaluateSection(sec, sig) {
     syncClass(sec, 'ytc-shelf-community', currentConfig.hideCommunity && sec.querySelector('ytd-post-renderer, ytd-backstage-post-renderer, ytd-backstage-post-thread-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer'));
     syncClass(sec, 'ytc-shelf-mix', currentConfig.hideMixes && isMixSection(sec));
     syncClass(sec, 'ytc-shelf-promo', currentConfig.autoDismissPromos && sec.querySelector('ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer, ytd-inline-survey-renderer, ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer'));
+    syncClass(sec, 'ytc-shelf-empty', isShelfEmptiedByFilters(sec, sig));
     sec.setAttribute('data-ytc-feed-sig', sig);
 }
 
@@ -342,11 +404,11 @@ export function scanAndTagFeedContent(scope) {
     for (const root of roots) {
         if (!root || !root.querySelectorAll) continue;
 
-        const sections = queryAllIncluding(root, `ytd-rich-section-renderer${staleSigSelector}`);
-        sections.forEach((sec) => evaluateSection(sec, sig));
-
         const richItems = queryAllIncluding(root, `ytd-rich-item-renderer${staleSigSelector}`);
         richItems.forEach((card) => evaluateCard(card, sig));
+
+        const sections = queryAllIncluding(root, `ytd-rich-section-renderer${staleSigSelector}`);
+        sections.forEach((sec) => evaluateSection(sec, sig));
 
         const standaloneSelector =
             `ytd-video-renderer${staleSigSelector}, ytd-compact-video-renderer${staleSigSelector}, ` +
@@ -432,7 +494,7 @@ function markWrapperDirty(el) {
     const wrapper = el.closest(FEED_WRAPPER_SELECTOR);
     if (!wrapper) return;
     wrapper.removeAttribute('data-ytc-feed-sig');
-    const outerRich = wrapper.closest('ytd-rich-section-renderer, ytd-rich-item-renderer');
+    const outerRich = wrapper.parentElement?.closest?.('ytd-rich-section-renderer, ytd-rich-item-renderer');
     if (outerRich && outerRich !== wrapper) {
         outerRich.removeAttribute('data-ytc-feed-sig');
     }

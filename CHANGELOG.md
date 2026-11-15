@@ -1,3 +1,9 @@
+## v3.9.38 — 15/11/2026 22:21
+
+- Ngăn lọc nhầm video nhạc đơn kèm `list=RD` trên tab Âm nhạc.
+- Ẩn gọn shelf rỗng khi mọi thẻ bên trong đã bị lọc.
+- Loại thẻ dọc slim khỏi quy tắc ép rộng 4 cột của lưới chính.
+
 ## v3.9.37 — 15/11/2026 21:18
 
 - Khắc phục lỗi lưới Trang chủ thưa cột khi bấm logo YouTube.
