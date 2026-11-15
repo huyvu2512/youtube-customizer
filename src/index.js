@@ -16,8 +16,7 @@ import {
     applyHomeGridColumns,
     setupLogoObserver,
     syncLogoObserver,
-    scheduleFeedScan,
-    scanAndTagFeedContent,
+    invalidateFeedScan,
     hasActiveFeedFilters,
     setupFeedShelvesObserver,
     syncFeedObserver,
@@ -110,6 +109,7 @@ if (window.self !== window.top) {
         applyHomeGridColumns();
         syncLogoObserver();
         syncFeedObserver();
+        invalidateFeedScan(document);
         applyAmbientLightingState();
         updateChatOverlayVisibility();
         applyAudioOnlyState();
@@ -153,14 +153,10 @@ if (window.self !== window.top) {
 
         if (location.pathname.startsWith('/watch')) {
             setWatchLoading(true);
-            applyHomeGridColumns();
-            if (hasActiveFeedFilters()) scanAndTagFeedContent(document);
-        } else if (isHomeFeedPath()) {
-            applyHomeGridColumns();
-            scheduleFeedScan(document);
-        } else {
-            applyHomeGridColumns();
-            if (hasActiveFeedFilters()) scheduleFeedScan(document);
+        }
+        applyHomeGridColumns();
+        if (isHomeFeedPath() || hasActiveFeedFilters()) {
+            invalidateFeedScan(document);
         }
     }
 
@@ -194,6 +190,10 @@ if (window.self !== window.top) {
             updateChatOverlayVisibility();
             syncPanelState();
         }
+        applyConfigToRoot(false);
+        applyHomeGridColumns();
+        syncFeedObserver();
+        invalidateFeedScan(document);
     });
 
     document.addEventListener('yt-navigate-finish', onNavigate);

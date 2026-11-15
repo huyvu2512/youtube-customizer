@@ -1,3 +1,9 @@
+## v3.9.37 — 15/11/2026 21:18
+
+- Khắc phục lỗi lưới Trang chủ thưa cột khi bấm logo YouTube.
+- Quét lại thẻ tái sử dụng và đợi dữ liệu con trước khi khóa lọc.
+- Ẩn đồng bộ vỏ ngoài thẻ quảng cáo, Shorts, Mix, Hội viên và khảo sát.
+
 ## v3.9.36 — 14/11/2026 23:05
 
 - Gỡ toàn bộ `:has()` CSS, scoping lưới và `content-visibility` bình luận.

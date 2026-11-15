@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.36
-// @description  YouTube Customizer v3.9.36 — Gỡ :has() CSS, tắt observer thừa trên Watch và khử blur GPU khi phóng to.
+// @version      3.9.37
+// @description  YouTube Customizer v3.9.37 — Sửa lỗi thưa cột Trang chủ khi bấm logo nhờ quét lại thẻ tái sử dụng.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -13,6 +13,7 @@
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.37 — Sửa lỗi thưa cột Trang chủ khi bấm logo nhờ quét lại thẻ tái sử dụng.
  * v3.9.36 — Gỡ :has() CSS, tắt observer thừa trên Watch và khử blur GPU khi phóng to.
  * v3.9.35 — Tối ưu hiệu năng phóng to, tua video và xem trước timeline.
  * v3.9.34 — Giữ mức ban đầu đến khi người dùng đổi trong menu YouTube.
@@ -22,7 +23,6 @@
  * v3.9.30 — Khôi phục chất lượng thích ứng khi chọn Tự động.
  * v3.9.29 — Bấm nút Replay gốc để khởi tạo khung chat ẩn.
  * v3.9.28 — Tự mở Live Chat Replay; ẩn khung gốc khi phóng to.
- * v3.9.27 — Áp chất lượng một lần; dùng chat gốc cho Live Chat Replay.
  * ============================================================================
  */
 (() => {
@@ -45,7 +45,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.36";
+      APP_VERSION = "3.9.37";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -503,12 +503,37 @@
   __export(feedFilter_exports, {
     hasActiveFeedFilters: () => hasActiveFeedFilters,
     hasActiveWatchCardFilters: () => hasActiveWatchCardFilters,
+    invalidateFeedScan: () => invalidateFeedScan,
     needsFeedObserver: () => needsFeedObserver,
     scanAndTagFeedContent: () => scanAndTagFeedContent,
     scheduleFeedScan: () => scheduleFeedScan,
     setupFeedShelvesObserver: () => setupFeedShelvesObserver,
     syncFeedObserver: () => syncFeedObserver
   });
+  function syncClass(el, className, enabled) {
+    const shouldHave = !!enabled;
+    if (el.classList.contains(className) !== shouldHave) {
+      el.classList.toggle(className, shouldHave);
+    }
+  }
+  function clearClasses(el, classes) {
+    for (const cls of classes) {
+      if (el.classList.contains(cls)) {
+        el.classList.remove(cls);
+      }
+    }
+  }
+  function queryAllIncluding(root, selector) {
+    const list = Array.from(root.querySelectorAll(selector));
+    if (root.matches?.(selector)) {
+      list.unshift(root);
+    }
+    return list;
+  }
+  function getActiveFilterSignature() {
+    const mask = (currentConfig.hideShorts ? "S" : "") + (currentConfig.hidePlayables ? "P" : "") + (currentConfig.hideMembersOnly ? "M" : "") + (currentConfig.hideMixes ? "X" : "") + (currentConfig.hideExploreTopics ? "E" : "") + (currentConfig.hideCommunity ? "C" : "") + (currentConfig.cleanSearch ? "A" : "") + (currentConfig.autoDismissPromos ? "D" : "");
+    return `${feedScanGeneration}_${mask}`;
+  }
   function hasActiveFeedFilters() {
     return !!(currentConfig.hideShorts || currentConfig.hidePlayables || currentConfig.hideMembersOnly || currentConfig.hideMixes || currentConfig.hideExploreTopics || currentConfig.hideCommunity || currentConfig.cleanSearch);
   }
@@ -560,6 +585,109 @@
     if (activeContainers.length > 0) return activeContainers;
     return scope && scope.querySelectorAll ? [scope] : [document];
   }
+  function hasAnyBadgeText(card, phrases) {
+    const badgeAreas = card.querySelectorAll("#badges, ytd-badge-supported-renderer, #metadata-line, yt-badge-view-model");
+    for (const area of badgeAreas) {
+      const text = area.textContent || "";
+      for (const phrase of phrases) {
+        if (text.includes(phrase)) return true;
+      }
+    }
+    return false;
+  }
+  function isMembersSection(sec) {
+    if (sec.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], a[href*="/membership"], a[href*="/memberships"]')) {
+      return true;
+    }
+    const text = sec.textContent || "";
+    return text.includes("lợi ích từ hội viên") || text.includes("Ưu tiên hội viên") || text.includes("ưu tiên hội viên") || text.includes("hội viên") && text.includes("YouTube chọn lọc") || text.includes("Get more from memberships") || text.includes("Members only") || text.includes("Members first");
+  }
+  function isExploreSection(sec) {
+    if (sec.querySelector("#chips, yt-chip-cloud-chip-renderer, yt-chip-cloud-renderer, ytd-feed-filter-chip-bar-renderer")) {
+      return true;
+    }
+    const text = sec.textContent || "";
+    return text.includes("Khám phá các chủ đề") || text.includes("Explore other topics") || text.includes("Explore topics");
+  }
+  function isMixSection(sec) {
+    const titleEl = sec.querySelector("#title, #title-container, yt-formatted-string#title");
+    const titleText = (titleEl ? titleEl.textContent : "") || "";
+    return titleText.includes("Danh sách kết hợp") || titleText.includes("Mixes") || titleText.includes("YouTube tạo danh sách phát này");
+  }
+  function isMembersCard(card) {
+    if (card.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], [aria-label*="hội viên" i], [aria-label*="Members" i]')) {
+      return true;
+    }
+    return hasAnyBadgeText(card, MEMBERS_TEXT_PHRASES);
+  }
+  function isMixCard(card) {
+    const tag = card.tagName ? card.tagName.toLowerCase() : "";
+    if (tag === "ytd-radio-renderer" || tag === "ytd-compact-radio-renderer" || tag === "ytd-grid-radio-renderer" || tag === "ytd-playlist-renderer" || tag === "ytd-compact-playlist-renderer") {
+      return true;
+    }
+    if (card.querySelector('ytd-radio-renderer, ytd-compact-radio-renderer, ytd-playlist-renderer, ytd-compact-playlist-renderer, ytd-playlist-thumbnail, ytd-playlist-custom-thumbnail-renderer, a[href*="/playlist?list="], a[href*="list=RD"], a[href*="list=PL"], a[href*="list=OLAK5uy_"], a[href*="list=CL"]')) {
+      return true;
+    }
+    const hasVideoDuration = !!card.querySelector("ytd-thumbnail-overlay-time-status-renderer, span.ytd-thumbnail-overlay-time-status-renderer");
+    if (hasVideoDuration) return false;
+    const titleOrBadge = card.querySelector("#video-title, #title, #metadata, yt-lockup-metadata-view-model") || card;
+    const text = titleOrBadge.textContent || "";
+    return text.includes("Danh sách kết hợp") || text.includes("YouTube tạo danh sách phát này") || text.includes("Xem toàn bộ danh sách phát") || text.includes("Xem toàn bộ khoá học") || text.includes("Xem toàn bộ khóa học");
+  }
+  function isSectionHydrated(sec) {
+    return !!sec.querySelector(HYDRATED_SECTION_SELECTOR);
+  }
+  function isCardHydrated(card) {
+    const tag = card.tagName ? card.tagName.toLowerCase() : "";
+    if (tag === "ytd-rich-item-renderer") {
+      if (card.querySelector("ytd-ghost-grid-renderer")) return false;
+      if (!card.querySelector(HYDRATED_RICH_ITEM_SELECTOR)) return false;
+      if (card.querySelector("yt-lockup-view-model") && !card.querySelector("ytd-ad-slot-renderer, ytd-in-feed-ad-layout-renderer, .badge-style-type-ad") && !card.querySelector(LOCKUP_CONTENT_SELECTOR)) {
+        return false;
+      }
+      return true;
+    }
+    if (tag === "yt-lockup-view-model") {
+      return !!card.querySelector(LOCKUP_CONTENT_SELECTOR);
+    }
+    return true;
+  }
+  function evaluateSection(sec, sig) {
+    if (!isSectionHydrated(sec)) {
+      clearClasses(sec, SECTION_HIDE_CLASSES);
+      return;
+    }
+    syncClass(sec, "ytc-shelf-shorts", currentConfig.hideShorts && sec.querySelector("ytd-rich-shelf-renderer[is-shorts], ytd-reel-shelf-renderer, [is-shorts]"));
+    syncClass(sec, "ytc-shelf-playables", currentConfig.hidePlayables && sec.querySelector('[is-mini-game-card-shelf], ytd-mini-game-card-view-model, a[href*="playables"]'));
+    syncClass(sec, "ytc-shelf-ad", currentConfig.cleanSearch && sec.querySelector("ytd-ad-slot-renderer, ytd-in-feed-ad-layout-renderer, ytd-brand-video-singleton-renderer"));
+    syncClass(sec, "ytc-shelf-members", currentConfig.hideMembersOnly && isMembersSection(sec));
+    syncClass(sec, "ytc-shelf-explore", currentConfig.hideExploreTopics && isExploreSection(sec));
+    syncClass(sec, "ytc-shelf-community", currentConfig.hideCommunity && sec.querySelector("ytd-post-renderer, ytd-backstage-post-renderer, ytd-backstage-post-thread-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer"));
+    syncClass(sec, "ytc-shelf-mix", currentConfig.hideMixes && isMixSection(sec));
+    syncClass(sec, "ytc-shelf-promo", currentConfig.autoDismissPromos && sec.querySelector("ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer, ytd-inline-survey-renderer, ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer"));
+    sec.setAttribute("data-ytc-feed-sig", sig);
+  }
+  function evaluateCard(card, sig) {
+    const outerRichItem = card.tagName && card.tagName.toLowerCase() !== "ytd-rich-item-renderer" ? card.closest?.("ytd-rich-item-renderer") : null;
+    if (outerRichItem) {
+      clearClasses(card, ITEM_HIDE_CLASSES);
+      if (outerRichItem.getAttribute("data-ytc-feed-sig") === sig) {
+        card.setAttribute("data-ytc-feed-sig", sig);
+      }
+      return;
+    }
+    if (!isCardHydrated(card)) {
+      clearClasses(card, ITEM_HIDE_CLASSES);
+      return;
+    }
+    syncClass(card, "ytc-item-members", currentConfig.hideMembersOnly && isMembersCard(card));
+    syncClass(card, "ytc-item-mix", currentConfig.hideMixes && isMixCard(card));
+    syncClass(card, "ytc-item-ad", currentConfig.cleanSearch && card.querySelector("ytd-ad-slot-renderer, ytd-in-feed-ad-layout-renderer, .badge-style-type-ad"));
+    syncClass(card, "ytc-item-playables", currentConfig.hidePlayables && card.querySelector('[is-mini-game-card-shelf], ytd-mini-game-card-view-model, a[href*="playables"]'));
+    syncClass(card, "ytc-item-community", currentConfig.hideCommunity && card.querySelector("ytd-post-renderer, ytd-backstage-post-renderer, ytd-backstage-post-thread-renderer"));
+    syncClass(card, "ytc-item-promo", currentConfig.autoDismissPromos && card.querySelector("ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer, ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer"));
+    card.setAttribute("data-ytc-feed-sig", sig);
+  }
   function scanAndTagFeedContent(scope) {
     if (!hasActiveFeedFilters()) return;
     if (currentConfig.hideShorts || currentConfig.hidePlayables) {
@@ -568,134 +696,48 @@
     if (isWatchRoute() && !hasActiveWatchCardFilters()) return;
     const roots = getScanRoots(scope);
     if (!roots.length) return;
+    const sig = getActiveFilterSignature();
+    const staleSigSelector = `:not([data-ytc-feed-sig="${sig}"])`;
     for (const root of roots) {
       if (!root || !root.querySelectorAll) continue;
-      if (currentConfig.hideShorts || currentConfig.hidePlayables || currentConfig.hideMembersOnly || currentConfig.hideExploreTopics || currentConfig.hideCommunity || currentConfig.hideMixes || currentConfig.cleanSearch) {
-        const sections = root.querySelectorAll("ytd-rich-section-renderer:not([data-ytc-sec-scanned])");
-        sections.forEach((sec) => {
-          sec.setAttribute("data-ytc-sec-scanned", "1");
-          if (currentConfig.hideShorts && sec.querySelector("ytd-rich-shelf-renderer[is-shorts], ytd-reel-shelf-renderer")) {
-            sec.classList.add("ytc-shelf-shorts");
-            return;
-          }
-          if (currentConfig.hidePlayables && sec.querySelector('[is-mini-game-card-shelf], a[href*="playables"]')) {
-            sec.classList.add("ytc-shelf-playables");
-            return;
-          }
-          if (currentConfig.cleanSearch && sec.querySelector("ytd-ad-slot-renderer")) {
-            sec.classList.add("ytc-shelf-ad");
-            return;
-          }
-          if (currentConfig.hideMembersOnly) {
-            if (sec.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], a[href*="/membership"], a[href*="/memberships"]')) {
-              sec.classList.add("ytc-shelf-members");
-              return;
-            }
-            const text = sec.textContent || "";
-            if (text.includes("lợi ích từ hội viên") || text.includes("Ưu tiên hội viên") || text.includes("ưu tiên hội viên") || text.includes("hội viên") && text.includes("YouTube chọn lọc") || text.includes("Get more from memberships") || text.includes("Members only") || text.includes("Members first")) {
-              sec.classList.add("ytc-shelf-members");
-              return;
-            }
-          }
-          if (currentConfig.hideExploreTopics) {
-            if (sec.querySelector("#chips, yt-chip-cloud-chip-renderer, yt-chip-cloud-renderer, ytd-feed-filter-chip-bar-renderer")) {
-              sec.classList.add("ytc-shelf-explore");
-              return;
-            }
-            const text = sec.textContent || "";
-            if (text.includes("Khám phá các chủ đề") || text.includes("Explore other topics") || text.includes("Explore topics")) {
-              sec.classList.add("ytc-shelf-explore");
-              return;
-            }
-          }
-          if (currentConfig.hideCommunity) {
-            if (sec.querySelector("ytd-post-renderer, ytd-backstage-post-renderer, ytd-backstage-post-thread-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer")) {
-              sec.classList.add("ytc-shelf-community");
-              return;
-            }
-          }
-          if (currentConfig.hideMixes) {
-            const titleEl = sec.querySelector("#title, #title-container, yt-formatted-string#title");
-            const titleText = (titleEl ? titleEl.textContent : "") || "";
-            if (titleText.includes("Danh sách kết hợp") || titleText.includes("Mixes") || titleText.includes("YouTube tạo danh sách phát này")) {
-              sec.classList.add("ytc-shelf-mix");
-            }
-          }
-        });
-      }
-      if (currentConfig.hideMembersOnly) {
-        const videoCards = root.querySelectorAll(
-          "ytd-rich-item-renderer:not([data-ytc-mem-scanned]), ytd-video-renderer:not([data-ytc-mem-scanned]), ytd-compact-video-renderer:not([data-ytc-mem-scanned]), yt-lockup-view-model:not([data-ytc-mem-scanned])"
-        );
-        videoCards.forEach((card) => {
-          card.setAttribute("data-ytc-mem-scanned", "1");
-          if (card.querySelector('.badge-style-type-members-only, .badge-style-type-members-first, [badge-style="MEMBERS_FIRST"], [badge-style="MEMBERS_ONLY"], [aria-label*="hội viên" i], [aria-label*="Members" i]')) {
-            card.classList.add("ytc-item-members");
-          } else {
-            const badgeArea = card.querySelector("#badges, ytd-badge-supported-renderer, #metadata-line, yt-badge-view-model");
-            const text = badgeArea ? badgeArea.textContent || "" : "";
-            if (text.includes("Ưu tiên hội viên") || text.includes("ưu tiên hội viên") || text.includes("Chỉ dành cho hội viên") || text.includes("chỉ dành cho hội viên") || text.includes("Members first") || text.includes("Members only") || text.includes("Members-only") || text.includes("Early access")) {
-              card.classList.add("ytc-item-members");
-            }
-          }
-        });
-      }
+      const sections = queryAllIncluding(root, `ytd-rich-section-renderer${staleSigSelector}`);
+      sections.forEach((sec) => evaluateSection(sec, sig));
+      const richItems = queryAllIncluding(root, `ytd-rich-item-renderer${staleSigSelector}`);
+      richItems.forEach((card) => evaluateCard(card, sig));
+      const standaloneSelector = `ytd-video-renderer${staleSigSelector}, ytd-compact-video-renderer${staleSigSelector}, yt-lockup-view-model${staleSigSelector}, ytd-radio-renderer${staleSigSelector}, ytd-compact-radio-renderer${staleSigSelector}, ytd-grid-radio-renderer${staleSigSelector}, ytd-playlist-renderer${staleSigSelector}, ytd-compact-playlist-renderer${staleSigSelector}`;
+      const standaloneCards = queryAllIncluding(root, standaloneSelector);
+      standaloneCards.forEach((card) => evaluateCard(card, sig));
       if (currentConfig.hideMixes) {
-        const mixCards = root.querySelectorAll(
-          "ytd-rich-item-renderer:not([data-ytc-mix-scanned]), ytd-video-renderer:not([data-ytc-mix-scanned]), ytd-compact-video-renderer:not([data-ytc-mix-scanned]), yt-lockup-view-model:not([data-ytc-mix-scanned]), ytd-radio-renderer:not([data-ytc-mix-scanned]), ytd-compact-radio-renderer:not([data-ytc-mix-scanned]), ytd-grid-radio-renderer:not([data-ytc-mix-scanned]), ytd-playlist-renderer:not([data-ytc-mix-scanned]), ytd-compact-playlist-renderer:not([data-ytc-mix-scanned])"
-        );
-        mixCards.forEach((card) => {
-          card.setAttribute("data-ytc-mix-scanned", "1");
-          const tag = card.tagName.toLowerCase();
-          if (tag === "ytd-radio-renderer" || tag === "ytd-compact-radio-renderer" || tag === "ytd-grid-radio-renderer" || tag === "ytd-playlist-renderer" || tag === "ytd-compact-playlist-renderer") {
-            card.classList.add("ytc-item-mix");
-            return;
-          }
-          if (card.querySelector('ytd-radio-renderer, ytd-compact-radio-renderer, ytd-playlist-renderer, ytd-compact-playlist-renderer, ytd-playlist-thumbnail, ytd-playlist-custom-thumbnail-renderer, a[href*="/playlist?list="], a[href*="list=RD"], a[href*="list=PL"], a[href*="list=OLAK5uy_"], a[href*="list=CL"]')) {
-            card.classList.add("ytc-item-mix");
-            return;
-          }
-          const hasVideoDuration = !!card.querySelector("ytd-thumbnail-overlay-time-status-renderer, span.ytd-thumbnail-overlay-time-status-renderer");
-          if (!hasVideoDuration) {
-            const titleOrBadge = card.querySelector("#video-title, #title, #metadata") || card;
-            const text = titleOrBadge.textContent || "";
-            if (text.includes("Danh sách kết hợp") || text.includes("YouTube tạo danh sách phát này") || text.includes("Xem toàn bộ danh sách phát") || text.includes("Xem toàn bộ khoá học") || text.includes("Xem toàn bộ khóa học")) {
-              card.classList.add("ytc-item-mix");
-            }
-          }
-        });
-        root.querySelectorAll("ytd-shelf-renderer:not([data-ytc-mix-shelf])").forEach((shelf) => {
-          shelf.setAttribute("data-ytc-mix-shelf", "1");
+        queryAllIncluding(root, `ytd-shelf-renderer${staleSigSelector}`).forEach((shelf) => {
           const titleEl = shelf.querySelector("#title, #title-container");
           const titleText = (titleEl ? titleEl.textContent : "") || "";
-          if (titleText.includes("Danh sách kết hợp") || titleText.includes("Mixes")) {
-            shelf.classList.add("ytc-shelf-mix");
-          }
+          syncClass(shelf, "ytc-shelf-mix", titleText.includes("Danh sách kết hợp") || titleText.includes("Mixes"));
+          shelf.setAttribute("data-ytc-feed-sig", sig);
         });
-        root.querySelectorAll("yt-chip-cloud-chip-renderer:not([data-ytc-mix-chip])").forEach((chip) => {
-          chip.setAttribute("data-ytc-mix-chip", "1");
+        queryAllIncluding(root, `yt-chip-cloud-chip-renderer${staleSigSelector}`).forEach((chip) => {
           const text = chip.textContent || "";
-          if (text.includes("Danh sách kết hợp") || text.includes("Mixes")) {
-            chip.classList.add("ytc-chip-mix");
-          }
+          syncClass(chip, "ytc-chip-mix", text.includes("Danh sách kết hợp") || text.includes("Mixes"));
+          chip.setAttribute("data-ytc-feed-sig", sig);
         });
       }
-      if (currentConfig.cleanSearch) {
-        root.querySelectorAll("ytd-rich-item-renderer:not([data-ytc-ad-scanned]), ytd-video-renderer:not([data-ytc-ad-scanned])").forEach((card) => {
-          card.setAttribute("data-ytc-ad-scanned", "1");
-          if (card.querySelector("ytd-ad-slot-renderer, .badge-style-type-ad")) {
-            card.classList.add("ytc-item-ad");
-          }
-        });
-      }
-      if (currentConfig.hideCommunity) {
-        root.querySelectorAll("ytd-rich-item-renderer:not([data-ytc-com-scanned])").forEach((card) => {
-          card.setAttribute("data-ytc-com-scanned", "1");
-          if (card.querySelector("ytd-post-renderer, ytd-backstage-post-renderer")) {
-            card.classList.add("ytc-item-community");
-          }
-        });
-      }
+    }
+  }
+  function invalidateFeedScan(scope = document) {
+    feedScanGeneration++;
+    if (needsFeedObserver()) {
+      scheduleFeedScan(scope);
+    } else {
+      applyHomeGridColumns();
+    }
+  }
+  function markWrapperDirty(el) {
+    if (!el || !el.closest) return;
+    const wrapper = el.closest(FEED_WRAPPER_SELECTOR);
+    if (!wrapper) return;
+    wrapper.removeAttribute("data-ytc-feed-sig");
+    const outerRich = wrapper.closest("ytd-rich-section-renderer, ytd-rich-item-renderer");
+    if (outerRich && outerRich !== wrapper) {
+      outerRich.removeAttribute("data-ytc-feed-sig");
     }
   }
   function attachFeedObserver(container) {
@@ -718,9 +760,36 @@
       }
       let hasRelevantChanges = false;
       for (const mutation of mutations) {
-        if (!mutation.addedNodes.length) continue;
-        if (mutation.target.closest && mutation.target.closest(IGNORED_FEED_ZONE)) {
+        const target = mutation.target;
+        if (target?.closest && target.closest(IGNORED_FEED_ZONE)) {
           continue;
+        }
+        if (mutation.type === "attributes") {
+          const attr = mutation.attributeName;
+          const targetTag = target?.tagName ? target.tagName.toUpperCase() : "";
+          if (attr === "continuation-is-reloading" && !target.hasAttribute("continuation-is-reloading")) {
+            feedScanGeneration++;
+            hasRelevantChanges = true;
+          } else if (attr === "hidden" && !target.hasAttribute("hidden")) {
+            if (targetTag === "YTD-BROWSE" || targetTag === "YTD-SEARCH") {
+              feedScanGeneration++;
+            } else {
+              markWrapperDirty(target);
+            }
+            hasRelevantChanges = true;
+          } else if (attr === "is-shorts" || attr === "is-mini-game-card-shelf" || attr === "is-post") {
+            markWrapperDirty(target);
+            hasRelevantChanges = true;
+          }
+          continue;
+        }
+        if (mutation.addedNodes.length || mutation.removedNodes.length) {
+          const insideWrapper = target?.closest?.(FEED_WRAPPER_SELECTOR);
+          if (insideWrapper) {
+            markWrapperDirty(target);
+            hasRelevantChanges = true;
+            continue;
+          }
         }
         for (const node of mutation.addedNodes) {
           if (node.nodeType === 1) {
@@ -729,19 +798,23 @@
               hasRelevantChanges = true;
               break;
             }
-            if (node.firstElementChild && node.querySelector && node.querySelector("ytd-rich-grid-row, ytd-rich-item-renderer, ytd-rich-section-renderer, ytd-compact-video-renderer, yt-lockup-view-model")) {
+            if (node.firstElementChild && node.querySelector && node.querySelector(RELEVANT_DESCENDANT_SELECTOR)) {
               hasRelevantChanges = true;
               break;
             }
           }
         }
-        if (hasRelevantChanges) break;
       }
       if (hasRelevantChanges) {
         scheduleFeedScan(container);
       }
     });
-    feedObserver.observe(container, { childList: true, subtree: true });
+    feedObserver.observe(container, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["continuation-is-reloading", "hidden", "is-shorts", "is-mini-game-card-shelf", "is-post"]
+    });
   }
   function syncFeedObserver() {
     if (!needsFeedObserver()) {
@@ -771,7 +844,7 @@
   function setupFeedShelvesObserver() {
     syncFeedObserver();
   }
-  var feedObserver, feedObserverTarget, scheduleFeedScan, RELEVANT_FEED_TAGS, IGNORED_FEED_ZONE;
+  var feedObserver, feedObserverTarget, feedScanGeneration, SECTION_HIDE_CLASSES, ITEM_HIDE_CLASSES, HYDRATED_SECTION_SELECTOR, HYDRATED_RICH_ITEM_SELECTOR, LOCKUP_CONTENT_SELECTOR, FEED_WRAPPER_SELECTOR, MEMBERS_TEXT_PHRASES, scheduleFeedScan, RELEVANT_FEED_TAGS, RELEVANT_DESCENDANT_SELECTOR, IGNORED_FEED_ZONE;
   var init_feedFilter = __esm({
     "src/features/feedFilter.js"() {
       init_utils();
@@ -779,6 +852,39 @@
       init_grid();
       feedObserver = null;
       feedObserverTarget = null;
+      feedScanGeneration = 0;
+      SECTION_HIDE_CLASSES = [
+        "ytc-shelf-shorts",
+        "ytc-shelf-playables",
+        "ytc-shelf-ad",
+        "ytc-shelf-members",
+        "ytc-shelf-explore",
+        "ytc-shelf-community",
+        "ytc-shelf-mix",
+        "ytc-shelf-promo"
+      ];
+      ITEM_HIDE_CLASSES = [
+        "ytc-item-members",
+        "ytc-item-mix",
+        "ytc-item-ad",
+        "ytc-item-community",
+        "ytc-item-playables",
+        "ytc-item-promo"
+      ];
+      HYDRATED_SECTION_SELECTOR = "ytd-rich-shelf-renderer, ytd-reel-shelf-renderer, grid-shelf-view-model, ytd-ad-slot-renderer, ytd-in-feed-ad-layout-renderer, ytd-brand-video-singleton-renderer, ytd-post-renderer, ytd-backstage-post-renderer, ytd-backstage-post-thread-renderer, ytd-post-multi-image-renderer, ytd-poll-renderer, yt-chip-cloud-renderer, ytd-feed-filter-chip-bar-renderer, ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer, ytd-inline-survey-renderer, ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer, ytd-shelf-renderer, ytd-mini-game-card-view-model, yt-card-view-model, ytd-feed-nudge-renderer, ytd-item-section-renderer, ytd-rich-item-renderer, a[href]";
+      HYDRATED_RICH_ITEM_SELECTOR = "yt-lockup-view-model, ytd-rich-grid-media, ytd-ad-slot-renderer, ytd-in-feed-ad-layout-renderer, ytd-post-renderer, ytd-backstage-post-renderer, ytd-backstage-post-thread-renderer, ytd-radio-renderer, ytd-compact-radio-renderer, ytd-grid-radio-renderer, ytd-playlist-renderer, ytd-compact-playlist-renderer, ytd-mini-game-card-view-model, ytd-feed-nudge-renderer, ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer, ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer, a#thumbnail, a[href]";
+      LOCKUP_CONTENT_SELECTOR = "a[href], #video-title, #title, #metadata, yt-lockup-metadata-view-model, .yt-lockup-metadata-view-model__title, yt-badge-view-model, ytd-badge-supported-renderer";
+      FEED_WRAPPER_SELECTOR = "ytd-rich-section-renderer, ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, yt-lockup-view-model, ytd-shelf-renderer, yt-chip-cloud-chip-renderer, ytd-radio-renderer, ytd-compact-radio-renderer, ytd-grid-radio-renderer, ytd-playlist-renderer, ytd-compact-playlist-renderer";
+      MEMBERS_TEXT_PHRASES = [
+        "Ưu tiên hội viên",
+        "ưu tiên hội viên",
+        "Chỉ dành cho hội viên",
+        "chỉ dành cho hội viên",
+        "Members first",
+        "Members only",
+        "Members-only",
+        "Early access"
+      ];
       scheduleFeedScan = rafThrottle((root) => {
         scanAndTagFeedContent(root);
         applyHomeGridColumns();
@@ -792,10 +898,26 @@
         "YTD-VIDEO-RENDERER",
         "YTD-COMPACT-VIDEO-RENDERER",
         "YT-LOCKUP-VIEW-MODEL",
+        "YTD-RICH-GRID-MEDIA",
+        "YTD-RICH-SHELF-RENDERER",
+        "YTD-REEL-SHELF-RENDERER",
         "YTD-SHELF-RENDERER",
-        "YTD-PLAYLIST-PANEL-RENDERER"
+        "YTD-AD-SLOT-RENDERER",
+        "YTD-IN-FEED-AD-LAYOUT-RENDERER",
+        "YTD-MINI-GAME-CARD-VIEW-MODEL",
+        "YTD-POST-RENDERER",
+        "YTD-BACKSTAGE-POST-RENDERER",
+        "YTD-BACKSTAGE-POST-THREAD-RENDERER",
+        "YTD-IN-FEED-SURVEY-RENDERER",
+        "YTD-SINGLE-OPTION-SURVEY-RENDERER",
+        "YTD-INLINE-SURVEY-RENDERER",
+        "YTD-PLAYLIST-PANEL-RENDERER",
+        "YTD-BADGE-SUPPORTED-RENDERER",
+        "YT-BADGE-VIEW-MODEL",
+        "GRID-SHELF-VIEW-MODEL"
       ]);
-      IGNORED_FEED_ZONE = "#preview, ytd-video-preview, #inline-preview-player, #movie_player, .html5-video-player, #ytc-streamer-box, #ytc-danmaku-container, ytd-moving-thumbnail-renderer, #comments, ytd-comments, #below, ytd-watch-metadata, #panels, ytd-engagement-panel-section-list-renderer, ytd-browse[hidden]";
+      RELEVANT_DESCENDANT_SELECTOR = "ytd-rich-grid-row, ytd-rich-item-renderer, ytd-rich-section-renderer, ytd-compact-video-renderer, yt-lockup-view-model, ytd-ad-slot-renderer, ytd-rich-shelf-renderer, ytd-reel-shelf-renderer, ytd-post-renderer";
+      IGNORED_FEED_ZONE = "#preview, ytd-video-preview, #inline-preview-player, #movie_player, .html5-video-player, #mouseover-overlay, #hover-overlays, yt-interaction, tp-yt-paper-ripple, tp-yt-paper-tooltip, yt-img-shadow, yt-image, #ytc-streamer-box, #ytc-danmaku-container, ytd-moving-thumbnail-renderer, #comments, ytd-comments, #below, ytd-watch-metadata, #panels, ytd-engagement-panel-section-list-renderer, ytd-browse[hidden]";
     }
   });
 
@@ -6726,11 +6848,18 @@
         --ytd-rich-grid-item-max-width: none !important;
     }
 
-    /* Làm phẳng cấu trúc dòng ytd-rich-grid-row — chỉ áp dụng trên trang Feed */
+    /* Làm phẳng cấu trúc dòng ytd-rich-grid-row và bảo đảm lưới phẳng #contents căn trái chuẩn */
+    html.ytc-feed-page ytd-browse:not([hidden]) ytd-rich-grid-renderer > #contents {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-start !important;
+    }
+
     html.ytc-feed-page ytd-browse:not([hidden]) #contents > ytd-rich-grid-row,
     html.ytc-feed-page ytd-browse:not([hidden]) #contents > ytd-rich-grid-row > #contents {
         display: flex !important;
         flex-wrap: wrap !important;
+        justify-content: flex-start !important;
         width: 100% !important;
     }
 
@@ -6808,6 +6937,7 @@ html.ytc-feed-page #inline-preview-player {
 }
 
 .ytc-hide-playables ytd-rich-section-renderer.ytc-shelf-playables,
+.ytc-hide-playables ytd-rich-item-renderer.ytc-item-playables,
 .ytc-hide-playables ytd-rich-shelf-renderer[is-mini-game-card-shelf],
 .ytc-hide-playables ytd-guide-entry-renderer.ytc-guide-playables,
 .ytc-hide-playables ytd-mini-guide-entry-renderer.ytc-guide-playables,
@@ -6926,6 +7056,8 @@ html.ytc-ambient-lighting .ytp-ambient-mode-rendering-container {
     pointer-events: none !important;
 }
 
+.ytc-auto-dismiss ytd-rich-section-renderer.ytc-shelf-promo,
+.ytc-auto-dismiss ytd-rich-item-renderer.ytc-item-promo,
 .ytc-auto-dismiss ytd-mealbar-promo-renderer,
 .ytc-auto-dismiss yt-mealbar-promo-renderer,
 .ytc-auto-dismiss ytd-upsell-dialog-renderer,
@@ -9047,6 +9179,8 @@ html.ytc-auto-dismiss snackbar-container,
 html.ytc-auto-dismiss snackbar-view-model,
 html.ytc-auto-dismiss .ytSnackbarContainerHost,
 html.ytc-auto-dismiss .ytSnackbarContainerSnackbarContainer,
+html.ytc-auto-dismiss ytd-rich-section-renderer.ytc-shelf-promo,
+html.ytc-auto-dismiss ytd-rich-item-renderer.ytc-item-promo,
 html.ytc-auto-dismiss ytd-mealbar-promo-renderer,
 html.ytc-auto-dismiss yt-mealbar-promo-renderer,
 html.ytc-auto-dismiss ytd-upsell-dialog-renderer {
@@ -9424,6 +9558,10 @@ html:not([dark]) .ytc-stat-red {
       promo.style.setProperty("display", "none", "important");
       promo.style.setProperty("opacity", "0", "important");
       promo.style.setProperty("pointer-events", "none", "important");
+      const outerSection = promo.closest?.("ytd-rich-section-renderer");
+      if (outerSection) outerSection.classList.add("ytc-shelf-promo");
+      const outerItem = promo.closest?.("ytd-rich-item-renderer");
+      if (outerItem) outerItem.classList.add("ytc-item-promo");
     });
     const toasts = queryIncludingRoot(root, "tp-yt-paper-toast, #toast, yt-notification-action-renderer, ytd-notification-action-renderer, yt-bubble-hint-renderer, ytd-mealbar-promo-renderer, snackbar-container, snackbar-view-model");
     toasts.forEach((toast) => {
@@ -10568,14 +10706,10 @@ html:not([dark]) .ytc-stat-red {
       applyAmbientLightingState();
       if (location.pathname.startsWith("/watch")) {
         setWatchLoading(true);
-        applyHomeGridColumns();
-        if (hasActiveFeedFilters()) scanAndTagFeedContent(document);
-      } else if (isHomeFeedPath()) {
-        applyHomeGridColumns();
-        scheduleFeedScan(document);
-      } else {
-        applyHomeGridColumns();
-        if (hasActiveFeedFilters()) scheduleFeedScan(document);
+      }
+      applyHomeGridColumns();
+      if (isHomeFeedPath() || hasActiveFeedFilters()) {
+        invalidateFeedScan(document);
       }
     };
     injectStyles(styles_default);
@@ -10583,6 +10717,7 @@ html:not([dark]) .ytc-stat-red {
       applyHomeGridColumns();
       syncLogoObserver();
       syncFeedObserver();
+      invalidateFeedScan(document);
       applyAmbientLightingState();
       updateChatOverlayVisibility();
       applyAudioOnlyState();
@@ -10623,6 +10758,10 @@ html:not([dark]) .ytc-stat-red {
         updateChatOverlayVisibility();
         syncPanelState();
       }
+      applyConfigToRoot(false);
+      applyHomeGridColumns();
+      syncFeedObserver();
+      invalidateFeedScan(document);
     });
     document.addEventListener("yt-navigate-finish", onNavigate);
     window.addEventListener("resize", applyHomeGridColumns);

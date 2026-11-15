@@ -169,6 +169,10 @@ export function dismissPromoBanners(scope) {
         promo.style.setProperty('display', 'none', 'important');
         promo.style.setProperty('opacity', '0', 'important');
         promo.style.setProperty('pointer-events', 'none', 'important');
+        const outerSection = promo.closest?.('ytd-rich-section-renderer');
+        if (outerSection) outerSection.classList.add('ytc-shelf-promo');
+        const outerItem = promo.closest?.('ytd-rich-item-renderer');
+        if (outerItem) outerItem.classList.add('ytc-item-promo');
     });
 
     const toasts = queryIncludingRoot(root, 'tp-yt-paper-toast, #toast, yt-notification-action-renderer, ytd-notification-action-renderer, yt-bubble-hint-renderer, ytd-mealbar-promo-renderer, snackbar-container, snackbar-view-model');

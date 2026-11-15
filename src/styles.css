@@ -25,11 +25,18 @@
         --ytd-rich-grid-item-max-width: none !important;
     }
 
-    /* Làm phẳng cấu trúc dòng ytd-rich-grid-row — chỉ áp dụng trên trang Feed */
+    /* Làm phẳng cấu trúc dòng ytd-rich-grid-row và bảo đảm lưới phẳng #contents căn trái chuẩn */
+    html.ytc-feed-page ytd-browse:not([hidden]) ytd-rich-grid-renderer > #contents {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: flex-start !important;
+    }
+
     html.ytc-feed-page ytd-browse:not([hidden]) #contents > ytd-rich-grid-row,
     html.ytc-feed-page ytd-browse:not([hidden]) #contents > ytd-rich-grid-row > #contents {
         display: flex !important;
         flex-wrap: wrap !important;
+        justify-content: flex-start !important;
         width: 100% !important;
     }
 
@@ -107,6 +114,7 @@ html.ytc-feed-page #inline-preview-player {
 }
 
 .ytc-hide-playables ytd-rich-section-renderer.ytc-shelf-playables,
+.ytc-hide-playables ytd-rich-item-renderer.ytc-item-playables,
 .ytc-hide-playables ytd-rich-shelf-renderer[is-mini-game-card-shelf],
 .ytc-hide-playables ytd-guide-entry-renderer.ytc-guide-playables,
 .ytc-hide-playables ytd-mini-guide-entry-renderer.ytc-guide-playables,
@@ -225,6 +233,8 @@ html.ytc-ambient-lighting .ytp-ambient-mode-rendering-container {
     pointer-events: none !important;
 }
 
+.ytc-auto-dismiss ytd-rich-section-renderer.ytc-shelf-promo,
+.ytc-auto-dismiss ytd-rich-item-renderer.ytc-item-promo,
 .ytc-auto-dismiss ytd-mealbar-promo-renderer,
 .ytc-auto-dismiss yt-mealbar-promo-renderer,
 .ytc-auto-dismiss ytd-upsell-dialog-renderer,
@@ -2346,6 +2356,8 @@ html.ytc-auto-dismiss snackbar-container,
 html.ytc-auto-dismiss snackbar-view-model,
 html.ytc-auto-dismiss .ytSnackbarContainerHost,
 html.ytc-auto-dismiss .ytSnackbarContainerSnackbarContainer,
+html.ytc-auto-dismiss ytd-rich-section-renderer.ytc-shelf-promo,
+html.ytc-auto-dismiss ytd-rich-item-renderer.ytc-item-promo,
 html.ytc-auto-dismiss ytd-mealbar-promo-renderer,
 html.ytc-auto-dismiss yt-mealbar-promo-renderer,
 html.ytc-auto-dismiss ytd-upsell-dialog-renderer {
