@@ -58,6 +58,7 @@ import {
 import {
     initCodecBlocker,
     initDisableChaptersHook,
+    syncDisableChaptersUI,
     initOptimization,
     applyAudioOnlyState
 } from './optimization/index.js';
@@ -116,6 +117,7 @@ if (window.self !== window.top) {
         applyAmbientLightingState();
         updateChatOverlayVisibility();
         applyAudioOnlyState();
+        syncDisableChaptersUI();
         if (currentConfig.autoDismissPromos) {
             dismissPromoBanners(document);
         }
@@ -153,6 +155,7 @@ if (window.self !== window.top) {
         checkInitialLiveSnap();
         normalizeTimeDisplay();
         applyAmbientLightingState();
+        syncDisableChaptersUI();
 
         if (location.pathname.startsWith('/watch')) {
             setWatchLoading(true);
@@ -194,6 +197,7 @@ if (window.self !== window.top) {
             syncPanelState();
         }
         applyConfigToRoot(false);
+        syncDisableChaptersUI();
         applyHomeGridColumns();
         syncFeedObserver();
         if (needsFeedObserver()) {

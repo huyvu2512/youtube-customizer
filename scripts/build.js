@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.40
-// @description  YouTube Customizer v3.9.40 — Thêm tùy chọn tắt chia đoạn video trong mục Tối ưu.
+// @version      3.9.41
+// @description  YouTube Customizer v3.9.41 — Gộp sóng heatmap liền mạch và tắt nổi bật đoạn khi di chuột.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -25,6 +25,7 @@ const banner = `// ==UserScript==
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.41 — Gộp sóng heatmap liền mạch và tắt nổi bật đoạn khi di chuột.
  * v3.9.40 — Thêm tùy chọn tắt chia đoạn video trong mục Tối ưu.
  * v3.9.39 — Giảm lag video chia đoạn dài, heatmap và chế độ phóng to.
  * v3.9.38 — Giữ video nhạc đơn kèm list=RD trên tab Âm nhạc và ẩn shelf rỗng.
@@ -34,7 +35,6 @@ const banner = `// ==UserScript==
  * v3.9.34 — Giữ mức ban đầu đến khi người dùng đổi trong menu YouTube.
  * v3.9.33 — Áp chất lượng ban đầu rồi cho phép đổi thủ công trong YouTube.
  * v3.9.32 — Phủ khoảng đen khi phóng to mà không cắt khung hình.
- * v3.9.31 — Nhận diện Replay từ cấu trúc YouTube, không phụ thuộc ngôn ngữ.
  * ============================================================================
  */`;
 

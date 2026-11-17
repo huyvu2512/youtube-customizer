@@ -2,7 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { currentConfig, DEFAULT_CONFIG, applyConfigToRoot } from '../src/core/config.js';
-import { stripChaptersFromWatchData, initDisableChaptersHook } from '../src/optimization/disableChapters.js';
+import {
+    stripChaptersFromWatchData,
+    initDisableChaptersHook,
+    buildUnifiedHeatmapPathFromMarkers,
+    buildUnifiedHeatmapPathFromSegments,
+    syncDisableChaptersUI
+} from '../src/optimization/disableChapters.js';
 import { t, SUPPORTED_LANGUAGES } from '../src/core/i18n.js';
 
 test('stripChaptersFromWatchData removes markersMap chapters and visibleOnLoad while preserving non-chapter markers and panels', () => {
@@ -198,4 +204,162 @@ test('disableChapters defaults to false, toggles root class, sits under preventA
     const chatGcPos = panelSrc.indexOf('data-toggle="chatMemoryGc"', optimizeStart);
     assert.ok(optimizeStart !== -1 && autoPausePos > optimizeStart);
     assert.ok(chaptersPos > autoPausePos && chaptersPos < chatGcPos);
+
+    const cssSrc = fs.readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
+    assert.ok(cssSrc.includes('.ytp-exp-chapter-hover-effect'));
+    assert.ok(cssSrc.includes('.ytp-heat-map-chapter.ytp-heatmap-hover'));
+    assert.ok(cssSrc.includes('.ytp-progress-bar-snap .ytp-tooltip-bg'));
+    assert.ok(cssSrc.includes('.ytc-unified-heatmap-active > .ytp-heat-map-chapter:not(.ytc-unified-heatmap)'));
+});
+
+test('stripChaptersFromWatchData preserves heatmap inside combined chapter entry and strips chapter keys from loadMarkersCommand', () => {
+    const data = {
+        playerOverlays: {
+            playerOverlayRenderer: {
+                decoratedPlayerBarRenderer: {
+                    decoratedPlayerBarRenderer: {
+                        playerBar: {
+                            multiMarkersPlayerBarRenderer: {
+                                visibleOnLoad: { key: 'AUTO_CHAPTERS' },
+                                markersMap: [
+                                    {
+                                        key: 'AUTO_CHAPTERS',
+                                        value: {
+                                            chapters: [{ title: { simpleText: 'Part 1' } }],
+                                            heatmap: { heatmapRenderer: { heatMarkers: [{ heatMarkerRenderer: { heatMarkerIntensityScoreNormalized: 0.5 } }] } }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        onResponseReceivedEndpoints: [
+            {
+                loadMarkersCommand: {
+                    visibleOnLoadKeys: ['Eg1BVVRPX0NIQVBURVJTIJICKAE%3D', 'EgpIRUFUU0VFS0VSIJICKAE%3D'],
+                    entityKeys: ['Eg1BVVRPX0NIQVBURVJTIJICKAE%3D', 'EgpIRUFUU0VFS0VSIJICKAE%3D']
+                }
+            }
+        ]
+    };
+
+    assert.equal(stripChaptersFromWatchData(data), true);
+    const multi = data.playerOverlays.playerOverlayRenderer.decoratedPlayerBarRenderer.decoratedPlayerBarRenderer.playerBar.multiMarkersPlayerBarRenderer;
+    assert.equal(multi.markersMap.length, 1);
+    assert.equal(multi.markersMap[0].value.chapters, undefined);
+    assert.ok(multi.markersMap[0].value.heatmap);
+    const cmd = data.onResponseReceivedEndpoints[0].loadMarkersCommand;
+    assert.deepEqual(cmd.visibleOnLoadKeys, ['EgpIRUFUU0VFS0VSIJICKAE%3D']);
+    assert.deepEqual(cmd.entityKeys, ['EgpIRUFUU0VFS0VSIJICKAE%3D']);
+});
+
+test('buildUnifiedHeatmapPathFromMarkers and buildUnifiedHeatmapPathFromSegments produce continuous curves without midpoint drops to 100', () => {
+    const pathFromMarkers = buildUnifiedHeatmapPathFromMarkers([0.2, 0.6, 0.8, 0.4], 0, 60);
+    assert.ok(pathFromMarkers.startsWith('M 0.0,100.0 C '));
+    assert.ok(pathFromMarkers.endsWith('1000.0,100.0'));
+    assert.equal(pathFromMarkers.slice(12).includes(',100.0 C '), false);
+
+    const pathFromSegments = buildUnifiedHeatmapPathFromSegments([
+        { left: 0, width: 46, d: 'M 0.0,100.0 C 100.0,80.0 200.0,80.0 500.0,70.0 C 800.0,60.0 900.0,60.0 1000.0,100.0' },
+        { left: 50, width: 50, d: 'M 0.0,100.0 C 10.0,80.0 50.0,70.0 100.0,70.0 C 300.0,50.0 400.0,50.0 600.0,45.0 C 800.0,50.0 900.0,50.0 1000.0,100.0' }
+    ]);
+    assert.ok(pathFromSegments.startsWith('M 0.0,100.0 C '));
+    assert.ok(pathFromSegments.endsWith('1000.0,100.0'));
+});
+
+test('syncDisableChaptersUI mounts a unified heatmap element when multiple native chapter segments exist and removes it when disabled', () => {
+    const prevDoc = globalThis.document;
+    const prevLoc = globalThis.location;
+    const prevSetting = currentConfig.disableChapters;
+
+    function mkEl(tag, isSvg = false) {
+        const el = {
+            tagName: tag.toUpperCase(),
+            isSvg,
+            className: '',
+            attrs: {},
+            style: {},
+            children: [],
+            classList: {
+                _set: new Set(),
+                add(...c) { c.forEach((x) => this._set.add(x)); el.className = [...this._set].join(' '); },
+                remove(...c) { c.forEach((x) => this._set.delete(x)); el.className = [...this._set].join(' '); },
+                contains(c) { return this._set.has(c) || el.className.split(/\s+/).includes(c); }
+            },
+            setAttribute(k, v) {
+                this.attrs[k] = String(v);
+                if (k === 'class') {
+                    this.className = String(v);
+                    this.classList._set = new Set(this.className.split(/\s+/).filter(Boolean));
+                }
+            },
+            getAttribute(k) { return this.attrs[k] ?? null; },
+            appendChild(child) { child.parentNode = this; this.children.push(child); return child; },
+            remove() {
+                if (this.parentNode) {
+                    this.parentNode.children = this.parentNode.children.filter((c) => c !== this);
+                }
+            },
+            querySelector(sel) {
+                const cls = sel.startsWith('.') ? sel.slice(1) : sel;
+                for (const c of this.children) {
+                    if (c.classList.contains(cls) || c.className.split(/\s+/).includes(cls)) return c;
+                    const deep = c.querySelector(sel);
+                    if (deep) return deep;
+                }
+                return null;
+            }
+        };
+        return el;
+    }
+
+    const container = mkEl('div');
+    for (const segSpec of [
+        { left: '0px', width: '46px', d: 'M 0.0,100.0 C 100.0,80.0 200.0,80.0 500.0,60.0 C 800.0,60.0 900.0,60.0 1000.0,100.0' },
+        { left: '50px', width: '50px', d: 'M 0.0,100.0 C 100.0,70.0 200.0,70.0 500.0,40.0 C 800.0,40.0 900.0,40.0 1000.0,100.0' }
+    ]) {
+        const ch = mkEl('div');
+        ch.classList.add('ytp-heat-map-chapter');
+        ch.style.left = segSpec.left;
+        ch.style.width = segSpec.width;
+        const path = mkEl('path', true);
+        path.classList.add('ytp-modern-heat-map');
+        path.setAttribute('d', segSpec.d);
+        ch.appendChild(path);
+        container.appendChild(ch);
+    }
+
+    globalThis.location = { pathname: '/watch', search: '?v=testvid123' };
+    globalThis.document = {
+        createElement: (tag) => mkEl(tag, false),
+        createElementNS: (_ns, tag) => mkEl(tag, true),
+        querySelector(sel) {
+            return sel === '#movie_player .ytp-heat-map-container' ? container : null;
+        },
+        querySelectorAll(sel) {
+            return sel.includes('.ytp-heat-map-container') ? [container] : [];
+        }
+    };
+
+    try {
+        currentConfig.disableChapters = true;
+        syncDisableChaptersUI();
+        assert.equal(container.classList.contains('ytc-unified-heatmap-active'), true);
+        const unified = container.querySelector('.ytc-unified-heatmap');
+        assert.ok(unified);
+        const unifiedPath = unified.querySelector('.ytp-modern-heat-map');
+        assert.ok(unifiedPath.getAttribute('d').startsWith('M 0.0,100.0 C '));
+
+        currentConfig.disableChapters = false;
+        syncDisableChaptersUI();
+        assert.equal(container.classList.contains('ytc-unified-heatmap-active'), false);
+        assert.equal(container.querySelector('.ytc-unified-heatmap'), null);
+    } finally {
+        currentConfig.disableChapters = prevSetting;
+        globalThis.document = prevDoc;
+        globalThis.location = prevLoc;
+    }
 });

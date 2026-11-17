@@ -1,3 +1,8 @@
+## v3.9.41 — 17/11/2026 11:43
+- Gộp sóng heatmap chia đoạn thành một đường liền mạch ngay khi bật.
+- Tắt nổi bật đoạn chapter, nhảy sóng heatmap và viền snap lúc di chuột.
+- Lọc key chapter trong `loadMarkersCommand` và bảo toàn heatmap đi kèm chapter.
+
 ## v3.9.40 — 17/11/2026 11:21
 - Thêm tùy chọn **Tắt chia đoạn video** dưới **Chặn tự dừng video** trong tab Tối ưu.
 - Gỡ dữ liệu chapter Watch để gộp thanh thời gian thành một đoạn liền mạch.

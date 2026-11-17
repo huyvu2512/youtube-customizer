@@ -2,7 +2,7 @@
 // CORE CONSTANTS & SVG ICONS
 // ==========================================================================
 
-export const APP_VERSION = '3.9.40';
+export const APP_VERSION = '3.9.41';
 export const CONFIG_KEY = 'ytc_config';
 
 

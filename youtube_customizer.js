@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.40
-// @description  YouTube Customizer v3.9.40 — Thêm tùy chọn tắt chia đoạn video trong mục Tối ưu.
+// @version      3.9.41
+// @description  YouTube Customizer v3.9.41 — Gộp sóng heatmap liền mạch và tắt nổi bật đoạn khi di chuột.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -13,6 +13,7 @@
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.41 — Gộp sóng heatmap liền mạch và tắt nổi bật đoạn khi di chuột.
  * v3.9.40 — Thêm tùy chọn tắt chia đoạn video trong mục Tối ưu.
  * v3.9.39 — Giảm lag video chia đoạn dài, heatmap và chế độ phóng to.
  * v3.9.38 — Giữ video nhạc đơn kèm list=RD trên tab Âm nhạc và ẩn shelf rỗng.
@@ -22,7 +23,6 @@
  * v3.9.34 — Giữ mức ban đầu đến khi người dùng đổi trong menu YouTube.
  * v3.9.33 — Áp chất lượng ban đầu rồi cho phép đổi thủ công trong YouTube.
  * v3.9.32 — Phủ khoảng đen khi phóng to mà không cắt khung hình.
- * v3.9.31 — Nhận diện Replay từ cấu trúc YouTube, không phụ thuộc ngôn ngữ.
  * ============================================================================
  */
 (() => {
@@ -45,7 +45,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, CHAPTERS_OFF_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.40";
+      APP_VERSION = "3.9.41";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -8750,7 +8750,7 @@ body.ytc-audio-only #movie_player video {
 }
 
 /* --------------------------------------------------------------------------
-   TẮT CHIA ĐOẠN VIDEO (DISABLE CHAPTERS & SEAMLESS PROGRESS BAR)
+   TẮT CHIA ĐOẠN VIDEO (DISABLE CHAPTERS & SEAMLESS PROGRESS BAR / HEATMAP)
    -------------------------------------------------------------------------- */
 html.ytc-disable-chapters #movie_player .ytp-chapter-container,
 body.ytc-disable-chapters #movie_player .ytp-chapter-container,
@@ -8796,13 +8796,43 @@ body.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="mar
     margin-right: -2px !important;
 }
 
+/* Chặn nổi bật từng đoạn chapter / từng đoạn sóng heatmap khi di chuột */
+html.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-chapter-hover-container.ytp-exp-chapter-hover-effect,
+body.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-chapter-hover-container.ytp-exp-chapter-hover-effect,
+html.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-exp-chapter-hover-container:hover,
+body.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-exp-chapter-hover-container:hover,
+html.ytc-disable-chapters #movie_player.ytp-delhi-modern.ytp-progress-bar-hover .ytp-progress-bar-container .ytp-chapter-hover-container.ytp-exp-chapter-hover-effect,
+body.ytc-disable-chapters #movie_player.ytp-delhi-modern.ytp-progress-bar-hover .ytp-progress-bar-container .ytp-chapter-hover-container.ytp-exp-chapter-hover-effect,
+html.ytc-disable-chapters #movie_player.ytp-player-minimized .ytp-progress-bar-container .ytp-chapter-hover-container.ytp-exp-chapter-hover-effect,
+body.ytc-disable-chapters #movie_player.ytp-player-minimized .ytp-progress-bar-container .ytp-chapter-hover-container.ytp-exp-chapter-hover-effect {
+    transform: none !important;
+    bottom: 0 !important;
+}
+
 html.ytc-disable-chapters #movie_player .ytp-progress-bar-container:hover .ytp-progress-list,
-body.ytc-disable-chapters #movie_player .ytp-progress-bar-container:hover .ytp-progress-list {
+body.ytc-disable-chapters #movie_player .ytp-progress-bar-container:hover .ytp-progress-list,
+html.ytc-disable-chapters #movie_player.ytp-delhi-modern.ytp-progress-bar-hover .ytp-progress-bar-container .ytp-progress-list,
+body.ytc-disable-chapters #movie_player.ytp-delhi-modern.ytp-progress-bar-hover .ytp-progress-bar-container .ytp-progress-list,
+html.ytc-disable-chapters #movie_player .ytp-drag .ytp-progress-list,
+body.ytc-disable-chapters #movie_player .ytp-drag .ytp-progress-list {
     transform: scaleY(1) !important;
 }
-html.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-exp-chapter-hover-container:hover,
-body.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-exp-chapter-hover-container:hover {
-    transform: none !important;
+
+html.ytc-disable-chapters #movie_player .ytp-heat-map-chapter.ytp-heatmap-hover,
+body.ytc-disable-chapters #movie_player .ytp-heat-map-chapter.ytp-heatmap-hover,
+html.ytc-disable-chapters #movie_player.ytp-big-mode .ytp-heat-map-chapter.ytp-heatmap-hover,
+body.ytc-disable-chapters #movie_player.ytp-big-mode .ytp-heat-map-chapter.ytp-heatmap-hover {
+    bottom: 0 !important;
+}
+
+html.ytc-disable-chapters #movie_player.ytp-progress-bar-snap .ytp-tooltip-bg,
+body.ytc-disable-chapters #movie_player.ytp-progress-bar-snap .ytp-tooltip-bg {
+    outline: none !important;
+}
+
+html.ytc-disable-chapters #movie_player .ytp-heat-map-container.ytc-unified-heatmap-active > .ytp-heat-map-chapter:not(.ytc-unified-heatmap),
+body.ytc-disable-chapters #movie_player .ytp-heat-map-container.ytc-unified-heatmap-active > .ytp-heat-map-chapter:not(.ytc-unified-heatmap) {
+    display: none !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -10957,27 +10987,57 @@ html:not([dark]) .ytc-stat-red {
 
   // src/optimization/disableChapters.js
   init_config();
+  var SVG_NS = "http://www.w3.org/2000/svg";
+  var HEATMAP_GRADIENT_ID = "ytc-heat-map-gradient-def";
+  var HEATMAP_CLIP_ID = "ytc-heat-map-clip";
+  var HEATMAP_DEFAULT_MIN_DP = 0;
+  var HEATMAP_DEFAULT_MAX_DP = 60;
   var chaptersHooked = false;
+  var cachedWatchHeatmap = null;
+  var heatmapObserver = null;
+  var observedHeatmapContainer = null;
+  var isSyncingUnifiedHeatmap = false;
+  function isChapterEntityKey(key) {
+    if (typeof key !== "string" || !key) return false;
+    if (/CHAPTERS/i.test(key)) return true;
+    if (typeof atob !== "function") return false;
+    try {
+      const decoded = atob(decodeURIComponent(key));
+      return /CHAPTERS/i.test(decoded);
+    } catch (e) {
+      return false;
+    }
+  }
   function cleanPlayerBar(playerBar) {
     if (!playerBar || typeof playerBar !== "object") return false;
     let modified = false;
     const multi = playerBar.multiMarkersPlayerBarRenderer;
     if (multi && Array.isArray(multi.markersMap)) {
       const removedKeys = /* @__PURE__ */ new Set();
-      const filtered = multi.markersMap.filter((entry) => {
-        if (!entry || typeof entry !== "object") return true;
+      const filtered = [];
+      for (const entry of multi.markersMap) {
+        if (!entry || typeof entry !== "object") {
+          filtered.push(entry);
+          continue;
+        }
         const key = typeof entry.key === "string" ? entry.key : "";
         const hasChaptersArray = Array.isArray(entry.value?.chapters);
         const isChapterKey = /CHAPTERS/i.test(key);
         if (hasChaptersArray || isChapterKey) {
-          if (key) removedKeys.add(key);
-          return false;
+          if (entry.value?.heatmap) {
+            delete entry.value.chapters;
+            delete entry.value.onChapterRepeat;
+            filtered.push(entry);
+          } else if (key) {
+            removedKeys.add(key);
+          }
+          modified = true;
+        } else {
+          filtered.push(entry);
         }
-        return true;
-      });
+      }
       if (filtered.length !== multi.markersMap.length) {
         multi.markersMap = filtered;
-        modified = true;
       }
       if (multi.visibleOnLoad?.key && removedKeys.has(multi.visibleOnLoad.key)) {
         delete multi.visibleOnLoad;
@@ -10993,13 +11053,39 @@ html:not([dark]) .ytc-stat-red {
   }
   function cleanFrameworkEntities(root) {
     const mutations = root?.frameworkUpdates?.entityBatchUpdate?.mutations;
-    if (!Array.isArray(mutations)) return false;
+    const removedKeys = /* @__PURE__ */ new Set();
     let modified = false;
-    for (const mutation of mutations) {
-      const markersList = mutation?.payload?.macroMarkersListEntity?.markersList;
-      if (markersList?.markerType === "MARKER_TYPE_TIMESTAMPS" && Array.isArray(markersList.markers) && markersList.markers.length > 0) {
-        markersList.markers = [];
-        modified = true;
+    if (Array.isArray(mutations)) {
+      for (const mutation of mutations) {
+        const markersList = mutation?.payload?.macroMarkersListEntity?.markersList;
+        if (markersList?.markerType === "MARKER_TYPE_TIMESTAMPS" && Array.isArray(markersList.markers) && markersList.markers.length > 0) {
+          markersList.markers = [];
+          if (typeof mutation.entityKey === "string" && mutation.entityKey) {
+            removedKeys.add(mutation.entityKey);
+          }
+          modified = true;
+        }
+      }
+    }
+    const endpoints = root?.onResponseReceivedEndpoints;
+    if (Array.isArray(endpoints)) {
+      for (const ep of endpoints) {
+        const cmd = ep?.loadMarkersCommand;
+        if (!cmd || typeof cmd !== "object") continue;
+        if (Array.isArray(cmd.entityKeys)) {
+          const nextEntityKeys = cmd.entityKeys.filter((k) => !removedKeys.has(k) && !isChapterEntityKey(k));
+          if (nextEntityKeys.length !== cmd.entityKeys.length) {
+            cmd.entityKeys = nextEntityKeys;
+            modified = true;
+          }
+        }
+        if (Array.isArray(cmd.visibleOnLoadKeys)) {
+          const nextVisibleKeys = cmd.visibleOnLoadKeys.filter((k) => !removedKeys.has(k) && !isChapterEntityKey(k));
+          if (nextVisibleKeys.length !== cmd.visibleOnLoadKeys.length) {
+            cmd.visibleOnLoadKeys = nextVisibleKeys;
+            modified = true;
+          }
+        }
       }
     }
     return modified;
@@ -11021,6 +11107,374 @@ html:not([dark]) .ytc-stat-red {
       if (cleanFrameworkEntities(root)) modified = true;
     }
     return modified;
+  }
+  function getCurrentWatchVideoId() {
+    if (typeof location === "undefined" || !location.pathname?.startsWith("/watch")) return "";
+    try {
+      return new URLSearchParams(location.search || "").get("v") || "";
+    } catch (e) {
+      return "";
+    }
+  }
+  function extractWatchVideoId(data) {
+    if (!data || typeof data !== "object") return "";
+    const candidates = [data, data.response, data.pageData, data.pageData?.response];
+    for (const root of candidates) {
+      const vid = root?.currentVideoEndpoint?.watchEndpoint?.videoId || root?.endpoint?.watchEndpoint?.videoId;
+      if (typeof vid === "string" && vid) return vid;
+    }
+    return "";
+  }
+  function extractHeatmapSpecFromData(data) {
+    if (!data || typeof data !== "object") return null;
+    const candidates = [data, data.response, data.pageData, data.pageData?.response];
+    for (const root of candidates) {
+      if (!root || typeof root !== "object") continue;
+      const mutations = root.frameworkUpdates?.entityBatchUpdate?.mutations;
+      if (Array.isArray(mutations)) {
+        for (const mutation of mutations) {
+          const list = mutation?.payload?.macroMarkersListEntity?.markersList;
+          if (list?.markerType === "MARKER_TYPE_HEATMAP" && Array.isArray(list.markers) && list.markers.length > 0) {
+            const meta = list.markersMetadata?.heatmapMetadata;
+            return {
+              minHeightDp: Number(meta?.minHeightDp ?? HEATMAP_DEFAULT_MIN_DP),
+              maxHeightDp: Number(meta?.maxHeightDp ?? HEATMAP_DEFAULT_MAX_DP),
+              markers: list.markers.map((m) => Number(m?.intensityScoreNormalized ?? 0))
+            };
+          }
+        }
+      }
+      const decorated = root.playerOverlays?.playerOverlayRenderer?.decoratedPlayerBarRenderer;
+      const playerBar = decorated?.decoratedPlayerBarRenderer?.playerBar || decorated?.playerBar;
+      const markersMap = playerBar?.multiMarkersPlayerBarRenderer?.markersMap;
+      if (Array.isArray(markersMap)) {
+        for (const entry of markersMap) {
+          const renderer = entry?.value?.heatmap?.heatmapRenderer;
+          if (Array.isArray(renderer?.heatMarkers) && renderer.heatMarkers.length > 0) {
+            return {
+              minHeightDp: Number(renderer.minHeightDp ?? HEATMAP_DEFAULT_MIN_DP),
+              maxHeightDp: Number(renderer.maxHeightDp ?? HEATMAP_DEFAULT_MAX_DP),
+              markers: renderer.heatMarkers.map((m) => Number(m?.heatMarkerRenderer?.heatMarkerIntensityScoreNormalized ?? 0))
+            };
+          }
+        }
+      }
+    }
+    return null;
+  }
+  function clamp(val, min, max) {
+    return Math.min(Math.max(val, min), max);
+  }
+  function bezierControlPoint(p, prev, next, reverse = false) {
+    const a = prev || p;
+    const b = next || p;
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    return {
+      x: p.x + (reverse ? -dx : dx) * 0.2,
+      y: p.y + (reverse ? -dy : dy) * 0.2
+    };
+  }
+  function serializeSmoothHeatmapPath(points) {
+    if (!Array.isArray(points) || points.length === 0) return "";
+    let path = "";
+    for (let i = 0; i < points.length; i++) {
+      const pt = points[i];
+      if (i === 0) {
+        path += `M ${pt.x.toFixed(1)},${pt.y.toFixed(1)}`;
+      } else {
+        const c1 = bezierControlPoint(points[i - 1], points[i - 2], pt, false);
+        const c2 = bezierControlPoint(pt, points[i - 1], points[i + 1], true);
+        path += ` C ${c1.x.toFixed(1)},${c1.y.toFixed(1)} ${c2.x.toFixed(1)},${c2.y.toFixed(1)} ${pt.x.toFixed(1)},${pt.y.toFixed(1)}`;
+      }
+    }
+    return path;
+  }
+  function buildUnifiedHeatmapPathFromMarkers(markers, minHeightDp = 0, maxHeightDp = 60) {
+    if (!Array.isArray(markers) || markers.length === 0) return "";
+    const safeMax = maxHeightDp > 0 ? maxHeightDp : HEATMAP_DEFAULT_MAX_DP;
+    const minPct = minHeightDp / safeMax * 100;
+    const step = 1e3 / markers.length;
+    const points = [{ x: 0, y: 100 }];
+    for (let i = 0; i < markers.length; i++) {
+      const raw = markers[i];
+      const score = typeof raw === "number" ? raw : Number(raw?.intensityScoreNormalized ?? raw?.heatMarkerRenderer?.heatMarkerIntensityScoreNormalized ?? 0);
+      const x = (i + 0.5) * step;
+      const y = 100 - clamp(score * 100, minPct, 100);
+      points.push({ x, y });
+      if (i === markers.length - 1) {
+        points.push({ x: 1e3, y });
+      }
+    }
+    points.push({ x: 1e3, y: 100 });
+    return serializeSmoothHeatmapPath(points);
+  }
+  function parsePathEndPoints(d) {
+    if (typeof d !== "string" || !d) return [];
+    const pts = [];
+    const tokens = d.match(/[MC]\s*[^MC]+/g) || [];
+    for (const tok of tokens) {
+      const nums = tok.slice(1).trim().split(/[\s,]+/).map(Number);
+      if (tok[0] === "M" && nums.length >= 2 && Number.isFinite(nums[0]) && Number.isFinite(nums[1])) {
+        pts.push({ x: nums[0], y: nums[1] });
+      } else if (tok[0] === "C" && nums.length >= 6 && Number.isFinite(nums[4]) && Number.isFinite(nums[5])) {
+        pts.push({ x: nums[4], y: nums[5] });
+      }
+    }
+    return pts;
+  }
+  function buildUnifiedHeatmapPathFromSegments(segments) {
+    if (!Array.isArray(segments) || segments.length === 0) return "";
+    const lastSeg = segments[segments.length - 1];
+    const totalW = Math.max(Number(lastSeg.left || 0) + Number(lastSeg.width || 0), 1);
+    const collected = [];
+    for (let i = 0; i < segments.length; i++) {
+      const seg = segments[i];
+      const nextSeg = segments[i + 1];
+      const left = Number(seg.left || 0);
+      const width = Number(seg.width || 0);
+      const spanW = nextSeg ? Math.max(width, Number(nextSeg.left || 0) - left) : width;
+      if (spanW <= 0) continue;
+      const rawPts = parsePathEndPoints(seg.d);
+      const interior = rawPts.filter((p) => {
+        if ((p.x <= 0.1 || p.x >= 999.9) && Math.abs(p.y - 100) < 0.05) return false;
+        return p.x > 0.1 && p.x < 999.9;
+      });
+      for (let j = 0; j < interior.length; j++) {
+        const p = interior[j];
+        if (i > 0 && j === 0 && collected.length > 0 && Math.abs(collected[collected.length - 1].y - p.y) < 0.25) {
+          continue;
+        }
+        const gx = (left + p.x / 1e3 * spanW) / totalW * 1e3;
+        if (collected.length > 0 && gx <= collected[collected.length - 1].x + 0.5) continue;
+        collected.push({ x: clamp(gx, 0.5, 999.5), y: clamp(p.y, 0, 100) });
+      }
+    }
+    if (collected.length === 0) return "";
+    const unifiedPoints = [
+      { x: 0, y: 100 },
+      ...collected,
+      { x: 1e3, y: collected[collected.length - 1].y },
+      { x: 1e3, y: 100 }
+    ];
+    return serializeSmoothHeatmapPath(unifiedPoints);
+  }
+  function getActiveHeatmapSpec() {
+    const currentVid = getCurrentWatchVideoId();
+    if (cachedWatchHeatmap && (!currentVid || cachedWatchHeatmap.videoId === currentVid)) {
+      return cachedWatchHeatmap.spec;
+    }
+    if (typeof window !== "undefined" && window.ytInitialData) {
+      const initVid = extractWatchVideoId(window.ytInitialData);
+      if (!currentVid || !initVid || initVid === currentVid) {
+        const spec = extractHeatmapSpecFromData(window.ytInitialData);
+        if (spec) return spec;
+      }
+    }
+    if (typeof document !== "undefined") {
+      const flexy = document.querySelector("ytd-watch-flexy");
+      const flexyData = flexy?.data || flexy?.playerData;
+      if (flexyData) {
+        const flexyVid = flexy.getAttribute?.("video-id") || extractWatchVideoId(flexyData);
+        if (!currentVid || !flexyVid || flexyVid === currentVid) {
+          const spec = extractHeatmapSpecFromData(flexyData);
+          if (spec) return spec;
+        }
+      }
+    }
+    return null;
+  }
+  function buildUnifiedHeatmapPathFromDom(nativeChapters) {
+    const segments = [];
+    for (const el of nativeChapters) {
+      const left = parseFloat(el.style?.left || "0") || 0;
+      const width = parseFloat(el.style?.width || "0") || el.getBoundingClientRect?.().width || 0;
+      const modern = el.querySelector(".ytp-modern-heat-map");
+      const classic = el.querySelector(".ytp-heat-map-path");
+      const d = (modern?.getAttribute("d") || classic?.getAttribute("d") || "").trim();
+      if (d) {
+        segments.push({ left, width, d });
+      }
+    }
+    return buildUnifiedHeatmapPathFromSegments(segments);
+  }
+  function isModernHeatmapMode(sampleEl) {
+    const modern = sampleEl?.querySelector(".ytp-modern-heat-map");
+    return Boolean(modern && modern.getAttribute("d") && modern.style?.display !== "none");
+  }
+  function ensureSvgEl(tag, attrs = {}) {
+    const el = document.createElementNS(SVG_NS, tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      el.setAttribute(k, v);
+    }
+    return el;
+  }
+  function createUnifiedHeatmapNode(pathD, modernMode) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "ytp-heat-map-chapter ytc-unified-heatmap";
+    wrapper.style.width = "100%";
+    wrapper.style.left = "0px";
+    const svg = ensureSvgEl("svg", {
+      class: "ytp-heat-map-svg",
+      height: "100%",
+      preserveAspectRatio: "none",
+      version: "1.1",
+      viewBox: "0 0 1000 100",
+      width: "100%"
+    });
+    const defs = ensureSvgEl("defs");
+    const clipPath = ensureSvgEl("clipPath", { id: HEATMAP_CLIP_ID });
+    const clipCurve = ensureSvgEl("path", {
+      class: "ytp-heat-map-path",
+      d: modernMode ? "" : pathD,
+      fill: "white"
+    });
+    clipPath.appendChild(clipCurve);
+    const grad = ensureSvgEl("linearGradient", {
+      gradientUnits: "userSpaceOnUse",
+      id: HEATMAP_GRADIENT_ID,
+      x1: "0%",
+      x2: "0%",
+      y1: "0%",
+      y2: "100%"
+    });
+    grad.appendChild(ensureSvgEl("stop", { offset: "0%", "stop-color": "white", "stop-opacity": "1" }));
+    grad.appendChild(ensureSvgEl("stop", { offset: "100%", "stop-color": "white", "stop-opacity": "0" }));
+    defs.appendChild(clipPath);
+    defs.appendChild(grad);
+    svg.appendChild(defs);
+    const graphRect = ensureSvgEl("rect", {
+      class: "ytp-heat-map-graph",
+      "clip-path": `url(#${HEATMAP_CLIP_ID})`,
+      fill: "white",
+      "fill-opacity": "0.4",
+      height: "100%",
+      width: "100%",
+      x: "0",
+      y: "0"
+    });
+    const hoverRect = ensureSvgEl("rect", {
+      class: "ytp-heat-map-hover",
+      "clip-path": `url(#${HEATMAP_CLIP_ID})`,
+      fill: "white",
+      "fill-opacity": "0.7",
+      height: "100%",
+      width: "100%",
+      x: "0",
+      y: "0"
+    });
+    const modernPath = ensureSvgEl("path", {
+      class: "ytp-modern-heat-map",
+      d: modernMode ? pathD : "",
+      fill: `url(#${HEATMAP_GRADIENT_ID})`,
+      height: "100%",
+      stroke: "white",
+      "stroke-opacity": "1",
+      "stroke-width": "2px",
+      width: "100%",
+      x: "0",
+      y: "0"
+    });
+    if (modernMode) {
+      graphRect.style.display = "none";
+      hoverRect.style.display = "none";
+    } else {
+      modernPath.style.display = "none";
+    }
+    svg.appendChild(graphRect);
+    svg.appendChild(hoverRect);
+    svg.appendChild(modernPath);
+    wrapper.appendChild(svg);
+    return wrapper;
+  }
+  function updateUnifiedHeatmapNode(wrapper, pathD, modernMode) {
+    const clipCurve = wrapper.querySelector(".ytp-heat-map-path");
+    const graphRect = wrapper.querySelector(".ytp-heat-map-graph");
+    const hoverRect = wrapper.querySelector(".ytp-heat-map-hover");
+    const modernPath = wrapper.querySelector(".ytp-modern-heat-map");
+    if (modernMode) {
+      if (clipCurve) clipCurve.setAttribute("d", "");
+      if (graphRect) graphRect.style.display = "none";
+      if (hoverRect) hoverRect.style.display = "none";
+      if (modernPath) {
+        modernPath.style.display = "";
+        modernPath.setAttribute("d", pathD);
+      }
+    } else {
+      if (clipCurve) clipCurve.setAttribute("d", pathD);
+      if (graphRect) graphRect.style.display = "";
+      if (hoverRect) hoverRect.style.display = "";
+      if (modernPath) {
+        modernPath.style.display = "none";
+        modernPath.setAttribute("d", "");
+      }
+    }
+  }
+  function disconnectHeatmapObserver() {
+    if (heatmapObserver) {
+      heatmapObserver.disconnect();
+      heatmapObserver = null;
+    }
+    observedHeatmapContainer = null;
+  }
+  function observeHeatmapContainer(container) {
+    if (typeof MutationObserver !== "function" || !container) return;
+    if (observedHeatmapContainer === container && heatmapObserver) return;
+    disconnectHeatmapObserver();
+    observedHeatmapContainer = container;
+    heatmapObserver = new MutationObserver(() => {
+      if (isSyncingUnifiedHeatmap) return;
+      syncDisableChaptersUI();
+    });
+    heatmapObserver.observe(container, { childList: true });
+  }
+  function clearUnifiedHeatmap() {
+    disconnectHeatmapObserver();
+    if (typeof document === "undefined") return;
+    const containers = document.querySelectorAll("#movie_player .ytp-heat-map-container.ytc-unified-heatmap-active, #movie_player .ytp-heat-map-container");
+    for (const container of containers) {
+      container.classList?.remove("ytc-unified-heatmap-active");
+      const unified = container.querySelector(".ytc-unified-heatmap");
+      if (unified) unified.remove();
+    }
+  }
+  function syncDisableChaptersUI() {
+    if (typeof document === "undefined") return;
+    const isWatch = typeof location !== "undefined" && location.pathname?.startsWith("/watch");
+    if (!currentConfig.disableChapters || !isWatch) {
+      clearUnifiedHeatmap();
+      return;
+    }
+    const container = document.querySelector("#movie_player .ytp-heat-map-container");
+    if (!container) return;
+    observeHeatmapContainer(container);
+    const children = Array.from(container.children || []);
+    const nativeChapters = children.filter(
+      (el) => el.classList?.contains("ytp-heat-map-chapter") && !el.classList?.contains("ytc-unified-heatmap")
+    );
+    if (nativeChapters.length <= 1) {
+      container.classList?.remove("ytc-unified-heatmap-active");
+      const stale = container.querySelector(".ytc-unified-heatmap");
+      if (stale) stale.remove();
+      return;
+    }
+    const spec = getActiveHeatmapSpec();
+    const pathD = spec ? buildUnifiedHeatmapPathFromMarkers(spec.markers, spec.minHeightDp, spec.maxHeightDp) : buildUnifiedHeatmapPathFromDom(nativeChapters);
+    if (!pathD) return;
+    const modernMode = isModernHeatmapMode(nativeChapters[0]);
+    isSyncingUnifiedHeatmap = true;
+    try {
+      let unified = container.querySelector(".ytc-unified-heatmap");
+      if (!unified) {
+        unified = createUnifiedHeatmapNode(pathD, modernMode);
+        container.appendChild(unified);
+      } else {
+        updateUnifiedHeatmapNode(unified, pathD, modernMode);
+      }
+      container.classList.add("ytc-unified-heatmap-active");
+    } finally {
+      isSyncingUnifiedHeatmap = false;
+    }
   }
   function initDisableChaptersHook() {
     if (chaptersHooked) return;
@@ -11073,7 +11527,7 @@ html:not([dark]) .ytc-stat-red {
         const origRespJson = window.Response.prototype.json;
         window.Response.prototype.json = function() {
           const promise = origRespJson.call(this);
-          if (currentConfig.disableChapters && typeof this.url === "string" && this.url.includes("/youtubei/v1/next")) {
+          if (currentConfig.disableChapters && typeof this.url === "string" && (this.url.includes("/youtubei/v1/next") || this.url.includes("/youtubei/v1/get_watch"))) {
             return promise.then((res) => {
               try {
                 stripChaptersFromWatchData(res);
@@ -11089,12 +11543,26 @@ html:not([dark]) .ytc-stat-red {
     }
     if (typeof document !== "undefined") {
       document.addEventListener("yt-page-data-fetched", (evt) => {
-        if (!currentConfig.disableChapters) return;
         try {
-          stripChaptersFromWatchData(evt?.detail?.pageData);
-          if (window.ytInitialData) stripChaptersFromWatchData(window.ytInitialData);
+          const pageData = evt?.detail?.pageData;
+          const spec = extractHeatmapSpecFromData(pageData);
+          if (spec) {
+            const vid = extractWatchVideoId(pageData) || getCurrentWatchVideoId();
+            cachedWatchHeatmap = { videoId: vid, spec };
+          } else if (getCurrentWatchVideoId()) {
+            cachedWatchHeatmap = null;
+          }
+          if (currentConfig.disableChapters) {
+            stripChaptersFromWatchData(pageData);
+            if (window.ytInitialData) stripChaptersFromWatchData(window.ytInitialData);
+            const flexy = document.querySelector("ytd-watch-flexy");
+            if (flexy?.data) stripChaptersFromWatchData(flexy.data);
+          }
         } catch (e) {
         }
+      }, true);
+      document.addEventListener("yt-navigate-start", () => {
+        clearUnifiedHeatmap();
       }, true);
     }
   }
@@ -11165,6 +11633,7 @@ html:not([dark]) .ytc-stat-red {
       checkInitialLiveSnap();
       normalizeTimeDisplay();
       applyAmbientLightingState();
+      syncDisableChaptersUI();
       if (location.pathname.startsWith("/watch")) {
         setWatchLoading(true);
       }
@@ -11182,6 +11651,7 @@ html:not([dark]) .ytc-stat-red {
       applyAmbientLightingState();
       updateChatOverlayVisibility();
       applyAudioOnlyState();
+      syncDisableChaptersUI();
       if (currentConfig.autoDismissPromos) {
         dismissPromoBanners(document);
       }
@@ -11220,6 +11690,7 @@ html:not([dark]) .ytc-stat-red {
         syncPanelState();
       }
       applyConfigToRoot(false);
+      syncDisableChaptersUI();
       applyHomeGridColumns();
       syncFeedObserver();
       if (needsFeedObserver()) {

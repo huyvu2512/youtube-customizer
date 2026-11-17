@@ -1722,7 +1722,7 @@ body.ytc-audio-only #movie_player video {
 }
 
 /* --------------------------------------------------------------------------
-   TẮT CHIA ĐOẠN VIDEO (DISABLE CHAPTERS & SEAMLESS PROGRESS BAR)
+   TẮT CHIA ĐOẠN VIDEO (DISABLE CHAPTERS & SEAMLESS PROGRESS BAR / HEATMAP)
    -------------------------------------------------------------------------- */
 html.ytc-disable-chapters #movie_player .ytp-chapter-container,
 body.ytc-disable-chapters #movie_player .ytp-chapter-container,
@@ -1768,13 +1768,43 @@ body.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="mar
     margin-right: -2px !important;
 }
 
+/* Chặn nổi bật từng đoạn chapter / từng đoạn sóng heatmap khi di chuột */
+html.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-chapter-hover-container.ytp-exp-chapter-hover-effect,
+body.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-chapter-hover-container.ytp-exp-chapter-hover-effect,
+html.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-exp-chapter-hover-container:hover,
+body.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-exp-chapter-hover-container:hover,
+html.ytc-disable-chapters #movie_player.ytp-delhi-modern.ytp-progress-bar-hover .ytp-progress-bar-container .ytp-chapter-hover-container.ytp-exp-chapter-hover-effect,
+body.ytc-disable-chapters #movie_player.ytp-delhi-modern.ytp-progress-bar-hover .ytp-progress-bar-container .ytp-chapter-hover-container.ytp-exp-chapter-hover-effect,
+html.ytc-disable-chapters #movie_player.ytp-player-minimized .ytp-progress-bar-container .ytp-chapter-hover-container.ytp-exp-chapter-hover-effect,
+body.ytc-disable-chapters #movie_player.ytp-player-minimized .ytp-progress-bar-container .ytp-chapter-hover-container.ytp-exp-chapter-hover-effect {
+    transform: none !important;
+    bottom: 0 !important;
+}
+
 html.ytc-disable-chapters #movie_player .ytp-progress-bar-container:hover .ytp-progress-list,
-body.ytc-disable-chapters #movie_player .ytp-progress-bar-container:hover .ytp-progress-list {
+body.ytc-disable-chapters #movie_player .ytp-progress-bar-container:hover .ytp-progress-list,
+html.ytc-disable-chapters #movie_player.ytp-delhi-modern.ytp-progress-bar-hover .ytp-progress-bar-container .ytp-progress-list,
+body.ytc-disable-chapters #movie_player.ytp-delhi-modern.ytp-progress-bar-hover .ytp-progress-bar-container .ytp-progress-list,
+html.ytc-disable-chapters #movie_player .ytp-drag .ytp-progress-list,
+body.ytc-disable-chapters #movie_player .ytp-drag .ytp-progress-list {
     transform: scaleY(1) !important;
 }
-html.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-exp-chapter-hover-container:hover,
-body.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-exp-chapter-hover-container:hover {
-    transform: none !important;
+
+html.ytc-disable-chapters #movie_player .ytp-heat-map-chapter.ytp-heatmap-hover,
+body.ytc-disable-chapters #movie_player .ytp-heat-map-chapter.ytp-heatmap-hover,
+html.ytc-disable-chapters #movie_player.ytp-big-mode .ytp-heat-map-chapter.ytp-heatmap-hover,
+body.ytc-disable-chapters #movie_player.ytp-big-mode .ytp-heat-map-chapter.ytp-heatmap-hover {
+    bottom: 0 !important;
+}
+
+html.ytc-disable-chapters #movie_player.ytp-progress-bar-snap .ytp-tooltip-bg,
+body.ytc-disable-chapters #movie_player.ytp-progress-bar-snap .ytp-tooltip-bg {
+    outline: none !important;
+}
+
+html.ytc-disable-chapters #movie_player .ytp-heat-map-container.ytc-unified-heatmap-active > .ytp-heat-map-chapter:not(.ytc-unified-heatmap),
+body.ytc-disable-chapters #movie_player .ytp-heat-map-container.ytc-unified-heatmap-active > .ytp-heat-map-chapter:not(.ytc-unified-heatmap) {
+    display: none !important;
 }
 
 /* --------------------------------------------------------------------------
