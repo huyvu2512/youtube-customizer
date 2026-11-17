@@ -649,36 +649,54 @@ export function onTheaterModeChanged(isTheater) {
 }
 
 let theaterObserver = null;
+let theaterObserverTarget = null;
+let theaterKeyListenerBound = false;
 export function setupTheaterModeObserver() {
-    if (theaterObserver) return;
-    const watchFlexy = document.querySelector('ytd-watch-flexy');
-    if (!watchFlexy) {
-        setTimeout(setupTheaterModeObserver, 500);
-        return;
-    }
-    let lastTheater = watchFlexy.hasAttribute('theater');
-    theaterObserver = new MutationObserver(() => {
-        const isTheater = watchFlexy.hasAttribute('theater');
-        if (isTheater !== lastTheater) {
-            lastTheater = isTheater;
-            onTheaterModeChanged(isTheater);
-        }
-    });
-    theaterObserver.observe(watchFlexy, { attributes: true, attributeFilter: ['theater'] });
+    if (!location.pathname.startsWith('/watch') && !location.pathname.startsWith('/live')) return;
 
-    document.addEventListener('keydown', (e) => {
-        const tag = e.target?.tagName;
-        if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) return;
-        if (e.key === 't' || e.key === 'T' || e.code === 'KeyT') {
-            setTimeout(() => {
-                const cur = watchFlexy.hasAttribute('theater');
-                if (cur !== lastTheater) {
-                    lastTheater = cur;
-                    onTheaterModeChanged(cur);
+    const attach = (watchFlexy) => {
+        if (!watchFlexy) return;
+        let lastTheater = watchFlexy.hasAttribute('theater');
+        if (theaterObserverTarget !== watchFlexy) {
+            if (theaterObserver) theaterObserver.disconnect();
+            theaterObserverTarget = watchFlexy;
+            theaterObserver = new MutationObserver(() => {
+                const isTheater = watchFlexy.hasAttribute('theater');
+                if (isTheater !== lastTheater) {
+                    lastTheater = isTheater;
+                    onTheaterModeChanged(isTheater);
                 }
-            }, 80);
+            });
+            theaterObserver.observe(watchFlexy, { attributes: true, attributeFilter: ['theater'] });
         }
-    }, true);
+
+        if (!theaterKeyListenerBound) {
+            theaterKeyListenerBound = true;
+            document.addEventListener('keydown', (e) => {
+                if (!currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') return;
+                const tag = e.target?.tagName;
+                if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) return;
+                if (e.key === 't' || e.key === 'T' || e.code === 'KeyT') {
+                    setTimeout(() => {
+                        const activeFlexy = document.querySelector('ytd-watch-flexy');
+                        if (!activeFlexy) return;
+                        const cur = activeFlexy.hasAttribute('theater');
+                        if (cur !== lastTheater) {
+                            lastTheater = cur;
+                            onTheaterModeChanged(cur);
+                        }
+                    }, 80);
+                }
+            }, true);
+        }
+    };
+
+    const watchFlexy = document.querySelector('ytd-watch-flexy');
+    if (watchFlexy) {
+        attach(watchFlexy);
+    } else {
+        whenElement('ytd-watch-flexy', attach);
+    }
 }
 
 function getAllChatElements(scope) {
@@ -942,11 +960,17 @@ export function updateChatOverlayVisibility() {
         disconnectChatBoxObservers();
     }
     if (mode === 'off') {
+        if (theaterObserver) {
+            theaterObserver.disconnect();
+            theaterObserver = null;
+            theaterObserverTarget = null;
+        }
         stopDanmakuScheduler();
         danmakuQueue.length = 0;
         laneNextAvailableTime.fill(0);
         removeChatOverlayContainers();
     } else {
+        setupTheaterModeObserver();
         ensureChatOverlayContainers();
     }
 
@@ -1546,7 +1570,9 @@ export function initChatOverlay() {
         setTimeout(autoCollapseNativeChatIfOpen, 800);
         setTimeout(autoCollapseNativeChatIfOpen, 1500);
     }
-    setupTheaterModeObserver();
+    if (currentConfig.chatOverlay && currentConfig.chatOverlay !== 'off') {
+        setupTheaterModeObserver();
+    }
     syncChatKeepAliveInterval();
 
     if (location.pathname.startsWith('/watch') || location.pathname.startsWith('/live')) {

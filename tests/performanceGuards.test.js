@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { shouldShowLetterboxBackdrop } from '../src/player/letterboxBackdrop.js';
 import { shouldThrottleRepeatSeek } from '../src/player/shortcuts.js';
-import { isIgnoredPromoMutationNode, shouldInspectPromoAddedNode } from '../src/features/promos.js';
+import { isIgnoredPromoMutationNode, shouldInspectPromoAddedNode, setupPromoObserver } from '../src/features/promos.js';
 import { currentConfig } from '../src/core/config.js';
-import { hasActiveFeedFilters, hasActiveWatchCardFilters, needsFeedObserver } from '../src/features/feedFilter.js';
+import { hasActiveFeedFilters, hasActiveWatchCardFilters, needsFeedObserver, getScanRoots } from '../src/features/feedFilter.js';
 
 test('shouldShowLetterboxBackdrop disables backdrop for standard 16:9 ratio match', () => {
     assert.equal(shouldShowLetterboxBackdrop(1920, 1080, 1920, 1080), false);
@@ -44,6 +44,9 @@ test('isIgnoredPromoMutationNode ignores high-frequency player tooltip, chrome, 
     assert.equal(isIgnoredPromoMutationNode(createMockNode('.ytp-tooltip')), true);
     assert.equal(isIgnoredPromoMutationNode(createMockNode('.ytp-chrome-bottom')), true);
     assert.equal(isIgnoredPromoMutationNode(createMockNode('.ytp-bezel')), true);
+    assert.equal(isIgnoredPromoMutationNode(createMockNode('.ytp-chapters-container')), true);
+    assert.equal(isIgnoredPromoMutationNode(createMockNode('.ytp-timed-markers-container')), true);
+    assert.equal(isIgnoredPromoMutationNode(createMockNode('ytd-macro-markers-list-renderer')), true);
     assert.equal(isIgnoredPromoMutationNode(createMockNode('ytd-live-chat-frame')), true);
     assert.equal(isIgnoredPromoMutationNode(createMockNode('ytd-engagement-panel-section-list-renderer')), true);
     assert.equal(isIgnoredPromoMutationNode(createMockNode('ytd-transcript-renderer')), true);
@@ -55,6 +58,9 @@ test('isIgnoredPromoMutationNode ignores high-frequency player tooltip, chrome, 
 test('shouldInspectPromoAddedNode skips ordinary watch DOM nodes and accepts promo/interruption roots', () => {
     assert.equal(shouldInspectPromoAddedNode({ nodeType: 3 }), false);
     assert.equal(shouldInspectPromoAddedNode({ nodeType: 1, tagName: 'DIV', className: 'style-scope ytd-watch-flexy' }), false);
+    assert.equal(shouldInspectPromoAddedNode({ nodeType: 1, tagName: 'DIV', className: 'ytp-chapter-hover-container' }), false);
+    assert.equal(shouldInspectPromoAddedNode({ nodeType: 1, tagName: 'SVG', className: { baseVal: 'ytp-heat-map-svg' } }), false);
+    assert.equal(shouldInspectPromoAddedNode({ nodeType: 1, tagName: 'PATH', className: { baseVal: 'ytp-heat-map-path' } }), false);
     assert.equal(shouldInspectPromoAddedNode({ nodeType: 1, tagName: 'YTD-COMMENT-THREAD-RENDERER', className: '' }), false);
     assert.equal(shouldInspectPromoAddedNode({ nodeType: 1, tagName: 'YTD-TRANSCRIPT-SEGMENT-RENDERER', className: '' }), false);
 
@@ -64,6 +70,91 @@ test('shouldInspectPromoAddedNode skips ordinary watch DOM nodes and accepts pro
     assert.equal(shouldInspectPromoAddedNode({ nodeType: 1, tagName: 'YTD-MEALBAR-PROMO-RENDERER', className: '' }), true);
     assert.equal(shouldInspectPromoAddedNode({ nodeType: 1, tagName: 'DIV', className: 'ytp-suggested-action-badge' }), true);
     assert.equal(shouldInspectPromoAddedNode({ nodeType: 1, tagName: 'DIV', id: 'toast', className: '' }), true);
+});
+
+test('setupPromoObserver filters out chapter heatmap SVG churn without calling closest()', () => {
+    const prevDoc = globalThis.document;
+    const prevMO = globalThis.MutationObserver;
+    const prevRAF = globalThis.requestAnimationFrame;
+    const prevLoc = globalThis.location;
+    let observerCb = null;
+    let closestCalls = 0;
+
+    globalThis.location = { pathname: '/watch' };
+    globalThis.requestAnimationFrame = () => 1;
+    globalThis.MutationObserver = class {
+        constructor(cb) { observerCb = cb; }
+        observe() {}
+        disconnect() {}
+    };
+    globalThis.document = {
+        querySelector(sel) {
+            return sel === 'body' ? { nodeType: 1, tagName: 'BODY' } : null;
+        },
+        documentElement: { nodeType: 1 }
+    };
+
+    try {
+        setupPromoObserver();
+        assert.equal(typeof observerCb, 'function');
+
+        const moviePlayer = {
+            nodeType: 1,
+            tagName: 'DIV',
+            id: 'movie_player',
+            closest() {
+                closestCalls++;
+                return null;
+            }
+        };
+        const svgMutation = {
+            target: moviePlayer,
+            addedNodes: [
+                { nodeType: 1, tagName: 'svg', className: { baseVal: 'ytp-heat-map-svg' }, closest() { closestCalls++; return null; } },
+                { nodeType: 1, tagName: 'DIV', className: 'ytp-tooltip ytp-bottom', closest() { closestCalls++; return null; } }
+            ]
+        };
+        observerCb([svgMutation]);
+        assert.equal(closestCalls, 0);
+    } finally {
+        globalThis.document = prevDoc;
+        globalThis.MutationObserver = prevMO;
+        globalThis.requestAnimationFrame = prevRAF;
+        globalThis.location = prevLoc;
+    }
+});
+
+test('getScanRoots on watch page restricts #secondary scans to #related and #playlist, skipping #panels chapters/transcript', () => {
+    const prevLoc = globalThis.location;
+    const prevDoc = globalThis.document;
+    globalThis.location = { pathname: '/watch' };
+
+    const relatedEl = { nodeType: 1, id: 'related', matches: () => true, closest: () => null };
+    const playlistEl = { nodeType: 1, id: 'playlist', matches: () => true, closest: () => null };
+    const panelsEl = { nodeType: 1, id: 'panels', matches: () => false, closest: (s) => (s.includes('#panels') ? panelsEl : null) };
+    const secondaryEl = {
+        nodeType: 1,
+        id: 'secondary',
+        matches: () => false,
+        closest: () => null,
+        querySelectorAll(sel) {
+            assert.equal(sel.includes('#related'), true);
+            assert.equal(sel.includes('#playlist'), true);
+            return [relatedEl, playlistEl];
+        }
+    };
+    globalThis.document = {
+        querySelectorAll: () => [relatedEl, playlistEl]
+    };
+
+    try {
+        assert.deepEqual(getScanRoots(secondaryEl), [relatedEl, playlistEl]);
+        assert.deepEqual(getScanRoots(panelsEl), []);
+        assert.deepEqual(getScanRoots(relatedEl), [relatedEl]);
+    } finally {
+        globalThis.location = prevLoc;
+        globalThis.document = prevDoc;
+    }
 });
 
 test('needsFeedObserver stays idle on watch page and default home feed unless matching filters are enabled', () => {
@@ -101,11 +192,12 @@ test('needsFeedObserver stays idle on watch page and default home feed unless ma
     }
 });
 
-test('styles.css avoids expensive global :has(), comment content-visibility, and ambient CSS blur shaders', () => {
+test('styles.css avoids expensive global :has(), comment content-visibility, and canvas CSS filter shaders', () => {
     const css = fs.readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
     assert.equal(css.includes(':has('), false);
     assert.equal(css.includes('ytd-comment-thread-renderer'), false);
     assert.equal(css.includes('mask-image'), false);
-    assert.equal(/#ytc-ambient-spread-canvas[\s\S]{0,400}filter:\s*blur\(/i.test(css), false);
+    assert.equal(/#ytc-ambient-spread-canvas[\s\S]{0,400}filter:\s*/i.test(css), false);
+    assert.equal(/\.ytc-letterbox-backdrop[\s\S]{0,300}filter:\s*/i.test(css), false);
     assert.equal(/html\.ytc-ambient-lighting\s+#movie_player\s*\{[\s\S]{0,200}overflow:\s*hidden/i.test(css), false);
 });

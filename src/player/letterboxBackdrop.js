@@ -65,6 +65,8 @@ function unbindVideo() {
     if (!boundVideo) return;
     boundVideo.removeEventListener('loadedmetadata', syncBackdrop);
     boundVideo.removeEventListener('seeked', drawFrame);
+    boundVideo.removeEventListener('play', syncBackdrop);
+    boundVideo.removeEventListener('pause', stopTimer);
     boundVideo = null;
 }
 
@@ -74,6 +76,8 @@ function bindVideo(video) {
     boundVideo = video;
     boundVideo.addEventListener('loadedmetadata', syncBackdrop, { passive: true });
     boundVideo.addEventListener('seeked', drawFrame, { passive: true });
+    boundVideo.addEventListener('play', syncBackdrop, { passive: true });
+    boundVideo.addEventListener('pause', stopTimer, { passive: true });
 }
 
 function clearBackdropCanvas() {
@@ -115,8 +119,14 @@ function drawFrame() {
     if (!ensureCanvas(player) || !context) return;
     if (video.paused && video === activeVideo && canvas.dataset.hasFrame === 'true') return;
     try {
-        // Upscaling a tiny 48x27 canvas on GPU gives smooth blur with zero CPU/Skia filter pass.
+        // Bão hòa màu ngay trên canvas 48x27 thay vì CSS filter toàn màn hình để giữ mượt khi phóng to.
+        if ('filter' in context) {
+            context.filter = 'saturate(1.15)';
+        }
         context.drawImage(video, -2, -2, CANVAS_WIDTH + 4, CANVAS_HEIGHT + 4);
+        if ('filter' in context) {
+            context.filter = 'none';
+        }
         activeVideo = video;
         canvas.dataset.hasFrame = 'true';
     } catch (_) {
@@ -135,8 +145,11 @@ function syncBackdrop() {
         return;
     }
     drawFrame();
-    if (activePlayer && updateTimer === null) {
+    const video = player.querySelector('video.html5-main-video') || player.querySelector('video');
+    if (activePlayer && updateTimer === null && video && !video.paused && !video.ended) {
         updateTimer = setInterval(drawFrame, UPDATE_INTERVAL_MS);
+    } else if (video && (video.paused || video.ended)) {
+        stopTimer();
     }
 }
 

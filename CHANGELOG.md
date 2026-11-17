@@ -1,3 +1,9 @@
+## v3.9.39 — 17/11/2026 11:08
+
+- Lọc O(1) mutation của heatmap/chapter trước khi duyệt cây DOM trên Watch.
+- Thu hẹp bộ lọc `#secondary` về `#related` và `#playlist`, bỏ qua `#panels`.
+- Giảm lấy mẫu Ambilight về 1 lần/tick và bỏ CSS `filter` nền phóng to.
+
 ## v3.9.38 — 15/11/2026 22:21
 
 - Ngăn lọc nhầm video nhạc đơn kèm `list=RD` trên tab Âm nhạc.

@@ -33,8 +33,10 @@ export function resetAutoLiveState() {
 }
 
 export function recordUserSeek() {
+    if (!currentConfig.autoLiveSync) return;
     lastUserSeekTime = Date.now();
     setTimeout(() => {
+        if (!currentConfig.autoLiveSync) return;
         const p = document.querySelector('#movie_player:not(#inline-preview-player)');
         if (!p || !isCurrentlyActiveLive(p)) return;
         const video = p.querySelector('video');
@@ -165,6 +167,12 @@ function checkLiveSync() {
 
     if (!isCurrentlyActiveLive(player)) {
         snapReadySince = 0;
+        try {
+            const vd = typeof player.getVideoData === 'function' ? player.getVideoData() : null;
+            if (vd && (vd.isPostLiveDvr === true || (vd.isLive === false && !vd.isLiveDvr))) {
+                stopAutoLiveSyncTimer();
+            }
+        } catch (e) {}
         return;
     }
 

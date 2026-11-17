@@ -18,6 +18,7 @@ import {
     syncLogoObserver,
     invalidateFeedScan,
     hasActiveFeedFilters,
+    needsFeedObserver,
     setupFeedShelvesObserver,
     syncFeedObserver,
     dismissPromoBanners,
@@ -193,7 +194,9 @@ if (window.self !== window.top) {
         applyConfigToRoot(false);
         applyHomeGridColumns();
         syncFeedObserver();
-        invalidateFeedScan(document);
+        if (needsFeedObserver()) {
+            invalidateFeedScan(document);
+        }
     });
 
     document.addEventListener('yt-navigate-finish', onNavigate);

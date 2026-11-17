@@ -14,24 +14,34 @@ let ambientSpreadCanvas = null;
 let ambientSpreadCtx = null;
 let ambientSampleCanvas = null;
 let ambientSampleCtx = null;
+let ambientEdgeCanvas = null;
+let ambientEdgeCtx = null;
 let ambientFadeGrad = null;
 let animFrameId = null;
+let loopTimeoutId = null;
 let isRunning = false;
-let lastDrawTime = 0;
 let currentVideo = null;
 let hasDrawnFirstFrame = false;
 let isPausedAndDrawn = false;
 let lastMastheadScrolled = null;
+let scrollListenerBound = false;
+let ambientResizeObserver = null;
+let observedResizeTarget = null;
+let rectsDirty = true;
 
 // Canvas nội bộ nhỏ + downscale 2 bước để khử răng cưa và thay thế hoàn toàn CSS blur/mask-image toàn màn hình
 const CANVAS_WIDTH = 128;
 const CANVAS_HEIGHT = 160;
 const SAMPLE_WIDTH = 40;
 const SAMPLE_HEIGHT = 50;
-const TARGET_INTERVAL = 1000 / 12; // 12 FPS cho nền ánh sáng viền nhẹ nhàng, giảm tải GPU khi phóng to
+const TARGET_INTERVAL = 100; // ~10 FPS đủ mượt cho ánh sáng viền, giảm tải GPU & compositor khi phóng to
 
 function isFullscreenActive() {
-    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+    return !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.querySelector('#movie_player.ytp-fullscreen, ytd-watch-flexy[fullscreen]')
+    );
 }
 
 /**
@@ -57,14 +67,32 @@ function findActivePlayer() {
 let cachedPlayerRect = null;
 let cachedWrapperRect = null;
 let cachedVideoRect = null;
+let cachedMediaRect = null;
 let cachedObjectFit = 'contain';
 let cachedObjectPosition = '50% 50%';
-let lastRectUpdateTime = 0;
 let lastVideoDimensions = '';
 
+function markRectsDirty() {
+    rectsDirty = true;
+}
+
+function syncResizeObserver(activePlayer) {
+    if (!window.ResizeObserver || !activePlayer) return;
+    if (!ambientResizeObserver) {
+        ambientResizeObserver = new ResizeObserver(() => {
+            rectsDirty = true;
+        });
+    }
+    if (observedResizeTarget !== activePlayer) {
+        ambientResizeObserver.disconnect();
+        ambientResizeObserver.observe(activePlayer);
+        if (ambientWrapper) ambientResizeObserver.observe(ambientWrapper);
+        observedResizeTarget = activePlayer;
+    }
+}
+
 function updateCachedRects(force = false) {
-    const now = Date.now();
-    if (!force && now - lastRectUpdateTime < 1500 && cachedPlayerRect && cachedWrapperRect) return;
+    if (!force && !rectsDirty && cachedPlayerRect && cachedWrapperRect && cachedVideoRect) return;
     const activePlayer = findActivePlayer();
     if (!activePlayer || !ambientWrapper) return;
     cachedPlayerRect = activePlayer.getBoundingClientRect();
@@ -76,7 +104,9 @@ function updateCachedRects(force = false) {
         cachedObjectFit = videoStyle.objectFit || 'contain';
         cachedObjectPosition = videoStyle.objectPosition || '50% 50%';
     }
-    lastRectUpdateTime = now;
+    cachedMediaRect = null;
+    rectsDirty = false;
+    syncResizeObserver(activePlayer);
 }
 
 function getObjectPositionOffset(availableSpace, position) {
@@ -181,13 +211,67 @@ function ensureAmbientCanvas() {
                 ambientSampleCtx.imageSmoothingQuality = 'low';
             }
         }
+
+        if (!ambientEdgeCanvas) {
+            ambientEdgeCanvas = document.createElement('canvas');
+            ambientEdgeCanvas.width = SAMPLE_WIDTH;
+            ambientEdgeCanvas.height = SAMPLE_HEIGHT;
+            ambientEdgeCtx = ambientEdgeCanvas.getContext('2d', {
+                alpha: false,
+                willReadFrequently: false
+            });
+            if (ambientEdgeCtx) {
+                ambientEdgeCtx.imageSmoothingEnabled = true;
+                ambientEdgeCtx.imageSmoothingQuality = 'low';
+            }
+        }
     }
 
-    return !!(ambientSpreadCtx && ambientSampleCtx);
+    return !!(ambientSpreadCtx && ambientSampleCtx && ambientEdgeCtx);
+}
+
+function getRenderedMediaRect(vW, vH, videoRect, boxW, boxH) {
+    let sourceX = 0, sourceY = 0, sourceW = vW, sourceH = vH;
+    let displayW = boxW, displayH = boxH;
+    const fit = cachedObjectFit;
+
+    if (fit === 'contain' || fit === 'scale-down') {
+        let scale = Math.min(boxW / vW, boxH / vH);
+        if (fit === 'scale-down') scale = Math.min(1, scale);
+        displayW = Math.min(boxW, vW * scale);
+        displayH = Math.min(boxH, vH * scale);
+        const positions = cachedObjectPosition.trim().split(/\s+/);
+        const offsetX = getObjectPositionOffset(boxW - displayW, positions[0]);
+        const offsetY = getObjectPositionOffset(boxH - displayH, positions[1] || '50%');
+        return {
+            sourceX, sourceY, sourceW, sourceH,
+            mediaRect: {
+                left: videoRect.left + offsetX,
+                top: videoRect.top + offsetY,
+                width: displayW,
+                height: displayH
+            }
+        };
+    }
+
+    if (fit === 'cover') {
+        const coverScale = Math.max(boxW / vW, boxH / vH);
+        const renderedW = vW * coverScale;
+        const renderedH = vH * coverScale;
+        const positions = cachedObjectPosition.trim().split(/\s+/);
+        const offsetX = getObjectPositionOffset(boxW - renderedW, positions[0]);
+        const offsetY = getObjectPositionOffset(boxH - renderedH, positions[1] || '50%');
+        sourceX = Math.max(0, Math.min(vW, -offsetX / coverScale));
+        sourceY = Math.max(0, Math.min(vH, -offsetY / coverScale));
+        sourceW = Math.max(1, Math.min(vW - sourceX, boxW / coverScale));
+        sourceH = Math.max(1, Math.min(vH - sourceY, boxH / coverScale));
+    }
+
+    return { sourceX, sourceY, sourceW, sourceH, mediaRect: videoRect };
 }
 
 /**
- * Vẽ một khung hình Ambilight
+ * Vẽ một khung hình Ambilight (chỉ lấy mẫu <video> 1 lần duy nhất mỗi tick)
  */
 function drawFrame(video) {
     if (!isAmbientEnabled()) {
@@ -210,18 +294,18 @@ function drawFrame(video) {
         if (dimensions !== lastVideoDimensions) {
             cachedPlayerRect = null;
             cachedVideoRect = null;
+            cachedMediaRect = null;
+            rectsDirty = true;
             lastVideoDimensions = dimensions;
         }
 
-        if (!cachedPlayerRect || !cachedWrapperRect) {
+        if (rectsDirty || !cachedPlayerRect || !cachedWrapperRect || !cachedVideoRect) {
             updateCachedRects(true);
-        } else if (Date.now() - lastRectUpdateTime > 2000) {
-            updateCachedRects(false);
         }
 
         const playerRect = cachedPlayerRect;
         const wrapperRect = cachedWrapperRect;
-        const videoRect = cachedVideoRect || video.getBoundingClientRect();
+        const videoRect = cachedVideoRect;
         if (!playerRect || !wrapperRect || !videoRect) return;
 
         const pW = playerRect.width;
@@ -230,54 +314,14 @@ function drawFrame(video) {
 
         const wrapW = wrapperRect.width || window.innerWidth || 1920;
         const wrapH = wrapperRect.height || 1150;
-
-        // Match the actual rendered media box inside YouTube's video element.
-        // Portrait and letterboxed videos usually use object-fit: contain, so do not crop them
-        // to the wider player aspect ratio.
         const boxW = videoRect.width || pW;
         const boxH = videoRect.height || pH;
         if (boxW < 10 || boxH < 10) return;
-        const videoAspect = vW / vH;
-        const boxAspect = boxW / boxH;
-        let sourceX = 0, sourceY = 0, sourceW = vW, sourceH = vH;
-        let displayW = boxW, displayH = boxH;
-        const fit = cachedObjectFit;
 
-        if (fit === 'contain' || fit === 'scale-down') {
-            let scale = Math.min(boxW / vW, boxH / vH);
-            if (fit === 'scale-down') scale = Math.min(1, scale);
-            displayW = vW * scale;
-            displayH = vH * scale;
-        } else if (fit === 'cover') {
-            const coverScale = Math.max(boxW / vW, boxH / vH);
-            const renderedW = vW * coverScale;
-            const renderedH = vH * coverScale;
-            const positions = cachedObjectPosition.trim().split(/\s+/);
-            const offsetX = getObjectPositionOffset(boxW - renderedW, positions[0]);
-            const offsetY = getObjectPositionOffset(boxH - renderedH, positions[1] || '50%');
-            sourceX = Math.max(0, Math.min(vW, -offsetX / coverScale));
-            sourceY = Math.max(0, Math.min(vH, -offsetY / coverScale));
-            sourceW = Math.max(1, Math.min(vW - sourceX, boxW / coverScale));
-            sourceH = Math.max(1, Math.min(vH - sourceY, boxH / coverScale));
+        if (!cachedMediaRect) {
+            cachedMediaRect = getRenderedMediaRect(vW, vH, videoRect, boxW, boxH);
         }
-
-        if (fit === 'contain' || fit === 'scale-down') {
-            const positions = cachedObjectPosition.trim().split(/\s+/);
-            displayW = Math.min(boxW, displayW);
-            displayH = Math.min(boxH, displayH);
-            const offsetX = getObjectPositionOffset(boxW - displayW, positions[0]);
-            const offsetY = getObjectPositionOffset(boxH - displayH, positions[1] || '50%');
-            cachedVideoRect = {
-                left: videoRect.left + offsetX,
-                top: videoRect.top + offsetY,
-                width: displayW,
-                height: displayH
-            };
-        } else {
-            cachedVideoRect = videoRect;
-        }
-
-        const mediaRect = cachedVideoRect;
+        const { sourceX, sourceY, sourceW, sourceH, mediaRect } = cachedMediaRect;
         const scaleX = SAMPLE_WIDTH / wrapW;
         const scaleY = SAMPLE_HEIGHT / wrapH;
         const cvX = Math.round((mediaRect.left - wrapperRect.left) * scaleX);
@@ -289,19 +333,19 @@ function drawFrame(video) {
         const sW = Math.max(1, Math.round(sourceW));
         const sH = Math.max(1, Math.round(sourceH));
 
-        // Độ dày dải mép lấy mẫu sát cạnh video
-        const stripW = Math.max(4, Math.round(sW * 0.020));
-        const stripH = Math.max(4, Math.round(sH * 0.025));
+        // Chỉ đọc frame từ thẻ <video> ĐÚNG 1 LẦN thay vì 9 lần để tránh kẹt GPU texture pipeline
+        ambientEdgeCtx.drawImage(video, sX, sY, sW, sH, 0, 0, SAMPLE_WIDTH, SAMPLE_HEIGHT);
 
-        ambientSampleCtx.clearRect(0, 0, SAMPLE_WIDTH, SAMPLE_HEIGHT);
-
-        // 1. Vẽ nhẹ video gốc vào buffer nhỏ để khử răng cưa các mép
+        const edgeW = Math.max(1, Math.round(SAMPLE_WIDTH * 0.05));
+        const edgeH = Math.max(1, Math.round(SAMPLE_HEIGHT * 0.05));
         const bleedX = Math.round(cvW * 0.04);
         const bleedY = Math.round(cvH * 0.04);
+
+        ambientSampleCtx.clearRect(0, 0, SAMPLE_WIDTH, SAMPLE_HEIGHT);
         ambientSampleCtx.globalAlpha = 0.88;
         ambientSampleCtx.drawImage(
-            video,
-            sX, sY, sW, sH,
+            ambientEdgeCanvas,
+            0, 0, SAMPLE_WIDTH, SAMPLE_HEIGHT,
             Math.max(0, cvX - bleedX),
             Math.max(0, cvY - bleedY),
             cvW + bleedX * 2,
@@ -313,40 +357,43 @@ function drawFrame(video) {
         const bottomY = cvY + cvH;
         const bottomH = Math.max(0, SAMPLE_HEIGHT - bottomY);
 
-        // 2-5. Kéo giãn 4 mép lên sample buffer 40x50
         if (rightW > 0 && cvH > 0) {
-            const srcX = sX + sW - stripW;
-            ambientSampleCtx.drawImage(video, srcX, sY, stripW, sH, cvX + cvW - 1, cvY, rightW + 1, cvH);
+            ambientSampleCtx.drawImage(ambientEdgeCanvas, SAMPLE_WIDTH - edgeW, 0, edgeW, SAMPLE_HEIGHT, cvX + cvW - 1, cvY, rightW + 1, cvH);
         }
         if (cvX > 0 && cvH > 0) {
-            ambientSampleCtx.drawImage(video, sX, sY, stripW, sH, 0, cvY, cvX + 1, cvH);
+            ambientSampleCtx.drawImage(ambientEdgeCanvas, 0, 0, edgeW, SAMPLE_HEIGHT, 0, cvY, cvX + 1, cvH);
         }
         if (cvY > 0 && cvW > 0) {
-            ambientSampleCtx.drawImage(video, sX, sY, sW, stripH, cvX, 0, cvW, cvY + 1);
+            ambientSampleCtx.drawImage(ambientEdgeCanvas, 0, 0, SAMPLE_WIDTH, edgeH, cvX, 0, cvW, cvY + 1);
         }
         if (bottomH > 0 && cvW > 0) {
-            const srcY = sY + sH - stripH;
-            ambientSampleCtx.drawImage(video, sX, srcY, sW, stripH, cvX, bottomY - 1, cvW, bottomH + 1);
+            ambientSampleCtx.drawImage(ambientEdgeCanvas, 0, SAMPLE_HEIGHT - edgeH, SAMPLE_WIDTH, edgeH, cvX, bottomY - 1, cvW, bottomH + 1);
         }
 
-        // 6. Phủ 4 góc
         if (cvX > 0 && cvY > 0) {
-            ambientSampleCtx.drawImage(video, sX, sY, stripW, stripH, 0, 0, cvX + 1, cvY + 1);
+            ambientSampleCtx.drawImage(ambientEdgeCanvas, 0, 0, edgeW, edgeH, 0, 0, cvX + 1, cvY + 1);
         }
         if (rightW > 0 && cvY > 0) {
-            ambientSampleCtx.drawImage(video, sX + sW - stripW, sY, stripW, stripH, cvX + cvW - 1, 0, rightW + 1, cvY + 1);
+            ambientSampleCtx.drawImage(ambientEdgeCanvas, SAMPLE_WIDTH - edgeW, 0, edgeW, edgeH, cvX + cvW - 1, 0, rightW + 1, cvY + 1);
         }
         if (cvX > 0 && bottomH > 0) {
-            ambientSampleCtx.drawImage(video, sX, sY + sH - stripH, stripW, stripH, 0, bottomY - 1, cvX + 1, bottomH + 1);
+            ambientSampleCtx.drawImage(ambientEdgeCanvas, 0, SAMPLE_HEIGHT - edgeH, edgeW, edgeH, 0, bottomY - 1, cvX + 1, bottomH + 1);
         }
         if (rightW > 0 && bottomH > 0) {
-            ambientSampleCtx.drawImage(video, sX + sW - stripW, sY + sH - stripH, stripW, stripH, cvX + cvW - 1, bottomY - 1, rightW + 1, bottomH + 1);
+            ambientSampleCtx.drawImage(ambientEdgeCanvas, SAMPLE_WIDTH - edgeW, SAMPLE_HEIGHT - edgeH, edgeW, edgeH, cvX + cvW - 1, bottomY - 1, rightW + 1, bottomH + 1);
         }
 
-        // Kết xuất từ buffer 40x50 lên canvas 128x160 và tan mờ đáy bằng gradient nội bộ (0 CSS filter blur / mask-image)
+        // Áp dụng tăng màu giao diện sáng ngay trên canvas 128x160 thay vì CSS filter toàn viewport
+        const isDark = document.documentElement.hasAttribute('dark');
         ambientSpreadCtx.globalCompositeOperation = 'source-over';
         ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        if ('filter' in ambientSpreadCtx) {
+            ambientSpreadCtx.filter = isDark ? 'none' : 'saturate(165%) contrast(108%) brightness(98%)';
+        }
         ambientSpreadCtx.drawImage(ambientSampleCanvas, 0, 0, SAMPLE_WIDTH, SAMPLE_HEIGHT, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        if ('filter' in ambientSpreadCtx) {
+            ambientSpreadCtx.filter = 'none';
+        }
         if (ambientFadeGrad) {
             ambientSpreadCtx.globalCompositeOperation = 'destination-in';
             ambientSpreadCtx.fillStyle = ambientFadeGrad;
@@ -354,7 +401,6 @@ function drawFrame(video) {
             ambientSpreadCtx.globalCompositeOperation = 'source-over';
         }
 
-        // 5. Kích hoạt trạng thái hiển thị CHỈ KHI tính năng thực sự được bật
         if (isAmbientEnabled()) {
             if (!hasDrawnFirstFrame) {
                 hasDrawnFirstFrame = true;
@@ -368,45 +414,68 @@ function drawFrame(video) {
     }
 }
 
+const VIDEO_ACTIVITY_EVENTS = ['play', 'playing', 'canplay', 'loadeddata', 'seeked', 'ratechange'];
+
+function detachCurrentVideo() {
+    if (!currentVideo) return;
+    VIDEO_ACTIVITY_EVENTS.forEach(evt => currentVideo.removeEventListener(evt, handleVideoActivity));
+    currentVideo = null;
+}
+
+function scheduleNextTick() {
+    if (!isRunning || loopTimeoutId !== null) return;
+    loopTimeoutId = setTimeout(() => {
+        loopTimeoutId = null;
+        if (!isRunning || document.hidden || isFullscreenActive() || !isAmbientEnabled()) {
+            stopLoop();
+            return;
+        }
+        animFrameId = requestAnimationFrame(renderLoop);
+    }, TARGET_INTERVAL);
+}
+
 /**
- * Vòng lặp render liên tục kiên cường (Resilient Render Loop)
+ * Vòng lặp render tiết kiệm (~10 FPS, nghỉ hẳn khi tạm dừng hoặc fullscreen)
  */
-function renderLoop(timestamp) {
+function renderLoop() {
+    animFrameId = null;
     if (!isRunning || document.hidden || isFullscreenActive() || !isAmbientEnabled()) {
         stopLoop();
         return;
     }
 
-    animFrameId = requestAnimationFrame(renderLoop);
-
-    if (timestamp - lastDrawTime < TARGET_INTERVAL) return;
-    lastDrawTime = timestamp;
-
     const video = currentVideo || findActiveVideo();
-    if (!video) return;
+    if (!video) {
+        scheduleNextTick();
+        return;
+    }
 
     if (video !== currentVideo) {
         attachVideo(video);
     }
 
-    if (video.seeking || document.getElementById('movie_player')?.classList.contains('ytp-scrubbing')) return;
+    if (video.seeking || document.getElementById('movie_player')?.classList.contains('ytp-scrubbing')) {
+        scheduleNextTick();
+        return;
+    }
 
-    // Khi video pause: Vẽ 1 frame lúc pause rồi tạm nghỉ để tiết kiệm CPU
+    // Khi video pause: Vẽ 1 frame lúc pause rồi dừng vòng lặp hoàn toàn cho tới khi play/seek lại
     if (video.paused || video.ended) {
         if (!isPausedAndDrawn && video.readyState >= 2 && video.videoWidth > 0) {
             drawFrame(video);
             isPausedAndDrawn = true;
         }
+        stopLoop();
         return;
     }
 
     isPausedAndDrawn = false;
 
-    if (video.readyState < 2 || !video.videoWidth || !video.videoHeight) {
-        return;
+    if (video.readyState >= 2 && video.videoWidth && video.videoHeight) {
+        drawFrame(video);
     }
 
-    drawFrame(video);
+    scheduleNextTick();
 }
 
 function startLoop() {
@@ -416,12 +485,15 @@ function startLoop() {
     }
     if (isRunning) return;
     isRunning = true;
-    lastDrawTime = 0;
     animFrameId = requestAnimationFrame(renderLoop);
 }
 
 function stopLoop() {
     isRunning = false;
+    if (loopTimeoutId !== null) {
+        clearTimeout(loopTimeoutId);
+        loopTimeoutId = null;
+    }
     if (animFrameId) {
         cancelAnimationFrame(animFrameId);
         animFrameId = null;
@@ -441,24 +513,15 @@ function handleVideoActivity() {
 
 function attachVideo(video) {
     if (!isAmbientEnabled()) {
-        if (currentVideo) {
-            const events = ['play', 'playing', 'timeupdate', 'canplay', 'loadeddata', 'seeked', 'ratechange'];
-            events.forEach(evt => currentVideo.removeEventListener(evt, handleVideoActivity));
-            currentVideo = null;
-        }
+        detachCurrentVideo();
         return;
     }
     if (!video || video === currentVideo) return;
     if (video.closest && video.closest('#inline-preview-player, #preview, ytd-video-preview')) return;
 
-    const events = ['play', 'playing', 'timeupdate', 'canplay', 'loadeddata', 'seeked', 'ratechange'];
-
-    if (currentVideo) {
-        events.forEach(evt => currentVideo.removeEventListener(evt, handleVideoActivity));
-    }
-
+    detachCurrentVideo();
     currentVideo = video;
-    events.forEach(evt => currentVideo.addEventListener(evt, handleVideoActivity, { passive: true }));
+    VIDEO_ACTIVITY_EVENTS.forEach(evt => currentVideo.addEventListener(evt, handleVideoActivity, { passive: true }));
 
     startLoop();
 }
@@ -492,6 +555,16 @@ function handleScroll() {
     }
 }
 
+function syncScrollListener(enabled) {
+    if (enabled && !scrollListenerBound) {
+        scrollListenerBound = true;
+        window.addEventListener('scroll', handleScroll, { passive: true });
+    } else if (!enabled && scrollListenerBound) {
+        scrollListenerBound = false;
+        window.removeEventListener('scroll', handleScroll);
+    }
+}
+
 function handleNavigation() {
     if (!isAmbientEnabled()) {
         applyAmbientLightingState();
@@ -509,17 +582,16 @@ function handleNavigation() {
         if (ambientWrapper) {
             ambientWrapper.classList.remove('ytc-ambient-active', 'ytc-ambient-shorts');
         }
-        if (currentVideo) {
-            const events = ['play', 'playing', 'timeupdate', 'canplay', 'loadeddata', 'seeked', 'ratechange'];
-            events.forEach(evt => currentVideo.removeEventListener(evt, handleVideoActivity));
-            currentVideo = null;
-        }
+        detachCurrentVideo();
         return;
     }
 
     isPausedAndDrawn = false;
     cachedPlayerRect = null;
     cachedWrapperRect = null;
+    cachedVideoRect = null;
+    cachedMediaRect = null;
+    rectsDirty = true;
     setTimeout(() => {
         if (!isAmbientEnabled()) return;
         ensureAmbientCanvas();
@@ -573,9 +645,19 @@ export function applyAmbientLightingState() {
     if (!isAmbientEnabled()) {
         stopLoop();
         syncAmbientObserver(false);
+        syncScrollListener(false);
+        if (ambientResizeObserver) {
+            ambientResizeObserver.disconnect();
+            observedResizeTarget = null;
+        }
         hasDrawnFirstFrame = false;
         isPausedAndDrawn = false;
         lastMastheadScrolled = null;
+        cachedPlayerRect = null;
+        cachedWrapperRect = null;
+        cachedVideoRect = null;
+        cachedMediaRect = null;
+        rectsDirty = true;
         document.documentElement.classList.remove('ytc-ambient-lighting');
         document.documentElement.classList.remove('ytc-ambient-ready');
         document.documentElement.classList.remove('ytc-masthead-scrolled');
@@ -597,11 +679,7 @@ export function applyAmbientLightingState() {
         document.querySelectorAll('ytd-reel-video-renderer.ytc-ambient-shorts-host').forEach(el => {
             el.classList.remove('ytc-ambient-shorts-host');
         });
-        if (currentVideo) {
-            const events = ['play', 'playing', 'timeupdate', 'canplay', 'loadeddata', 'seeked', 'ratechange'];
-            events.forEach(evt => currentVideo.removeEventListener(evt, handleVideoActivity));
-            currentVideo = null;
-        }
+        detachCurrentVideo();
         return;
     }
 
@@ -615,6 +693,7 @@ export function applyAmbientLightingState() {
 
     ensureAmbientCanvas();
     syncAmbientObserver(true);
+    syncScrollListener(true);
 
     const video = findActiveVideo();
     if (video) {
@@ -637,6 +716,8 @@ export function initAmbientLight() {
         cachedPlayerRect = null;
         cachedWrapperRect = null;
         cachedVideoRect = null;
+        cachedMediaRect = null;
+        rectsDirty = true;
         isPausedAndDrawn = false;
         updateCachedRects(true);
         startLoop();
@@ -647,13 +728,13 @@ export function initAmbientLight() {
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('resize', () => {
         if (!isAmbientEnabled() || isFullscreenActive()) return;
+        rectsDirty = true;
         updateCachedRects(true);
         const v = findActiveVideo();
         if (v && isRunning && !v.seeking) drawFrame(v);
     }, { passive: true });
     document.addEventListener('fullscreenchange', handleFullscreenChange, { passive: true });
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange, { passive: true });
-    window.addEventListener('scroll', handleScroll, { passive: true });
 
     window.addEventListener('yt-navigate-finish', handleNavigation);
     window.addEventListener('yt-page-data-updated', handleNavigation);

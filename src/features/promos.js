@@ -37,12 +37,14 @@ export const IGNORED_MUTATION_ZONES =
     '#comments, ytd-comments, #ytc-danmaku-container, #ytc-streamer-box, #ytc-ambient-wrapper, ' +
     '#ytc-settings-panel, #ytc-perf-widget, ytd-moving-thumbnail-renderer, ' +
     '.ytp-chrome-bottom, .ytp-tooltip, .ytp-caption-window-container, ' +
-    '.ytp-bezel, .ytp-spinner, .ytp-chapter-hover-container, .ytp-heat-map-container, ' +
+    '.ytp-bezel, .ytp-spinner, .ytp-chapter-hover-container, .ytp-chapters-container, ' +
+    '.ytp-timed-markers-container, .ytp-heat-map-container, ' +
     '.ytp-progress-bar-container, .ytp-storyboard-framepreview, .ytp-ce-element, .html5-video-info-panel, ' +
     'ytd-video-preview, #preview, #inline-preview-player, ytd-live-chat-frame, #chat, ' +
     '#related, ytd-watch-next-secondary-results-renderer, #playlist, ytd-playlist-panel-renderer, ' +
     '#below, ytd-watch-metadata, #panels, #panels-full-bleed-container, ' +
-    'ytd-engagement-panel-section-list-renderer, ytd-transcript-renderer, #masthead, ytd-masthead';
+    'ytd-engagement-panel-section-list-renderer, ytd-macro-markers-list-renderer, ' +
+    'ytd-transcript-renderer, #masthead, ytd-masthead';
 
 export function isIgnoredPromoMutationNode(node) {
     if (!node) return true;
@@ -206,9 +208,20 @@ export function setupPromoObserver() {
     const observer = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
             if (!mutation.addedNodes.length) continue;
-            if (isIgnoredPromoMutationNode(mutation.target)) continue;
+            const target = mutation.target;
+            if (target?.id && FAST_SKIP_PARENT_IDS.has(target.id)) continue;
+
+            // Lọc O(1) trên từng node vừa thêm trước khi chạy closest() lên tổ tiên.
+            // Tránh đi ngược cây DOM hàng nghìn lần khi hover heatmap/chapter hoặc render phụ đề.
+            let targetChecked = false;
+            let targetIgnored = false;
             for (const node of mutation.addedNodes) {
-                if (!shouldInspectPromoAddedNode(node, mutation.target)) continue;
+                if (!shouldInspectPromoAddedNode(node, target)) continue;
+                if (!targetChecked) {
+                    targetChecked = true;
+                    targetIgnored = isIgnoredPromoMutationNode(target);
+                }
+                if (targetIgnored) break;
                 if (isIgnoredPromoMutationNode(node)) continue;
                 pendingScopes.add(node);
             }

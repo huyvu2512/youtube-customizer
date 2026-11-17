@@ -144,12 +144,21 @@ function tagGuideEntries(doc) {
     }
 }
 
-function getScanRoots(scope) {
+const WATCH_FEED_ROOT_SELECTOR =
+    '#related, ytd-watch-next-secondary-results-renderer, #playlist, ytd-playlist-panel-renderer';
+
+export function getScanRoots(scope) {
     if (isWatchRoute()) {
-        if (scope && scope !== document && scope.nodeType === 1 && !scope.matches('#page-manager, ytd-page-manager, ytd-app')) {
-            return [scope];
+        if (scope && scope !== document && scope.nodeType === 1) {
+            if (scope.closest?.('#panels, #panels-full-bleed-container, ytd-engagement-panel-section-list-renderer, #chat, ytd-live-chat-frame')) {
+                return [];
+            }
+            if (scope.matches?.(WATCH_FEED_ROOT_SELECTOR) || scope.closest?.(WATCH_FEED_ROOT_SELECTOR)) {
+                return [scope];
+            }
+            return Array.from(scope.querySelectorAll?.(WATCH_FEED_ROOT_SELECTOR) || []);
         }
-        return Array.from(document.querySelectorAll('#related, ytd-watch-next-secondary-results-renderer, #playlist, ytd-playlist-panel-renderer'));
+        return Array.from(document.querySelectorAll(WATCH_FEED_ROOT_SELECTOR));
     }
 
     if (scope && scope !== document && scope.nodeType === 1 && !scope.matches('#page-manager, ytd-page-manager, ytd-app')) {
@@ -482,12 +491,19 @@ const RELEVANT_DESCENDANT_SELECTOR =
     'ytd-compact-video-renderer, yt-lockup-view-model, ytd-ad-slot-renderer, ' +
     'ytd-rich-shelf-renderer, ytd-reel-shelf-renderer, ytd-post-renderer';
 
+const FAST_SKIP_FEED_IDS = new Set([
+    'preview', 'inline-preview-player', 'movie_player', 'ytc-streamer-box', 'ytc-danmaku-container',
+    'comments', 'below', 'panels', 'panels-full-bleed-container', 'chat', 'chat-container', 'masthead'
+]);
+
 const IGNORED_FEED_ZONE =
     '#preview, ytd-video-preview, #inline-preview-player, #movie_player, .html5-video-player, ' +
     '#mouseover-overlay, #hover-overlays, yt-interaction, tp-yt-paper-ripple, tp-yt-paper-tooltip, ' +
     'yt-img-shadow, yt-image, ' +
     '#ytc-streamer-box, #ytc-danmaku-container, ytd-moving-thumbnail-renderer, ' +
-    '#comments, ytd-comments, #below, ytd-watch-metadata, #panels, ytd-engagement-panel-section-list-renderer, ytd-browse[hidden]';
+    '#comments, ytd-comments, #below, ytd-watch-metadata, #panels, #panels-full-bleed-container, ' +
+    'ytd-engagement-panel-section-list-renderer, ytd-transcript-renderer, ytd-macro-markers-list-renderer, ' +
+    '#chat, #chat-container, ytd-live-chat-frame, ytd-browse[hidden]';
 
 function markWrapperDirty(el) {
     if (!el || !el.closest) return;
@@ -522,6 +538,9 @@ function attachFeedObserver(container) {
         let hasRelevantChanges = false;
         for (const mutation of mutations) {
             const target = mutation.target;
+            if (target?.id && FAST_SKIP_FEED_IDS.has(target.id)) {
+                continue;
+            }
             if (target?.closest && target.closest(IGNORED_FEED_ZONE)) {
                 continue;
             }

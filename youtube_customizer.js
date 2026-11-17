@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.38
-// @description  YouTube Customizer v3.9.38 — Giữ video nhạc đơn kèm list=RD trên tab Âm nhạc và ẩn shelf rỗng.
+// @version      3.9.39
+// @description  YouTube Customizer v3.9.39 — Giảm lag video chia đoạn dài, heatmap và chế độ phóng to.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -13,6 +13,7 @@
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.39 — Giảm lag video chia đoạn dài, heatmap và chế độ phóng to.
  * v3.9.38 — Giữ video nhạc đơn kèm list=RD trên tab Âm nhạc và ẩn shelf rỗng.
  * v3.9.37 — Sửa lỗi thưa cột Trang chủ khi bấm logo nhờ quét lại thẻ tái sử dụng.
  * v3.9.36 — Gỡ :has() CSS, tắt observer thừa trên Watch và khử blur GPU khi phóng to.
@@ -22,7 +23,6 @@
  * v3.9.32 — Phủ khoảng đen khi phóng to mà không cắt khung hình.
  * v3.9.31 — Nhận diện Replay từ cấu trúc YouTube, không phụ thuộc ngôn ngữ.
  * v3.9.30 — Khôi phục chất lượng thích ứng khi chọn Tự động.
- * v3.9.29 — Bấm nút Replay gốc để khởi tạo khung chat ẩn.
  * ============================================================================
  */
 (() => {
@@ -45,7 +45,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.38";
+      APP_VERSION = "3.9.39";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -501,6 +501,7 @@
   // src/features/feedFilter.js
   var feedFilter_exports = {};
   __export(feedFilter_exports, {
+    getScanRoots: () => getScanRoots,
     hasActiveFeedFilters: () => hasActiveFeedFilters,
     hasActiveWatchCardFilters: () => hasActiveWatchCardFilters,
     invalidateFeedScan: () => invalidateFeedScan,
@@ -572,10 +573,16 @@
   }
   function getScanRoots(scope) {
     if (isWatchRoute()) {
-      if (scope && scope !== document && scope.nodeType === 1 && !scope.matches("#page-manager, ytd-page-manager, ytd-app")) {
-        return [scope];
+      if (scope && scope !== document && scope.nodeType === 1) {
+        if (scope.closest?.("#panels, #panels-full-bleed-container, ytd-engagement-panel-section-list-renderer, #chat, ytd-live-chat-frame")) {
+          return [];
+        }
+        if (scope.matches?.(WATCH_FEED_ROOT_SELECTOR) || scope.closest?.(WATCH_FEED_ROOT_SELECTOR)) {
+          return [scope];
+        }
+        return Array.from(scope.querySelectorAll?.(WATCH_FEED_ROOT_SELECTOR) || []);
       }
-      return Array.from(document.querySelectorAll("#related, ytd-watch-next-secondary-results-renderer, #playlist, ytd-playlist-panel-renderer"));
+      return Array.from(document.querySelectorAll(WATCH_FEED_ROOT_SELECTOR));
     }
     if (scope && scope !== document && scope.nodeType === 1 && !scope.matches("#page-manager, ytd-page-manager, ytd-app")) {
       if (scope.closest?.("ytd-browse[hidden], ytd-search[hidden]")) return [];
@@ -798,6 +805,9 @@
       let hasRelevantChanges = false;
       for (const mutation of mutations) {
         const target = mutation.target;
+        if (target?.id && FAST_SKIP_FEED_IDS.has(target.id)) {
+          continue;
+        }
         if (target?.closest && target.closest(IGNORED_FEED_ZONE)) {
           continue;
         }
@@ -881,7 +891,7 @@
   function setupFeedShelvesObserver() {
     syncFeedObserver();
   }
-  var feedObserver, feedObserverTarget, feedScanGeneration, SECTION_HIDE_CLASSES, ITEM_HIDE_CLASSES, HYDRATED_SECTION_SELECTOR, HYDRATED_RICH_ITEM_SELECTOR, LOCKUP_CONTENT_SELECTOR, FEED_WRAPPER_SELECTOR, MEMBERS_TEXT_PHRASES, MIX_EXPLICIT_SELECTOR, DURATION_BADGE_SELECTOR, scheduleFeedScan, RELEVANT_FEED_TAGS, RELEVANT_DESCENDANT_SELECTOR, IGNORED_FEED_ZONE;
+  var feedObserver, feedObserverTarget, feedScanGeneration, SECTION_HIDE_CLASSES, ITEM_HIDE_CLASSES, HYDRATED_SECTION_SELECTOR, HYDRATED_RICH_ITEM_SELECTOR, LOCKUP_CONTENT_SELECTOR, FEED_WRAPPER_SELECTOR, WATCH_FEED_ROOT_SELECTOR, MEMBERS_TEXT_PHRASES, MIX_EXPLICIT_SELECTOR, DURATION_BADGE_SELECTOR, scheduleFeedScan, RELEVANT_FEED_TAGS, RELEVANT_DESCENDANT_SELECTOR, FAST_SKIP_FEED_IDS, IGNORED_FEED_ZONE;
   var init_feedFilter = __esm({
     "src/features/feedFilter.js"() {
       init_utils();
@@ -913,6 +923,7 @@
       HYDRATED_RICH_ITEM_SELECTOR = "yt-lockup-view-model, ytd-rich-grid-media, ytd-ad-slot-renderer, ytd-in-feed-ad-layout-renderer, ytd-post-renderer, ytd-backstage-post-renderer, ytd-backstage-post-thread-renderer, ytd-radio-renderer, ytd-compact-radio-renderer, ytd-grid-radio-renderer, ytd-playlist-renderer, ytd-compact-playlist-renderer, ytd-mini-game-card-view-model, ytd-feed-nudge-renderer, ytd-in-feed-survey-renderer, ytd-single-option-survey-renderer, ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer, a#thumbnail, a[href]";
       LOCKUP_CONTENT_SELECTOR = "a[href], #video-title, #title, #metadata, yt-lockup-metadata-view-model, .yt-lockup-metadata-view-model__title, yt-badge-view-model, ytd-badge-supported-renderer";
       FEED_WRAPPER_SELECTOR = "ytd-rich-section-renderer, ytd-rich-item-renderer, ytd-video-renderer, ytd-compact-video-renderer, yt-lockup-view-model, ytd-shelf-renderer, yt-chip-cloud-chip-renderer, ytd-radio-renderer, ytd-compact-radio-renderer, ytd-grid-radio-renderer, ytd-playlist-renderer, ytd-compact-playlist-renderer";
+      WATCH_FEED_ROOT_SELECTOR = "#related, ytd-watch-next-secondary-results-renderer, #playlist, ytd-playlist-panel-renderer";
       MEMBERS_TEXT_PHRASES = [
         "Ưu tiên hội viên",
         "ưu tiên hội viên",
@@ -957,7 +968,21 @@
         "GRID-SHELF-VIEW-MODEL"
       ]);
       RELEVANT_DESCENDANT_SELECTOR = "ytd-rich-grid-row, ytd-rich-item-renderer, ytd-rich-section-renderer, ytd-compact-video-renderer, yt-lockup-view-model, ytd-ad-slot-renderer, ytd-rich-shelf-renderer, ytd-reel-shelf-renderer, ytd-post-renderer";
-      IGNORED_FEED_ZONE = "#preview, ytd-video-preview, #inline-preview-player, #movie_player, .html5-video-player, #mouseover-overlay, #hover-overlays, yt-interaction, tp-yt-paper-ripple, tp-yt-paper-tooltip, yt-img-shadow, yt-image, #ytc-streamer-box, #ytc-danmaku-container, ytd-moving-thumbnail-renderer, #comments, ytd-comments, #below, ytd-watch-metadata, #panels, ytd-engagement-panel-section-list-renderer, ytd-browse[hidden]";
+      FAST_SKIP_FEED_IDS = /* @__PURE__ */ new Set([
+        "preview",
+        "inline-preview-player",
+        "movie_player",
+        "ytc-streamer-box",
+        "ytc-danmaku-container",
+        "comments",
+        "below",
+        "panels",
+        "panels-full-bleed-container",
+        "chat",
+        "chat-container",
+        "masthead"
+      ]);
+      IGNORED_FEED_ZONE = "#preview, ytd-video-preview, #inline-preview-player, #movie_player, .html5-video-player, #mouseover-overlay, #hover-overlays, yt-interaction, tp-yt-paper-ripple, tp-yt-paper-tooltip, yt-img-shadow, yt-image, #ytc-streamer-box, #ytc-danmaku-container, ytd-moving-thumbnail-renderer, #comments, ytd-comments, #below, ytd-watch-metadata, #panels, #panels-full-bleed-container, ytd-engagement-panel-section-list-renderer, ytd-transcript-renderer, ytd-macro-markers-list-renderer, #chat, #chat-container, ytd-live-chat-frame, ytd-browse[hidden]";
     }
   });
 
@@ -1368,7 +1393,7 @@
     initAmbientLight: () => initAmbientLight
   });
   function isFullscreenActive() {
-    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+    return !!(document.fullscreenElement || document.webkitFullscreenElement || document.querySelector("#movie_player.ytp-fullscreen, ytd-watch-flexy[fullscreen]"));
   }
   function isAmbientEnabled() {
     return !!currentConfig.ambientLighting && !currentConfig.audioOnlyMode && !isShortsPage();
@@ -1379,9 +1404,22 @@
   function findActivePlayer() {
     return document.querySelector("#movie_player:not(#inline-preview-player)") || document.getElementById("movie_player") || document.querySelector(".html5-video-player");
   }
+  function syncResizeObserver(activePlayer2) {
+    if (!window.ResizeObserver || !activePlayer2) return;
+    if (!ambientResizeObserver) {
+      ambientResizeObserver = new ResizeObserver(() => {
+        rectsDirty = true;
+      });
+    }
+    if (observedResizeTarget !== activePlayer2) {
+      ambientResizeObserver.disconnect();
+      ambientResizeObserver.observe(activePlayer2);
+      if (ambientWrapper) ambientResizeObserver.observe(ambientWrapper);
+      observedResizeTarget = activePlayer2;
+    }
+  }
   function updateCachedRects(force = false) {
-    const now = Date.now();
-    if (!force && now - lastRectUpdateTime < 1500 && cachedPlayerRect && cachedWrapperRect) return;
+    if (!force && !rectsDirty && cachedPlayerRect && cachedWrapperRect && cachedVideoRect) return;
     const activePlayer2 = findActivePlayer();
     if (!activePlayer2 || !ambientWrapper) return;
     cachedPlayerRect = activePlayer2.getBoundingClientRect();
@@ -1393,7 +1431,9 @@
       cachedObjectFit = videoStyle.objectFit || "contain";
       cachedObjectPosition = videoStyle.objectPosition || "50% 50%";
     }
-    lastRectUpdateTime = now;
+    cachedMediaRect = null;
+    rectsDirty = false;
+    syncResizeObserver(activePlayer2);
   }
   function getObjectPositionOffset(availableSpace, position) {
     const value = String(position || "50%").trim().toLowerCase();
@@ -1477,8 +1517,60 @@
           ambientSampleCtx.imageSmoothingQuality = "low";
         }
       }
+      if (!ambientEdgeCanvas) {
+        ambientEdgeCanvas = document.createElement("canvas");
+        ambientEdgeCanvas.width = SAMPLE_WIDTH;
+        ambientEdgeCanvas.height = SAMPLE_HEIGHT;
+        ambientEdgeCtx = ambientEdgeCanvas.getContext("2d", {
+          alpha: false,
+          willReadFrequently: false
+        });
+        if (ambientEdgeCtx) {
+          ambientEdgeCtx.imageSmoothingEnabled = true;
+          ambientEdgeCtx.imageSmoothingQuality = "low";
+        }
+      }
     }
-    return !!(ambientSpreadCtx && ambientSampleCtx);
+    return !!(ambientSpreadCtx && ambientSampleCtx && ambientEdgeCtx);
+  }
+  function getRenderedMediaRect(vW, vH, videoRect, boxW, boxH) {
+    let sourceX = 0, sourceY = 0, sourceW = vW, sourceH = vH;
+    let displayW = boxW, displayH = boxH;
+    const fit = cachedObjectFit;
+    if (fit === "contain" || fit === "scale-down") {
+      let scale = Math.min(boxW / vW, boxH / vH);
+      if (fit === "scale-down") scale = Math.min(1, scale);
+      displayW = Math.min(boxW, vW * scale);
+      displayH = Math.min(boxH, vH * scale);
+      const positions = cachedObjectPosition.trim().split(/\s+/);
+      const offsetX = getObjectPositionOffset(boxW - displayW, positions[0]);
+      const offsetY = getObjectPositionOffset(boxH - displayH, positions[1] || "50%");
+      return {
+        sourceX,
+        sourceY,
+        sourceW,
+        sourceH,
+        mediaRect: {
+          left: videoRect.left + offsetX,
+          top: videoRect.top + offsetY,
+          width: displayW,
+          height: displayH
+        }
+      };
+    }
+    if (fit === "cover") {
+      const coverScale = Math.max(boxW / vW, boxH / vH);
+      const renderedW = vW * coverScale;
+      const renderedH = vH * coverScale;
+      const positions = cachedObjectPosition.trim().split(/\s+/);
+      const offsetX = getObjectPositionOffset(boxW - renderedW, positions[0]);
+      const offsetY = getObjectPositionOffset(boxH - renderedH, positions[1] || "50%");
+      sourceX = Math.max(0, Math.min(vW, -offsetX / coverScale));
+      sourceY = Math.max(0, Math.min(vH, -offsetY / coverScale));
+      sourceW = Math.max(1, Math.min(vW - sourceX, boxW / coverScale));
+      sourceH = Math.max(1, Math.min(vH - sourceY, boxH / coverScale));
+    }
+    return { sourceX, sourceY, sourceW, sourceH, mediaRect: videoRect };
   }
   function drawFrame2(video) {
     if (!isAmbientEnabled()) {
@@ -1498,16 +1590,16 @@
       if (dimensions !== lastVideoDimensions) {
         cachedPlayerRect = null;
         cachedVideoRect = null;
+        cachedMediaRect = null;
+        rectsDirty = true;
         lastVideoDimensions = dimensions;
       }
-      if (!cachedPlayerRect || !cachedWrapperRect) {
+      if (rectsDirty || !cachedPlayerRect || !cachedWrapperRect || !cachedVideoRect) {
         updateCachedRects(true);
-      } else if (Date.now() - lastRectUpdateTime > 2e3) {
-        updateCachedRects(false);
       }
       const playerRect = cachedPlayerRect;
       const wrapperRect = cachedWrapperRect;
-      const videoRect = cachedVideoRect || video.getBoundingClientRect();
+      const videoRect = cachedVideoRect;
       if (!playerRect || !wrapperRect || !videoRect) return;
       const pW = playerRect.width;
       const pH = playerRect.height;
@@ -1517,44 +1609,10 @@
       const boxW = videoRect.width || pW;
       const boxH = videoRect.height || pH;
       if (boxW < 10 || boxH < 10) return;
-      const videoAspect = vW / vH;
-      const boxAspect = boxW / boxH;
-      let sourceX = 0, sourceY = 0, sourceW = vW, sourceH = vH;
-      let displayW = boxW, displayH = boxH;
-      const fit = cachedObjectFit;
-      if (fit === "contain" || fit === "scale-down") {
-        let scale = Math.min(boxW / vW, boxH / vH);
-        if (fit === "scale-down") scale = Math.min(1, scale);
-        displayW = vW * scale;
-        displayH = vH * scale;
-      } else if (fit === "cover") {
-        const coverScale = Math.max(boxW / vW, boxH / vH);
-        const renderedW = vW * coverScale;
-        const renderedH = vH * coverScale;
-        const positions = cachedObjectPosition.trim().split(/\s+/);
-        const offsetX = getObjectPositionOffset(boxW - renderedW, positions[0]);
-        const offsetY = getObjectPositionOffset(boxH - renderedH, positions[1] || "50%");
-        sourceX = Math.max(0, Math.min(vW, -offsetX / coverScale));
-        sourceY = Math.max(0, Math.min(vH, -offsetY / coverScale));
-        sourceW = Math.max(1, Math.min(vW - sourceX, boxW / coverScale));
-        sourceH = Math.max(1, Math.min(vH - sourceY, boxH / coverScale));
+      if (!cachedMediaRect) {
+        cachedMediaRect = getRenderedMediaRect(vW, vH, videoRect, boxW, boxH);
       }
-      if (fit === "contain" || fit === "scale-down") {
-        const positions = cachedObjectPosition.trim().split(/\s+/);
-        displayW = Math.min(boxW, displayW);
-        displayH = Math.min(boxH, displayH);
-        const offsetX = getObjectPositionOffset(boxW - displayW, positions[0]);
-        const offsetY = getObjectPositionOffset(boxH - displayH, positions[1] || "50%");
-        cachedVideoRect = {
-          left: videoRect.left + offsetX,
-          top: videoRect.top + offsetY,
-          width: displayW,
-          height: displayH
-        };
-      } else {
-        cachedVideoRect = videoRect;
-      }
-      const mediaRect = cachedVideoRect;
+      const { sourceX, sourceY, sourceW, sourceH, mediaRect } = cachedMediaRect;
       const scaleX = SAMPLE_WIDTH / wrapW;
       const scaleY = SAMPLE_HEIGHT / wrapH;
       const cvX = Math.round((mediaRect.left - wrapperRect.left) * scaleX);
@@ -1565,18 +1623,19 @@
       const sY = Math.round(sourceY);
       const sW = Math.max(1, Math.round(sourceW));
       const sH = Math.max(1, Math.round(sourceH));
-      const stripW = Math.max(4, Math.round(sW * 0.02));
-      const stripH = Math.max(4, Math.round(sH * 0.025));
-      ambientSampleCtx.clearRect(0, 0, SAMPLE_WIDTH, SAMPLE_HEIGHT);
+      ambientEdgeCtx.drawImage(video, sX, sY, sW, sH, 0, 0, SAMPLE_WIDTH, SAMPLE_HEIGHT);
+      const edgeW = Math.max(1, Math.round(SAMPLE_WIDTH * 0.05));
+      const edgeH = Math.max(1, Math.round(SAMPLE_HEIGHT * 0.05));
       const bleedX = Math.round(cvW * 0.04);
       const bleedY = Math.round(cvH * 0.04);
+      ambientSampleCtx.clearRect(0, 0, SAMPLE_WIDTH, SAMPLE_HEIGHT);
       ambientSampleCtx.globalAlpha = 0.88;
       ambientSampleCtx.drawImage(
-        video,
-        sX,
-        sY,
-        sW,
-        sH,
+        ambientEdgeCanvas,
+        0,
+        0,
+        SAMPLE_WIDTH,
+        SAMPLE_HEIGHT,
         Math.max(0, cvX - bleedX),
         Math.max(0, cvY - bleedY),
         cvW + bleedX * 2,
@@ -1587,34 +1646,39 @@
       const bottomY = cvY + cvH;
       const bottomH = Math.max(0, SAMPLE_HEIGHT - bottomY);
       if (rightW > 0 && cvH > 0) {
-        const srcX = sX + sW - stripW;
-        ambientSampleCtx.drawImage(video, srcX, sY, stripW, sH, cvX + cvW - 1, cvY, rightW + 1, cvH);
+        ambientSampleCtx.drawImage(ambientEdgeCanvas, SAMPLE_WIDTH - edgeW, 0, edgeW, SAMPLE_HEIGHT, cvX + cvW - 1, cvY, rightW + 1, cvH);
       }
       if (cvX > 0 && cvH > 0) {
-        ambientSampleCtx.drawImage(video, sX, sY, stripW, sH, 0, cvY, cvX + 1, cvH);
+        ambientSampleCtx.drawImage(ambientEdgeCanvas, 0, 0, edgeW, SAMPLE_HEIGHT, 0, cvY, cvX + 1, cvH);
       }
       if (cvY > 0 && cvW > 0) {
-        ambientSampleCtx.drawImage(video, sX, sY, sW, stripH, cvX, 0, cvW, cvY + 1);
+        ambientSampleCtx.drawImage(ambientEdgeCanvas, 0, 0, SAMPLE_WIDTH, edgeH, cvX, 0, cvW, cvY + 1);
       }
       if (bottomH > 0 && cvW > 0) {
-        const srcY = sY + sH - stripH;
-        ambientSampleCtx.drawImage(video, sX, srcY, sW, stripH, cvX, bottomY - 1, cvW, bottomH + 1);
+        ambientSampleCtx.drawImage(ambientEdgeCanvas, 0, SAMPLE_HEIGHT - edgeH, SAMPLE_WIDTH, edgeH, cvX, bottomY - 1, cvW, bottomH + 1);
       }
       if (cvX > 0 && cvY > 0) {
-        ambientSampleCtx.drawImage(video, sX, sY, stripW, stripH, 0, 0, cvX + 1, cvY + 1);
+        ambientSampleCtx.drawImage(ambientEdgeCanvas, 0, 0, edgeW, edgeH, 0, 0, cvX + 1, cvY + 1);
       }
       if (rightW > 0 && cvY > 0) {
-        ambientSampleCtx.drawImage(video, sX + sW - stripW, sY, stripW, stripH, cvX + cvW - 1, 0, rightW + 1, cvY + 1);
+        ambientSampleCtx.drawImage(ambientEdgeCanvas, SAMPLE_WIDTH - edgeW, 0, edgeW, edgeH, cvX + cvW - 1, 0, rightW + 1, cvY + 1);
       }
       if (cvX > 0 && bottomH > 0) {
-        ambientSampleCtx.drawImage(video, sX, sY + sH - stripH, stripW, stripH, 0, bottomY - 1, cvX + 1, bottomH + 1);
+        ambientSampleCtx.drawImage(ambientEdgeCanvas, 0, SAMPLE_HEIGHT - edgeH, edgeW, edgeH, 0, bottomY - 1, cvX + 1, bottomH + 1);
       }
       if (rightW > 0 && bottomH > 0) {
-        ambientSampleCtx.drawImage(video, sX + sW - stripW, sY + sH - stripH, stripW, stripH, cvX + cvW - 1, bottomY - 1, rightW + 1, bottomH + 1);
+        ambientSampleCtx.drawImage(ambientEdgeCanvas, SAMPLE_WIDTH - edgeW, SAMPLE_HEIGHT - edgeH, edgeW, edgeH, cvX + cvW - 1, bottomY - 1, rightW + 1, bottomH + 1);
       }
+      const isDark = document.documentElement.hasAttribute("dark");
       ambientSpreadCtx.globalCompositeOperation = "source-over";
       ambientSpreadCtx.clearRect(0, 0, CANVAS_WIDTH2, CANVAS_HEIGHT2);
+      if ("filter" in ambientSpreadCtx) {
+        ambientSpreadCtx.filter = isDark ? "none" : "saturate(165%) contrast(108%) brightness(98%)";
+      }
       ambientSpreadCtx.drawImage(ambientSampleCanvas, 0, 0, SAMPLE_WIDTH, SAMPLE_HEIGHT, 0, 0, CANVAS_WIDTH2, CANVAS_HEIGHT2);
+      if ("filter" in ambientSpreadCtx) {
+        ambientSpreadCtx.filter = "none";
+      }
       if (ambientFadeGrad) {
         ambientSpreadCtx.globalCompositeOperation = "destination-in";
         ambientSpreadCtx.fillStyle = ambientFadeGrad;
@@ -1632,32 +1696,53 @@
     } catch (e) {
     }
   }
-  function renderLoop(timestamp) {
+  function detachCurrentVideo() {
+    if (!currentVideo) return;
+    VIDEO_ACTIVITY_EVENTS.forEach((evt) => currentVideo.removeEventListener(evt, handleVideoActivity));
+    currentVideo = null;
+  }
+  function scheduleNextTick() {
+    if (!isRunning || loopTimeoutId !== null) return;
+    loopTimeoutId = setTimeout(() => {
+      loopTimeoutId = null;
+      if (!isRunning || document.hidden || isFullscreenActive() || !isAmbientEnabled()) {
+        stopLoop();
+        return;
+      }
+      animFrameId = requestAnimationFrame(renderLoop);
+    }, TARGET_INTERVAL);
+  }
+  function renderLoop() {
+    animFrameId = null;
     if (!isRunning || document.hidden || isFullscreenActive() || !isAmbientEnabled()) {
       stopLoop();
       return;
     }
-    animFrameId = requestAnimationFrame(renderLoop);
-    if (timestamp - lastDrawTime < TARGET_INTERVAL) return;
-    lastDrawTime = timestamp;
     const video = currentVideo || findActiveVideo();
-    if (!video) return;
+    if (!video) {
+      scheduleNextTick();
+      return;
+    }
     if (video !== currentVideo) {
       attachVideo(video);
     }
-    if (video.seeking || document.getElementById("movie_player")?.classList.contains("ytp-scrubbing")) return;
+    if (video.seeking || document.getElementById("movie_player")?.classList.contains("ytp-scrubbing")) {
+      scheduleNextTick();
+      return;
+    }
     if (video.paused || video.ended) {
       if (!isPausedAndDrawn && video.readyState >= 2 && video.videoWidth > 0) {
         drawFrame2(video);
         isPausedAndDrawn = true;
       }
+      stopLoop();
       return;
     }
     isPausedAndDrawn = false;
-    if (video.readyState < 2 || !video.videoWidth || !video.videoHeight) {
-      return;
+    if (video.readyState >= 2 && video.videoWidth && video.videoHeight) {
+      drawFrame2(video);
     }
-    drawFrame2(video);
+    scheduleNextTick();
   }
   function startLoop() {
     if (!isAmbientEnabled() || document.hidden || isFullscreenActive()) {
@@ -1666,11 +1751,14 @@
     }
     if (isRunning) return;
     isRunning = true;
-    lastDrawTime = 0;
     animFrameId = requestAnimationFrame(renderLoop);
   }
   function stopLoop() {
     isRunning = false;
+    if (loopTimeoutId !== null) {
+      clearTimeout(loopTimeoutId);
+      loopTimeoutId = null;
+    }
     if (animFrameId) {
       cancelAnimationFrame(animFrameId);
       animFrameId = null;
@@ -1688,21 +1776,14 @@
   }
   function attachVideo(video) {
     if (!isAmbientEnabled()) {
-      if (currentVideo) {
-        const events2 = ["play", "playing", "timeupdate", "canplay", "loadeddata", "seeked", "ratechange"];
-        events2.forEach((evt) => currentVideo.removeEventListener(evt, handleVideoActivity));
-        currentVideo = null;
-      }
+      detachCurrentVideo();
       return;
     }
     if (!video || video === currentVideo) return;
     if (video.closest && video.closest("#inline-preview-player, #preview, ytd-video-preview")) return;
-    const events = ["play", "playing", "timeupdate", "canplay", "loadeddata", "seeked", "ratechange"];
-    if (currentVideo) {
-      events.forEach((evt) => currentVideo.removeEventListener(evt, handleVideoActivity));
-    }
+    detachCurrentVideo();
     currentVideo = video;
-    events.forEach((evt) => currentVideo.addEventListener(evt, handleVideoActivity, { passive: true }));
+    VIDEO_ACTIVITY_EVENTS.forEach((evt) => currentVideo.addEventListener(evt, handleVideoActivity, { passive: true }));
     startLoop();
   }
   function handleVisibilityChange() {
@@ -1732,6 +1813,15 @@
       document.documentElement.classList.toggle("ytc-masthead-scrolled", isScrolled);
     }
   }
+  function syncScrollListener(enabled) {
+    if (enabled && !scrollListenerBound) {
+      scrollListenerBound = true;
+      window.addEventListener("scroll", handleScroll, { passive: true });
+    } else if (!enabled && scrollListenerBound) {
+      scrollListenerBound = false;
+      window.removeEventListener("scroll", handleScroll);
+    }
+  }
   function handleNavigation() {
     if (!isAmbientEnabled()) {
       applyAmbientLightingState();
@@ -1745,16 +1835,15 @@
       if (ambientWrapper) {
         ambientWrapper.classList.remove("ytc-ambient-active", "ytc-ambient-shorts");
       }
-      if (currentVideo) {
-        const events = ["play", "playing", "timeupdate", "canplay", "loadeddata", "seeked", "ratechange"];
-        events.forEach((evt) => currentVideo.removeEventListener(evt, handleVideoActivity));
-        currentVideo = null;
-      }
+      detachCurrentVideo();
       return;
     }
     isPausedAndDrawn = false;
     cachedPlayerRect = null;
     cachedWrapperRect = null;
+    cachedVideoRect = null;
+    cachedMediaRect = null;
+    rectsDirty = true;
     setTimeout(() => {
       if (!isAmbientEnabled()) return;
       ensureAmbientCanvas();
@@ -1804,9 +1893,19 @@
     if (!isAmbientEnabled()) {
       stopLoop();
       syncAmbientObserver(false);
+      syncScrollListener(false);
+      if (ambientResizeObserver) {
+        ambientResizeObserver.disconnect();
+        observedResizeTarget = null;
+      }
       hasDrawnFirstFrame = false;
       isPausedAndDrawn = false;
       lastMastheadScrolled = null;
+      cachedPlayerRect = null;
+      cachedWrapperRect = null;
+      cachedVideoRect = null;
+      cachedMediaRect = null;
+      rectsDirty = true;
       document.documentElement.classList.remove("ytc-ambient-lighting");
       document.documentElement.classList.remove("ytc-ambient-ready");
       document.documentElement.classList.remove("ytc-masthead-scrolled");
@@ -1828,11 +1927,7 @@
       document.querySelectorAll("ytd-reel-video-renderer.ytc-ambient-shorts-host").forEach((el) => {
         el.classList.remove("ytc-ambient-shorts-host");
       });
-      if (currentVideo) {
-        const events = ["play", "playing", "timeupdate", "canplay", "loadeddata", "seeked", "ratechange"];
-        events.forEach((evt) => currentVideo.removeEventListener(evt, handleVideoActivity));
-        currentVideo = null;
-      }
+      detachCurrentVideo();
       return;
     }
     document.documentElement.classList.add("ytc-ambient-lighting");
@@ -1844,6 +1939,7 @@
     }
     ensureAmbientCanvas();
     syncAmbientObserver(true);
+    syncScrollListener(true);
     const video = findActiveVideo();
     if (video) {
       attachVideo(video);
@@ -1862,6 +1958,8 @@
       cachedPlayerRect = null;
       cachedWrapperRect = null;
       cachedVideoRect = null;
+      cachedMediaRect = null;
+      rectsDirty = true;
       isPausedAndDrawn = false;
       updateCachedRects(true);
       startLoop();
@@ -1871,19 +1969,19 @@
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("resize", () => {
       if (!isAmbientEnabled() || isFullscreenActive()) return;
+      rectsDirty = true;
       updateCachedRects(true);
       const v = findActiveVideo();
       if (v && isRunning && !v.seeking) drawFrame2(v);
     }, { passive: true });
     document.addEventListener("fullscreenchange", handleFullscreenChange, { passive: true });
     document.addEventListener("webkitfullscreenchange", handleFullscreenChange, { passive: true });
-    window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("yt-navigate-finish", handleNavigation);
     window.addEventListener("yt-page-data-updated", handleNavigation);
     window.addEventListener("popstate", handleNavigation);
     applyAmbientLightingState();
   }
-  var ambientWrapper, ambientSpreadCanvas, ambientSpreadCtx, ambientSampleCanvas, ambientSampleCtx, ambientFadeGrad, animFrameId, isRunning, lastDrawTime, currentVideo, hasDrawnFirstFrame, isPausedAndDrawn, lastMastheadScrolled, CANVAS_WIDTH2, CANVAS_HEIGHT2, SAMPLE_WIDTH, SAMPLE_HEIGHT, TARGET_INTERVAL, cachedPlayerRect, cachedWrapperRect, cachedVideoRect, cachedObjectFit, cachedObjectPosition, lastRectUpdateTime, lastVideoDimensions, ambientObserver, ambientInitialized;
+  var ambientWrapper, ambientSpreadCanvas, ambientSpreadCtx, ambientSampleCanvas, ambientSampleCtx, ambientEdgeCanvas, ambientEdgeCtx, ambientFadeGrad, animFrameId, loopTimeoutId, isRunning, currentVideo, hasDrawnFirstFrame, isPausedAndDrawn, lastMastheadScrolled, scrollListenerBound, ambientResizeObserver, observedResizeTarget, rectsDirty, CANVAS_WIDTH2, CANVAS_HEIGHT2, SAMPLE_WIDTH, SAMPLE_HEIGHT, TARGET_INTERVAL, cachedPlayerRect, cachedWrapperRect, cachedVideoRect, cachedMediaRect, cachedObjectFit, cachedObjectPosition, lastVideoDimensions, VIDEO_ACTIVITY_EVENTS, ambientObserver, ambientInitialized;
   var init_ambientLight = __esm({
     "src/player/ambientLight.js"() {
       init_config();
@@ -1892,26 +1990,33 @@
       ambientSpreadCtx = null;
       ambientSampleCanvas = null;
       ambientSampleCtx = null;
+      ambientEdgeCanvas = null;
+      ambientEdgeCtx = null;
       ambientFadeGrad = null;
       animFrameId = null;
+      loopTimeoutId = null;
       isRunning = false;
-      lastDrawTime = 0;
       currentVideo = null;
       hasDrawnFirstFrame = false;
       isPausedAndDrawn = false;
       lastMastheadScrolled = null;
+      scrollListenerBound = false;
+      ambientResizeObserver = null;
+      observedResizeTarget = null;
+      rectsDirty = true;
       CANVAS_WIDTH2 = 128;
       CANVAS_HEIGHT2 = 160;
       SAMPLE_WIDTH = 40;
       SAMPLE_HEIGHT = 50;
-      TARGET_INTERVAL = 1e3 / 12;
+      TARGET_INTERVAL = 100;
       cachedPlayerRect = null;
       cachedWrapperRect = null;
       cachedVideoRect = null;
+      cachedMediaRect = null;
       cachedObjectFit = "contain";
       cachedObjectPosition = "50% 50%";
-      lastRectUpdateTime = 0;
       lastVideoDimensions = "";
+      VIDEO_ACTIVITY_EVENTS = ["play", "playing", "canplay", "loadeddata", "seeked", "ratechange"];
       ambientObserver = null;
       ambientInitialized = false;
     }
@@ -5984,34 +6089,48 @@
     ensureBackgroundLiveChat();
   }
   function setupTheaterModeObserver() {
-    if (theaterObserver) return;
-    const watchFlexy = document.querySelector("ytd-watch-flexy");
-    if (!watchFlexy) {
-      setTimeout(setupTheaterModeObserver, 500);
-      return;
-    }
-    let lastTheater = watchFlexy.hasAttribute("theater");
-    theaterObserver = new MutationObserver(() => {
-      const isTheater = watchFlexy.hasAttribute("theater");
-      if (isTheater !== lastTheater) {
-        lastTheater = isTheater;
-        onTheaterModeChanged(isTheater);
-      }
-    });
-    theaterObserver.observe(watchFlexy, { attributes: true, attributeFilter: ["theater"] });
-    document.addEventListener("keydown", (e) => {
-      const tag = e.target?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || e.target?.isContentEditable) return;
-      if (e.key === "t" || e.key === "T" || e.code === "KeyT") {
-        setTimeout(() => {
-          const cur = watchFlexy.hasAttribute("theater");
-          if (cur !== lastTheater) {
-            lastTheater = cur;
-            onTheaterModeChanged(cur);
+    if (!location.pathname.startsWith("/watch") && !location.pathname.startsWith("/live")) return;
+    const attach = (watchFlexy2) => {
+      if (!watchFlexy2) return;
+      let lastTheater = watchFlexy2.hasAttribute("theater");
+      if (theaterObserverTarget !== watchFlexy2) {
+        if (theaterObserver) theaterObserver.disconnect();
+        theaterObserverTarget = watchFlexy2;
+        theaterObserver = new MutationObserver(() => {
+          const isTheater = watchFlexy2.hasAttribute("theater");
+          if (isTheater !== lastTheater) {
+            lastTheater = isTheater;
+            onTheaterModeChanged(isTheater);
           }
-        }, 80);
+        });
+        theaterObserver.observe(watchFlexy2, { attributes: true, attributeFilter: ["theater"] });
       }
-    }, true);
+      if (!theaterKeyListenerBound) {
+        theaterKeyListenerBound = true;
+        document.addEventListener("keydown", (e) => {
+          if (!currentConfig.chatOverlay || currentConfig.chatOverlay === "off") return;
+          const tag = e.target?.tagName;
+          if (tag === "INPUT" || tag === "TEXTAREA" || e.target?.isContentEditable) return;
+          if (e.key === "t" || e.key === "T" || e.code === "KeyT") {
+            setTimeout(() => {
+              const activeFlexy = document.querySelector("ytd-watch-flexy");
+              if (!activeFlexy) return;
+              const cur = activeFlexy.hasAttribute("theater");
+              if (cur !== lastTheater) {
+                lastTheater = cur;
+                onTheaterModeChanged(cur);
+              }
+            }, 80);
+          }
+        }, true);
+      }
+    };
+    const watchFlexy = document.querySelector("ytd-watch-flexy");
+    if (watchFlexy) {
+      attach(watchFlexy);
+    } else {
+      whenElement("ytd-watch-flexy", attach);
+    }
   }
   function getAllChatElements(scope) {
     const root = scope || document;
@@ -6219,11 +6338,17 @@
       disconnectChatBoxObservers();
     }
     if (mode === "off") {
+      if (theaterObserver) {
+        theaterObserver.disconnect();
+        theaterObserver = null;
+        theaterObserverTarget = null;
+      }
       stopDanmakuScheduler();
       danmakuQueue.length = 0;
       laneNextAvailableTime.fill(0);
       removeChatOverlayContainers();
     } else {
+      setupTheaterModeObserver();
       ensureChatOverlayContainers();
     }
     const danmaku = document.getElementById("ytc-danmaku-container") || danmakuContainer;
@@ -6714,7 +6839,9 @@
       setTimeout(autoCollapseNativeChatIfOpen, 800);
       setTimeout(autoCollapseNativeChatIfOpen, 1500);
     }
-    setupTheaterModeObserver();
+    if (currentConfig.chatOverlay && currentConfig.chatOverlay !== "off") {
+      setupTheaterModeObserver();
+    }
     syncChatKeepAliveInterval();
     if (location.pathname.startsWith("/watch") || location.pathname.startsWith("/live")) {
       whenElement("#movie_player:not(#inline-preview-player)", () => {
@@ -6734,7 +6861,7 @@
       });
     }
   }
-  var userManuallyOpenedChat, hasAutoCollapsedChatForCurrentVideo, chatAutoCloseObserver, chatAutoCloseTimeout, replayNativeOpenRequestedVideoId, chatToggleListenersBound, ensureNativeLiveChatRunning, theaterObserver, bgChatIframe, currentBgVideoId, bgChatIframeStartedAt, bgChatIframeAttempts, bgChatIframeReady, BACKGROUND_CHAT_RETRY_MS, MAX_BACKGROUND_CHAT_ATTEMPTS, chatKeepAliveTimer, UNICODE_EMOJI_REGEX2;
+  var userManuallyOpenedChat, hasAutoCollapsedChatForCurrentVideo, chatAutoCloseObserver, chatAutoCloseTimeout, replayNativeOpenRequestedVideoId, chatToggleListenersBound, ensureNativeLiveChatRunning, theaterObserver, theaterObserverTarget, theaterKeyListenerBound, bgChatIframe, currentBgVideoId, bgChatIframeStartedAt, bgChatIframeAttempts, bgChatIframeReady, BACKGROUND_CHAT_RETRY_MS, MAX_BACKGROUND_CHAT_ATTEMPTS, chatKeepAliveTimer, UNICODE_EMOJI_REGEX2;
   var init_chatObserver = __esm({
     "src/chat/chatObserver.js"() {
       init_config();
@@ -6775,6 +6902,8 @@
       chatToggleListenersBound = false;
       ensureNativeLiveChatRunning = syncNativeChatState;
       theaterObserver = null;
+      theaterObserverTarget = null;
+      theaterKeyListenerBound = false;
       bgChatIframe = null;
       currentBgVideoId = null;
       bgChatIframeStartedAt = 0;
@@ -8816,7 +8945,6 @@ html[fullscreen] #movie_player,
     height: 108% !important;
     object-fit: fill !important;
     opacity: 0.42 !important;
-    filter: saturate(1.15);
     pointer-events: none !important;
 }
 #movie_player.ytc-letterbox-backdrop-active > .html5-video-container {
@@ -9043,9 +9171,8 @@ html[dark].ytc-ambient-lighting ytd-watch-metadata #title h1 {
    2. QUY TẮC RIÊNG CHO GIAO DIỆN SÁNG (LIGHT THEME)
    ========================================================================== */
 
-/* Tinh chỉnh màu sắc Ambilight trên nền trắng (không dùng CSS blur nặng trên toàn viewport) */
+/* Độ mờ Ambilight trên nền trắng (bão hòa màu xử lý trực tiếp trên canvas nhỏ, 0 CSS filter toàn màn hình) */
 html:not([dark]) #ytc-ambient-spread-canvas {
-    filter: saturate(165%) contrast(108%) brightness(98%);
     opacity: 0.85;
 }
 
@@ -9501,7 +9628,7 @@ html:not([dark]) .ytc-stat-red {
     "ytc-settings-panel",
     "ytc-perf-widget"
   ]);
-  var IGNORED_MUTATION_ZONES = "#comments, ytd-comments, #ytc-danmaku-container, #ytc-streamer-box, #ytc-ambient-wrapper, #ytc-settings-panel, #ytc-perf-widget, ytd-moving-thumbnail-renderer, .ytp-chrome-bottom, .ytp-tooltip, .ytp-caption-window-container, .ytp-bezel, .ytp-spinner, .ytp-chapter-hover-container, .ytp-heat-map-container, .ytp-progress-bar-container, .ytp-storyboard-framepreview, .ytp-ce-element, .html5-video-info-panel, ytd-video-preview, #preview, #inline-preview-player, ytd-live-chat-frame, #chat, #related, ytd-watch-next-secondary-results-renderer, #playlist, ytd-playlist-panel-renderer, #below, ytd-watch-metadata, #panels, #panels-full-bleed-container, ytd-engagement-panel-section-list-renderer, ytd-transcript-renderer, #masthead, ytd-masthead";
+  var IGNORED_MUTATION_ZONES = "#comments, ytd-comments, #ytc-danmaku-container, #ytc-streamer-box, #ytc-ambient-wrapper, #ytc-settings-panel, #ytc-perf-widget, ytd-moving-thumbnail-renderer, .ytp-chrome-bottom, .ytp-tooltip, .ytp-caption-window-container, .ytp-bezel, .ytp-spinner, .ytp-chapter-hover-container, .ytp-chapters-container, .ytp-timed-markers-container, .ytp-heat-map-container, .ytp-progress-bar-container, .ytp-storyboard-framepreview, .ytp-ce-element, .html5-video-info-panel, ytd-video-preview, #preview, #inline-preview-player, ytd-live-chat-frame, #chat, #related, ytd-watch-next-secondary-results-renderer, #playlist, ytd-playlist-panel-renderer, #below, ytd-watch-metadata, #panels, #panels-full-bleed-container, ytd-engagement-panel-section-list-renderer, ytd-macro-markers-list-renderer, ytd-transcript-renderer, #masthead, ytd-masthead";
   function isIgnoredPromoMutationNode(node) {
     if (!node) return true;
     const el = node.nodeType === 1 ? node : node.parentElement;
@@ -9630,9 +9757,17 @@ html:not([dark]) .ytc-stat-red {
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         if (!mutation.addedNodes.length) continue;
-        if (isIgnoredPromoMutationNode(mutation.target)) continue;
+        const target = mutation.target;
+        if (target?.id && FAST_SKIP_PARENT_IDS.has(target.id)) continue;
+        let targetChecked = false;
+        let targetIgnored = false;
         for (const node of mutation.addedNodes) {
-          if (!shouldInspectPromoAddedNode(node, mutation.target)) continue;
+          if (!shouldInspectPromoAddedNode(node, target)) continue;
+          if (!targetChecked) {
+            targetChecked = true;
+            targetIgnored = isIgnoredPromoMutationNode(target);
+          }
+          if (targetIgnored) break;
           if (isIgnoredPromoMutationNode(node)) continue;
           pendingScopes.add(node);
         }
@@ -9811,6 +9946,8 @@ html:not([dark]) .ytc-stat-red {
     if (!boundVideo2) return;
     boundVideo2.removeEventListener("loadedmetadata", syncBackdrop);
     boundVideo2.removeEventListener("seeked", drawFrame);
+    boundVideo2.removeEventListener("play", syncBackdrop);
+    boundVideo2.removeEventListener("pause", stopTimer);
     boundVideo2 = null;
   }
   function bindVideo(video) {
@@ -9819,6 +9956,8 @@ html:not([dark]) .ytc-stat-red {
     boundVideo2 = video;
     boundVideo2.addEventListener("loadedmetadata", syncBackdrop, { passive: true });
     boundVideo2.addEventListener("seeked", drawFrame, { passive: true });
+    boundVideo2.addEventListener("play", syncBackdrop, { passive: true });
+    boundVideo2.addEventListener("pause", stopTimer, { passive: true });
   }
   function clearBackdropCanvas() {
     stopTimer();
@@ -9854,7 +9993,13 @@ html:not([dark]) .ytc-stat-red {
     if (!ensureCanvas(player) || !context) return;
     if (video.paused && video === activeVideo && canvas.dataset.hasFrame === "true") return;
     try {
+      if ("filter" in context) {
+        context.filter = "saturate(1.15)";
+      }
       context.drawImage(video, -2, -2, CANVAS_WIDTH + 4, CANVAS_HEIGHT + 4);
+      if ("filter" in context) {
+        context.filter = "none";
+      }
       activeVideo = video;
       canvas.dataset.hasFrame = "true";
     } catch (_) {
@@ -9871,8 +10016,11 @@ html:not([dark]) .ytc-stat-red {
       return;
     }
     drawFrame();
-    if (activePlayer && updateTimer === null) {
+    const video = player.querySelector("video.html5-main-video") || player.querySelector("video");
+    if (activePlayer && updateTimer === null && video && !video.paused && !video.ended) {
       updateTimer = setInterval(drawFrame, UPDATE_INTERVAL_MS);
+    } else if (video && (video.paused || video.ended)) {
+      stopTimer();
     }
   }
   function initLetterboxBackdrop() {
@@ -9925,8 +10073,10 @@ html:not([dark]) .ytc-stat-red {
     }
   }
   function recordUserSeek() {
+    if (!currentConfig.autoLiveSync) return;
     lastUserSeekTime = Date.now();
     setTimeout(() => {
+      if (!currentConfig.autoLiveSync) return;
       const p = document.querySelector("#movie_player:not(#inline-preview-player)");
       if (!p || !isCurrentlyActiveLive(p)) return;
       const video = p.querySelector("video");
@@ -10029,6 +10179,13 @@ html:not([dark]) .ytc-stat-red {
     }
     if (!isCurrentlyActiveLive(player)) {
       snapReadySince = 0;
+      try {
+        const vd = typeof player.getVideoData === "function" ? player.getVideoData() : null;
+        if (vd && (vd.isPostLiveDvr === true || vd.isLive === false && !vd.isLiveDvr)) {
+          stopAutoLiveSyncTimer();
+        }
+      } catch (e) {
+      }
       return;
     }
     const video = player.querySelector("video");
@@ -10628,6 +10785,7 @@ html:not([dark]) .ytc-stat-red {
   init_utils();
   var lactInterval = null;
   var dialogObserver = null;
+  var preventAutoPauseBound = false;
   function refreshLact() {
     try {
       window._lact = Date.now();
@@ -10636,9 +10794,7 @@ html:not([dark]) .ytc-stat-red {
   }
   function checkAndDismissPauseDialog() {
     if (!currentConfig.preventAutoPause) return;
-    const dialogs = document.querySelectorAll(
-      "yt-confirm-dialog-renderer, ytd-popup-container, tp-yt-paper-dialog"
-    );
+    const dialogs = document.querySelectorAll("yt-confirm-dialog-renderer, tp-yt-paper-dialog");
     for (const dialog of dialogs) {
       if (dialog.offsetParent === null && dialog.style.display === "none") continue;
       const text = dialog.textContent || "";
@@ -10657,28 +10813,54 @@ html:not([dark]) .ytc-stat-red {
       }
     }
   }
+  function syncPreventAutoPause() {
+    if (!currentConfig.preventAutoPause) {
+      stopPreventAutoPause();
+      return;
+    }
+    if (!lactInterval) {
+      lactInterval = setInterval(() => {
+        if (currentConfig.preventAutoPause) {
+          refreshLact();
+        } else {
+          stopPreventAutoPause();
+        }
+      }, 5 * 60 * 1e3);
+      refreshLact();
+    }
+    if (!dialogObserver) {
+      let debounceTimer = null;
+      whenElement("ytd-popup-container", (popupTarget) => {
+        if (!dialogObserver && currentConfig.preventAutoPause) {
+          dialogObserver = new MutationObserver(() => {
+            if (!currentConfig.preventAutoPause) return;
+            if (debounceTimer) return;
+            debounceTimer = setTimeout(() => {
+              debounceTimer = null;
+              checkAndDismissPauseDialog();
+            }, 500);
+          });
+          dialogObserver.observe(popupTarget, { childList: true, subtree: true });
+        }
+      });
+    }
+  }
   function initPreventAutoPause() {
-    if (lactInterval) return;
-    lactInterval = setInterval(() => {
-      if (currentConfig.preventAutoPause) {
-        refreshLact();
-      }
-    }, 5 * 60 * 1e3);
-    refreshLact();
-    let debounceTimer = null;
-    whenElement("ytd-popup-container", (popupTarget) => {
-      if (!dialogObserver && currentConfig.preventAutoPause) {
-        dialogObserver = new MutationObserver(() => {
-          if (!currentConfig.preventAutoPause) return;
-          if (debounceTimer) return;
-          debounceTimer = setTimeout(() => {
-            debounceTimer = null;
-            checkAndDismissPauseDialog();
-          }, 500);
-        });
-        dialogObserver.observe(popupTarget, { childList: true, subtree: true });
-      }
-    });
+    if (!preventAutoPauseBound) {
+      preventAutoPauseBound = true;
+      onConfigChange(syncPreventAutoPause);
+    }
+    syncPreventAutoPause();
+  }
+  function stopPreventAutoPause() {
+    if (lactInterval) {
+      clearInterval(lactInterval);
+      lactInterval = null;
+    }
+    if (dialogObserver) {
+      dialogObserver.disconnect();
+      dialogObserver = null;
+    }
   }
 
   // src/optimization/index.js
@@ -10802,7 +10984,9 @@ html:not([dark]) .ytc-stat-red {
       applyConfigToRoot(false);
       applyHomeGridColumns();
       syncFeedObserver();
-      invalidateFeedScan(document);
+      if (needsFeedObserver()) {
+        invalidateFeedScan(document);
+      }
     });
     document.addEventListener("yt-navigate-finish", onNavigate);
     window.addEventListener("resize", applyHomeGridColumns);

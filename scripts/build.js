@@ -13,8 +13,8 @@ const isWatch = process.argv.includes('--watch');
 const banner = `// ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.38
-// @description  YouTube Customizer v3.9.38 — Giữ video nhạc đơn kèm list=RD trên tab Âm nhạc và ẩn shelf rỗng.
+// @version      3.9.39
+// @description  YouTube Customizer v3.9.39 — Giảm lag video chia đoạn dài, heatmap và chế độ phóng to.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -25,6 +25,7 @@ const banner = `// ==UserScript==
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.39 — Giảm lag video chia đoạn dài, heatmap và chế độ phóng to.
  * v3.9.38 — Giữ video nhạc đơn kèm list=RD trên tab Âm nhạc và ẩn shelf rỗng.
  * v3.9.37 — Sửa lỗi thưa cột Trang chủ khi bấm logo nhờ quét lại thẻ tái sử dụng.
  * v3.9.36 — Gỡ :has() CSS, tắt observer thừa trên Watch và khử blur GPU khi phóng to.
@@ -34,7 +35,6 @@ const banner = `// ==UserScript==
  * v3.9.32 — Phủ khoảng đen khi phóng to mà không cắt khung hình.
  * v3.9.31 — Nhận diện Replay từ cấu trúc YouTube, không phụ thuộc ngôn ngữ.
  * v3.9.30 — Khôi phục chất lượng thích ứng khi chọn Tự động.
- * v3.9.29 — Bấm nút Replay gốc để khởi tạo khung chat ẩn.
  * ============================================================================
  */`;
 
