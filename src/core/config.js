@@ -29,6 +29,7 @@ export const DEFAULT_CONFIG = {
     chatMemoryGc: false,       // Dọn dẹp DOM tin nhắn Live Chat chống tràn RAM (mặc định tắt)
     audioOnlyMode: false,      // Chế độ Radio / Chỉ phát âm thanh, ngắt render video (mặc định tắt)
     preventAutoPause: false,   // Chặn tự dừng video "Bạn vẫn đang xem chứ?" (mặc định tắt)
+    disableChapters: false,    // Tắt chia đoạn video trên thanh tiến trình (mặc định tắt)
     preferredQuality: 'auto',  // Ưu tiên độ phân giải video: 'auto', 'max', '1440p', '1080p', '720p'
     lockElapsedTime: true,     // Cố định thời gian đã phát, chống tự nhảy sang thời gian còn lại (mặc định bật)
     ambientLighting: false,    // Hiệu ứng ánh sáng phòng (Ambilight) phản chiếu viền video (mặc định tắt)
@@ -89,6 +90,7 @@ export function applyConfigToRoot(notify = true) {
     root.classList.toggle('ytc-hide-native-chat', !!currentConfig.hideNativeLiveChat);
     root.classList.toggle('ytc-hide-chat-emojis', !!currentConfig.hideChatEmojis);
     root.classList.toggle('ytc-audio-only', !!currentConfig.audioOnlyMode);
+    root.classList.toggle('ytc-disable-chapters', !!currentConfig.disableChapters);
     root.classList.toggle('ytc-ambient-lighting', !!currentConfig.ambientLighting);
     root.setAttribute('data-ytc-cols', String(currentConfig.columns || 3));
     root.setAttribute('data-ytc-chat', currentConfig.chatOverlay || 'off');
@@ -109,6 +111,7 @@ export function applyConfigToRoot(notify = true) {
         document.body.classList.toggle('ytc-hide-native-chat', !!currentConfig.hideNativeLiveChat);
         document.body.classList.toggle('ytc-hide-chat-emojis', !!currentConfig.hideChatEmojis);
         document.body.classList.toggle('ytc-audio-only', !!currentConfig.audioOnlyMode);
+        document.body.classList.toggle('ytc-disable-chapters', !!currentConfig.disableChapters);
         document.body.classList.toggle('ytc-ambient-lighting', !!currentConfig.ambientLighting);
         document.body.setAttribute('data-ytc-cols', String(currentConfig.columns || 3));
         document.body.setAttribute('data-ytc-chat', currentConfig.chatOverlay || 'off');

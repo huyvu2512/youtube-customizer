@@ -1722,6 +1722,62 @@ body.ytc-audio-only #movie_player video {
 }
 
 /* --------------------------------------------------------------------------
+   TẮT CHIA ĐOẠN VIDEO (DISABLE CHAPTERS & SEAMLESS PROGRESS BAR)
+   -------------------------------------------------------------------------- */
+html.ytc-disable-chapters #movie_player .ytp-chapter-container,
+body.ytc-disable-chapters #movie_player .ytp-chapter-container,
+html.ytc-disable-chapters #movie_player .ytp-tooltip-progress-bar-pill-title,
+body.ytc-disable-chapters #movie_player .ytp-tooltip-progress-bar-pill-title,
+html.ytc-disable-chapters #movie_player .ytp-chapter-seek-text,
+body.ytc-disable-chapters #movie_player .ytp-chapter-seek-text,
+html.ytc-disable-chapters #movie_player .ytp-chapter-seek-text-legacy,
+body.ytc-disable-chapters #movie_player .ytp-chapter-seek-text-legacy {
+    display: none !important;
+}
+
+html.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 4px"],
+body.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 4px"] {
+    margin-right: 0 !important;
+    padding-right: 4px !important;
+    box-sizing: content-box !important;
+}
+html.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 4px"] > .ytp-progress-list,
+body.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 4px"] > .ytp-progress-list {
+    margin-right: -4px !important;
+}
+
+html.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 3px"],
+body.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 3px"] {
+    margin-right: 0 !important;
+    padding-right: 3px !important;
+    box-sizing: content-box !important;
+}
+html.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 3px"] > .ytp-progress-list,
+body.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 3px"] > .ytp-progress-list {
+    margin-right: -3px !important;
+}
+
+html.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 2px"],
+body.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 2px"] {
+    margin-right: 0 !important;
+    padding-right: 2px !important;
+    box-sizing: content-box !important;
+}
+html.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 2px"] > .ytp-progress-list,
+body.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 2px"] > .ytp-progress-list {
+    margin-right: -2px !important;
+}
+
+html.ytc-disable-chapters #movie_player .ytp-progress-bar-container:hover .ytp-progress-list,
+body.ytc-disable-chapters #movie_player .ytp-progress-bar-container:hover .ytp-progress-list {
+    transform: scaleY(1) !important;
+}
+html.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-exp-chapter-hover-container:hover,
+body.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-exp-chapter-hover-container:hover {
+    transform: none !important;
+}
+
+/* --------------------------------------------------------------------------
    TAB 5: THÔNG TIN, NHÀ PHÁT TRIỂN & ỦNG HỘ
    -------------------------------------------------------------------------- */
 .ytc-item-text-group {

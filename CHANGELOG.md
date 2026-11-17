@@ -1,3 +1,8 @@
+## v3.9.40 — 17/11/2026 11:21
+- Thêm tùy chọn **Tắt chia đoạn video** dưới **Chặn tự dừng video** trong tab Tối ưu.
+- Gỡ dữ liệu chapter Watch để gộp thanh thời gian thành một đoạn liền mạch.
+- Ẩn nhãn tên chapter và nối kín khe hở thanh tiến trình ngay khi bật.
+
 ## v3.9.39 — 17/11/2026 11:08
 
 - Lọc O(1) mutation của heatmap/chapter trước khi duyệt cây DOM trên Watch.

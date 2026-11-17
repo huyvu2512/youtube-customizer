@@ -57,6 +57,7 @@ import {
 } from './ui/index.js';
 import {
     initCodecBlocker,
+    initDisableChaptersHook,
     initOptimization,
     applyAudioOnlyState
 } from './optimization/index.js';
@@ -64,9 +65,10 @@ import {
 // Re-export for compatibility
 export { CONFIG_KEY, DEFAULT_CONFIG, loadConfig, saveConfig, currentConfig, applyConfigToRoot };
 
-// Khởi chạy hook Codec Blocker và Live DVR ngay từ đầu trong top window
+// Khởi chạy hook Codec Blocker, Live DVR và Tắt chia đoạn ngay từ đầu trong top window
 if (window.self === window.top) {
     initCodecBlocker();
+    initDisableChaptersHook();
     initLiveDvrHook();
 }
 

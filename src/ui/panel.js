@@ -31,6 +31,7 @@ import {
     BROOM_SVG,
     HEADPHONES_SVG,
     INFINITY_SVG,
+    CHAPTERS_OFF_SVG,
     SHIELD_CHECK_SVG,
     PLAYLIST_SVG,
     QUALITY_SVG,
@@ -461,6 +462,17 @@ export function createSettingsPanel() {
                     </div>
                     <label class="ytc-switch" for="ytc-chk-autopause">
                         <input type="checkbox" id="ytc-chk-autopause" name="preventAutoPause" aria-label="Chặn tự dừng video" ${currentConfig.preventAutoPause ? 'checked' : ''}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="disableChapters" data-i18n-title="disable_chapters">
+                    <div class="ytc-item-left">
+                        ${CHAPTERS_OFF_SVG}
+                        <span data-i18n="disable_chapters">Tắt chia đoạn video</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-chapters">
+                        <input type="checkbox" id="ytc-chk-chapters" name="disableChapters" aria-label="Tắt chia đoạn video" ${currentConfig.disableChapters ? 'checked' : ''}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>

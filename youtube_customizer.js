@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.39
-// @description  YouTube Customizer v3.9.39 — Giảm lag video chia đoạn dài, heatmap và chế độ phóng to.
+// @version      3.9.40
+// @description  YouTube Customizer v3.9.40 — Thêm tùy chọn tắt chia đoạn video trong mục Tối ưu.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -13,6 +13,7 @@
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.40 — Thêm tùy chọn tắt chia đoạn video trong mục Tối ưu.
  * v3.9.39 — Giảm lag video chia đoạn dài, heatmap và chế độ phóng to.
  * v3.9.38 — Giữ video nhạc đơn kèm list=RD trên tab Âm nhạc và ẩn shelf rỗng.
  * v3.9.37 — Sửa lỗi thưa cột Trang chủ khi bấm logo nhờ quét lại thẻ tái sử dụng.
@@ -22,7 +23,6 @@
  * v3.9.33 — Áp chất lượng ban đầu rồi cho phép đổi thủ công trong YouTube.
  * v3.9.32 — Phủ khoảng đen khi phóng to mà không cắt khung hình.
  * v3.9.31 — Nhận diện Replay từ cấu trúc YouTube, không phụ thuộc ngôn ngữ.
- * v3.9.30 — Khôi phục chất lượng thích ứng khi chọn Tự động.
  * ============================================================================
  */
 (() => {
@@ -42,10 +42,10 @@
   };
 
   // src/core/constants.js
-  var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
+  var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, CHAPTERS_OFF_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.39";
+      APP_VERSION = "3.9.40";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -73,6 +73,7 @@
       BROOM_SVG = `<svg viewBox="0 0 24 24"><path d="M19.36 2.72l1.42 1.42-4.95 4.95-1.41-1.42 4.94-4.95zm-6.36 6.36l1.41 1.42-2.12 2.12-1.41-1.41 2.12-2.13zm-3.54 3.54l1.41 1.41L5 19.83V22h2.17l5.79-5.79 1.42 1.42L7.59 24H3v-4.59l7.46-7.33z"/></svg>`;
       HEADPHONES_SVG = `<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v7c0 1.1.9 2 2 2h4v-8H5v-1a7 7 0 0 1 14 0v1h-4v8h4c1.1 0 2-.9 2-2v-7a9 9 0 0 0-9-9z"/></svg>`;
       INFINITY_SVG = `<svg viewBox="0 0 24 24"><path d="M18.6 6.62c-1.44 0-2.8.56-3.77 1.53L12 10.98l-2.83-2.83A5.33 5.33 0 0 0 5.4 6.62C2.42 6.62 0 9.04 0 12s2.42 5.38 5.4 5.38c1.44 0 2.8-.56 3.77-1.53L12 13.02l2.83 2.83c.97.97 2.33 1.53 3.77 1.53 2.98 0 5.4-2.42 5.4-5.38s-2.42-5.38-5.4-5.38zm-13.2 8.78c-1.87 0-3.4-1.53-3.4-3.4s1.53-3.4 3.4-3.4c.91 0 1.77.36 2.38.97l2.43 2.43-2.43 2.43c-.61.61-1.47.97-2.38.97zm13.2 0c-.91 0-1.77-.36-2.38-.97L13.79 12l2.43-2.43c.61-.61 1.47-.97 2.38-.97 1.87 0 3.4 1.53 3.4 3.4s-1.53 3.4-3.4 3.4z"/></svg>`;
+      CHAPTERS_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M3 10h18v4H3v-4zm0-5h12v2H3V5zm0 12h12v2H3v-2z"/></svg>`;
       SHIELD_CHECK_SVG = `<svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>`;
       PLAYLIST_SVG = `<svg viewBox="0 0 24 24"><path d="M4 10h12v2H4zm0-4h12v2H4zm0 8h8v2H4zm10 0v6l5-3z"/></svg>`;
       AMBIENT_LIGHT_SVG = `<svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6A4.997 4.997 0 0 1 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/></svg>`;
@@ -133,6 +134,7 @@
     root.classList.toggle("ytc-hide-native-chat", !!currentConfig.hideNativeLiveChat);
     root.classList.toggle("ytc-hide-chat-emojis", !!currentConfig.hideChatEmojis);
     root.classList.toggle("ytc-audio-only", !!currentConfig.audioOnlyMode);
+    root.classList.toggle("ytc-disable-chapters", !!currentConfig.disableChapters);
     root.classList.toggle("ytc-ambient-lighting", !!currentConfig.ambientLighting);
     root.setAttribute("data-ytc-cols", String(currentConfig.columns || 3));
     root.setAttribute("data-ytc-chat", currentConfig.chatOverlay || "off");
@@ -152,6 +154,7 @@
       document.body.classList.toggle("ytc-hide-native-chat", !!currentConfig.hideNativeLiveChat);
       document.body.classList.toggle("ytc-hide-chat-emojis", !!currentConfig.hideChatEmojis);
       document.body.classList.toggle("ytc-audio-only", !!currentConfig.audioOnlyMode);
+      document.body.classList.toggle("ytc-disable-chapters", !!currentConfig.disableChapters);
       document.body.classList.toggle("ytc-ambient-lighting", !!currentConfig.ambientLighting);
       document.body.setAttribute("data-ytc-cols", String(currentConfig.columns || 3));
       document.body.setAttribute("data-ytc-chat", currentConfig.chatOverlay || "off");
@@ -232,6 +235,8 @@
         // Chế độ Radio / Chỉ phát âm thanh, ngắt render video (mặc định tắt)
         preventAutoPause: false,
         // Chặn tự dừng video "Bạn vẫn đang xem chứ?" (mặc định tắt)
+        disableChapters: false,
+        // Tắt chia đoạn video trên thanh tiến trình (mặc định tắt)
         preferredQuality: "auto",
         // Ưu tiên độ phân giải video: 'auto', 'max', '1440p', '1080p', '720p'
         lockElapsedTime: true,
@@ -2883,6 +2888,7 @@
           quality_auto: "Tự động",
           quality_max: "Cao nhất",
           prevent_auto_pause: "Chặn tự dừng video",
+          disable_chapters: "Tắt chia đoạn video",
           chat_memory_gc: "Dọn rác bộ nhớ Live Chat",
           keyboard_controls: "Phím tắt (A-S-D, Numpad)",
           block_av1: "Chặn AV1 / Ép Codec H.264",
@@ -2947,6 +2953,7 @@
           quality_auto: "Auto",
           quality_max: "Max Quality",
           prevent_auto_pause: "Prevent Auto-Pause",
+          disable_chapters: "Disable Video Chapters",
           chat_memory_gc: "Live Chat Memory GC",
           keyboard_controls: "Shortcuts (A-S-D, Numpad)",
           block_av1: "Block AV1 / Force H.264 & VP9",
@@ -3011,6 +3018,7 @@
           quality_auto: "自動",
           quality_max: "最高画質",
           prevent_auto_pause: "自動停止を防止",
+          disable_chapters: "チャプター分割をオフ",
           chat_memory_gc: "チャットメモリ解放",
           keyboard_controls: "ショートカット (A-S-D)",
           block_av1: "AV1無効 / H.264強制",
@@ -3069,6 +3077,7 @@
           quality_auto: "자동",
           quality_max: "최고 화질",
           prevent_auto_pause: "자동 일시정지 방지",
+          disable_chapters: "영상 챕터 구분 끄기",
           chat_memory_gc: "채팅 메모리 최적화",
           keyboard_controls: "단축키 제어 (A-S-D)",
           block_av1: "AV1 차단 / 하드웨어 코덱",
@@ -3127,6 +3136,7 @@
           quality_auto: "自动",
           quality_max: "最高画质",
           prevent_auto_pause: "防止自动暂停",
+          disable_chapters: "关闭视频分段章节",
           chat_memory_gc: "聊天内存清理",
           keyboard_controls: "键盘快捷键 (A-S-D)",
           block_av1: "禁用 AV1 / 强制硬件解码",
@@ -3185,6 +3195,7 @@
           quality_auto: "自動",
           quality_max: "最高畫質",
           prevent_auto_pause: "防止自動暫停",
+          disable_chapters: "關閉影片分段章節",
           chat_memory_gc: "釋放聊天記憶體",
           keyboard_controls: "鍵盤快速鍵 (A-S-D)",
           block_av1: "禁用 AV1 / 強制硬體解碼",
@@ -3243,6 +3254,7 @@
           quality_auto: "Automático",
           quality_max: "Máxima",
           prevent_auto_pause: "Evitar pausa automática",
+          disable_chapters: "Desactivar capítulos",
           chat_memory_gc: "Limpiar memoria de chat",
           keyboard_controls: "Atajos (A-S-D, teclado numérico)",
           block_av1: "Bloquear AV1 / Forzar H.264",
@@ -3301,6 +3313,7 @@
           quality_auto: "Auto",
           quality_max: "Maximale",
           prevent_auto_pause: "Empêcher pause automatique",
+          disable_chapters: "Désactiver les chapitres",
           chat_memory_gc: "Nettoyage mémoire chat",
           keyboard_controls: "Raccourcis (A-S-D, Pavé num.)",
           block_av1: "Bloquer AV1 / Forcer H.264",
@@ -3359,6 +3372,7 @@
           quality_auto: "Automatisch",
           quality_max: "Maximal",
           prevent_auto_pause: "Auto-Pause verhindern",
+          disable_chapters: "Videokapitel deaktivieren",
           chat_memory_gc: "Chat-Speicher bereinigen",
           keyboard_controls: "Tastenkürzel (A-S-D, Ziffernblock)",
           block_av1: "AV1 blockieren / H.264 erzwingen",
@@ -3417,6 +3431,7 @@
           quality_auto: "Авто",
           quality_max: "Максимальное",
           prevent_auto_pause: "Блокировать автопаузу",
+          disable_chapters: "Отключить разделение на главы",
           chat_memory_gc: "Очистка памяти чата",
           keyboard_controls: "Горячие клавиши (A-S-D, Numpad)",
           block_av1: "Блокировать AV1 / Аппаратный H.264",
@@ -3475,6 +3490,7 @@
           quality_auto: "Automático",
           quality_max: "Máxima",
           prevent_auto_pause: "Evitar pausa automática",
+          disable_chapters: "Desativar capítulos do vídeo",
           chat_memory_gc: "Limpeza de memória do chat",
           keyboard_controls: "Atalhos (A-S-D, Teclado numérico)",
           block_av1: "Bloquear AV1 / Forçar H.264",
@@ -3533,6 +3549,7 @@
           quality_auto: "Automatico",
           quality_max: "Massima",
           prevent_auto_pause: "Previeni pausa automatica",
+          disable_chapters: "Disattiva capitoli video",
           chat_memory_gc: "Pulizia memoria chat",
           keyboard_controls: "Scorciatoie (A-S-D, Tastierino)",
           block_av1: "Blocca AV1 / Forza H.264",
@@ -3591,6 +3608,7 @@
           quality_auto: "Otomatis",
           quality_max: "Tertinggi",
           prevent_auto_pause: "Cegah jeda otomatis",
+          disable_chapters: "Nonaktifkan bab video",
           chat_memory_gc: "Bersihkan RAM live chat",
           keyboard_controls: "Pintasan (A-S-D, Numpad)",
           block_av1: "Blokir AV1 / Paksa H.264",
@@ -3649,6 +3667,7 @@
           quality_auto: "อัตโนมัติ",
           quality_max: "สูงสุด",
           prevent_auto_pause: "ป้องกันการหยุดวิดีโออัตโนมัติ",
+          disable_chapters: "ปิดการแบ่งช่วงวิดีโอ",
           chat_memory_gc: "ล้างแรมประวัติแชท",
           keyboard_controls: "ปุ่มลัด (A-S-D, แป้นตัวเลข)",
           block_av1: "บล็อก AV1 / บังคับใช้ H.264",
@@ -3707,6 +3726,7 @@
           quality_auto: "स्वतः",
           quality_max: "सर्वोच्च",
           prevent_auto_pause: "स्वतः पॉज़ रोकें",
+          disable_chapters: "वीडियो अध्याय बंद करें",
           chat_memory_gc: "चैट मेमोरी साफ़ करें",
           keyboard_controls: "शॉर्टकट (A-S-D, नम्पैड)",
           block_av1: "AV1 ब्लॉक करें / H.264 लागू करें",
@@ -3765,6 +3785,7 @@
           quality_auto: "تلقائي",
           quality_max: "الأعلى",
           prevent_auto_pause: "منع الإيقاف التلقائي",
+          disable_chapters: "تعطيل تقسيم فصول الفيديو",
           chat_memory_gc: "تنظيف ذاكرة الدردشة",
           keyboard_controls: "اختصارات (A-S-D، لوحة الأرقام)",
           block_av1: "حظر AV1 / فرض H.264",
@@ -3823,6 +3844,7 @@
           quality_auto: "Otomatik",
           quality_max: "En Yüksek",
           prevent_auto_pause: "Otomatik Duraklatmayı Engelle",
+          disable_chapters: "Video bölümlerini kapat",
           chat_memory_gc: "Sohbet Belleğini Temizle",
           keyboard_controls: "Kısayollar (A-S-D, Numpad)",
           block_av1: "AV1 Engelle / H.264 Zorla",
@@ -3881,6 +3903,7 @@
           quality_auto: "Automatyczna",
           quality_max: "Najwyższa",
           prevent_auto_pause: "Blokuj automatyczne zatrzymywanie",
+          disable_chapters: "Wyłącz podział na rozdziały",
           chat_memory_gc: "Czyszczenie pamięci RAM czatu",
           keyboard_controls: "Skróty (A-S-D, klawiatura numeryczna)",
           block_av1: "Blokuj AV1 / Wymuś H.264",
@@ -3939,6 +3962,7 @@
           quality_auto: "Automatisch",
           quality_max: "Hoogste",
           prevent_auto_pause: "Automatisch pauzeren voorkomen",
+          disable_chapters: "Videohoofdstukken uitschakelen",
           chat_memory_gc: "Chatgeheugen opschonen",
           keyboard_controls: "Sneltoetsen (A-S-D, numeriek blok)",
           block_av1: "AV1 blokkeren / H.264 forceren",
@@ -3997,6 +4021,7 @@
           quality_auto: "Awtomatiko",
           quality_max: "Pinakamataas",
           prevent_auto_pause: "Pigilan ang Auto-Pause",
+          disable_chapters: "I-off ang mga kabanata ng video",
           chat_memory_gc: "Linisin ang RAM ng Chat",
           keyboard_controls: "Mga Shortcut (A-S-D, Numpad)",
           block_av1: "I-block ang AV1 / Pilitin ang H.264",
@@ -4977,6 +5002,17 @@
                     </div>
                     <label class="ytc-switch" for="ytc-chk-autopause">
                         <input type="checkbox" id="ytc-chk-autopause" name="preventAutoPause" aria-label="Chặn tự dừng video" ${currentConfig.preventAutoPause ? "checked" : ""}>
+                        <span class="ytc-slider"></span>
+                    </label>
+                </div>
+
+                <div class="ytc-item" data-toggle="disableChapters" data-i18n-title="disable_chapters">
+                    <div class="ytc-item-left">
+                        ${CHAPTERS_OFF_SVG}
+                        <span data-i18n="disable_chapters">Tắt chia đoạn video</span>
+                    </div>
+                    <label class="ytc-switch" for="ytc-chk-chapters">
+                        <input type="checkbox" id="ytc-chk-chapters" name="disableChapters" aria-label="Tắt chia đoạn video" ${currentConfig.disableChapters ? "checked" : ""}>
                         <span class="ytc-slider"></span>
                     </label>
                 </div>
@@ -8714,6 +8750,62 @@ body.ytc-audio-only #movie_player video {
 }
 
 /* --------------------------------------------------------------------------
+   TẮT CHIA ĐOẠN VIDEO (DISABLE CHAPTERS & SEAMLESS PROGRESS BAR)
+   -------------------------------------------------------------------------- */
+html.ytc-disable-chapters #movie_player .ytp-chapter-container,
+body.ytc-disable-chapters #movie_player .ytp-chapter-container,
+html.ytc-disable-chapters #movie_player .ytp-tooltip-progress-bar-pill-title,
+body.ytc-disable-chapters #movie_player .ytp-tooltip-progress-bar-pill-title,
+html.ytc-disable-chapters #movie_player .ytp-chapter-seek-text,
+body.ytc-disable-chapters #movie_player .ytp-chapter-seek-text,
+html.ytc-disable-chapters #movie_player .ytp-chapter-seek-text-legacy,
+body.ytc-disable-chapters #movie_player .ytp-chapter-seek-text-legacy {
+    display: none !important;
+}
+
+html.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 4px"],
+body.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 4px"] {
+    margin-right: 0 !important;
+    padding-right: 4px !important;
+    box-sizing: content-box !important;
+}
+html.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 4px"] > .ytp-progress-list,
+body.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 4px"] > .ytp-progress-list {
+    margin-right: -4px !important;
+}
+
+html.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 3px"],
+body.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 3px"] {
+    margin-right: 0 !important;
+    padding-right: 3px !important;
+    box-sizing: content-box !important;
+}
+html.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 3px"] > .ytp-progress-list,
+body.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 3px"] > .ytp-progress-list {
+    margin-right: -3px !important;
+}
+
+html.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 2px"],
+body.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 2px"] {
+    margin-right: 0 !important;
+    padding-right: 2px !important;
+    box-sizing: content-box !important;
+}
+html.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 2px"] > .ytp-progress-list,
+body.ytc-disable-chapters #movie_player .ytp-chapter-hover-container[style*="margin-right: 2px"] > .ytp-progress-list {
+    margin-right: -2px !important;
+}
+
+html.ytc-disable-chapters #movie_player .ytp-progress-bar-container:hover .ytp-progress-list,
+body.ytc-disable-chapters #movie_player .ytp-progress-bar-container:hover .ytp-progress-list {
+    transform: scaleY(1) !important;
+}
+html.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-exp-chapter-hover-container:hover,
+body.ytc-disable-chapters #movie_player .ytp-progress-bar-container .ytp-exp-chapter-hover-container:hover {
+    transform: none !important;
+}
+
+/* --------------------------------------------------------------------------
    TAB 5: THÔNG TIN, NHÀ PHÁT TRIỂN & ỦNG HỘ
    -------------------------------------------------------------------------- */
 .ytc-item-text-group {
@@ -10863,11 +10955,156 @@ html:not([dark]) .ytc-stat-red {
     }
   }
 
+  // src/optimization/disableChapters.js
+  init_config();
+  var chaptersHooked = false;
+  function cleanPlayerBar(playerBar) {
+    if (!playerBar || typeof playerBar !== "object") return false;
+    let modified = false;
+    const multi = playerBar.multiMarkersPlayerBarRenderer;
+    if (multi && Array.isArray(multi.markersMap)) {
+      const removedKeys = /* @__PURE__ */ new Set();
+      const filtered = multi.markersMap.filter((entry) => {
+        if (!entry || typeof entry !== "object") return true;
+        const key = typeof entry.key === "string" ? entry.key : "";
+        const hasChaptersArray = Array.isArray(entry.value?.chapters);
+        const isChapterKey = /CHAPTERS/i.test(key);
+        if (hasChaptersArray || isChapterKey) {
+          if (key) removedKeys.add(key);
+          return false;
+        }
+        return true;
+      });
+      if (filtered.length !== multi.markersMap.length) {
+        multi.markersMap = filtered;
+        modified = true;
+      }
+      if (multi.visibleOnLoad?.key && removedKeys.has(multi.visibleOnLoad.key)) {
+        delete multi.visibleOnLoad;
+        modified = true;
+      }
+    }
+    const chaptered = playerBar.chapteredPlayerBarRenderer;
+    if (chaptered && Array.isArray(chaptered.chapters) && chaptered.chapters.length > 0) {
+      chaptered.chapters = [];
+      modified = true;
+    }
+    return modified;
+  }
+  function cleanFrameworkEntities(root) {
+    const mutations = root?.frameworkUpdates?.entityBatchUpdate?.mutations;
+    if (!Array.isArray(mutations)) return false;
+    let modified = false;
+    for (const mutation of mutations) {
+      const markersList = mutation?.payload?.macroMarkersListEntity?.markersList;
+      if (markersList?.markerType === "MARKER_TYPE_TIMESTAMPS" && Array.isArray(markersList.markers) && markersList.markers.length > 0) {
+        markersList.markers = [];
+        modified = true;
+      }
+    }
+    return modified;
+  }
+  function stripChaptersFromWatchData(data) {
+    if (!data || typeof data !== "object") return false;
+    let modified = false;
+    const targets = [data, data.response, data.pageData, data.pageData?.response];
+    for (const root of targets) {
+      if (!root || typeof root !== "object") continue;
+      const decorated = root.playerOverlays?.playerOverlayRenderer?.decoratedPlayerBarRenderer;
+      const playerBars = [
+        decorated?.decoratedPlayerBarRenderer?.playerBar,
+        decorated?.playerBar
+      ];
+      for (const bar of playerBars) {
+        if (cleanPlayerBar(bar)) modified = true;
+      }
+      if (cleanFrameworkEntities(root)) modified = true;
+    }
+    return modified;
+  }
+  function initDisableChaptersHook() {
+    if (chaptersHooked) return;
+    chaptersHooked = true;
+    try {
+      const existingDesc = Object.getOwnPropertyDescriptor(window, "ytInitialData");
+      let _val = window.ytInitialData;
+      if (_val && currentConfig.disableChapters) {
+        stripChaptersFromWatchData(_val);
+      }
+      if (!existingDesc || existingDesc.configurable !== false) {
+        Object.defineProperty(window, "ytInitialData", {
+          get() {
+            return existingDesc && existingDesc.get ? existingDesc.get.call(this) : _val;
+          },
+          set(newVal) {
+            if (currentConfig.disableChapters && newVal) {
+              try {
+                stripChaptersFromWatchData(newVal);
+              } catch (e) {
+              }
+            }
+            if (existingDesc && existingDesc.set) {
+              existingDesc.set.call(this, newVal);
+            }
+            _val = newVal;
+          },
+          configurable: true,
+          enumerable: true
+        });
+      }
+    } catch (e) {
+    }
+    try {
+      const origParse = JSON.parse;
+      JSON.parse = function(text, reviver) {
+        const res = origParse.call(this, text, reviver);
+        if (currentConfig.disableChapters && typeof text === "string" && text.length > 200 && (text.indexOf("multiMarkersPlayerBarRenderer") !== -1 || text.indexOf("chapteredPlayerBarRenderer") !== -1 || text.indexOf("MARKER_TYPE_TIMESTAMPS") !== -1)) {
+          try {
+            stripChaptersFromWatchData(res);
+          } catch (e) {
+          }
+        }
+        return res;
+      };
+    } catch (e) {
+    }
+    try {
+      if (typeof window.Response !== "undefined" && window.Response.prototype && typeof window.Response.prototype.json === "function") {
+        const origRespJson = window.Response.prototype.json;
+        window.Response.prototype.json = function() {
+          const promise = origRespJson.call(this);
+          if (currentConfig.disableChapters && typeof this.url === "string" && this.url.includes("/youtubei/v1/next")) {
+            return promise.then((res) => {
+              try {
+                stripChaptersFromWatchData(res);
+              } catch (e) {
+              }
+              return res;
+            });
+          }
+          return promise;
+        };
+      }
+    } catch (e) {
+    }
+    if (typeof document !== "undefined") {
+      document.addEventListener("yt-page-data-fetched", (evt) => {
+        if (!currentConfig.disableChapters) return;
+        try {
+          stripChaptersFromWatchData(evt?.detail?.pageData);
+          if (window.ytInitialData) stripChaptersFromWatchData(window.ytInitialData);
+        } catch (e) {
+        }
+      }, true);
+    }
+  }
+
   // src/optimization/index.js
   init_chatMemoryGc();
   var isOptInitialized = false;
   function initOptimization() {
     initCodecBlocker();
+    initDisableChaptersHook();
     initChatMemoryGc();
     initAudioOnly();
     initPreventAutoPause();
@@ -10877,6 +11114,7 @@ html:not([dark]) .ytc-stat-red {
   // src/index.js
   if (window.self === window.top) {
     initCodecBlocker();
+    initDisableChaptersHook();
     initLiveDvrHook();
   }
   function injectStyles(css) {
