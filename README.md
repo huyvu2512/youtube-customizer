@@ -9,7 +9,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.9.41-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.9.42-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -34,7 +34,7 @@
 
 **YouTube Customizer** là tiện ích mở rộng dạng Userscript chạy trên nền Tampermonkey / Violentmonkey, được thiết kế nhằm mang lại trải nghiệm xem YouTube gọn gàng, mượt mà và trực quan hơn. Sản phẩm được thiết kế và phát triển bởi Huy Vũ (@huyvu2512) với mục tiêu nghiên cứu chuyên sâu về cơ chế can thiệp DOM (DOM Manipulation), tối ưu hóa hiệu năng render trình phát và điều khiển tương tác trên nền tảng YouTube.
 
-Phiên bản **v3.9.41** gộp sóng heatmap thành một đường liền mạch ngay lập tức khi bật **Tắt chia đoạn video** và chặn hiệu ứng phóng to/nổi bật từng đoạn chapter lúc di chuột. Xem [CHANGELOG.md](CHANGELOG.md) để biết chi tiết.
+Phiên bản **v3.9.42** tự động ẩn tin nhắn từ Nightbot và các chatbot YouTube Live phổ biến khi bật Live Chat Ngang (Danmaku) hoặc Nổi (Streamer). Xem [CHANGELOG.md](CHANGELOG.md) để biết chi tiết.
 
 ---
 
@@ -47,7 +47,7 @@ Phiên bản **v3.9.41** gộp sóng heatmap thành một đường liền mạc
 - **Lọc nội dung** - Có thể ẩn Shorts, Playables, video hội viên, bài đăng cộng đồng, chủ đề khám phá, Mix/playlist, sản phẩm gắn thẻ và kết quả tìm kiếm được tài trợ.
 - **Tùy chỉnh trình phát** - Có tùy chọn ẩn watermark, thẻ kết thúc và chú thích; đóng banner hoặc thông báo; ẩn khung chat gốc và biểu tượng trong Live Chat.
 - **Công cụ phát trực tiếp** - Mở khóa tua Live DVR và đồng bộ về thời gian thực bằng Auto Live Sync.
-- **Live Chat Overlay** - Hiển thị tin nhắn dạng chạy ngang (Danmaku) hoặc trong khung nổi (Streamer). Mặc định tắt.
+- **Live Chat Overlay** - Hiển thị tin nhắn dạng chạy ngang (Danmaku) hoặc trong khung nổi (Streamer), mặc định tự ẩn tin nhắn Nightbot và các chatbot tự động. Mặc định tắt.
 - **Ưu tiên độ phân giải** - Chọn Tự động, Cao nhất, 1440p, 1080p hoặc 720p. Chất lượng cuối cùng còn phụ thuộc video và khả năng phát của YouTube.
 - **Tùy chọn tối ưu** - Chế độ chỉ phát âm thanh hạ chất lượng xuống mức thấp nhất; các tùy chọn khác có thể chặn AV1, tắt chia đoạn video, dọn DOM Live Chat hoặc đóng hộp thoại hỏi tiếp tục xem. Các tùy chọn này mặc định tắt.
 - **Thông số phát video** - Bảng cài đặt có thể hiển thị FPS, thời lượng buffer, độ trễ phản hồi HTTP tới YouTube và tốc độ tải ước tính.

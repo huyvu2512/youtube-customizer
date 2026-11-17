@@ -9,7 +9,7 @@
 [![Tampermonkey](https://img.shields.io/badge/Tampermonkey-Userscript-black)](https://www.tampermonkey.net/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/CSS3-Vanilla%20Dark-1572B6)](https://www.w3.org/Style/CSS/)
-[![Version](https://img.shields.io/badge/Version-3.9.41-red)](https://github.com/huyvu2512/youtube-customizer)
+[![Version](https://img.shields.io/badge/Version-3.9.42-red)](https://github.com/huyvu2512/youtube-customizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [![Stars](https://img.shields.io/github/stars/huyvu2512/youtube-customizer?style=flat-square&label=Stars&color=FFCC00)](https://github.com/huyvu2512/youtube-customizer/stargazers)
@@ -34,7 +34,7 @@
 
 **YouTube Customizer** is a high-performance Userscript running on Tampermonkey / Violentmonkey, engineered to deliver a clean, distraction-free, and immersive YouTube viewing experience. Designed and developed by Huy Vũ (@huyvu2512), this project serves as an in-depth exploration of advanced DOM manipulation, video player rendering pipeline optimization, and fine-tuned browser event interactions on YouTube.
 
-Release **v3.9.41** merges segmented heatmap waves into a single continuous curve on live toggle and suppresses per-chapter hover scaling, heatmap bounce, and snap outlines. See [CHANGELOG.md](CHANGELOG.md) for details.
+Release **v3.9.42** automatically hides messages from Nightbot and common YouTube Live chat bots inside both Danmaku and floating Streamer chat overlays. See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ---
 
@@ -47,7 +47,7 @@ Release **v3.9.41** merges segmented heatmap waves into a single continuous curv
 - **Content filters** - Optional filters for Shorts, Playables, members-only videos, Community posts, Explore topics, Mixes/playlists, tagged products, and sponsored search results.
 - **Player options** - Hide channel watermarks, end screens, and info cards; dismiss banners or interruption prompts; hide native Live Chat and its emoji/stickers.
 - **Live playback tools** - Unlock Live DVR seeking and use Auto Live Sync to return toward the live edge.
-- **Live Chat overlay** - Show chat as Danmaku or in a floating Streamer box. The overlay is off by default.
+- **Live Chat overlay** - Show chat as Danmaku or in a floating Streamer box, automatically filtering Nightbot and common chat bots by default. The overlay is off by default.
 - **Video quality preference** - Choose Auto, Maximum, 1440p, 1080p, or 720p. The available result still depends on each video and YouTube playback support.
 - **Optional optimization controls** - Audio-only mode lowers playback quality to the lowest level; other controls block AV1, disable video chapters, clean up Live Chat DOM, or dismiss the continue-watching prompt. These controls are off by default.
 - **Playback statistics** - The settings panel can show video FPS, buffered seconds, HTTP response latency to YouTube, and estimated download speed.

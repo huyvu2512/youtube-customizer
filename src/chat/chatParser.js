@@ -5,6 +5,7 @@ import { currentConfig } from '../core/config.js';
 import { safeHTML, setElementHTML } from '../core/utils.js';
 import { isDuplicateMessage, ensureChatOverlayContainers, danmakuContainer, streamerMessages } from './chatState.js';
 import { danmakuQueue, startDanmakuScheduler } from './danmaku.js';
+import { isLiveChatBotAuthor } from './botFilter.js';
 
 const UNICODE_EMOJI_REGEX = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{200D}\u{FE0F}]/gu;
 
@@ -65,14 +66,20 @@ export function extractMessageData(node) {
 
     const authorEl = node.querySelector('#author-name');
     const rawAuthor = authorEl ? authorEl.textContent.trim() : '';
-    let author = rawAuthor.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    if (author.startsWith('@')) {
-        author = author.substring(1);
+    const plainAuthor = rawAuthor.replace(/^@+/, '').trim();
+
+    const isMod = !!node.querySelector('yt-live-chat-author-badge-renderer[type="moderator"], yt-live-chat-author-badge-renderer[aria-label*="điều hành" i], yt-live-chat-author-badge-renderer[aria-label*="kiểm duyệt" i], yt-live-chat-author-badge-renderer[aria-label*="moderator" i], [type="moderator"], .moderator')
+        || !!node.classList?.contains('author-type-moderator')
+        || node.getAttribute?.('author-type') === 'moderator';
+
+    // Mặc định ẩn bình luận từ Nightbot & các bot Live Chat trên overlay video
+    if (isLiveChatBotAuthor(plainAuthor, isMod)) {
+        return null;
     }
 
-    const isMod = !!node.querySelector('yt-live-chat-author-badge-renderer[type="moderator"], yt-live-chat-author-badge-renderer[aria-label*="điều hành" i], yt-live-chat-author-badge-renderer[aria-label*="kiểm duyệt" i], yt-live-chat-author-badge-renderer[aria-label*="moderator" i], [type="moderator"], .moderator') || node.classList.contains('author-type-moderator');
-    const isMember = !!node.querySelector('yt-live-chat-author-badge-renderer[type="member"], yt-live-chat-author-badge-renderer[aria-label*="hội viên" i], yt-live-chat-author-badge-renderer[aria-label*="member" i], [type="member"], .member') || node.classList.contains('author-type-member');
-    const isOwner = !!node.querySelector('yt-live-chat-author-badge-renderer[type="owner"], yt-live-chat-author-badge-renderer[aria-label*="chủ sở hữu" i], yt-live-chat-author-badge-renderer[aria-label*="owner" i], [type="owner"], .owner') || node.classList.contains('author-type-owner');
+    let author = plainAuthor.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const isMember = !!node.querySelector('yt-live-chat-author-badge-renderer[type="member"], yt-live-chat-author-badge-renderer[aria-label*="hội viên" i], yt-live-chat-author-badge-renderer[aria-label*="member" i], [type="member"], .member') || !!node.classList?.contains('author-type-member');
+    const isOwner = !!node.querySelector('yt-live-chat-author-badge-renderer[type="owner"], yt-live-chat-author-badge-renderer[aria-label*="chủ sở hữu" i], yt-live-chat-author-badge-renderer[aria-label*="owner" i], [type="owner"], .owner') || !!node.classList?.contains('author-type-owner');
 
     const avatarEl = node.querySelector(
         '#author-photo img, ' +
@@ -161,6 +168,7 @@ export function extractMessageData(node) {
 
 export function displayChatMessage(data, isBacklog = false) {
     if (!data || !currentConfig.chatOverlay || currentConfig.chatOverlay === 'off') return;
+    if (isLiveChatBotAuthor(data.author, data.authorClass === 'mod')) return;
 
     // Khi video đang tạm dừng: không nạp tin nhắn mới
     const player = document.querySelector('#movie_player:not(#inline-preview-player)');

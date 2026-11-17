@@ -1,3 +1,7 @@
+## v3.9.42 — 17/11/2026 21:24
+- Mặc định ẩn tin nhắn Nightbot và chatbot phổ biến trên Live Chat Ngang/Nổi.
+- Bổ sung lọc thêm bot kiểm duyệt viên tùy chỉnh trước khi đưa lên overlay video.
+
 ## v3.9.41 — 17/11/2026 11:43
 - Gộp sóng heatmap chia đoạn thành một đường liền mạch ngay khi bật.
 - Tắt nổi bật đoạn chapter, nhảy sóng heatmap và viền snap lúc di chuột.

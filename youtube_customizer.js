@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         YouTube Customizer
 // @namespace    http://tampermonkey.net/
-// @version      3.9.41
-// @description  YouTube Customizer v3.9.41 — Gộp sóng heatmap liền mạch và tắt nổi bật đoạn khi di chuột.
+// @version      3.9.42
+// @description  YouTube Customizer v3.9.42 — Mặc định ẩn tin nhắn Nightbot và chatbot trên Live Chat Ngang/Nổi.
 // @author       Huy Vũ
 // @match        https://www.youtube.com/*
 // @run-at       document-start
@@ -13,6 +13,7 @@
  * ============================================================================
  * NHẬT KÝ CẬP NHẬT / CHANGELOG — 10 VERSION GẦN NHẤT
  * ============================================================================
+ * v3.9.42 — Mặc định ẩn tin nhắn Nightbot và chatbot trên Live Chat Ngang/Nổi.
  * v3.9.41 — Gộp sóng heatmap liền mạch và tắt nổi bật đoạn khi di chuột.
  * v3.9.40 — Thêm tùy chọn tắt chia đoạn video trong mục Tối ưu.
  * v3.9.39 — Giảm lag video chia đoạn dài, heatmap và chế độ phóng to.
@@ -22,7 +23,6 @@
  * v3.9.35 — Tối ưu hiệu năng phóng to, tua video và xem trước timeline.
  * v3.9.34 — Giữ mức ban đầu đến khi người dùng đổi trong menu YouTube.
  * v3.9.33 — Áp chất lượng ban đầu rồi cho phép đổi thủ công trong YouTube.
- * v3.9.32 — Phủ khoảng đen khi phóng to mà không cắt khung hình.
  * ============================================================================
  */
 (() => {
@@ -45,7 +45,7 @@
   var APP_VERSION, CONFIG_KEY, CHAT_OFF_SVG, EMOJI_OFF_SVG, GEAR_SVG, GRID_SVG, SHORTS_SVG, GAMEPAD_SVG, YOUTUBE_SVG, SEARCH_SVG, KEYBOARD_SVG, CROWN_SVG, COMPASS_SVG, LAYOUT_TAB_SVG, SHIELD_TAB_SVG, PLAYER_TAB_SVG, POST_SVG, ENDSCREEN_SVG, BELL_OFF_SVG, WATERMARK_SVG, REWIND_SVG, MESSAGE_SVG, RADIO_SVG, OPTIMIZE_TAB_SVG, CPU_SVG, BROOM_SVG, HEADPHONES_SVG, INFINITY_SVG, CHAPTERS_OFF_SVG, SHIELD_CHECK_SVG, PLAYLIST_SVG, AMBIENT_LIGHT_SVG, QUALITY_SVG, INFO_TAB_SVG, UPDATE_SVG, USER_SVG, BUG_SVG, GIFT_SVG, EXTERNAL_LINK_SVG, SHOPPING_SVG;
   var init_constants = __esm({
     "src/core/constants.js"() {
-      APP_VERSION = "3.9.41";
+      APP_VERSION = "3.9.42";
       CONFIG_KEY = "ytc_config";
       CHAT_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M20 4v10.59l2 2V4c0-1.1-.9-2-2-2H5.41l2 2H20zM2.81 2.81L1.39 4.22l2.61 2.61V22l4-4h8.59l3.18 3.19 1.41-1.41L2.81 2.81zM8.83 16l-2.83 2.83V8.83L16 16H8.83z"/></svg>`;
       EMOJI_OFF_SVG = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.41 0 8 3.59 8 8 0 1.85-.63 3.55-1.69 4.9z"/><circle cx="8.5" cy="9.5" r="1.5"/><circle cx="15.5" cy="9.5" r="1.5"/><path d="M12 17.5c2.1 0 3.88-1.2 4.6-3h-9.2c.72 1.8 2.5 3 4.6 3z"/></svg>`;
@@ -2575,6 +2575,76 @@
     }
   });
 
+  // src/chat/botFilter.js
+  function normalizeChatAuthor(rawAuthor) {
+    if (typeof rawAuthor !== "string") return "";
+    return rawAuthor.replace(INVISIBLE_CHAR_REGEX, "").trim().replace(/^@+/, "").trim();
+  }
+  function isLiveChatBotAuthor(rawAuthor, isMod = false) {
+    const clean = normalizeChatAuthor(rawAuthor);
+    if (!clean) return false;
+    const compactKey = clean.toLowerCase().replace(/[\s._\-]+/g, "");
+    if (KNOWN_BOT_KEYS.has(compactKey)) {
+      return true;
+    }
+    if (!isMod) {
+      return false;
+    }
+    if (MOD_ONLY_BOT_KEYS.has(compactKey)) {
+      return true;
+    }
+    return MOD_BOT_BOUNDARY_REGEX.test(clean) || MOD_BOT_CAMEL_REGEX.test(clean) || MOD_BOT_FUNCTIONAL_REGEX.test(compactKey);
+  }
+  var INVISIBLE_CHAR_REGEX, KNOWN_BOT_KEYS, MOD_ONLY_BOT_KEYS, MOD_BOT_BOUNDARY_REGEX, MOD_BOT_CAMEL_REGEX, MOD_BOT_FUNCTIONAL_REGEX;
+  var init_botFilter = __esm({
+    "src/chat/botFilter.js"() {
+      INVISIBLE_CHAR_REGEX = /[\u200B-\u200D\uFEFF]/g;
+      KNOWN_BOT_KEYS = /* @__PURE__ */ new Set([
+        "nightbot",
+        "nightbottv",
+        "streamelements",
+        "streamelementsbot",
+        "streamlabs",
+        "streamlabsbot",
+        "streamlabscloudbot",
+        "streamlabschatbot",
+        "fossabot",
+        "botrix",
+        "casterlabs",
+        "botisimo",
+        "restreambot",
+        "phantombot",
+        "moobot",
+        "wizebot",
+        "coebot",
+        "deepbot",
+        "ohbot",
+        "scorpbot",
+        "ankhbot",
+        "stayhydratedbot",
+        "streamerdotbot",
+        "aleshaai"
+      ]);
+      MOD_ONLY_BOT_KEYS = /* @__PURE__ */ new Set([
+        "cloudbot",
+        "soundalerts",
+        "blerp",
+        "streamloots",
+        "streamerbot",
+        "mixitup",
+        "mixitupapp",
+        "own3d",
+        "own3dpro",
+        "restream",
+        "restreamio",
+        "truffle"
+      ]);
+      MOD_BOT_BOUNDARY_REGEX = /^(?:\[?bot\]?[\s._\-:]|.*[\s._\-\[\(]bot(?:[\s._\-\]\)\d]|$))/i;
+      MOD_BOT_CAMEL_REGEX = /[a-z0-9]Bot\d*$/;
+      MOD_BOT_FUNCTIONAL_REGEX = /(?:^|(?:stream|chat|mod|auto|timer|alert|song|music|live|donate|help|helper|notice|news|rule|rules))bot\d*$/i;
+    }
+  });
+
   // src/chat/chatParser.js
   function filterEmojisFromMessage(messageEl) {
     if (!messageEl) return { html: "", text: "", isEmpty: true };
@@ -2621,13 +2691,14 @@
     }
     const authorEl = node.querySelector("#author-name");
     const rawAuthor = authorEl ? authorEl.textContent.trim() : "";
-    let author = rawAuthor.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    if (author.startsWith("@")) {
-      author = author.substring(1);
+    const plainAuthor = rawAuthor.replace(/^@+/, "").trim();
+    const isMod = !!node.querySelector('yt-live-chat-author-badge-renderer[type="moderator"], yt-live-chat-author-badge-renderer[aria-label*="điều hành" i], yt-live-chat-author-badge-renderer[aria-label*="kiểm duyệt" i], yt-live-chat-author-badge-renderer[aria-label*="moderator" i], [type="moderator"], .moderator') || !!node.classList?.contains("author-type-moderator") || node.getAttribute?.("author-type") === "moderator";
+    if (isLiveChatBotAuthor(plainAuthor, isMod)) {
+      return null;
     }
-    const isMod = !!node.querySelector('yt-live-chat-author-badge-renderer[type="moderator"], yt-live-chat-author-badge-renderer[aria-label*="điều hành" i], yt-live-chat-author-badge-renderer[aria-label*="kiểm duyệt" i], yt-live-chat-author-badge-renderer[aria-label*="moderator" i], [type="moderator"], .moderator') || node.classList.contains("author-type-moderator");
-    const isMember = !!node.querySelector('yt-live-chat-author-badge-renderer[type="member"], yt-live-chat-author-badge-renderer[aria-label*="hội viên" i], yt-live-chat-author-badge-renderer[aria-label*="member" i], [type="member"], .member') || node.classList.contains("author-type-member");
-    const isOwner = !!node.querySelector('yt-live-chat-author-badge-renderer[type="owner"], yt-live-chat-author-badge-renderer[aria-label*="chủ sở hữu" i], yt-live-chat-author-badge-renderer[aria-label*="owner" i], [type="owner"], .owner') || node.classList.contains("author-type-owner");
+    let author = plainAuthor.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const isMember = !!node.querySelector('yt-live-chat-author-badge-renderer[type="member"], yt-live-chat-author-badge-renderer[aria-label*="hội viên" i], yt-live-chat-author-badge-renderer[aria-label*="member" i], [type="member"], .member') || !!node.classList?.contains("author-type-member");
+    const isOwner = !!node.querySelector('yt-live-chat-author-badge-renderer[type="owner"], yt-live-chat-author-badge-renderer[aria-label*="chủ sở hữu" i], yt-live-chat-author-badge-renderer[aria-label*="owner" i], [type="owner"], .owner') || !!node.classList?.contains("author-type-owner");
     const avatarEl = node.querySelector(
       '#author-photo img, yt-img-shadow#author-photo img, #author-photo #img, yt-avatar-shape img, [id="author-photo"] img, yt-img-shadow img, img#img'
     ) || node.querySelector("#author-photo")?.shadowRoot?.querySelector("img");
@@ -2694,6 +2765,7 @@
   }
   function displayChatMessage(data, isBacklog = false) {
     if (!data || !currentConfig.chatOverlay || currentConfig.chatOverlay === "off") return;
+    if (isLiveChatBotAuthor(data.author, data.authorClass === "mod")) return;
     const player = document.querySelector("#movie_player:not(#inline-preview-player)");
     const video = player ? player.querySelector("video") : null;
     if (video && video.paused) return;
@@ -2764,6 +2836,7 @@
       init_utils();
       init_chatState();
       init_danmaku();
+      init_botFilter();
       UNICODE_EMOJI_REGEX = /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{200D}\u{FE0F}]/gu;
     }
   });
@@ -6956,6 +7029,8 @@
   var chat_exports = {};
   __export(chat_exports, {
     CHATBOX_POS_KEY: () => CHATBOX_POS_KEY,
+    KNOWN_BOT_KEYS: () => KNOWN_BOT_KEYS,
+    MOD_ONLY_BOT_KEYS: () => MOD_ONLY_BOT_KEYS,
     TOTAL_LANES: () => TOTAL_LANES,
     applyChatBoxPos: () => applyChatBoxPos,
     autoCollapseNativeChatIfOpen: () => autoCollapseNativeChatIfOpen,
@@ -6978,11 +7053,13 @@
     initChatOverlay: () => initChatOverlay,
     initIframeChatSender: () => initIframeChatSender,
     isDuplicateMessage: () => isDuplicateMessage,
+    isLiveChatBotAuthor: () => isLiveChatBotAuthor,
     isNativeChatHiddenByScript: () => isNativeChatHiddenByScript,
     isNativeChatOpenInFullscreen: () => isNativeChatOpenInFullscreen,
     laneNextAvailableTime: () => laneNextAvailableTime,
     lastDanmakuSpawnTime: () => lastDanmakuSpawnTime,
     lastSpawnedLane: () => lastSpawnedLane,
+    normalizeChatAuthor: () => normalizeChatAuthor,
     observeFullscreenChatPanels: () => observeFullscreenChatPanels,
     observePlayerChatState: () => observePlayerChatState,
     onTheaterModeChanged: () => onTheaterModeChanged,
@@ -7020,6 +7097,7 @@
       init_chatState();
       init_streamerBox();
       init_danmaku();
+      init_botFilter();
       init_chatParser();
       init_chatObserver();
     }
